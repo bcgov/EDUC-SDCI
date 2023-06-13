@@ -1,0 +1,16 @@
+*.iml
+.idea/**
+*.iml
+# Ignore VS Code settings
+.vscode/
+
+#ignore .env and local.json files
+backend/.env
+frontend/.env
+frontend/.env.development
+frontend/.env.production
+**/local.json
+
+#ignore modules
+backend/node_modules
+backend/src/config/local.json
