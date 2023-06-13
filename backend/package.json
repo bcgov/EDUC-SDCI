@@ -1,0 +1,27 @@
+{
+  "name": "token",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "test",
+    "serve": "npm run setlocal && npm run setEnvironment && npm run servecmd",
+    "setEnvironment": "set EDUC_SDCI_ENV=DEV",
+    "setlocal": "set NODE_ENV=local",
+    "servecmd": "nodemon --max-old-space-size=250 ./server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "body-parser": "^1.20.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.1.4",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "nconf": "^0.12.0",
+    "node-cache": "^5.1.2",
+    "nodemon": "^2.0.22",
+    "path": "^0.12.7"
+  }
+}
