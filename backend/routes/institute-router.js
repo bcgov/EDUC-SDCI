@@ -18,24 +18,67 @@ const data = {
 
 //Batch Routes
 router.get('/*',getToken, getInstituteAPI);
+
+async function isTokenExpired(token) {
+  const now = Date.now().valueOf() / 1000;
+  const payload = jsonwebtoken.decode(token);
+  console.log(payload)
+  console.log("Token: " + payload['exp']) 
+  console.log("Time : " + now)
+
+  return (!!payload['exp'] && payload['exp'] < (now + 30)); // Add 30 seconds to make sure , edge case is avoided and token is refreshed.
+}
+
 async function getToken(req, res, next) {
-  axios
-    .post(tokenEndpoint, data, {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    })
-    .then((response) => {
-      let accessToken = response.data.access_token;
-      cache.set("token", accessToken);
-    })
-    .catch((error) => {
-      console.error("Error:", error.response.data);
-    });
-  next();
+  try{
+    let token = await cache.get("token")
+
+    if(token && !isTokenExpired(token)){
+      console.log("TOKEN IS EXPIRED... GETTING A NEW ONE")
+      await axios
+      .post(tokenEndpoint, data, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      })
+      .then((response) => {
+        let accessToken = response.data.access_token;
+        console.log(accessToken)
+        cache.set("token", accessToken);
+        
+      })
+      .catch((error) => {
+        console.error("Error:", error.response.data);
+      });
+    }else{
+      await axios
+      .post(tokenEndpoint, data, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      })
+      .then((response) => {
+        let accessToken = response.data.access_token;
+        console.log(accessToken)
+        cache.set("token", accessToken);
+        
+      })
+      .catch((error) => {
+        console.error("Error:", error.response.data);
+      });
+    }
+    next();  
+  }catch(error){
+    console.log(error)
+  }
+      
+  
+  
 }
 async function getInstituteAPI(req, res) {
-  const memToken = cache.get("token");
+  const memToken = await cache.get("token");  
+
+  
   const url = `${config.get('server:instituteAPIURL')}/institute` + req.url;
   axios
     .get(url, { headers: { Authorization: `Bearer ${memToken}` } })
