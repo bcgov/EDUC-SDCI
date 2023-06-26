@@ -11,6 +11,23 @@ frontend/.env.development
 frontend/.env.production
 **/local.json
 
+
+# Editor directories and files
+.idea
+.vscode
+*.iml
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw*
+*.pem
+
 #ignore modules
 node_modules
 backend/src/config/local.json
+
+# log files
+.*-audit.json
+*.log
+logs
