@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import ListDistricts from '../views/ListDistricts.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -9,6 +10,11 @@ const router = createRouter({
       name: 'home',
       component: HomeView
     },
+    {
+      path: '/list-districts',
+      name: 'list districts',
+      component: ListDistricts
+    },    
     {
       path: '/about',
       name: 'about',

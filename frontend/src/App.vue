@@ -1,6 +1,39 @@
-<script setup lang="ts">
+<script>
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
+import { ref, onMounted } from 'vue'
+import InstituteService from './services/InstituteService'
+import { useAppStore } from './stores/app'
+
+export default {
+  setup() {
+    const data = ref([]) // Placeholder for the received data
+    const appStore = useAppStore()
+
+    const getDistricts = () => {
+      InstituteService.getDistricts()
+        .then((response) => {
+          data.value = response.data
+          // Handle the response data
+          appStore.setDistricts(response.data)
+        })
+        .catch((error) => {
+          // Handle the error
+          console.error(error)
+        })
+    }
+
+    // Call the getDistricts function when the component is mounted
+    onMounted(() => {
+      getDistricts()
+    })
+
+    return {
+      data,
+      getDistricts
+    }
+  }
+}
 </script>
 
 <template>
@@ -13,6 +46,7 @@ import HelloWorld from './components/HelloWorld.vue'
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
+        <RouterLink to="/list-districts">List Districts</RouterLink>
       </nav>
     </div>
   </header>
