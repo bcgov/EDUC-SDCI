@@ -15,11 +15,11 @@ const router = createRouter({
       name: 'list districts',
       component: () =>  import('../views/ListDistricts.vue')
     },
-    {
-      path: '/list-schools',
-      name: 'list schools',
-      component: () =>  import('../views/ListSchools.vue')
-    },    
+    // {
+    //   path: '/list-schools',
+    //   name: 'list schools',
+    //   component: () =>  import('../views/ListSchools.vue')
+    // },    
     {    
       path: '/search',
       name: 'search',
@@ -33,7 +33,7 @@ const router = createRouter({
       )
     },
     {
-      path: '/district', //TODO: Add dist code once we setup axios call to get dist data
+      path: '/district-:districtId', //TODO: Add dist code once we setup axios call to get dist data
       name: 'district',
       component: () =>  import('../views/DistrictView.vue'
       )
