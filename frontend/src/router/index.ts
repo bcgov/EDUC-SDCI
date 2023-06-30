@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+//import SchoolSearchView from '../views/SchoolSearchView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,6 +9,30 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView
+    },
+    {
+      path: '/search',
+      name: 'search',
+      component: () =>  import('../views/SchoolSearchView.vue'
+      )
+    },
+    {
+      path: '/school', //TODO: Add mincode once we setup axios call to get school data
+      name: 'school',
+      component: () =>  import('../views/SchoolView.vue'
+      )
+    },
+    {
+      path: '/district', //TODO: Add mincode once we setup axios call to get dist data
+      name: 'district',
+      component: () =>  import('../views/DistrictView.vue'
+      )
+    },
+    {
+      path: '/authority', //TODO: Add mincode once we setup axios call to get dist data
+      name: 'authority',
+      component: () =>  import('../views/AuthorityView.vue'
+      )
     },
     {
       path: '/about',
