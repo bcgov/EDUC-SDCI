@@ -15,6 +15,11 @@ const router = createRouter({
       name: 'list districts',
       component: () =>  import('../views/ListDistricts.vue')
     },
+    {
+      path: '/list-schools',
+      name: 'list schools',
+      component: () =>  import('../views/ListSchools.vue')
+    },    
     {    
       path: '/search',
       name: 'search',

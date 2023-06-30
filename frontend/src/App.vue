@@ -13,9 +13,20 @@ export default {
     const getDistricts = () => {
       InstituteService.getDistricts()
         .then((response) => {
-          data.value = response.data
           // Handle the response data
           appStore.setDistricts(response.data)
+        })
+        .catch((error) => {
+          // Handle the error
+          console.error(error)
+        })
+    }
+    const getSchools = () => {
+      InstituteService.getSchools()
+        .then((response) => {
+          console.log('getting schools')
+          // Handle the response data
+          appStore.setSchools(response.data)
         })
         .catch((error) => {
           // Handle the error
@@ -26,11 +37,13 @@ export default {
     // Call the getDistricts function when the component is mounted
     onMounted(() => {
       getDistricts()
+      getSchools()
     })
 
     return {
       data,
-      getDistricts
+      getDistricts,
+      getSchools
     }
   }
 }
@@ -46,11 +59,13 @@ export default {
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
-        <RouterLink to="/list-districts">List Districts</RouterLink>
         <RouterLink to="/search">School Search</RouterLink>
         <RouterLink to="/school">School</RouterLink>
         <RouterLink to="/district">District</RouterLink>
         <RouterLink to="/authority">Authority</RouterLink>
+
+        <RouterLink to="/list-districts">List Districts</RouterLink>
+        <RouterLink to="/list-schools">List Schools</RouterLink>
       </nav>
     </div>
   </header>
