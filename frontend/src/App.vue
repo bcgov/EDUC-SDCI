@@ -37,7 +37,7 @@ export default {
     // Call the getDistricts function when the component is mounted
     onMounted(() => {
       getDistricts()
-      getSchools()
+      //getSchools()
     })
 
     return {
