@@ -23,13 +23,13 @@ const router = createRouter({
       )
     },
     {
-      path: '/district', //TODO: Add mincode once we setup axios call to get dist data
+      path: '/district', //TODO: Add dist code once we setup axios call to get dist data
       name: 'district',
       component: () =>  import('../views/DistrictView.vue'
       )
     },
     {
-      path: '/authority', //TODO: Add mincode once we setup axios call to get dist data
+      path: '/authority', //TODO: Add auth code once we setup axios call to get dist data
       name: 'authority',
       component: () =>  import('../views/AuthorityView.vue'
       )
