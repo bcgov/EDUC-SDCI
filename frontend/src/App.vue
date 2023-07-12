@@ -1,6 +1,5 @@
 <script>
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
 import { ref, onMounted } from 'vue'
 import InstituteService from './services/InstituteService'
 import { useAppStore } from './stores/app'
