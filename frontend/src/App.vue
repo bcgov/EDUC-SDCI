@@ -65,7 +65,6 @@ export default {
       </nav>
     </div>
   </header>
-
   <RouterView />
 </template>
 
