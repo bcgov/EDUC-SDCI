@@ -117,7 +117,7 @@ objects:
               emptyDir: {}
             - name: tls-certs
               secret:
-                secretName: edx-backend-cert
+                secretName: sdci-backend-cert
             - name: flb-sc-config-volume
               configMap:
                 name: "${APP_NAME}-backend-config-map"
@@ -128,7 +128,7 @@ objects:
     kind: Service
     metadata:
       annotations:
-        service.alpha.openshift.io/serving-cert-secret-name: "edx-backend-cert"
+        service.alpha.openshift.io/serving-cert-secret-name: "sdci-backend-cert"
         openshift.io/generated-by: OpenShiftNewApp
       creationTimestamp:
       labels:
