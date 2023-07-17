@@ -61,7 +61,6 @@ export default {
         <RouterLink to="/about">About</RouterLink>
         <RouterLink to="/search">School Search</RouterLink>
         <RouterLink to="/school">School</RouterLink>
-        <RouterLink to="/district-81770c47-b1aa-44b1-d732-7e1c1b809389">District</RouterLink>
         <RouterLink to="/authority">Authority</RouterLink>
 
         <RouterLink to="/list-districts">List Districts</RouterLink>

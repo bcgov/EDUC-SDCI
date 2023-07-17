@@ -5,16 +5,17 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 console.log(route.params.districtId)
+//get district ID. Best way to do this?
+
 const district = ref({})
 
-InstituteService.getDistrict(String(route.params.districtId))
+const getDistrictInfo = InstituteService.getDistrict(String(route.params.districtId))
   .then((response) => {
     district.value = response.data
   })
   .catch((error) => {
     console.error(error)
   })
-console.log(district)
 
 // onBeforeMount(() => {
 //   district = InstituteService.getDistrict(route.params.districtId)

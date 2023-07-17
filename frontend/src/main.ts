@@ -12,7 +12,7 @@ import * as directives from 'vuetify/directives'
 import App from './App.vue'
 import router from './router/index.ts'
 
-const vuetify = createVuetify({components, directives})
+const vuetify = createVuetify({components, directives,})
 const app = createApp(App)
 
 app.use(vuetify)

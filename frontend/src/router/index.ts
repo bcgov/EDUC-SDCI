@@ -32,11 +32,17 @@ const router = createRouter({
       component: () =>  import('../views/SchoolView.vue'
       )
     },
+    // {
+    //   path: '/district-:districtNumber', //TODO: Add dist code once we setup axios call to get dist data
+    //   name: 'district',
+    //   alias: '/:districtId:districtNumber',
+    //   component: () =>  import('../views/DistrictView.vue'
+    //   )
+    // },
     {
-      path: '/district-:districtId', //TODO: Add dist code once we setup axios call to get dist data
+      path: '/district-:districtNumber',
       name: 'district',
-      component: () =>  import('../views/DistrictView.vue'
-      )
+      component: ()=> import('../views/DistrictView.vue')
     },
     {
       path: '/authority', //TODO: Add auth code once we setup axios call to get dist data
