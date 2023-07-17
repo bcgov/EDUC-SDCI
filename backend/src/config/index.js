@@ -35,7 +35,8 @@ nconf.defaults({
   oidc: {
     clientId: process.env.SOAM_CLIENT_ID,
     clientSecret: process.env.SOAM_CLIENT_SECRET,
-    discovery: process.env.SOAM_DISCOVERY
+    discovery: process.env.SOAM_DISCOVERY,
+    tokenEndpoint: process.env.SOAM_TOKEN_URL
   },
 });
 module.exports = nconf;
