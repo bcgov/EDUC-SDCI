@@ -12,11 +12,12 @@
 </template>
 <script>
 import { useAppStore } from '@/stores/app'
+import { toRefs, watchEffect } from 'vue';
 
 export default {
   setup() {
     const appStore = useAppStore()
-    const districts = appStore.getDistricts
+    const { districts } = toRefs(appStore);
     return { districts }
   }
 }

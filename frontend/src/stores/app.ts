@@ -13,16 +13,31 @@ interface School {
 
 }
 
+import InstituteService from '../services/InstituteService'
+
 export const useAppStore = defineStore('app', {
   state: () => ({
     districts: [] as District[],
     schools: [] as School[]
   }),
   actions: {
-    setDistricts(districts: District[]): void {
-      this.districts = districts;
+    setDistricts(): void {
+     
+        InstituteService.getDistricts()
+          .then((response) => {
+            // Handle the response data
+            this.districts = response.data
+          })
+          .catch((error) => {
+            // Handle the error
+            console.error(error)
+          })
+      
+ 
+      
     },
     setSchools(schools: School[]): void {
+
       this.schools = schools;
     }
   },

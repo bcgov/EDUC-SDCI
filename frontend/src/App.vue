@@ -1,7 +1,6 @@
 <script>
 import { RouterLink, RouterView } from 'vue-router'
-import { ref, onMounted } from 'vue'
-import InstituteService from './services/InstituteService'
+import { ref, onBeforeMount, onMounted } from 'vue'
 import { useAppStore } from './stores/app'
 
 export default {
@@ -9,41 +8,12 @@ export default {
     const data = ref([]) // Placeholder for the received data
     const appStore = useAppStore()
 
-    const getDistricts = () => {
-      InstituteService.getDistricts()
-        .then((response) => {
-          // Handle the response data
-          appStore.setDistricts(response.data)
-        })
-        .catch((error) => {
-          // Handle the error
-          console.error(error)
-        })
-    }
-    const getSchools = () => {
-      InstituteService.getSchools()
-        .then((response) => {
-          console.log('getting schools')
-          // Handle the response data
-          appStore.setSchools(response.data)
-        })
-        .catch((error) => {
-          // Handle the error
-          console.error(error)
-        })
-    }
-    getDistricts()
-
-    // Call the getDistricts function when the component is mounted
-    onMounted(() => {
-      //getDistricts()
-      //getSchools()
+    onBeforeMount(async () => {
+      await appStore.setDistricts()
     })
 
     return {
-      data,
-      getDistricts,
-      getSchools
+      data
     }
   },
   mounted() {
