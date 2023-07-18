@@ -8,7 +8,7 @@ const jsonwebtoken = require("jsonwebtoken");
 const axios = require("axios");
 
 const cache = new NodeCache({ stdTTL: config.get("server:instituteAPITokenExpiry") });
-const listCache = new NodeCache({ stdTTL: 1800 });
+const listCache = new NodeCache({ stdTTL: 21600 });
 const clientId = config.get("oidc:clientId");
 const clientSecret = config.get("oidc:clientSecret")
 const tokenEndpoint = config.get("oidc:tokenEndpoint")
