@@ -12,12 +12,12 @@
 </template>
 <script>
 import { useAppStore } from '@/stores/app'
-import { toRefs, watchEffect } from 'vue';
+import { storeToRefs } from 'pinia'
 
 export default {
   setup() {
     const appStore = useAppStore()
-    const { districts } = toRefs(appStore);
+    const { districts } = storeToRefs(appStore);
     return { districts }
   }
 }

@@ -1,19 +1,11 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useAppStore } from '@/stores/app'
-import { mapState } from 'pinia'
+import { storeToRefs } from 'pinia'
 import router from '@/router'
 
 const appStore = useAppStore()
-//const districts = appStore.getDistricts
-const districts = computed({
-  get() {
-    return appStore.getDistricts
-  },
-  set(newValue) {
-    console.log(newValue) //TODO set districts in store? what am I doing here
-  }
-})
+const { districts } = storeToRefs(appStore)
 
 const selectedDistrict = ref({}) // placeholder
 function goToDistrict() {
@@ -30,7 +22,7 @@ function goToDistrict() {
 
 <template>
   <div>
-    {{ selectedDistrict }}
+    <!-- {{ districts }} -->
     <!-- <v-autocomplete
       v-model="selectedDistrict"
       label="Select a District"

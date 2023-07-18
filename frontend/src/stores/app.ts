@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia';
+import { storeToRefs, defineStore } from 'pinia';
 
 interface District {
   districtId: string;
@@ -42,11 +42,11 @@ export const useAppStore = defineStore('app', {
     }
   },
   getters: {
-    getDistricts(): District[] {
-      return this.districts;
+    getDistricts: (state) => {
+      return () => state.districts
     },
-    getSchools(): School[] {
-      return this.schools;
+    getSchools: (state) => {
+      return () => state.schools
     }
   }
 });
