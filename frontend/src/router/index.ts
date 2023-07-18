@@ -40,9 +40,10 @@ const router = createRouter({
     //   )
     // },
     {
-      path: '/district-:districtNumber',
+      path: '/district/:districtId',
       name: 'district',
-      component: ()=> import('../views/DistrictView.vue')
+      component: ()=> import('../views/DistrictView.vue'),
+      props: true,
     },
     {
       path: '/authority', //TODO: Add auth code once we setup axios call to get dist data

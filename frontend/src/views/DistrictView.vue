@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import InstituteService from '@/Services/InstituteService'
 import { ref, onBeforeMount } from 'vue'
-import { useRoute } from 'vue-router'
-
-const route = useRoute()
-console.log(route.params.districtId)
-//get district ID. Best way to do this?
 
 const district = ref({})
+const props = defineProps({
+  districtId: String
+  // districtNumber: String
+  // displayName: String
+})
 
-const getDistrictInfo = InstituteService.getDistrict(String(route.params.districtId))
+console.log(props.districtId)
+InstituteService.getDistrict(String(props.districtId))
   .then((response) => {
     district.value = response.data
   })

@@ -3,8 +3,6 @@
     <h1>Districts</h1>
     <p>App.vue on start up accesses the institute api and store the response using pinia.
     ListDistricts.vue uses the stored response from pinia store</p>
-    {{districts}}
-
     <p style="float:left; height: 200px; width:300px overflow: scroll">
       <ul>
         <li v-for="district in districts" :key="district.districtId">{{ district.displayName }}</li>

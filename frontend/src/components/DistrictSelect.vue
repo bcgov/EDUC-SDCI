@@ -1,17 +1,19 @@
 <script setup lang="ts">
-import { ref, reactive, toRaw } from 'vue'
+import { ref, computed } from 'vue'
 import { useAppStore } from '@/stores/app'
+import { mapState } from 'pinia'
 import router from '@/router'
 
-// TODO: Create common type definitions for app to used
-interface District {
-  districtId: string
-  displayName: string
-  districtNumber: string
-}
-
 const appStore = useAppStore()
-const districts = appStore.getDistricts
+//const districts = appStore.getDistricts
+const districts = computed({
+  get() {
+    return appStore.getDistricts
+  },
+  set(newValue) {
+    console.log(newValue) //TODO set districts in store? what am I doing here
+  }
+})
 
 const selectedDistrict = ref({}) // placeholder
 function goToDistrict() {
@@ -19,7 +21,7 @@ function goToDistrict() {
   router.push({
     name: 'district',
     params: {
-      districtNumber: String(selectedDistrict.value?.districtNumber),
+      // districtNumber: String(selectedDistrict.value?.districtNumber),
       districtId: String(selectedDistrict.value?.districtId)
     }
   })

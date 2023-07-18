@@ -32,10 +32,11 @@ export default {
           console.error(error)
         })
     }
+    getDistricts()
 
     // Call the getDistricts function when the component is mounted
     onMounted(() => {
-      getDistricts()
+      //getDistricts()
       //getSchools()
     })
 
@@ -44,6 +45,9 @@ export default {
       getDistricts,
       getSchools
     }
+  },
+  mounted() {
+    console.log('mounted!')
   }
 }
 </script>
