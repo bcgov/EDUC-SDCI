@@ -27,8 +27,8 @@ router.get('/*',checkToken, getInstituteAPI);
 function createSchoolList(schools) {
   return schools.map(function(school) {
     return {
-      mincode: school.mincode,
-      displayName: school.displayName
+      displayName: school.displayName + "(" + school.mincode + ")",
+      id: school.schoolId
     };
   });
 }
