@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import InstituteService from '@/Services/InstituteService'
 import { ref, onBeforeMount } from 'vue'
+import { useAppStore } from '@/stores/app'
+import router from '@/router'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
+const appStore = useAppStore()
 const district = ref({})
-const props = defineProps({
-  districtId: String
-  // districtNumber: String
-  // displayName: String
-})
+const districtId = appStore.getDistrictByDistrictNumber(
+  String(route.params.districtNumber)
+)?.districtId
 
-console.log(props.districtId)
-InstituteService.getDistrict(String(props.districtId))
+InstituteService.getDistrict(String(districtId))
   .then((response) => {
     district.value = response.data
   })

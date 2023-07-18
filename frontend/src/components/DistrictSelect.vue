@@ -6,15 +6,17 @@ import router from '@/router'
 
 const appStore = useAppStore()
 const { districts } = storeToRefs(appStore)
+console.log(appStore.districtNumberNameOnly)
 
-const selectedDistrict = ref({}) // placeholder
+const selectedDistrict = ref('') // placeholder
 function goToDistrict() {
   //console.log(selectedDistrict.value.districtId)
   router.push({
     name: 'district',
     params: {
-      // districtNumber: String(selectedDistrict.value?.districtNumber),
-      districtId: String(selectedDistrict.value?.districtId)
+      districtNumber: String(selectedDistrict.value?.districtNumber),
+      displayName: String(selectedDistrict.value?.displayName)
+      //districtId: String(selectedDistrict.value?.districtId)
     }
   })
 }
@@ -22,7 +24,7 @@ function goToDistrict() {
 
 <template>
   <div>
-    <!-- {{ districts }} -->
+    {{ selectedDistrict }}
     <!-- <v-autocomplete
       v-model="selectedDistrict"
       label="Select a District"
@@ -47,7 +49,7 @@ function goToDistrict() {
     <v-autocomplete
       v-model="selectedDistrict"
       label="Select a District"
-      :items="districts"
+      :items="appStore.districtNumberNameOnly"
       :item-title="(item) => (item ? item.districtNumber + ' - ' + item.displayName : '')"
       :item-value="(item) => item"
       @update:modelValue="goToDistrict"
