@@ -23,13 +23,16 @@ const data = {
 router.get('/school/list', checkToken, getSchoolList);
 router.get('/*',checkToken, getInstituteAPI);
 
-
-function createSchoolList(schools) {
+function createSchoolList(schools)  {
   return schools.map(function(school) {
-    return {
-      displayName: school.displayName + "(" + school.mincode + ")",
-      id: school.schoolId
-    };
+    if (school.closedDate !== null) {
+      return {
+        mincode: school.mincode,
+        displayName: school.displayName
+      };
+    }
+  }).filter(function(school) {
+    return school !== undefined;
   });
 }
 
