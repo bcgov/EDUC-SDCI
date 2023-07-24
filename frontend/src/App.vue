@@ -10,6 +10,7 @@ export default {
 
     onBeforeMount(async () => {
       await appStore.setDistricts()
+      await appStore.setSchoolList()
     })
 
     return {

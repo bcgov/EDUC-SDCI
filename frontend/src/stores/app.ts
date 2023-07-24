@@ -32,13 +32,19 @@ export const useAppStore = defineStore('app', {
             // Handle the error
             console.error(error)
           })
-      
- 
-      
     },
-    setSchools(schools: School[]): void {
+    setSchoolList(): void {
 
-      this.schools = schools;
+      InstituteService.getSchoolList()
+      .then((response) => {
+        // Handle the response data
+        this.schools = response.data
+      })
+      .catch((error) => {
+        // Handle the error
+        console.error(error)
+      })
+      
     }
   },
   getters: {
