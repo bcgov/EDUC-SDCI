@@ -16,9 +16,6 @@ export default {
     return {
       data
     }
-  },
-  mounted() {
-    console.log('mounted!')
   }
 }
 </script>
