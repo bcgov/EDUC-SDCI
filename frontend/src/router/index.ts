@@ -6,7 +6,7 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
+      path: '/', //landing page
       name: 'home',
       component: HomeView
     },
@@ -42,6 +42,11 @@ const router = createRouter({
       name: 'authority',
       component: () =>  import('../views/AuthorityView.vue'
       )
+    },
+    {
+      path: '/offshore',
+      name: 'offshore',
+      component: () => import('../views/OffshoreView.vue')
     },
     {
       path: '/about',

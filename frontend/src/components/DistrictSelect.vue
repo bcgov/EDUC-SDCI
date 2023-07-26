@@ -15,7 +15,7 @@ function goToDistrict() {
     name: 'district',
     params: {
       districtNumber: String(selectedDistrict.value?.districtNumber),
-      displayName: String(selectedDistrict.value?.displayName)
+      displayName: String(selectedDistrict.value?.displayName).toLowerCase()
       //districtId: String(selectedDistrict.value?.districtId)
     }
   })
@@ -23,36 +23,43 @@ function goToDistrict() {
 </script>
 
 <template>
-  <div>
-    {{ selectedDistrict }}
-    <!-- <v-autocomplete
-      v-model="selectedDistrict"
-      label="Select a District"
-      :items="districts"
-      item-title="displayName"
-      item-value="districtId"
-      @update:modelValue="goToDistrict"
-    >
-      <template v-slot:selection="{ props, item }"
-        ><v-list-item
-          v-bind="props"
-          :title="`${item?.raw?.districtNumber} - ${item?.raw?.displayName}`"
-        ></v-list-item
-      ></template>
-      <template v-slot:item="{ props, item }">
-        <v-list-item
-          v-bind="props"
-          :title="`${item?.raw?.districtNumber} - ${item?.raw?.displayName}`"
-        ></v-list-item>
-      </template>
-    </v-autocomplete> -->
-    <v-autocomplete
-      v-model="selectedDistrict"
-      label="Select a District"
-      :items="appStore.districtNumberNameOnly"
-      :item-title="(item) => (item ? item.districtNumber + ' - ' + item.displayName : '')"
-      :item-value="(item) => item"
-      @update:modelValue="goToDistrict"
-    ></v-autocomplete>
-  </div>
+  <v-container fluid>
+    <v-row no-gutters>
+      {{ selectedDistrict }}
+      <!-- <v-autocomplete
+        v-model="selectedDistrict"
+        label="Select a District"
+        :items="districts"
+        item-title="displayName"
+        item-value="districtId"
+        @update:modelValue="goToDistrict"
+      >
+        <template v-slot:selection="{ props, item }"
+          ><v-list-item
+            v-bind="props"
+            :title="`${item?.raw?.districtNumber} - ${item?.raw?.displayName}`"
+          ></v-list-item
+        ></template>
+        <template v-slot:item="{ props, item }">
+          <v-list-item
+            v-bind="props"
+            :title="`${item?.raw?.districtNumber} - ${item?.raw?.displayName}`"
+          ></v-list-item>
+        </template>
+      </v-autocomplete> -->
+      <v-col>
+        <v-autocomplete
+          v-model="selectedDistrict"
+          label="Select a District"
+          :items="appStore.districtNumberNameOnly"
+          :item-title="(item) => (item ? item.districtNumber + ' - ' + item.displayName : '')"
+          :item-value="(item) => item"
+          @update:modelValue="goToDistrict"
+        ></v-autocomplete>
+      </v-col>
+      <v-col cols="3">
+        <v-btn>View District</v-btn>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>

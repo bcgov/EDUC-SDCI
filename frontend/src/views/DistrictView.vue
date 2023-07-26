@@ -1,18 +1,19 @@
 <script setup lang="ts">
 import InstituteService from '@/Services/InstituteService'
-import { ref, onBeforeMount } from 'vue'
+import { ref, computed } from 'vue'
 import { useAppStore } from '@/stores/app'
-import router from '@/router'
+import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const appStore = useAppStore()
 const district = ref({})
-const districtId = appStore.getDistrictByDistrictNumber(
-  String(route.params.districtNumber)
-)?.districtId
+const districtId = computed(
+  () => appStore.getDistrictByDistrictNumber(String(route.params.districtNumber))?.districtId
+)
 
-InstituteService.getDistrict(String(districtId))
+console.log(districtId.value)
+InstituteService.getDistrict(districtId.value)
   .then((response) => {
     district.value = response.data
   })

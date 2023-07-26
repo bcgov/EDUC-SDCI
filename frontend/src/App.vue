@@ -32,6 +32,7 @@ export default {
         <RouterLink to="/search">School Search</RouterLink>
         <RouterLink to="/school">School</RouterLink>
         <RouterLink to="/authority">Authority</RouterLink>
+        <RouterLink to="/offshore">Offshore</RouterLink>
         <RouterLink to="/list-districts">List Districts</RouterLink>
         <RouterLink to="/list-schools">List Schools</RouterLink>
       </nav>
