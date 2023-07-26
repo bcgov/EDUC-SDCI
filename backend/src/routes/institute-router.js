@@ -8,6 +8,7 @@ const jsonwebtoken = require("jsonwebtoken");
 const axios = require("axios");
 
 const cache = new NodeCache({ stdTTL: config.get("server:instituteAPITokenExpiry") });
+const listCache = new NodeCache({ stdTTL: 21600 });
 const clientId = config.get("oidc:clientId");
 const clientSecret = config.get("oidc:clientSecret")
 const tokenEndpoint = config.get("oidc:tokenEndpoint")
@@ -19,7 +20,43 @@ const data = {
 };
 
 //Batch Routes
+router.get('/school/list', checkToken, getSchoolList);
 router.get('/*',checkToken, getInstituteAPI);
+
+function createSchoolList(schools)  {
+  return schools.map(function(school) {
+    if (school.closedDate !== null) {
+      return {
+        mincode: school.mincode,
+        displayName: school.displayName
+      };
+    }
+  }).filter(function(school) {
+    return school !== undefined;
+  });
+}
+
+async function getSchoolList(req, res) {
+  const memToken = await cache.get("token");  
+  if(await !listCache.has("schoollist")){
+    const url = `${config.get('server:instituteAPIURL')}/institute/school`; // Update the URL according to your API endpoint
+    axios
+      .get(url, { headers: { Authorization: `Bearer ${memToken}` } })
+      .then((response) => {
+        const schoolList = createSchoolList(response.data)
+        res.json(schoolList);
+        listCache.set("schoollist", schoolList)
+        log.info(req.url);
+      })
+      .catch((e) => {
+        log.error('getSchoolsList Error', e.response ? e.response.status : e.message);
+      });    
+  }else{
+    schoolList = await listCache.get("schoollist")
+    res.json(schoolList)
+  }
+  
+}
 
 async function getNewToken(req, res, next) {
   await axios

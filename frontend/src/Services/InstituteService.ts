@@ -8,8 +8,8 @@ export default {
   getDistrict(districtId: string): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/district/'+districtId);
   },  
-  getSchools(): Promise<AxiosResponse> {
-    return ApiService.apiAxios.get('/api/v1/institute/school');
+  getSchoolList(): Promise<AxiosResponse> {
+    return ApiService.apiAxios.get('/api/v1/institute/school/list');
   },
   getSchool(schoolId: string): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/school/'+schoolId);

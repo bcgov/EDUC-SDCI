@@ -10,14 +10,12 @@ export default {
 
     onBeforeMount(async () => {
       await appStore.setDistricts()
+      await appStore.setSchoolList()
     })
 
     return {
       data
     }
-  },
-  mounted() {
-    console.log('mounted!')
   }
 }
 </script>
