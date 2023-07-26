@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { storeToRefs } from 'pinia'
 import router from '@/router'
+import { useSanitizeURL } from '@'
 
 const appStore = useAppStore()
 const { districts } = storeToRefs(appStore)
@@ -24,29 +25,8 @@ function goToDistrict() {
 
 <template>
   <v-container fluid>
+    {{ selectedDistrict }}
     <v-row no-gutters>
-      {{ selectedDistrict }}
-      <!-- <v-autocomplete
-        v-model="selectedDistrict"
-        label="Select a District"
-        :items="districts"
-        item-title="displayName"
-        item-value="districtId"
-        @update:modelValue="goToDistrict"
-      >
-        <template v-slot:selection="{ props, item }"
-          ><v-list-item
-            v-bind="props"
-            :title="`${item?.raw?.districtNumber} - ${item?.raw?.displayName}`"
-          ></v-list-item
-        ></template>
-        <template v-slot:item="{ props, item }">
-          <v-list-item
-            v-bind="props"
-            :title="`${item?.raw?.districtNumber} - ${item?.raw?.displayName}`"
-          ></v-list-item>
-        </template>
-      </v-autocomplete> -->
       <v-col>
         <v-autocomplete
           v-model="selectedDistrict"
@@ -54,12 +34,12 @@ function goToDistrict() {
           :items="appStore.districtNumberNameOnly"
           :item-title="(item) => (item ? item.districtNumber + ' - ' + item.displayName : '')"
           :item-value="(item) => item"
-          @update:modelValue="goToDistrict"
         ></v-autocomplete>
+        <v-btn class="text-none text-subtitle-1" variant="flat" @click="goToDistrict"
+          >View District Info</v-btn
+        >
       </v-col>
-      <v-col cols="3">
-        <v-btn>View District</v-btn>
-      </v-col>
+      <v-col> </v-col>
     </v-row>
   </v-container>
 </template>
