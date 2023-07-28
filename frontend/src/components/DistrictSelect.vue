@@ -23,8 +23,8 @@ function goToDistrict() {
 <template>
   <v-container fluid>
     {{ selectedDistrict }}
-    <v-row no-gutters>
-      <v-col>
+    <v-row no-gutters justify="space-between">
+      <v-col class="mr-6">
         <v-autocomplete
           v-model="selectedDistrict"
           label="Select a District"
@@ -36,7 +36,20 @@ function goToDistrict() {
           >View District Info</v-btn
         >
       </v-col>
-      <v-col> </v-col>
+      <v-col class="ml-6">
+        <v-btn class="text-none text-subtitle-1 ma-1" variant="flat"
+          ><template v-slot:prepend> <v-icon icon="mdi-download" /></template> Mailing for All
+          Districts</v-btn
+        >
+        <v-btn class="text-none text-subtitle-1 ma-1" variant="flat"
+          ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Contacts for All
+          Districts</v-btn
+        >
+        <v-btn class="text-none text-subtitle-1 ma-1" variant="flat"
+          ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Contacts by
+          Type</v-btn
+        >
+      </v-col>
     </v-row>
   </v-container>
 </template>
