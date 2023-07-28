@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import InstituteService from '@/Services/InstituteService'
-import { ref, computed } from 'vue'
+import { ref, reactive, computed, toValue } from 'vue'
 import { useAppStore } from '@/stores/app'
-import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const appStore = useAppStore()
-const district = ref({})
-const districtId = computed(
-  () => appStore.getDistrictByDistrictNumber(String(route.params.districtNumber))?.districtId
+const districtId = ref(
+  appStore.getDistrictByDistrictNumber(String(route.params.districtNumber))?.districtId
 )
 
+const district = reactive({ value: {} })
 console.log(districtId.value)
+
 InstituteService.getDistrict(districtId.value)
   .then((response) => {
     district.value = response.data
@@ -21,9 +21,7 @@ InstituteService.getDistrict(districtId.value)
     console.error(error)
   })
 
-// onBeforeMount(() => {
-//   district = InstituteService.getDistrict(route.params.districtId)
-// })
+console.log(toValue(district))
 </script>
 
 <template>

@@ -1,4 +1,5 @@
-export function useSanitizeURL(input: String) {
-    input = input.toLowerCase() // format input to lower case
+export function useSanitizeURL(input: string) {
+    // format input to lower case and remove special characters
+    input = input.toLowerCase().replace(/^a-zA-Z0-9 ]/g, '')
     return input
 }

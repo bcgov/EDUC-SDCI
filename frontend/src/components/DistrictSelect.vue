@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { useAppStore } from '@/stores/app'
-import { storeToRefs } from 'pinia'
 import router from '@/router'
-import { useSanitizeURL } from '@'
+import { useSanitizeURL } from '@/composables/string'
 
 const appStore = useAppStore()
-const { districts } = storeToRefs(appStore)
-console.log(appStore.districtNumberNameOnly)
 
 const selectedDistrict = ref('') // placeholder
 function goToDistrict() {
@@ -15,8 +12,8 @@ function goToDistrict() {
   router.push({
     name: 'district',
     params: {
-      districtNumber: String(selectedDistrict.value?.districtNumber),
-      displayName: String(selectedDistrict.value?.displayName).toLowerCase()
+      districtNumber: useSanitizeURL(String(selectedDistrict.value?.districtNumber)),
+      displayName: useSanitizeURL(String(selectedDistrict.value?.displayName))
       //districtId: String(selectedDistrict.value?.districtId)
     }
   })
@@ -31,7 +28,7 @@ function goToDistrict() {
         <v-autocomplete
           v-model="selectedDistrict"
           label="Select a District"
-          :items="appStore.districtNumberNameOnly"
+          :items="appStore.getDistrictList"
           :item-title="(item) => (item ? item.districtNumber + ' - ' + item.displayName : '')"
           :item-value="(item) => item"
         ></v-autocomplete>

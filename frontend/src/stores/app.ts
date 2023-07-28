@@ -51,7 +51,7 @@ export const useAppStore = defineStore('app', {
     getDistricts: (state) => {
       return () => state.districts
     },
-    districtNumberNameOnly: (state) => {
+    getDistrictList: (state) => {
       return state.districts.map((district) => {return {districtNumber: district.districtNumber, displayName: district.displayName}})
     },
     getDistrictByDistrictNumber: (state) => {
