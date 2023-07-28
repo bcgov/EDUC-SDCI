@@ -22,7 +22,7 @@ function goToDistrict() {
 
 <template>
   <v-container fluid>
-    {{ selectedDistrict }}
+    <h2>District Information</h2>
     <v-row no-gutters justify="space-between">
       <v-col class="mr-6">
         <v-autocomplete
