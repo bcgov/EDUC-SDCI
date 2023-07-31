@@ -5,15 +5,32 @@ import { createPinia } from 'pinia'
 
 // Vuetify
 import 'vuetify/styles'
-import { createVuetify } from 'vuetify'
+import { createVuetify, ThemeDefinition } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 
+// material design icons for vuetify
 import { aliases, mdi } from "vuetify/iconsets/mdi"
 import '@mdi/font/css/materialdesignicons.css'
 
 import App from './App.vue'
 import router from './router/index.ts'
+
+// define custom theme
+const bcGovTheme: ThemeDefinition = {
+    dark: false,
+    colors: {
+        background: '#FFFFFF',
+        surface: '#FFFFFF',
+        primary: '#38598A',
+        secondary: '#7490BA',
+        bcGovBlue: '#003366',
+        bcGovGold: '#FCBA19',
+        error: '#D8292F',
+        success: '#2E8540',
+        warning: '#FFCC51',
+    }
+}
 
 const vuetify = createVuetify({
     components,
@@ -23,7 +40,11 @@ const vuetify = createVuetify({
         aliases,
         sets: {
             mdi,
-        }}})
+        }},
+    theme: {
+        defaultTheme: 'bcGovTheme',
+        themes: {bcGovTheme,}
+    }})
 const app = createApp(App)
 
 

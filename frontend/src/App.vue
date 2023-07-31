@@ -1,42 +1,28 @@
-<script>
+<script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import { ref, onBeforeMount, onMounted } from 'vue'
 import { useAppStore } from './stores/app'
+import Header from './components/Header.vue'
 
-export default {
-  setup() {
-    const data = ref([]) // Placeholder for the received data
-    const appStore = useAppStore()
+const data = ref([]) // Placeholder for the received data
+const appStore = useAppStore()
 
-    onBeforeMount(async () => {
-      await appStore.setDistricts()
-      await appStore.setSchoolList()
-    })
-
-    return {
-      data
-    }
-  }
-}
+onBeforeMount(async () => {
+  await appStore.setDistricts()
+  await appStore.setSchoolList()
+})
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-    <div class="wrapper">
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-        <RouterLink to="/search">School Search</RouterLink>
-        <RouterLink to="/school">School</RouterLink>
-        <RouterLink to="/authority">Authority</RouterLink>
-        <RouterLink to="/offshore">Offshore</RouterLink>
-        <RouterLink to="/list-districts">List Districts</RouterLink>
-        <RouterLink to="/list-schools">List Schools</RouterLink>
-      </nav>
-    </div>
-  </header>
-  <RouterView />
+  <v-app id="app">
+    <!-- TODO: System banner (think ENV banner?) component here? -->
+    <Header />
+    <!-- TODO: SnackBar component: notifications to user, successful download for example -->
+    <v-main>
+      <RouterView />
+    </v-main>
+    <!-- TODO: Footer -->
+  </v-app>
 </template>
 
 <style scoped>

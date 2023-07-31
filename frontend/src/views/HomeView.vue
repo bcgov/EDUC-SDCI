@@ -4,8 +4,8 @@ import DistrictSelect from '../components/DistrictSelect.vue'
 </script>
 
 <template>
-  <main>
+  <div>
     <DistrictSelect />
     <TheWelcome />
-  </main>
+  </div>
 </template>

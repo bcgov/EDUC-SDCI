@@ -1,0 +1,40 @@
+<script setup lang="ts"></script>
+
+<template>
+  <v-app-bar>
+    <!-- <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" /> -->
+    <a href="https://www2.gov.bc.ca/">
+      <img
+        alt="B.C. Government Logo"
+        class="logo"
+        src="@/assets/images/bc-gov-logo.svg"
+        width="125"
+        height="125"
+      />
+    </a>
+    <h1>School and District Contact Information</h1>
+    <!-- TODO: Move to DEBUG component? Links are temporary until we build out our views.-->
+    <div class="wrapper">
+      <nav>
+        <RouterLink class="mx-2" to="/">Home</RouterLink>
+        <RouterLink class="mx-2" to="/about">About</RouterLink>
+        <RouterLink class="mx-2" to="/search">School Search</RouterLink>
+        <RouterLink class="mx-2" to="/school">School</RouterLink>
+        <RouterLink class="mx-2" to="/authority">Authority</RouterLink>
+        <RouterLink class="mx-2" to="/offshore">Offshore</RouterLink>
+        <RouterLink class="mx-2" to="/list-districts">List Districts</RouterLink>
+        <RouterLink class="mx-2" to="/list-schools">List Schools</RouterLink>
+      </nav>
+    </div>
+  </v-app-bar>
+</template>
+
+<style>
+/* TODO: Override when properly implementing app header */
+header {
+  padding-left: 60px;
+}
+.wrapper {
+  display: block;
+}
+</style>

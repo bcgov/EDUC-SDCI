@@ -35,7 +35,9 @@
 
   --section-gap: 160px;
 }
+/* STYLING FOR DARK MODE */
 
+/*
 @media (prefers-color-scheme: dark) {
   :root {
     --color-background: var(--vt-c-black);
@@ -49,6 +51,7 @@
     --color-text: var(--vt-c-text-dark-2);
   }
 }
+*/
 
 *,
 *::before,
