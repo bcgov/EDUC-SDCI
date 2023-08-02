@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import {useAppStore} from "../stores/app"
 //import SchoolSearchView from '../views/SchoolSearchView.vue'
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -36,6 +36,12 @@ const router = createRouter({
       path: '/district/:districtNumber-:displayName',
       name: 'district',
       component: ()=> import('../views/DistrictView.vue'),
+      beforeEnter: async (to, from, next) => {
+        const appStore = useAppStore()
+        await appStore.setDistricts();
+        console.log("LOADED DISTRICTS")
+        next();
+      },      
     },
     {
       path: '/authority', //TODO: Add auth code once we setup axios call to get dist data

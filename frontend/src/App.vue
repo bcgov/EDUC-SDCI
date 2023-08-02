@@ -9,7 +9,9 @@ const appStore = useAppStore()
 
 onBeforeMount(async () => {
   await appStore.setDistricts()
+  console.log('districts loaded')
   await appStore.setSchoolList()
+  console.log('school list loaded')
 })
 </script>
 
