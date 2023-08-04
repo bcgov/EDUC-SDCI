@@ -9,6 +9,7 @@ import 'vuetify/styles'
 import { createVuetify, ThemeDefinition } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
+import * as labsComponents from 'vuetify/labs/components'
 
 // material design icons for vuetify
 import { aliases, mdi } from "vuetify/iconsets/mdi"
@@ -34,7 +35,10 @@ const bcGovTheme: ThemeDefinition = {
 }
 
 const vuetify = createVuetify({
-    components,
+    components: {
+        ...components,
+        ...labsComponents,
+      },
     directives,
     icons: {
         defaultSet: 'mdi',

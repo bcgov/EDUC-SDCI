@@ -82,7 +82,34 @@ async function checkToken(req, res, next) {
   }catch(error){
     console.log(error)
   }
-}
+// }
+
+// async function getInstituteAPI(req, res) {
+//   console.log("XXX")
+//   console.log(req)
+//   console.log("YYY")
+//   let params = {params: req.query};
+//   const memToken = await cache.get("token");  
+//   const url = `${config.get('server:instituteAPIURL')}/institute` + req.url;
+
+//   params.headers = { Authorization: `Bearer ${memToken}` }
+//   params.params = req.query
+//   console.log("PARAMS")
+//   console.log(params)
+//   console.log("PARAMZ")
+//   axios
+//     .get(url, params)
+//     .then((response) => {
+//       res.json(response.data);
+//       log.info(req.url);
+//     })
+//     .catch((e) => {
+  
+//       log.error('getData Error', e.response ? e.response.status : e.message);
+//     });
+// }
+
+
 async function getInstituteAPI(req, res) {
   const memToken = await cache.get("token");  
   const url = `${config.get('server:instituteAPIURL')}/institute` + req.url;
