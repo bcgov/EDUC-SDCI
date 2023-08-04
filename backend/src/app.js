@@ -9,6 +9,7 @@ const NodeCache = require("node-cache");
 const apiRouter = express.Router();
 const instituteRouter = require('./routes/institute-router');
 const app = express();
+app.use(express.static('public'));
 app.use(cors());
 
 app.use(/(\/api)?/, apiRouter);

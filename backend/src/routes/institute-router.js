@@ -84,6 +84,7 @@ async function checkToken(req, res, next) {
   }
 }
 async function getInstituteAPI(req, res) {
+  console.log(req.query)
   const memToken = await cache.get("token");  
   const url = `${config.get('server:instituteAPIURL')}/institute` + req.url;
   axios
