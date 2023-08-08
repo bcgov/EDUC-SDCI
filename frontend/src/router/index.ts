@@ -44,10 +44,16 @@ const router = createRouter({
       },      
     },
     {
-      path: '/authority', //TODO: Add auth code once we setup axios call to get dist data
+      path: '/authority/:authorityNumber-:displayName', //TODO: Add auth code once we setup axios call to get dist data
       name: 'authority',
       component: () =>  import('../views/AuthorityView.vue'
-      )
+      ),
+      beforeEnter: async (to, from, next) => {
+        const appStore = useAppStore()
+        await appStore.setAuthorities();
+        console.log("LOADED AUTHORITIES")
+        next();
+      }
     },
     {
       path: '/offshore',

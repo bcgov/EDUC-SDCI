@@ -6,6 +6,13 @@ interface District {
   districtNumber: string
 }
 
+interface Authority {
+  independentAuthorityId: string;
+  displayName: string;
+  authorityNumber: string;
+  closedDate: string;
+}
+
 interface School {
   id: number;
   name: string;
@@ -18,6 +25,7 @@ import InstituteService from '../services/InstituteService'
 export const useAppStore = defineStore('app', {
   state: () => ({
     districts: [] as District[],
+    authorities: [] as Authority[],
     schools: [] as School[]
   }),
   actions: {
@@ -32,6 +40,16 @@ export const useAppStore = defineStore('app', {
             // Handle the error
             console.error(error)
           })
+    },
+    setAuthorities(): void {
+      InstituteService.getAuthorities().then((response) => {
+        //handle the response
+        this.authorities = response.data
+      })
+      .catch((error) => {
+        //handle the error
+        console.error(error)
+      })
     },
     setSchoolList(): void {
 
@@ -49,13 +67,22 @@ export const useAppStore = defineStore('app', {
   },
   getters: {
     getDistricts: (state) => {
-      return () => state.districts
+      return state.districts
     },
     getDistrictList: (state) => {
       return state.districts.map((district) => {return {districtNumber: district.districtNumber, displayName: district.displayName}})
     },
     getDistrictByDistrictNumber: (state) => {
       return (distNum: String) => state.districts.find((district) => distNum === district.districtNumber)
+    },
+    getAuthorities: (state) => {
+      return state.authorities
+    },
+    getAuthoritiesList: (state) => {
+      return state.authorities.map((authority) => {return {authorityNumber: authority.authorityNumber, displayName: authority.displayName}})
+    },
+    getAuthorityByAuthorityNumber: (state) => {
+      return (authNum: string) => state.authorities.find((authority) => authNum === authority.authorityNumber)
     },
     getSchools: (state) => {
       return () => state.schools

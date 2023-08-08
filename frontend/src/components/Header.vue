@@ -20,7 +20,6 @@
         <RouterLink class="mx-2" to="/about">About</RouterLink>
         <RouterLink class="mx-2" to="/search">School Search</RouterLink>
         <RouterLink class="mx-2" to="/school">School</RouterLink>
-        <RouterLink class="mx-2" to="/authority">Authority</RouterLink>
         <RouterLink class="mx-2" to="/offshore">Offshore</RouterLink>
         <RouterLink class="mx-2" to="/list-districts">List Districts</RouterLink>
         <RouterLink class="mx-2" to="/list-schools">List Schools</RouterLink>

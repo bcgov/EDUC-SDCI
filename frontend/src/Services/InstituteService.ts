@@ -7,7 +7,13 @@ export default {
   },
   getDistrict(districtId: string): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/district/'+districtId);
-  },  
+  },
+  getAuthorities(): Promise<AxiosResponse> {
+    return ApiService.apiAxios.get('api/v1/institute/authority');
+  },
+  getAuthority(authorityId: string): Promise<AxiosResponse> {
+    return ApiService.apiAxios.get('/api/v1/institute/authority/'+ authorityId)
+  },
   getSchoolList(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/school/list');
   },
