@@ -16,19 +16,10 @@
       <v-col cols="12" md="4">
         <v-select
           v-model="selectedType"
+          item-title="label"
+          item-value="facilityTypeCode"
           :items="types"
-          item-title="facilityTypeCode"
-          item-value="label"
-          :label="Type"
-        ></v-select>
-      </v-col>
-      <v-col cols="12" md="4">
-        <v-select
-          v-model="selectedGrade"
-          :items="grades"
-          item-value="label"
-          item-title="schoolGradeCode"
-          label="Grade"
+          label="Types"
         ></v-select>
       </v-col>
       <v-col cols="12">
@@ -38,14 +29,15 @@
     </v-row>
 
     <!-- Search Results Table -->
-    Total: {{ results }}
-    <v-data-table
-      v-model:items-per-page="itemsPerPage"
+    TOTAL: {{ filteredSchools.totalElements }}
+    {{ filteredSchools }}
+
+    <!-- <v-data-table
       :headers="headers"
       :items="filteredSchools"
       item-value="name"
       class="elevation-1"
-    ></v-data-table>
+    ></v-data-table> -->
   </v-container>
 </template>
 
@@ -157,7 +149,6 @@ const resetFilters = () => {
   selectedType.value = null
   selectedGrade.value = null
   search.value = ''
-  results.value = ''
   filteredSchools.value = schools
 }
 

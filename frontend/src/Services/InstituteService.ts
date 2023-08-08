@@ -24,17 +24,7 @@ export default {
     return ApiService.apiAxios.get('/api/v1/institute/grade-codes');
   },
   searchSchools(req: any): Promise<AxiosResponse> {
-    console.log(req);
-  
-    // Make the API request with the provided search criteria
-    try {
-      return ApiService.apiAxios.get('/api/v1/institute/school/paginated', req)
-
-    } catch (error) {
-      // Handle errors if the API request fails
-      console.error('Error fetching school data:', error);
-      throw error;
-    }
-  }
+    return ApiService.apiAxios.get('/api/v1/institute/school/paginated?pageSize=3000&searchCriteriaList=' + req.searchCriteriaList);
+  },
 
 }
