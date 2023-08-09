@@ -17,20 +17,16 @@ onMounted(async () => {
   )?.districtId
 
   try {
-    const response = await InstituteService.getDistrict(districtId.value)
+    const response = await InstituteService.getDistrictView(districtId.value)
     district.value = response.data
   } catch (error) {
     console.error(error)
   }
-
-  console.log(districtId.value) // Logs the districtId after it has been set
-  console.log(toValue(district)) // Logs the district object after it has been updated
 })
 </script>
 
 <template>
   <div>
-    Hello World, I'm DistrictView.vue!
     <pre>
     {{ district }}
     </pre>

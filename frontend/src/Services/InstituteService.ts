@@ -27,5 +27,8 @@ export default {
     console.log(req.searchCriteriaList)
     return ApiService.apiAxios.get('/api/v1/institute/school/paginated?pageSize=10&searchCriteriaList=' + req.searchCriteriaList);
   },
+  getDistrictView(id: string): Promise<AxiosResponse> {
+    return ApiService.apiAxios.get(`/api/v1/district/${id}`)
+  }
 
 }

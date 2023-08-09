@@ -8,6 +8,7 @@ const cors = require('cors');
 const NodeCache = require("node-cache");
 const apiRouter = express.Router();
 const instituteRouter = require('./routes/institute-router');
+const districtRouter = require('./routes/district-router');
 const app = express();
 app.use(express.static('public'));
 app.use(cors());
@@ -16,6 +17,7 @@ app.use(/(\/api)?/, apiRouter);
 
 //institute Router
 apiRouter.use('/v1/institute', instituteRouter);
+apiRouter.use('/v1/district', districtRouter);
 
 
 //Handle 500 error
