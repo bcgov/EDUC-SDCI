@@ -15,8 +15,6 @@ onMounted(async () => {
     String(route.params.authorityNumber)
   )?.independentAuthorityId
 
-  console.log(authorityId.value)
-
   try {
     const response = await InstituteService.getAuthority(authorityId.value)
     authority.value = response.data

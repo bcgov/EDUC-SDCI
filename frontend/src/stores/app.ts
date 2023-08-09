@@ -73,7 +73,7 @@ export const useAppStore = defineStore('app', {
       return state.districts.map((district) => {return {districtNumber: district.districtNumber, displayName: district.displayName}})
     },
     getDistrictByDistrictNumber: (state) => {
-      return (distNum: String) => state.districts.find((district) => distNum === district.districtNumber)
+      return (distNum: string | String) => state.districts.find((district) => distNum === district.districtNumber)
     },
     getAuthorities: (state) => {
       return state.authorities
@@ -82,7 +82,7 @@ export const useAppStore = defineStore('app', {
       return state.authorities.map((authority) => {return {authorityNumber: authority.authorityNumber, displayName: authority.displayName}})
     },
     getAuthorityByAuthorityNumber: (state) => {
-      return (authNum: string) => state.authorities.find((authority) => authNum === authority.authorityNumber)
+      return (authNum: string | String) => state.authorities.find((authority) => authNum === authority.authorityNumber)
     },
     getSchools: (state) => {
       return () => state.schools
