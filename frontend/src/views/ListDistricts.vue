@@ -7,10 +7,12 @@
       <ul>
         <li v-for="district in districts" :key="district.districtId">{{ district.displayName }}</li>
       </ul>
+      <button @click="handleButtonClick">Export to CSV</button>
     </p>
   </div>
 </template>
 <script>
+
 import { useAppStore } from '@/stores/app'
 import { storeToRefs } from 'pinia'
 
@@ -18,7 +20,16 @@ export default {
   setup() {
     const appStore = useAppStore()
     const { districts } = storeToRefs(appStore);
-    return { districts }
+
+    function handleButtonClick() {
+      const test = appStore.convertToCSV(appStore.getDistrictList)
+      appStore.exportToCSV(test)
+      console.log('Button clicked!');
+    }
+    return {
+      districts,
+      handleButtonClick
+    }
   }
 }
 </script>

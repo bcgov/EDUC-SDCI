@@ -29,8 +29,40 @@ export const useAppStore = defineStore('app', {
     schools: [] as School[]
   }),
   actions: {
+    convertToCSV(jsonArray) {
+      let csvContent = "";
+
+      if (jsonArray.length === 0) {
+        return csvContent;
+      }
+
+      // Extract headers
+      const headers = Object.keys(jsonArray[0]);
+      csvContent += headers.join(",") + "\n";
+
+      // Extract values
+      jsonArray.forEach((item) => {
+        const values = headers.map((header) => {
+          const value = item[header];
+          return typeof value === "string" ? `"${value}"` : value;
+        });
+        csvContent += values.join(",") + "\n";
+      });
+      console.log(csvContent);
+      return csvContent;
+    },
+    exportToCSV(csvData) {
+      // Create a blob with the CSV data
+      const blob = new Blob([csvData], { type: 'text/csv' });
+
+      // Create a temporary anchor element to trigger the file download
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'output.csv';
+      a.click();
+    },
     setDistricts(): void {
-     
+
         InstituteService.getDistricts()
           .then((response) => {
             // Handle the response data
@@ -62,8 +94,9 @@ export const useAppStore = defineStore('app', {
         // Handle the error
         console.error(error)
       })
-      
-    }
+
+    },
+
   },
   getters: {
     getDistricts: (state) => {
