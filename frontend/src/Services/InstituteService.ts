@@ -24,7 +24,8 @@ export default {
     return ApiService.apiAxios.get('/api/v1/institute/grade-codes');
   },
   searchSchools(req: any): Promise<AxiosResponse> {
-    return ApiService.apiAxios.get('/api/v1/institute/school/paginated?pageSize=3000&searchCriteriaList=' + req.searchCriteriaList);
+    console.log(req.searchCriteriaList)
+    return ApiService.apiAxios.get('/api/v1/institute/school/paginated?pageSize=10&searchCriteriaList=' + req.searchCriteriaList);
   },
 
 }

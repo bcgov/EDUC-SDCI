@@ -8,6 +8,7 @@
           item-title="label"
           item-value="schoolCategoryCode"
           label="Jurisdiction"
+          multiple
         ></v-select>
       </v-col>
       <v-col cols="12" md="4">
@@ -20,6 +21,7 @@
           item-value="facilityTypeCode"
           :items="types"
           label="Types"
+          multiple
         ></v-select>
       </v-col>
       <v-col cols="12">
@@ -29,15 +31,14 @@
     </v-row>
 
     <!-- Search Results Table -->
-    TOTAL: {{ filteredSchools.totalElements }}
-    {{ filteredSchools }}
+    TOTAL: {{ results }}
 
-    <!-- <v-data-table
+    <v-data-table
       :headers="headers"
       :items="filteredSchools"
       item-value="name"
       class="elevation-1"
-    ></v-data-table> -->
+    ></v-data-table>
   </v-container>
 </template>
 
@@ -107,39 +108,41 @@ const search = ref('')
 
 const searchSchools = async () => {
   // Filter schools based on selected filters
-  console.log('SEARCH')
-  const req = {
-    schoolCategoryCode: selectedJurisdiction.value,
-    city: selectedCity.value,
-    facilityTypeCode: selectedType.value,
-    grade: selectedGrade.value
-  }
-
-  const schoolSearchParam = {
-    params: {
-      pageNumber: 1,
-      pageSize: 10,
-      searchCriteriaList: JSON.stringify([
-        {
-          condition: null,
-          searchCriteriaList: [
-            {
-              key: 'schoolCategoryCode',
-              operation: 'IN',
-              value: 'EAR_LEARN,PUBLIC',
-              valueType: 'String',
-              condition: 'AND'
-            }
-          ]
-        }
-      ])
+  const params = [
+    {
+      condition: null,
+      searchCriteriaList: []
     }
+  ]
+  if (selectedJurisdiction.value) {
+    params[0].searchCriteriaList.push({
+      key: 'schoolCategoryCode',
+      operation: selectedJurisdiction.value.length > 1 ? 'in' : 'eq',
+      value: selectedJurisdiction.value.join(', '),
+      valueType: 'STRING',
+      condition: 'OR'
+    })
+  }
+  if (selectedType.value) {
+    params[0].searchCriteriaList.push({
+      key: 'facilityTypeCode',
+      operation: 'in',
+      value: selectedType.value.join(', '),
+      valueType: 'STRING',
+      condition: 'AND'
+    })
   }
 
-  const searchresults = await InstituteService.searchSchools(schoolSearchParam)
-  console.log(searchresults.data)
-  results.value = searchresults.data.totalElements
+  const jsonString = JSON.stringify(params)
+  const encodedParams = encodeURIComponent(jsonString)
+  const req = {
+    pageNumber: 1,
+    pageSize: 10,
+    searchCriteriaList: encodedParams
+  }
+  const searchresults = await InstituteService.searchSchools(req)
   filteredSchools.value = searchresults.data.content
+  results.value = searchresults.data.totalElements
 }
 
 const resetFilters = () => {
