@@ -19,18 +19,24 @@ const router = createRouter({
       path: '/list-schools',
       name: 'list schools',
       component: () =>  import('../views/ListSchools.vue')
-    },    
-    {    
+    },
+    {
       path: '/search',
       name: 'search',
       component: () =>  import('../views/SchoolSearchView.vue'
       )
     },
+    // {
+    //   path: '/school', //TODO: Add mincode once we setup axios call to get school data
+    //   name: 'school',
+    //   component: () =>  import('../views/SchoolView.vue'
+    //   )
+    // },
     {
-      path: '/school', //TODO: Add mincode once we setup axios call to get school data
+      path: '/school/:schoolId', //TODO: Add mincode once we setup axios call to get school data
       name: 'school',
-      component: () =>  import('../views/SchoolView.vue'
-      )
+      component: () =>  import('../views/SchoolView.vue'),
+      props: true
     },
     {
       path: '/district/:districtNumber-:displayName',
@@ -41,7 +47,7 @@ const router = createRouter({
         await appStore.setDistricts();
         console.log("LOADED DISTRICTS")
         next();
-      },      
+      },
     },
     {
       path: '/authority/:authorityNumber-:displayName', //TODO: Add auth code once we setup axios call to get dist data
