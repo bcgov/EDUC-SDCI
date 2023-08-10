@@ -14,6 +14,21 @@ const schoolListFields = ['mincode', 'displayName'];
 //Batch Routes
 router.get('/:id', checkToken, getDistrict);
 
+async function removeItemsFromDistrictDataResponse(response, itemsToRemove) {
+  if (response && response.data) {
+    const newData = { ...response.data };
+
+    if (itemsToRemove && Array.isArray(itemsToRemove)) {
+      itemsToRemove.forEach(item => {
+        if (newData[item]) {
+          delete newData[item];
+        }
+      });
+    }
+
+    response.data = newData;
+  }
+}
 
 async function getSchoolList(req, res) {
   
@@ -63,10 +78,9 @@ async function getDistrict(req, res) {
   const url = `${config.get('server:instituteAPIURL')}/institute/district/${id}`;
   const districtSchoolsUrl = `${config.get('server:instituteAPIURL')}/institute/school/paginated?pageNumber=1&pageSize=10&searchCriteriaList=${encodedParams}`;
   //const districtSchoolsUrl = `${config.get('server:instituteAPIURL')}/institute/school/paginated?pageNumber=1&pageSize=10`;
+  
   console.log(districtSchoolsUrl)
-
-
-
+  
 
   try {
     const districtDataResponse = await axios.get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } });

@@ -55,9 +55,8 @@ export default {
   },  
   getDistrictView(id: string): Promise<AxiosResponse> {
     return ApiService.apiAxios.get(`/api/v1/district/${id}`)
-  }
+  },
   getDistrictContactTypeCodes(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/district-contact-type-codes');
-  },
-
+  }
 }
