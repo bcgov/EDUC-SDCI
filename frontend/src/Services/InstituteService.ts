@@ -29,10 +29,19 @@ export default {
   getGradeCodes(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/grade-codes');
   },
+  // searchSchools(req: any): Promise<AxiosResponse> {
+  //   console.log(req.searchCriteriaList)
+  //   return ApiService.apiAxios.get('/api/v1/institute/school/paginated?pageSize=10&searchCriteriaList=' + req.searchCriteriaList);
+  // },
   searchSchools(req: any): Promise<AxiosResponse> {
-    console.log(req.searchCriteriaList)
-    return ApiService.apiAxios.get('/api/v1/institute/school/paginated?pageSize=10&searchCriteriaList=' + req.searchCriteriaList);
-  },
+    const searchCriteriaList = req.searchCriteriaList || '';
+    const pageSize = req.pageSize.value || ''; // Set a default value if not provided
+    const pageNumber = req.pageNumber || ''; // Set a default value if not provided
+    //const sort = req.sort.value || ''; // Set a default value if not provided
+    const url = `/api/v1/institute/school/paginated?pageSize=${pageSize}&pageNumber=${pageNumber}&searchCriteriaList=${searchCriteriaList}`;
+
+    return ApiService.apiAxios.get(url);
+  },  
   getDistrictView(id: string): Promise<AxiosResponse> {
     return ApiService.apiAxios.get(`/api/v1/district/${id}`)
   }

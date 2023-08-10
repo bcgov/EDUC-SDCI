@@ -26,12 +26,6 @@ const router = createRouter({
       component: () =>  import('../views/SchoolSearchView.vue'
       )
     },
-    // {
-    //   path: '/school', //TODO: Add mincode once we setup axios call to get school data
-    //   name: 'school',
-    //   component: () =>  import('../views/SchoolView.vue'
-    //   )
-    // },
     {
       path: '/school/:schoolId', //TODO: Add mincode once we setup axios call to get school data
       name: 'school',
