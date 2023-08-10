@@ -8,6 +8,30 @@ const appStore = useAppStore()
 const districtId = ref(null) // Initialize with null initially
 
 const district = reactive({ value: {} })
+const districtContactTypeCodes = reactive({ value: {} })
+
+const tabOptions = {
+  contacts: 1,
+  schools: 2
+}
+const tab = ref(tabOptions.contacts) // Default to contacts tab
+
+const contactHeaders = [
+  { title: 'Contact Type', key: 'districtContactTypeCode' },
+  { title: 'Name', key: 'firstName' },
+  { title: 'Title/Roll', key: 'jobTitle' },
+  { title: 'Phone', key: 'phoneNumber' },
+  { title: 'Email', key: 'email' }
+]
+
+;async () => {
+  try {
+    const response = await InstituteService.getDistrictContactTypeCodes()
+    districtContactTypeCodes.value = response.data
+  } catch (error) {
+    console.error(error)
+  }
+}
 
 onMounted(async () => {
   const route = useRoute()
@@ -27,8 +51,48 @@ onMounted(async () => {
 
 <template>
   <div>
-    <pre>
-    {{ district }}
-    </pre>
+    <v-expansion-panels id="ui-debug">
+      <v-expansion-panel title="DEBUG: District JSON">
+        <v-expansion-panel-text>
+          <pre>
+            {{ district }}
+          </pre>
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+      <v-expansion-panel title="DEBUG: DistrictContactTypeCodes JSON">
+        <v-expansion-panel-text>
+          <pre>
+            {{ districtContactTypeCodes }}
+          </pre>
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+    </v-expansion-panels>
+
+    <v-tabs v-model="tab">
+      <v-tab :value="tabOptions.contacts"> District Contacts </v-tab>
+      <v-tab :value="tabOptions.schools"> District Schools </v-tab>
+    </v-tabs>
+
+    <v-card-text>
+      <v-window v-model="tab">
+        <v-window-item :value="tabOptions.contacts"
+          >CONTACTS
+          <v-data-table
+            items-per-page="-1"
+            :headers="contactHeaders"
+            :items="district.value.districtData?.contacts"
+          >
+            <template v-slot:item.firstName="{ item }">
+              {{ item.selectable.firstName }} {{ item.selectable.lastName }}
+            </template>
+
+            <template v-slot:item.email="{ item }">
+              <a :href="`mailto:${item.selectable.email}`">{{ item.selectable.email }}</a>
+            </template>
+          </v-data-table>
+        </v-window-item>
+        <v-window-item :value="tabOptions.schools">SCHOOLS</v-window-item>
+      </v-window>
+    </v-card-text>
   </div>
 </template>
