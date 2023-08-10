@@ -14,6 +14,8 @@ onBeforeMount(async () => {
   console.log('Independent Authorities loaded')
   await appStore.setSchoolList()
   console.log('school list loaded')
+  await appStore.setDistrictContactTypeCodes()
+  console.log('district contact type codes loaded')
 })
 </script>
 

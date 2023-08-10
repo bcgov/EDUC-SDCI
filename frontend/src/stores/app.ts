@@ -10,7 +10,7 @@ interface Authority {
   independentAuthorityId: string;
   displayName: string;
   authorityNumber: string;
-  closedDate: string;
+  closedDate?: string;
 }
 
 interface School {
@@ -20,13 +20,20 @@ interface School {
 
 }
 
+interface DistrictContactTypeCodes {
+  districtContactTypeCode: string;
+  label: string;
+  description?: string;
+}
+
 import InstituteService from '../services/InstituteService'
 
 export const useAppStore = defineStore('app', {
   state: () => ({
     districts: [] as District[],
     authorities: [] as Authority[],
-    schools: [] as School[]
+    schools: [] as School[],
+    districtContactTypeCodes: [] as DistrictContactTypeCodes[],
   }),
   actions: {
     convertToCSV(jsonArray) {
@@ -96,9 +103,18 @@ export const useAppStore = defineStore('app', {
       })
 
     },
+    setDistrictContactTypeCodes(): void {
+      InstituteService.getDistrictContactTypeCodes().then((response) => {
+        this.districtContactTypeCodes = response.data
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+    }
 
   },
   getters: {
+    // Districts
     getDistricts: (state) => {
       return state.districts
     },
@@ -108,6 +124,7 @@ export const useAppStore = defineStore('app', {
     getDistrictByDistrictNumber: (state) => {
       return (distNum: string | String) => state.districts.find((district) => distNum === district.districtNumber)
     },
+    // Independent Authorities
     getAuthorities: (state) => {
       return state.authorities
     },
@@ -117,8 +134,16 @@ export const useAppStore = defineStore('app', {
     getAuthorityByAuthorityNumber: (state) => {
       return (authNum: string | String) => state.authorities.find((authority) => authNum === authority.authorityNumber)
     },
+    // Schools
     getSchools: (state) => {
       return () => state.schools
+    },
+    // Codes
+    getDistrictContactTypeCodes: (state) => {
+      return state.districtContactTypeCodes
+    },
+    getDistrictContactTypeCodesLabel: (state) => {
+      return (searchCode: string | String) => state.districtContactTypeCodes.find((contactCode) => searchCode === contactCode.districtContactTypeCode)?.label
     }
   }
 });

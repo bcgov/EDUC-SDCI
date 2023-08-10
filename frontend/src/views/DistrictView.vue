@@ -24,34 +24,32 @@ const contactHeaders = [
   { title: 'Email', key: 'email' }
 ]
 
-;async () => {
-  try {
-    const response = await InstituteService.getDistrictContactTypeCodes()
-    districtContactTypeCodes.value = response.data
-  } catch (error) {
-    console.error(error)
-  }
-}
-
 onMounted(async () => {
   const route = useRoute()
   // Set the districtId inside the onMounted hook
   districtId.value = appStore.getDistrictByDistrictNumber(
     String(route.params.districtNumber)
   )?.districtId
-
+  // get district data
   try {
     const response = await InstituteService.getDistrictView(districtId.value)
     district.value = response.data
   } catch (error) {
     console.error(error)
   }
+  // get district contact type codes
+  // try {
+  //   const response = await InstituteService.getDistrictContactTypeCodes()
+  //   districtContactTypeCodes.value = response.data
+  // } catch (error) {
+  //   console.error(error)
+  // }
 })
 </script>
 
 <template>
   <div>
-    <v-expansion-panels id="ui-debug">
+    <v-expansion-panels id="ui-debug" class="debug">
       <v-expansion-panel title="DEBUG: District JSON">
         <v-expansion-panel-text>
           <pre>
@@ -62,7 +60,7 @@ onMounted(async () => {
       <v-expansion-panel title="DEBUG: DistrictContactTypeCodes JSON">
         <v-expansion-panel-text>
           <pre>
-            {{ districtContactTypeCodes }}
+            {{ appStore.getDistrictContactTypeCodes }}
           </pre>
         </v-expansion-panel-text>
       </v-expansion-panel>
@@ -88,6 +86,17 @@ onMounted(async () => {
 
             <template v-slot:item.email="{ item }">
               <a :href="`mailto:${item.selectable.email}`">{{ item.selectable.email }}</a>
+            </template>
+
+            <template v-slot:item.districtContactTypeCode="{ item }">
+              {{
+                appStore.getDistrictContactTypeCodesLabel(item.selectable.districtContactTypeCode)
+              }}
+              <!-- {{
+                districtContactTypeCodes.value.find(
+                  (code) => item.selectable.districtContactTypeCode === code.districtContactTypeCode
+                ).label
+              }} -->
             </template>
           </v-data-table>
         </v-window-item>
