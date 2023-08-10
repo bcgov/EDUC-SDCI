@@ -31,6 +31,7 @@ const bcGovTheme: ThemeDefinition = {
         error: '#D8292F',
         success: '#2E8540',
         warning: '#FFCC51',
+        debug: '#C582FF',
     }
 }
 

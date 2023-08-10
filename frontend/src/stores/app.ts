@@ -10,7 +10,7 @@ interface Authority {
   independentAuthorityId: string;
   displayName: string;
   authorityNumber: string;
-  closedDate: string;
+  closedDate?: string;
 }
 
 interface School {
@@ -20,13 +20,27 @@ interface School {
 
 }
 
+interface DistrictContactTypeCode {
+  districtContactTypeCode: string;
+  label: string;
+  description?: string;
+}
+
+interface CategoryCode {
+  schoolCategoryCode: string,
+  label: string;
+  description: string;
+}
+
 import InstituteService from '../services/InstituteService'
 
 export const useAppStore = defineStore('app', {
   state: () => ({
     districts: [] as District[],
     authorities: [] as Authority[],
-    schools: [] as School[]
+    schools: [] as School[],
+    districtContactTypeCodes: [] as DistrictContactTypeCode[],
+    categoryCodes: [] as CategoryCode[],
   }),
   actions: {
     convertToCSV(jsonArray) {
@@ -96,9 +110,26 @@ export const useAppStore = defineStore('app', {
       })
 
     },
+    setCodes(): void {
+      // set district contact type codes
+      InstituteService.getDistrictContactTypeCodes().then((response) => {
+        this.districtContactTypeCodes = response.data
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+
+      // set category codes
+      InstituteService.getCategoryCodes().then((response) => {
+        this.categoryCodes = response.data
+      }).catch((error) => {
+        console.error(error)
+      })
+    }
 
   },
   getters: {
+    // Districts
     getDistricts: (state) => {
       return state.districts
     },
@@ -108,6 +139,7 @@ export const useAppStore = defineStore('app', {
     getDistrictByDistrictNumber: (state) => {
       return (distNum: string | String) => state.districts.find((district) => distNum === district.districtNumber)
     },
+    // Independent Authorities
     getAuthorities: (state) => {
       return state.authorities
     },
@@ -117,8 +149,22 @@ export const useAppStore = defineStore('app', {
     getAuthorityByAuthorityNumber: (state) => {
       return (authNum: string | String) => state.authorities.find((authority) => authNum === authority.authorityNumber)
     },
+    // Schools
     getSchools: (state) => {
       return () => state.schools
+    },
+    // Codes
+    getDistrictContactTypeCodes: (state) => {
+      return state.districtContactTypeCodes
+    },
+    getDistrictContactTypeCodesLabel: (state) => {
+      return (searchCode: string | String) => state.districtContactTypeCodes.find((contactCode) => searchCode === contactCode.districtContactTypeCode)?.label
+    },
+    getCategoryCodes: (state) => {
+      return state.categoryCodes
+    },
+    getCategoryCodesLabel: (state) => {
+      return (searchCode: string | String ) => state.categoryCodes.find((categoryCode) => searchCode === categoryCode.schoolCategoryCode)?.label
     }
   }
 });
