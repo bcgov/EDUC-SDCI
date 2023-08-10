@@ -24,6 +24,18 @@ const contactHeaders = [
   { title: 'Email', key: 'email' }
 ]
 
+const schoolHeaders = [
+  { title: 'School Name', key: 'displayName' },
+  { title: 'Mincode', key: 'mincode' },
+  { title: 'Category', key: 'schoolCategoryCode' },
+  { title: 'Type', key: 'facilityTypeCode' },
+  //{ title: 'Grades', key: ''},
+  { title: 'Phone', key: 'phoneNumber' },
+  { title: 'Fax', key: 'faxNumber' },
+  { title: 'Email', key: 'email' },
+  { title: 'Website', key: 'website' }
+]
+
 onMounted(async () => {
   const route = useRoute()
   // Set the districtId inside the onMounted hook
@@ -73,6 +85,7 @@ onMounted(async () => {
 
     <v-card-text>
       <v-window v-model="tab">
+        <!-- District Contacts tab contents -->
         <v-window-item :value="tabOptions.contacts"
           >CONTACTS
           <v-data-table
@@ -92,15 +105,20 @@ onMounted(async () => {
               {{
                 appStore.getDistrictContactTypeCodesLabel(item.selectable.districtContactTypeCode)
               }}
-              <!-- {{
-                districtContactTypeCodes.value.find(
-                  (code) => item.selectable.districtContactTypeCode === code.districtContactTypeCode
-                ).label
-              }} -->
             </template>
           </v-data-table>
         </v-window-item>
-        <v-window-item :value="tabOptions.schools">SCHOOLS</v-window-item>
+        <!-- District Schools tab contents -->
+        <v-window-item :value="tabOptions.schools"
+          >SCHOOLS
+          <v-data-table
+            items-per-page="-1"
+            :headers="schoolHeaders"
+            :items="district.value.districtSchools"
+          >
+            <template v-slot:item.schoolCategoryCode="{ item }"> hello world </template>
+          </v-data-table>
+        </v-window-item>
       </v-window>
     </v-card-text>
   </div>

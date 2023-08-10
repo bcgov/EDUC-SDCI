@@ -20,10 +20,16 @@ interface School {
 
 }
 
-interface DistrictContactTypeCodes {
+interface DistrictContactTypeCode {
   districtContactTypeCode: string;
   label: string;
   description?: string;
+}
+
+interface CategoryCode {
+  schoolCategoryCode: string,
+  label: string;
+  description: string;
 }
 
 import InstituteService from '../services/InstituteService'
@@ -33,7 +39,8 @@ export const useAppStore = defineStore('app', {
     districts: [] as District[],
     authorities: [] as Authority[],
     schools: [] as School[],
-    districtContactTypeCodes: [] as DistrictContactTypeCodes[],
+    districtContactTypeCodes: [] as DistrictContactTypeCode[],
+    categoryCodes: [] as CategoryCode[],
   }),
   actions: {
     convertToCSV(jsonArray) {
@@ -103,11 +110,19 @@ export const useAppStore = defineStore('app', {
       })
 
     },
-    setDistrictContactTypeCodes(): void {
+    setCodes(): void {
+      // set district contact type codes
       InstituteService.getDistrictContactTypeCodes().then((response) => {
         this.districtContactTypeCodes = response.data
       })
       .catch((error) => {
+        console.error(error)
+      })
+
+      // set category codes
+      InstituteService.getCategoryCodes().then((response) => {
+        this.categoryCodes = response.data
+      }).catch((error) => {
         console.error(error)
       })
     }
@@ -144,6 +159,12 @@ export const useAppStore = defineStore('app', {
     },
     getDistrictContactTypeCodesLabel: (state) => {
       return (searchCode: string | String) => state.districtContactTypeCodes.find((contactCode) => searchCode === contactCode.districtContactTypeCode)?.label
+    },
+    getCategoryCodes: (state) => {
+      return state.categoryCodes
+    },
+    getCategoryCodesLabel: (state) => {
+      return (searchCode: string | String ) => state.categoryCodes.find((categoryCode) => searchCode === categoryCode.schoolCategoryCode)?.label
     }
   }
 });
