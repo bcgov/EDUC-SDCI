@@ -160,6 +160,9 @@ export const useAppStore = defineStore('app', {
     getDistrictContactTypeCodesLabel: (state) => {
       return (searchCode: string | String) => state.districtContactTypeCodes.find((contactCode) => searchCode === contactCode.districtContactTypeCode)?.label
     },
+    getAllDistrictContactTypeCodesLabel: (state) => {
+      return state.districtContactTypeCodes.map(item => item.label)
+    },
     getCategoryCodes: (state) => {
       return state.categoryCodes
     },
