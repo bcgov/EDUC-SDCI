@@ -32,13 +32,24 @@
 
     <!-- Search Results Table -->
     TOTAL: {{ results }}
+    <v-data-table-server
+      v-model:items-per-page="itemsPerPage"
+      :headers="headers"
+      :items-length="results"
+      :items="filteredSchools"
+      class="elevation-1"
+      item-value="name"
+      :loading="loading"
+      @page-change:page="handlePageChange"
+      @update:options="handleUpdate"
+    ></v-data-table-server>
 
-    <v-data-table
+    <!-- <v-data-table
       :headers="headers"
       :items="filteredSchools"
       item-value="name"
       class="elevation-1"
-    ></v-data-table>
+    ></v-data-table> -->
   </v-container>
 </template>
 
@@ -55,7 +66,25 @@ const selectedJurisdiction = ref(null)
 const selectedCity = ref(null)
 const selectedType = ref(null)
 const selectedGrade = ref(null)
-const results = ref(null)
+const results = ref(0)
+const currentPage = ref(1)
+const itemsPerPage = ref(10)
+const itemsSort = ref('asc')
+const totalPages = ref(1)
+const loading = ref(false)
+const handlePageChange = async (page) => {
+  loading.value = true
+  currentPage.value = page
+  await searchSchools()
+  loading.value = false
+}
+const handleUpdate = async (options) => {
+  loading.value = true
+  currentPage.value = options.page || currentPage.value
+  itemsPerPage.value = options.perPage || itemsPerPage.value
+  await searchSchools()
+  loading.value = false
+}
 
 const fetchTypes = async () => {
   try {
@@ -135,14 +164,24 @@ const searchSchools = async () => {
 
   const jsonString = JSON.stringify(params)
   const encodedParams = encodeURIComponent(jsonString)
+
   const req = {
-    pageNumber: 1,
-    pageSize: 10,
+    pageNumber: currentPage.value,
+    pageSize: itemsPerPage,
     searchCriteriaList: encodedParams
   }
-  const searchresults = await InstituteService.searchSchools(req)
-  filteredSchools.value = searchresults.data.content
-  results.value = searchresults.data.totalElements
+
+  try {
+    const searchresults = await InstituteService.searchSchools(req)
+    filteredSchools.value = searchresults.data.content
+    results.value = searchresults.data.totalElements
+
+    // Update current page and total pages
+    currentPage.value = req.pageNumber
+    totalPages.value = searchresults.data.totalPages
+  } catch (error) {
+    console.error('Error fetching schools:', error)
+  }
 }
 
 const resetFilters = () => {
