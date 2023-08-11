@@ -30,6 +30,9 @@ export default {
   getCategoryCodes(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/category-codes');
   },
+  getContactTypeCodes(): Promise<AxiosResponse> {
+    return ApiService.apiAxios.get('/api/v1/institute/contact-type-codes');
+  },
   getGradeCodes(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/grade-codes');
   },

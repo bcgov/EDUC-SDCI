@@ -32,6 +32,12 @@ interface CategoryCode {
   description: string;
 }
 
+interface ContactTypeCode {
+  authorityContactTypeCodes: [],
+  districtContactTypeCodes: [];
+  schoolContactTypeCodes: [];
+}
+
 import InstituteService from '../services/InstituteService'
 
 export const useAppStore = defineStore('app', {
@@ -41,6 +47,7 @@ export const useAppStore = defineStore('app', {
     schools: [] as School[],
     districtContactTypeCodes: [] as DistrictContactTypeCode[],
     categoryCodes: [] as CategoryCode[],
+    contactTypeCodes: [] as ContactTypeCode[],
   }),
   actions: {
     convertToCSV(jsonArray) {
@@ -125,6 +132,12 @@ export const useAppStore = defineStore('app', {
       }).catch((error) => {
         console.error(error)
       })
+      
+      InstituteService.getContactTypeCodes().then((response) => {
+        this.contactTypeCodes = response.data
+      }).catch((error) => {
+        console.error(error)
+      })      
     }
 
   },
@@ -154,6 +167,9 @@ export const useAppStore = defineStore('app', {
       return () => state.schools
     },
     // Codes
+    getContactTypeCodes: (state) => {
+      return state.contactTypeCodes
+    },
     getDistrictContactTypeCodes: (state) => {
       return state.districtContactTypeCodes
     },

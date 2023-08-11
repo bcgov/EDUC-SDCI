@@ -9,6 +9,7 @@ const districtId = ref(null) // Initialize with null initially
 
 const district = reactive({ value: {} })
 const districtContactTypeCodes = reactive({ value: {} })
+const contactTypeCodes = reactive({ value: {} })
 
 const tabOptions = {
   contacts: 1,
@@ -73,6 +74,13 @@ onMounted(async () => {
         <v-expansion-panel-text>
           <pre>
             {{ appStore.getDistrictContactTypeCodes }}
+          </pre>
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+      <v-expansion-panel title="DEBUG: ContactTypeCodes">
+        <v-expansion-panel-text>
+          <pre>
+            {{ appStore.getContactTypeCodes }}
           </pre>
         </v-expansion-panel-text>
       </v-expansion-panel>
