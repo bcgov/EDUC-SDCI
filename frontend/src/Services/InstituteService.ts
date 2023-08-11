@@ -9,9 +9,6 @@ export default {
   getDistrict(districtId: string): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/district/'+districtId);
   },
-  getDistrictView(id: string): Promise<AxiosResponse> {
-    return ApiService.apiAxios.get(`/api/v1/district/${id}`)
-  },
   // Independent Authorities
   getAuthorities(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/authority');
@@ -25,10 +22,6 @@ export default {
   },
   getSchool(schoolId: string): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/school/'+schoolId);
-  },
-  searchSchools(req: any): Promise<AxiosResponse> {
-    console.log(req.searchCriteriaList)
-    return ApiService.apiAxios.get('/api/v1/institute/school/paginated?pageSize=10&searchCriteriaList=' + req.searchCriteriaList);
   },
   // Codes
   getFacilityCodes(): Promise<AxiosResponse> {
