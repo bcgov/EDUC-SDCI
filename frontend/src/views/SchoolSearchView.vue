@@ -54,7 +54,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeMount } from 'vue'
+import { ref, onMounted, onBeforeMount, isProxy, toRaw } from 'vue'
 import InstituteService from '@/services/InstituteService'
 
 const jurisdictions = ref([])
@@ -69,7 +69,7 @@ const selectedGrade = ref(null)
 const results = ref(0)
 const currentPage = ref(1)
 const itemsPerPage = ref(10)
-const itemsSort = ref('asc')
+const itemsSort = ref('')
 const totalPages = ref(1)
 const loading = ref(false)
 const handlePageChange = async (page) => {
@@ -82,6 +82,12 @@ const handleUpdate = async (options) => {
   loading.value = true
   currentPage.value = options.page || currentPage.value
   itemsPerPage.value = options.perPage || itemsPerPage.value
+  if (isProxy(options.sortBy)) {
+    console.log('is proxy')
+    const sortby = toRaw(options.sortBy)
+    itemsSort.value = sortby[0]
+  }
+
   await searchSchools()
   loading.value = false
 }
@@ -128,6 +134,7 @@ const schools = [
 const headers = [
   { title: 'School Name', key: 'displayName' },
   { title: 'ID', key: 'districtId' },
+  { title: 'school Category', key: 'schoolCategoryCode' },
   { title: 'Mincode', key: 'mincode' },
   { title: 'Grade', key: 'grade' }
 ]
@@ -168,7 +175,8 @@ const searchSchools = async () => {
   const req = {
     pageNumber: currentPage.value,
     pageSize: itemsPerPage,
-    searchCriteriaList: encodedParams
+    searchCriteriaList: encodedParams,
+    sort: itemsSort.value
   }
 
   try {

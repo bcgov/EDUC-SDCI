@@ -3,13 +3,12 @@ const express = require("express");
 const router = express.Router();
 const log = require("../components/logger");
 const config = require("../config/index");
-const NodeCache = require("node-cache");
+
 const axios = require("axios");
 const { checkToken } = require("../components/auth");
-const { createSchoolList } = require("../components/utils"); 
+const { createList } = require("../components/utils")
+const { listCache } = require("../components/cache");; 
 
-
-const listCache = new NodeCache({ stdTTL: 21600 });
 const schoolListFields = ['mincode', 'displayName']; 
 //Batch Routes
 router.get('/school/list', checkToken, getSchoolList);
@@ -24,7 +23,7 @@ async function getSchoolList(req, res) {
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
-        const schoolList = createSchoolList(response.data, schoolListFields);
+        const schoolList = createList(response.data, schoolListFields);
         res.json(schoolList);
         listCache.set("schoollist", schoolList)
         log.info(req.url);

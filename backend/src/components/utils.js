@@ -1,4 +1,4 @@
-function createSchoolList(list, fields) {
+function createList(list, fields) {
     return list
       .map(function (item) {
         if (item.closedDate !== null) {
@@ -14,4 +14,4 @@ function createSchoolList(list, fields) {
       });
   }
   
-  module.exports = { createSchoolList };
+  module.exports = { createList };
