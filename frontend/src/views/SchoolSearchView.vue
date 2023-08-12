@@ -67,7 +67,7 @@ const selectedCity = ref(null)
 const selectedType = ref(null)
 const selectedGrade = ref(null)
 const results = ref(0)
-const currentPage = ref(1)
+const currentPage = ref(2)
 const itemsPerPage = ref(10)
 const itemsSort = ref('')
 const totalPages = ref(1)
@@ -136,7 +136,7 @@ const headers = [
   { title: 'ID', key: 'districtId' },
   { title: 'school Category', key: 'schoolCategoryCode' },
   { title: 'Mincode', key: 'mincode' },
-  { title: 'Grade', key: 'grade' }
+  { title: 'closedDate', key: 'closedDate' }
 ]
 
 const filteredSchools = ref(schools)
@@ -144,6 +144,8 @@ const search = ref('')
 
 const searchSchools = async () => {
   // Filter schools based on selected filters
+  let currentDate = new Date().toISOString().substring(0, 19)
+  console.log(currentDate)
   const params = [
     {
       condition: null,
@@ -168,6 +170,21 @@ const searchSchools = async () => {
       condition: 'AND'
     })
   }
+  //only add open schools
+  params[0].searchCriteriaList.push({
+    key: 'openedDate',
+    operation: 'lte',
+    value: currentDate,
+    valueType: 'DATE_TIME',
+    condition: 'AND'
+  })
+  params[0].searchCriteriaList.push({
+    key: 'closedDate',
+    operation: 'eq',
+    value: null,
+    valueType: 'STRING',
+    condition: 'AND'
+  })
 
   const jsonString = JSON.stringify(params)
   const encodedParams = encodeURIComponent(jsonString)
