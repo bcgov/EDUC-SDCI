@@ -54,11 +54,27 @@ export default {
       url += `&sort[${sortField}]=${sortOrder}`
     }
     return ApiService.apiAxios.get(url);
-  },  
+  },
+  searchContactByType(req: any): Promise<AxiosResponse> {
+    // console.log(req.sort.value)
+    const searchCriteriaList = req.searchCriteriaList || '';
+    const pageSize = req.pageSize.value || ''; // Set a default value if not provided
+    const pageNumber = req.pageNumber || ''; // Set a default value if not provided
+    console.log(req.sort)
+    const sortOrder = (req.sort && req.sort.order) ? req.sort.order.toUpperCase() : '';
+    const sortField = (req.sort && req.sort.key) ? req.sort.key : ''
+    console.log(sortOrder + sortField)
+    let url = `/api/v1/institute/district/contact/paginated?pageSize=${pageSize}&pageNumber=${pageNumber}&searchCriteriaList=${searchCriteriaList}`;
+    if(sortOrder && sortField){
+      url += `&sort[${sortField}]=${sortOrder}`
+    }
+    return ApiService.apiAxios.get(url);
+  },
   getDistrictView(id: string): Promise<AxiosResponse> {
     return ApiService.apiAxios.get(`/api/v1/district/${id}`)
   },
   getDistrictContactTypeCodes(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/district-contact-type-codes');
-  }
+  },
+
 }

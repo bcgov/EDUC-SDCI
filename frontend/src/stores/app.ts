@@ -132,12 +132,12 @@ export const useAppStore = defineStore('app', {
       }).catch((error) => {
         console.error(error)
       })
-      
+
       InstituteService.getContactTypeCodes().then((response) => {
         this.contactTypeCodes = response.data
       }).catch((error) => {
         console.error(error)
-      })      
+      })
     }
 
   },
@@ -177,7 +177,8 @@ export const useAppStore = defineStore('app', {
       return (searchCode: string | String) => state.districtContactTypeCodes.find((contactCode) => searchCode === contactCode.districtContactTypeCode)?.label
     },
     getAllDistrictContactTypeCodesLabel: (state) => {
-      return state.districtContactTypeCodes.map(item => item.label)
+      const sortedTypeCode = state.districtContactTypeCodes.map(item => item.label).sort();
+      return sortedTypeCode;
     },
     getCategoryCodes: (state) => {
       return state.categoryCodes
