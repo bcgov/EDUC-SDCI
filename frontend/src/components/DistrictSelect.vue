@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useAppStore } from '@/stores/app'
 import router from '@/router'
 import { useSanitizeURL } from '@/composables/string'
-
+import ContactTypeModal from '@/components/ContactTypeModel.vue'
 const appStore = useAppStore()
 
 const selectedDistrict = ref('') // placeholder
@@ -49,6 +49,7 @@ function goToDistrict() {
           ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Contacts by
           Type</v-btn
         >
+        <ContactTypeModal></ContactTypeModal>
       </v-col>
     </v-row>
   </v-container>
