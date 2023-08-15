@@ -42,14 +42,11 @@
       :loading="loading"
       @page-change:page="handlePageChange"
       @update:options="handleUpdate"
-    ></v-data-table-server>
-
-    <!-- <v-data-table
-      :headers="headers"
-      :items="filteredSchools"
-      item-value="name"
-      class="elevation-1"
-    ></v-data-table> -->
+    >
+      <template v-slot:item.displayName="{ item }">
+        <a :href="`/school/${item.selectable.schoolId}`">{{ item.selectable.displayName }}</a>
+      </template>
+    </v-data-table-server>
   </v-container>
 </template>
 
@@ -133,7 +130,7 @@ const schools = [
 
 const headers = [
   { title: 'School Name', key: 'displayName' },
-  { title: 'ID', key: 'districtId' },
+  { title: 'ID', key: 'schoolId' },
   { title: 'school Category', key: 'schoolCategoryCode' },
   { title: 'Mincode', key: 'mincode' },
   { title: 'closedDate', key: 'closedDate' }
