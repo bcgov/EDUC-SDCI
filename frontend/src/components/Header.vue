@@ -17,7 +17,6 @@
     <template v-slot:extension>
       <div>
         <RouterLink class="mx-2" to="/">Home</RouterLink>
-        <RouterLink class="mx-2" to="/about">About</RouterLink>
         <RouterLink class="mx-2" to="/search">School Search</RouterLink>
         <RouterLink class="mx-2" to="/school">School</RouterLink>
         <RouterLink class="mx-2" to="/offshore">Offshore</RouterLink>

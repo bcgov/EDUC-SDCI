@@ -39,7 +39,6 @@ const router = createRouter({
       beforeEnter: async (to, from, next) => {
         const appStore = useAppStore()
         await appStore.setDistricts();
-        console.log("LOADED DISTRICTS")
         next();
       },
     },
@@ -51,7 +50,6 @@ const router = createRouter({
       beforeEnter: async (to, from, next) => {
         const appStore = useAppStore()
         await appStore.setAuthorities();
-        console.log("LOADED AUTHORITIES")
         next();
       }
     },
@@ -61,13 +59,11 @@ const router = createRouter({
       component: () => import('../views/OffshoreView.vue')
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue')
+      path: '/:catchAll(.*)', // This pattern will match any route that hasn't been matched by other routes
+      name: 'not-found',
+      component: () => import('../views/ErrorView.vue') // Use your error page component here   
     }
+
   ]
 })
 

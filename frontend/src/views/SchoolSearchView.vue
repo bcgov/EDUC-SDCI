@@ -44,7 +44,17 @@
       @update:options="handleUpdate"
     >
       <template v-slot:item.displayName="{ item }">
-        <a :href="`/school/${item.selectable.schoolId}`">{{ item.selectable.displayName }}</a>
+        {{ item.selectable.displayName }}
+        <v-menu offset-y>
+          <template v-slot:activator="{ on }">
+            <a v-on="on">{{ item.selectable.displayName }}</a>
+          </template>
+          <v-list>
+            <v-list-item @click="moreInformation(item)">
+              <v-list-item-title>More Information</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </template>
     </v-data-table-server>
   </v-container>
@@ -74,6 +84,10 @@ const handlePageChange = async (page) => {
   currentPage.value = page
   await searchSchools()
   loading.value = false
+}
+
+const moreInformation = (item) => {
+  item.selectable.schoolId
 }
 const handleUpdate = async (options) => {
   loading.value = true

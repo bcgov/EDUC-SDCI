@@ -1,5 +1,5 @@
 <template>
-  <div class="about">
+  <div>
     <h1>Schools</h1>
     <p>App.vue on start up accesses the institute api and store the response using pinia.
     ListSchools.vue uses the stored response from pinia store</p>
@@ -23,11 +23,4 @@ export default {
 }
 </script>
 <style>
-@media (min-width: 1024px) {
-  .about {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-  }
-}
 </style>
