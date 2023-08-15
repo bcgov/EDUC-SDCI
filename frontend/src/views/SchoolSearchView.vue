@@ -33,8 +33,8 @@
     <!-- Search Results Table -->
     TOTAL: {{ results }} Current Page {{ currentPage }}
     <v-data-table-server
-      v-model:expanded="expanded"
-      :items-per-page="itemsPerPage"
+      v-model:items-per-page="itemsPerPage"
+      :expanded="expanded"
       :headers="headers"
       :items-length="results"
       :items="filteredSchools"
