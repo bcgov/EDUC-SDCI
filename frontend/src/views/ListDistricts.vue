@@ -23,7 +23,7 @@ export default {
 
     function handleButtonClick() {
       const test = appStore.convertToCSV(appStore.getDistrictList)
-      appStore.exportToCSV(test)
+      appStore.exportCSV(test)
       console.log('Button clicked!');
     }
     return {
