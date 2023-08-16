@@ -7,7 +7,12 @@
   font-family: 'BCSans', 'Noto Sans', Verdana, Arial, sans-serif;
   font-weight: normal;
 }
-
+@media (max-width: 768px) {
+  #app {
+    min-width: 1130px; /* Adjust as needed */
+    padding: 1rem; /* Adjust as needed */
+  }
+}
 a,
 .green {
   text-decoration: none;

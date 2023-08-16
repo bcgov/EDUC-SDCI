@@ -4,11 +4,9 @@ const log = require("../components/logger");
 const config = require("../config/index");
 const axios = require("axios");
 const { checkToken } = require("../components/auth");
-const { listCache } = require("../components/cache");
 const json2xls = require('json2xls');
 const fs = require('fs');
 const path = require('path');
-const { json } = require("body-parser");
 const {isSafeFilePath} = require("../components/utils")
 
 const FILE_STORAGE_DIR = path.join(__dirname, '../..', 'public');
