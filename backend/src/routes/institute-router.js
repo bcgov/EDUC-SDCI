@@ -6,14 +6,17 @@ const config = require("../config/index");
 
 const axios = require("axios");
 const { checkToken } = require("../components/auth");
-const { createList } = require("../components/utils")
-const { listCache } = require("../components/cache");; 
+const { createList } = require("../components/utils");
+const { listCache } = require("../components/cache");
 
-const schoolListFields = ['mincode', 'displayName']; 
+const schoolListFields = ['mincode', 'displayName'];
 //Batch Routes
 router.get('/contact-type-codes', checkToken, getContactTypeCodes);
 router.get('/school/list', checkToken, getSchoolList);
+//router.get('/authority/list', checkToken, getAuthorityList);
+router.get('/district/list',checkToken, getDistrictList)
 router.get('/*', checkToken, getInstituteAPI);
+
 
 
 async function getContactTypeCodes(req, res) {
@@ -82,33 +85,25 @@ async function getSchoolList(req, res) {
   }
   
 }
-
-async function getSchoolList(req, res) {
-  
-  if(await !listCache.has("schoollist")){
-    console.log("GETTING NEW SCHOOL LIST")
-    const url = `${config.get('server:instituteAPIURL')}/institute/school`; // Update the URL according to your API endpoint
+async function getDistrictList(req, res) {
+  if(await !listCache.has("districtlist")){
+    const url = `${config.get('server:instituteAPIURL')}/institute/district`; // Update the URL according to your API endpoint
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
-        const schoolList = createList(response.data, schoolListFields);
-        res.json(schoolList);
-        listCache.set("schoollist", schoolList)
+        const districtList = response.data
+        res.json(districtList);
+        listCache.set("districtlist", districtList)
         log.info(req.url);
       })
       .catch((e) => {
-        log.error('getSchoolsList Error', e.response ? e.response.status : e.message);
+        log.error('getDistrictList Error', e.response ? e.response.status : e.message);
       });    
   }else{
-    console.log("USING SCHOOL LIST CACHE")
-    schoolList = await listCache.get("schoollist")
-    res.json(schoolList)
+    schoolList = await listCache.get("districtlist")
+    res.json(districtList)
   }
-  
 }
-
-
-
 
 async function getInstituteAPI(req, res) {
   const url = `${config.get('server:instituteAPIURL')}/institute` + req.url;
