@@ -69,16 +69,13 @@ export const useAppStore = defineStore('app', {
       return csvContent;
     },
     exportCSV(csvData) {
-      if(csvData){
         // Create a blob with the CSV data
         const blob = new Blob([csvData], { type: 'text/csv' });
-
         // Create a temporary anchor element to trigger the file download
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
         a.download = 'output.csv';
         a.click();
-      }
     },
     setDistricts(): void {
 
