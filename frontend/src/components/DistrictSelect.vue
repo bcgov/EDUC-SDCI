@@ -37,17 +37,10 @@ function goToDistrict() {
         >
       </v-col>
       <v-col class="ml-6">
-        <v-btn
-          class="text-none text-subtitle-1 ma-1"
-          variant="flat"
-          href="/api/v1/download/exceldistrictoffice"
-          target="_blank"
+        <v-btn class="text-none text-subtitle-1 ma-1" variant="flat"
+          ><template v-slot:prepend> <v-icon icon="mdi-download" /></template> Mailing for All
+          Districts</v-btn
         >
-          <template v-slot:prepend>
-            <v-icon icon="mdi-download" />
-          </template>
-          Mailing for All Districts
-        </v-btn>
         <v-btn class="text-none text-subtitle-1 ma-1" variant="flat"
           ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Contacts for All
           Districts</v-btn
