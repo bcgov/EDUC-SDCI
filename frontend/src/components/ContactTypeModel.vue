@@ -25,7 +25,7 @@
         </v-card-text>
 
         TOTAL: {{ results }}
-        <v-btn class="text-none text-subtitle-1 ma-1" variant="flat"
+        <v-btn @click="downloadCSV" class="text-none text-subtitle-1 ma-1" variant="flat"
           ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download to
           CSV</v-btn
         >
