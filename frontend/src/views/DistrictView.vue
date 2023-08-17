@@ -111,7 +111,7 @@ onMounted(async () => {
 
             <template v-slot:item.districtContactTypeCode="{ item }">
               {{
-                appStore.getDistrictContactTypeCodesLabel(item.selectable.districtContactTypeCode)
+                appStore.getDistrictContactTypeCodeLabel(item.selectable.districtContactTypeCode)
               }}
             </template>
           </v-data-table>
@@ -124,7 +124,13 @@ onMounted(async () => {
             :headers="schoolHeaders"
             :items="district.value.districtSchools"
           >
-            <template v-slot:item.schoolCategoryCode="{ item }"> hello world </template>
+            <template v-slot:item.schoolCategoryCode="{ item }">
+              {{ appStore.getCategoryCodeLabel(item.selectable.schoolCategoryCode) }}
+            </template>
+
+            <template v-slot:item.facilityTypeCode="{ item }">
+              {{ appStore.getFacilityCodeLabel(item.selectable.facilityTypeCode) }}
+            </template>
           </v-data-table>
         </v-window-item>
       </v-window>
