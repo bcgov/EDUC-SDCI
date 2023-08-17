@@ -68,6 +68,10 @@ nav a:first-of-type {
 }
 
 @media (min-width: 1024px) {
+  #app {
+    width: 1280px;
+    padding: 0 2rem;
+  }
   header {
     display: flex;
     place-items: center;

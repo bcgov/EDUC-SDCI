@@ -31,30 +31,90 @@
     </v-row>
 
     <!-- Search Results Table -->
-    TOTAL: {{ results }}
+    TOTAL: {{ results }} Current Page {{ currentPage }}
     <v-data-table-server
       v-model:items-per-page="itemsPerPage"
+      :expanded="expanded"
       :headers="headers"
       :items-length="results"
       :items="filteredSchools"
+      show-expand
       class="elevation-1"
-      item-value="name"
+      item-value="schoolId"
       :loading="loading"
       @page-change:page="handlePageChange"
       @update:options="handleUpdate"
     >
       <template v-slot:item.displayName="{ item }">
-        {{ item.selectable.displayName }}
-        <v-menu offset-y>
-          <template v-slot:activator="{ on }">
-            <a v-on="on">{{ item.selectable.displayName }}</a>
-          </template>
-          <v-list>
-            <v-list-item @click="moreInformation(item)">
-              <v-list-item-title>More Information</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+        <a :href="`/school/${item.selectable.schoolId}`">{{ item.selectable.displayName }}</a>
+      </template>
+      <template v-slot:expanded-row="{ columns, item }">
+        <tr>
+          <td :colspan="columns.length">
+            <v-card>
+              <v-card-title> {{ item.selectable.displayName }} School Information </v-card-title>
+              <v-card-text>
+                <p>Category Code: {{ item.selectable.schoolCategoryCode }}</p>
+                <p>Facility Code: {{ item.selectable.facilityTypeCode }}</p>
+                <p>
+                  District:
+                  <router-link :to="`/district/District${item.selectable.districtId}`">
+                    View District
+                  </router-link>
+                </p>
+                <p>
+                  Grades:
+                  <v-container>
+                    <v-row>
+                      <v-col
+                        v-for="(grade, index) in item.selectable.grades"
+                        :key="index"
+                        cols="12"
+                        md="4"
+                      >
+                        {{ grade.schoolGradeCode }}
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                </p>
+                <p>
+                  Addresses:
+                  <v-container>
+                    <v-row>
+                      <v-col
+                        v-for="(address, index) in item.raw.addresses"
+                        :key="index"
+                        cols="12"
+                        md="4"
+                      >
+                        <v-card>
+                          <v-card-text>
+                            <v-list dense>
+                              <v-list-item>
+                                <v-list-item-content>
+                                  <v-list-item-title>
+                                    <p>addressLine1 {{ address.addressLine1 }}</p>
+                                    <p>addressLine2 {{ address.addressLine2 }}</p>
+                                    <p>city {{ address.city }}</p>
+                                    <p>postal {{ address.postal }}</p>
+                                    <p>addressTypeCode {{ address.addressTypeCode }}</p>
+                                    <p>provinceCode {{ address.provinceCode }}</p>
+                                    <p>countryCode {{ address.countryCode }}</p>
+                                    <p>schoolAddressId {{ address.schoolAddressId }}</p>
+                                  </v-list-item-title>
+                                </v-list-item-content>
+                              </v-list-item>
+                            </v-list>
+                          </v-card-text>
+                        </v-card>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                </p>
+              </v-card-text>
+            </v-card>
+          </td>
+        </tr>
       </template>
     </v-data-table-server>
   </v-container>
@@ -74,20 +134,16 @@ const selectedCity = ref(null)
 const selectedType = ref(null)
 const selectedGrade = ref(null)
 const results = ref(0)
-const currentPage = ref(2)
+const currentPage = ref(1)
 const itemsPerPage = ref(10)
 const itemsSort = ref('')
-const totalPages = ref(1)
+const totalPages = ref(0)
 const loading = ref(false)
 const handlePageChange = async (page) => {
   loading.value = true
   currentPage.value = page
   await searchSchools()
   loading.value = false
-}
-
-const moreInformation = (item) => {
-  item.selectable.schoolId
 }
 const handleUpdate = async (options) => {
   loading.value = true
@@ -143,15 +199,16 @@ const schools = [
 ]
 
 const headers = [
+  { title: '', key: 'data-table-expand' },
   { title: 'School Name', key: 'displayName' },
   { title: 'ID', key: 'schoolId' },
   { title: 'school Category', key: 'schoolCategoryCode' },
-  { title: 'Mincode', key: 'mincode' },
-  { title: 'closedDate', key: 'closedDate' }
+  { title: 'Mincode', key: 'mincode' }
 ]
 
 const filteredSchools = ref(schools)
 const search = ref('')
+const expanded = ref([])
 
 const searchSchools = async () => {
   // Filter schools based on selected filters
@@ -167,16 +224,16 @@ const searchSchools = async () => {
     params[0].searchCriteriaList.push({
       key: 'schoolCategoryCode',
       operation: selectedJurisdiction.value.length > 1 ? 'in' : 'eq',
-      value: selectedJurisdiction.value.join(', '),
+      value: selectedJurisdiction.value.join(','),
       valueType: 'STRING',
-      condition: 'OR'
+      condition: 'AND'
     })
   }
   if (selectedType.value) {
     params[0].searchCriteriaList.push({
       key: 'facilityTypeCode',
       operation: 'in',
-      value: selectedType.value.join(', '),
+      value: selectedType.value.join(','),
       valueType: 'STRING',
       condition: 'AND'
     })
