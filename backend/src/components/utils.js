@@ -41,6 +41,19 @@ function createList(list, fields) {
         return item !== undefined;
       });
   }
-
+  function addDistrictLabels(jsonData, districtList) {
   
-  module.exports = { createList, isSafeFilePath };
+      if (jsonData.content && Array.isArray(jsonData.content)) {
+        jsonData.content.forEach(dataItem => {
+          const district = districtList.find(item => item.districtId === dataItem.districtId);
+          if (district) {
+            dataItem.districtNumber = district.districtNumber;
+            dataItem.displayName = district.displayName;
+          }
+        });
+      }
+      console.log(jsonData)
+      return jsonData
+    }
+  
+  module.exports = { createList, isSafeFilePath, addDistrictLabels };

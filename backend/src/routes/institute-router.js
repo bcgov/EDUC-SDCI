@@ -6,7 +6,7 @@ const config = require("../config/index");
 
 const axios = require("axios");
 const { checkToken } = require("../components/auth");
-const { createList } = require("../components/utils");
+const { createList, addDistrictLabels } = require("../components/utils");
 const { listCache } = require("../components/cache");
 
 const schoolListFields = ['mincode', 'displayName'];
@@ -15,6 +15,7 @@ router.get('/contact-type-codes', checkToken, getContactTypeCodes);
 router.get('/school/list', checkToken, getSchoolList);
 //router.get('/authority/list', checkToken, getAuthorityList);
 router.get('/district/list',checkToken, getDistrictList)
+router.get('/district/contact/*',checkToken, getDistrictContactsAPI)
 router.get('/*', checkToken, getInstituteAPI);
 
 
@@ -62,6 +63,9 @@ async function getContactTypeCodes(req, res) {
   
 }
 
+
+
+
 async function getSchoolList(req, res) {
   
   if(await !listCache.has("schoollist")){
@@ -80,38 +84,64 @@ async function getSchoolList(req, res) {
       });    
   }else{
     console.log("USING SCHOOL LIST CACHE")
-    schoolList = await listCache.get("schoollist")
+    const schoolList = await listCache.get("schoollist")
     res.json(schoolList)
   }
   
 }
 async function getDistrictList(req, res) {
   if(await !listCache.has("districtlist")){
+    console.log("CREATE DISTRICT CACHE")
     const url = `${config.get('server:instituteAPIURL')}/institute/district`; // Update the URL according to your API endpoint
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
         const districtList = response.data
-        res.json(districtList);
+      
         listCache.set("districtlist", districtList)
+        res.json(districtList);
         log.info(req.url);
       })
       .catch((e) => {
         log.error('getDistrictList Error', e.response ? e.response.status : e.message);
       });    
   }else{
-    schoolList = await listCache.get("districtlist")
+    console.log("CACHE DISTRICT")
+    const districtList = await listCache.get("districtlist")
     res.json(districtList)
   }
 }
-
 async function getInstituteAPI(req, res) {
   const url = `${config.get('server:instituteAPIURL')}/institute` + req.url;
-  axios
+  const districtList = await listCache.get('districtlist')
+   axios
     .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
     .then((response) => {
-      res.json(response.data);
+
+        res.json(response.data);
+ 
       log.info(req.url);
+    })
+    .catch((e) => {
+      log.error('getData Error', e.response ? e.response.status : e.message);
+    });
+}
+
+async function getDistrictContactsAPI(req, res) {
+  console.log("getting the contacts")
+  const url = `${config.get('server:instituteAPIURL')}/institute` + req.url;
+  console.log(req.url)
+  const districtList = await listCache.get('districtlist')
+   axios
+    .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
+    .then((response) => {
+
+      if (req.url.includes('/district/contact/paginated')) {
+        const jsonData = addDistrictLabels(response.data, districtList)
+        res.json(jsonData);
+      }else{
+        res.json(response.data);
+      }
     })
     .catch((e) => {
       log.error('getData Error', e.response ? e.response.status : e.message);
