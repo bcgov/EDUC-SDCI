@@ -91,7 +91,7 @@ async function getSchoolList(req, res) {
 }
 async function getDistrictList(req, res) {
   if(await !listCache.has("districtlist")){
-    console.log("CREATE DISTRICT CACHE")
+    console.log("GETTING NEW DISTRICT LIST")
     const url = `${config.get('server:instituteAPIURL')}/institute/district`; // Update the URL according to your API endpoint
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
@@ -106,7 +106,7 @@ async function getDistrictList(req, res) {
         log.error('getDistrictList Error', e.response ? e.response.status : e.message);
       });    
   }else{
-    console.log("CACHE DISTRICT")
+    console.log("USING DISTRICT LIST CACHE")
     const districtList = await listCache.get("districtlist")
     res.json(districtList)
   }
@@ -117,9 +117,7 @@ async function getInstituteAPI(req, res) {
    axios
     .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
     .then((response) => {
-
-        res.json(response.data);
- 
+      res.json(response.data);
       log.info(req.url);
     })
     .catch((e) => {
@@ -128,9 +126,7 @@ async function getInstituteAPI(req, res) {
 }
 
 async function getDistrictContactsAPI(req, res) {
-  console.log("getting the contacts")
   const url = `${config.get('server:instituteAPIURL')}/institute` + req.url;
-  console.log(req.url)
   const districtList = await listCache.get('districtlist')
    axios
     .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
