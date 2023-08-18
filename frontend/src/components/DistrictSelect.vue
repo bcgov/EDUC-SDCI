@@ -42,8 +42,12 @@ function goToDistrict() {
           Districts</v-btn
         >
         <v-btn class="text-none text-subtitle-1 ma-1" variant="flat"
-          ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Contacts for All
-          Districts</v-btn
+          ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>
+          <a
+            href="/api/v1/download/excel/institute/district/contact/paginated?pageSize=1000&pageNumber=&filepath=exceldistrictcontacts"
+          >
+            Contacts for All Districts</a
+          ></v-btn
         >
         <v-btn class="text-none text-subtitle-1 ma-1" variant="flat"
           ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Contacts by

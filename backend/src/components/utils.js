@@ -19,7 +19,8 @@ const ALLOWED_FILENAMES = new Set([
   'superintendent',
   'chairperson',
   'secretary-treasurer',
-  'executive-admin-assistant'
+  'executive-admin-assistant',
+  'exceldistrictcontacts'
   // Add more allowed filepaths as needed
 ]);
 function isSafeFilePath(filepath) {
@@ -52,7 +53,6 @@ function createList(list, fields) {
           }
         });
       }
-      console.log(jsonData)
       return jsonData
     }
   

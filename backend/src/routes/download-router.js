@@ -13,11 +13,9 @@ const { listCache } = require("../components/cache");
 
 const FILE_STORAGE_DIR = path.join(__dirname, '../..', 'public');
 
-//router.get('/excel/*', checkToken, getExcelDownload);
 
 
-router.get('/excel2/*', checkToken, getData, addDistrictLabels, createExcelDownload, getExcelDownload);
-//router.get('/csv/*', checkToken, getCSVDownload);
+router.get('/excel/*', checkToken, getData, addDistrictLabels, createExcelDownload, getExcelDownload);
 
 
 
@@ -83,7 +81,6 @@ async function addDistrictLabels(req, res, next) {
         }
       }
     
-      console.log(districtList)
       if (req.jsonData && Array.isArray(req.jsonData)) {
         req.jsonData.forEach(dataItem => {
           const district = districtList.find(item => item.districtId === dataItem.districtId);
@@ -106,7 +103,7 @@ async function addDistrictLabels(req, res, next) {
 async function getData(req, res,next){
   console.log("GETDATA")
   try {
-    const url = `${config.get('server:instituteAPIURL')}` + req.url.replace('/excel2', '');
+    const url = `${config.get('server:instituteAPIURL')}` + req.url.replace('/excel', '');
     const response = await axios.get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } });
     // Attach the fetched data to the request object
     req.jsonData = response.data.content;
