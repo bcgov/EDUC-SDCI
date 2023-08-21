@@ -4,7 +4,7 @@ import { type AxiosResponse } from 'axios';
 export default {
   // Districts
   getDistricts(): Promise<AxiosResponse> {
-    return ApiService.apiAxios.get('/api/v1/institute/district');
+    return ApiService.apiAxios.get('/api/v1/institute/district/list');
   },
   getDistrict(districtId: string): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/district/'+districtId);
