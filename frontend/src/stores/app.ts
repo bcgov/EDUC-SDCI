@@ -181,7 +181,7 @@ export const useAppStore = defineStore('app', {
       return (searchCode: string | String) => state.contactTypeCodes.codesList.districtContactTypeCodes.find((contactCode) => searchCode === contactCode.districtContactTypeCode)?.label
     },
     getAllDistrictContactTypeCodesLabel: (state) => {
-      const sortedTypeCode = state.districtContactTypeCodes.map(item => item.label).sort();
+      const sortedTypeCode = state.contactTypeCodes.codesList.districtContactTypeCodes.map(item => item.label).sort();
       return sortedTypeCode;
     },
     getCategoryCodes: (state) => {
