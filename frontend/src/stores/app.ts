@@ -33,6 +33,10 @@ interface FacilityCode extends Code {
   facilityTypeCode: string;
 }
 
+interface AddressTypeCode extends Code {
+  addressTypeCode: string;
+}
+
 interface ContactTypeCode {
   authorityContactTypeCodes: [],
   districtContactTypeCodes: [];
@@ -48,6 +52,7 @@ export const useAppStore = defineStore('app', {
     schools: [] as School[],
     categoryCodes: [] as CategoryCode[],
     facilityCodes: [] as FacilityCode[],
+    addressTypeCodes: [] as AddressTypeCode[],
     contactTypeCodes: [] as ContactTypeCode[],
   }),
   actions: {
@@ -142,6 +147,13 @@ export const useAppStore = defineStore('app', {
       }).catch((error) => {
         console.error(error)
       })
+
+      // set address type codes for institute addresses
+      InstituteService.getAddressTypeCodes().then((response) => {
+        this.addressTypeCodes = response.data
+      }).catch((error) => {
+        console.error(error)
+      })
     }
 
   },
@@ -194,7 +206,13 @@ export const useAppStore = defineStore('app', {
       return state.facilityCodes
     },
     getFacilityCodeLabel: (state) => {
-      return (searchCode: string | String ) => state.facilityCodes.find((facilityCode) => searchCode === facilityCode.facilityTypeCode)?.label
-    }
+      return (searchCode: string | String ) => state.facilityCodes.find((facilityTypeCode) => searchCode === facilityTypeCode.facilityTypeCode)?.label
+    },
+    getAddressTypeCodes: (state) => {
+      return state.addressTypeCodes
+    },
+    getAddressTypeCodeLabel: (state) => {
+      return (searchCode: string | String) => state.addressTypeCodes.find((addressTypeCode) => searchCode === addressTypeCode.addressTypeCode)?.label
+    },
   }
 });

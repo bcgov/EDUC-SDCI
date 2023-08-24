@@ -12,7 +12,7 @@
         height="125"
       />
     </a>
-    <h1>School and District Contact Information</h1>
+    <h1>BC School & District Contact Information</h1>
     <!-- TODO: Move to DEBUG component? Links are temporary until we build out our views.-->
     <template v-slot:extension>
       <div>
