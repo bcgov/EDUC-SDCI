@@ -70,7 +70,7 @@ onMounted(async () => {
         {{ district.value.districtData?.districtNumber }} -
         {{ district.value.districtData?.displayName }}
       </h2>
-      <v-row>
+      <v-row v-if="district.value.districtData">
         <v-col v-for="item in district.value.districtData.addresses">
           <DisplayAddress v-bind="item" />
         </v-col>
