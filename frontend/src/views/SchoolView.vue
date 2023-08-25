@@ -8,16 +8,20 @@
         >
         <v-card-subtitle>
           <!-- School Address -->
-          <div v-if="schoolData.value.addresses > 0">
-            {{ schoolData.value.addresses[0].addressLine1 }}<br />
-            <span v-if="schoolData.value.addresses[0].addressLine2"
-              >{{ schoolData.value.addresses[0].addressLine2 }}<br
+          <div v-if="filteredAddresses.value != 'N/A'">
+            <span v-if="filteredAddresses.value.addressLine1"
+              >{{ filteredAddresses.value.addressLine1 }}<br
             /></span>
-            {{ schoolData.value.addresses[0].city }},
-            {{ schoolData.value.addresses[0].provinceCode }},
-            {{ schoolData.value.addresses[0].postal }}
+            <span v-if="filteredAddresses.value.addressLine2"
+              >{{ filteredAddresses.value.addressLine2 }}<br
+            /></span>
+            <span v-if="filteredAddresses.value.city">{{ filteredAddresses.value.city }}</span
+            >,
+            <span v-if="filteredAddresses.value.provinceCode"
+              >{{ filteredAddresses.value.provinceCode }},</span
+            >
+            <span v-if="filteredAddresses.value.postal">{{ filteredAddresses.value.postal }}</span>
           </div>
-          <br />
           <!-- School type info. -->
           <span v-if="schoolData.value.facilityTypeCode"
             >{{ schoolData.value.facilityTypeCode }} SCHOOL<br
@@ -41,13 +45,14 @@
   </div>
 </template>
 <script setup>
-import { reactive, onMounted, ref } from 'vue'
+import { reactive, onMounted, onBeforeMount, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import InstituteService from '@/Services/InstituteService'
 import { useAppStore } from '@/stores/app'
 const appStore = useAppStore()
 const schoolData = reactive({ value: {} })
 const filteredContacts = ref([])
+const filteredAddresses = reactive({ value: {} })
 const headers = [
   { title: 'Contact', key: 'jobTitle' },
   { title: 'First Name', key: 'firstName' },
@@ -57,12 +62,19 @@ const headers = [
   { title: 'Fax', key: 'faxNumber' },
   { title: 'Email', key: 'email' }
 ]
-onMounted(async () => {
+onBeforeMount(async () => {
   const route = useRoute()
   const selectedSchoolId = route.params.schoolId
   try {
     const response = await InstituteService.getSchool(selectedSchoolId)
     schoolData.value = response.data
+    // console.log(schoolData.value)
+    if (response.data) {
+      if (response.data.addresses.length > 0) {
+        // console.log(response.data)
+        filteredAddresses.value = response.data.addresses[0]
+      }
+    }
     if (response.data) {
       if (response.data.contacts.length > 0) {
         filteredContacts.value = response.data.contacts
@@ -70,7 +82,6 @@ onMounted(async () => {
         filteredContacts.value[0].phoneExtension = response.data.phoneExtension
         filteredContacts.value[0].email = response.data.email
         filteredContacts.value[0].faxNumber = response.data.faxNumber
-        console.log(filteredContacts.value)
       }
     }
     // Formats the grades
