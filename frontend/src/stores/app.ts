@@ -155,6 +155,9 @@ export const useAppStore = defineStore('app', {
     getDistrictList: (state) => {
       return state.districts.map((district) => {return {districtNumber: district.districtNumber, displayName: district.displayName}})
     },
+    getDistrictByDistrictId: (state) => {
+      return (districtId: string,authorityNumber: authority.authorityNumber, displayName: authority.displayName) => state.districts.find((district) => districtId === district.districtId)
+    },
     getDistrictByDistrictNumber: (state) => {
       return (distNum: string | String) => state.districts.find((district) => distNum === district.districtNumber)
     },

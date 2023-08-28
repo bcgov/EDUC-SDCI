@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>District XXX - District name <br /></h1>
+    <h1>{{ districtInfo.value.districtNumber }} - {{ districtInfo.value.displayName }} <br /></h1>
     <v-card width="100%" v-if="schoolData.value">
       <v-card-item>
         <v-card-title v-if="schoolData.value.displayName">
@@ -53,6 +53,7 @@ const appStore = useAppStore()
 const schoolData = reactive({ value: {} })
 const filteredContacts = ref([])
 const filteredAddresses = reactive({ value: {} })
+const districtInfo = reactive({ value: {} })
 const headers = [
   { title: 'Contact', key: 'jobTitle' },
   { title: 'First Name', key: 'firstName' },
@@ -68,7 +69,10 @@ onBeforeMount(async () => {
   try {
     const response = await InstituteService.getSchool(selectedSchoolId)
     schoolData.value = response.data
-    // console.log(schoolData.value)
+    if (schoolData.value.districtId) {
+      districtInfo.value = appStore.getDistrictByDistrictId(String(schoolData.value.districtId))
+    }
+    console.log(districtInfo.value)
     if (response.data) {
       if (response.data.addresses.length > 0) {
         // console.log(response.data)
