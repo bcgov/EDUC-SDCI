@@ -37,7 +37,11 @@ interface ContactTypeCode {
   districtContactTypeCodes: [];
   schoolContactTypeCodes: [];
 }
-
+interface GradeCode {
+  schoolGradeCode: string,
+  label: string,
+  description: string,
+}
 import InstituteService from '../services/InstituteService'
 
 export const useAppStore = defineStore('app', {
@@ -48,6 +52,7 @@ export const useAppStore = defineStore('app', {
     districtContactTypeCodes: [] as DistrictContactTypeCode[],
     categoryCodes: [] as CategoryCode[],
     contactTypeCodes: [] as ContactTypeCode[],
+    gradeCodes: [] as GradeCode[]
   }),
   actions: {
     convertToCSV(jsonArray) {
@@ -141,6 +146,11 @@ export const useAppStore = defineStore('app', {
 
       InstituteService.getContactTypeCodes().then((response) => {
         this.contactTypeCodes = response.data
+      }).catch((error) => {
+        console.error(error)
+      })
+      InstituteService.getGradeCodes().then((response) => {
+        this.gradeCodes = response.data
       }).catch((error) => {
         console.error(error)
       })
