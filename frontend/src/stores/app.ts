@@ -83,6 +83,17 @@ export const useAppStore = defineStore('app', {
         a.download = 'output.csv';
         a.click();
     },
+    extractGradeCodes(data) {
+      const gradeCodes = data.map(item => item.schoolGradeCode).sort();
+      // Extract numeric portion of grade codes and convert to numbers
+      const numericGrades = gradeCodes.map(code => parseInt(code.match(/\d+/)[0], 10));
+      // Find the minimum and maximum grades
+      const minGrade = Math.min(...numericGrades);
+      const maxGrade = Math.max(...numericGrades);
+      // Create the desired range string
+      const gradeRange = `${minGrade}-${maxGrade}`;
+      return gradeRange
+    },
     setDistricts(): void {
 
         InstituteService.getDistricts()
@@ -164,6 +175,9 @@ export const useAppStore = defineStore('app', {
     },
     getDistrictList: (state) => {
       return state.districts.map((district) => {return {districtNumber: district.districtNumber, displayName: district.displayName}})
+    },
+    getDistrictByDistrictId: (state) => {
+      return (districtId: string,authorityNumber: authority.authorityNumber, displayName: authority.displayName) => state.districts.find((district) => districtId === district.districtId)
     },
     getDistrictByDistrictNumber: (state) => {
       return (distNum: string | String) => state.districts.find((district) => distNum === district.districtNumber)
