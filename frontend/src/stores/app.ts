@@ -20,16 +20,21 @@ interface School {
 
 }
 
-interface DistrictContactTypeCode {
-  districtContactTypeCode: string;
-  label: string;
-  description?: string;
-}
-
-interface CategoryCode {
-  schoolCategoryCode: string,
+interface Code {
   label: string;
   description: string;
+}
+
+interface CategoryCode extends Code {
+  schoolCategoryCode: string;
+}
+
+interface FacilityCode extends Code {
+  facilityTypeCode: string;
+}
+
+interface AddressTypeCode extends Code {
+  addressTypeCode: string;
 }
 
 interface ContactTypeCode {
@@ -45,8 +50,9 @@ export const useAppStore = defineStore('app', {
     districts: [] as District[],
     authorities: [] as Authority[],
     schools: [] as School[],
-    districtContactTypeCodes: [] as DistrictContactTypeCode[],
     categoryCodes: [] as CategoryCode[],
+    facilityCodes: [] as FacilityCode[],
+    addressTypeCodes: [] as AddressTypeCode[],
     contactTypeCodes: [] as ContactTypeCode[],
   }),
   actions: {
@@ -125,12 +131,12 @@ export const useAppStore = defineStore('app', {
     },
     setCodes(): void {
       // set district contact type codes
-      InstituteService.getDistrictContactTypeCodes().then((response) => {
-        this.districtContactTypeCodes = response.data
-      })
-      .catch((error) => {
-        console.error(error)
-      })
+      // InstituteService.getDistrictContactTypeCodes().then((response) => {
+      //   this.districtContactTypeCodes = response.data
+      // })
+      // .catch((error) => {
+      //   console.error(error)
+      // })
 
       // set category codes
       InstituteService.getCategoryCodes().then((response) => {
@@ -139,8 +145,23 @@ export const useAppStore = defineStore('app', {
         console.error(error)
       })
 
+      // set facility type codes
+      InstituteService.getFacilityCodes().then((response) => {
+        this.facilityCodes = response.data
+      }).catch((error) => {
+        console.error(error)
+      })
+
+      // set contact type codes for Districts, Authorities, and Schools
       InstituteService.getContactTypeCodes().then((response) => {
         this.contactTypeCodes = response.data
+      }).catch((error) => {
+        console.error(error)
+      })
+
+      // set address type codes for institute addresses
+      InstituteService.getAddressTypeCodes().then((response) => {
+        this.addressTypeCodes = response.data
       }).catch((error) => {
         console.error(error)
       })
@@ -180,20 +201,32 @@ export const useAppStore = defineStore('app', {
       return state.contactTypeCodes
     },
     getDistrictContactTypeCodes: (state) => {
-      return state.districtContactTypeCodes
+      return state.contactTypeCodes.codesList.districtContactTypeCodes
     },
-    getDistrictContactTypeCodesLabel: (state) => {
-      return (searchCode: string | String) => state.districtContactTypeCodes.find((contactCode) => searchCode === contactCode.districtContactTypeCode)?.label
+    getDistrictContactTypeCodeLabel: (state) => {
+      return (searchCode: string | String) => state.contactTypeCodes.codesList.districtContactTypeCodes.find((contactCode) => searchCode === contactCode.districtContactTypeCode)?.label
     },
     getAllDistrictContactTypeCodesLabel: (state) => {
-      const sortedTypeCode = state.districtContactTypeCodes.map(item => item.label).sort();
+      const sortedTypeCode = state.contactTypeCodes.codesList.districtContactTypeCodes.map(item => item.label).sort();
       return sortedTypeCode;
     },
     getCategoryCodes: (state) => {
       return state.categoryCodes
     },
-    getCategoryCodesLabel: (state) => {
+    getCategoryCodeLabel: (state) => {
       return (searchCode: string | String ) => state.categoryCodes.find((categoryCode) => searchCode === categoryCode.schoolCategoryCode)?.label
-    }
+    },
+    getFacilityCodes: (state) => {
+      return state.facilityCodes
+    },
+    getFacilityCodeLabel: (state) => {
+      return (searchCode: string | String ) => state.facilityCodes.find((facilityTypeCode) => searchCode === facilityTypeCode.facilityTypeCode)?.label
+    },
+    getAddressTypeCodes: (state) => {
+      return state.addressTypeCodes
+    },
+    getAddressTypeCodeLabel: (state) => {
+      return (searchCode: string | String) => state.addressTypeCodes.find((addressTypeCode) => searchCode === addressTypeCode.addressTypeCode)?.label
+    },
   }
 });
