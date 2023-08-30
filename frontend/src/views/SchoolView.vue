@@ -26,8 +26,10 @@
           <span v-if="schoolData.value.facilityTypeCode"
             >{{ schoolData.value.facilityTypeCode }} SCHOOL<br
           /></span>
-          <span v-if="schoolData.value.grades">Grades {{ schoolData.value.grades }}</span
-          ><br />
+          <div v-if="schoolData.value.grades">
+            Grades: <span v-for="item in schoolData.value.grades">{{ item }},</span>
+          </div>
+          <br />
           <span v-if="schoolData.value.schoolCategoryCode"
             >{{ schoolData.value.schoolCategoryCode }} SCHOOL</span
           >
@@ -54,6 +56,7 @@ const schoolData = reactive({ value: {} })
 const filteredContacts = ref([])
 const filteredAddresses = reactive({ value: {} })
 const districtInfo = reactive({ value: {} })
+const grades = reactive([])
 const headers = [
   { title: 'Contact', key: 'jobTitle' },
   { title: 'First Name', key: 'firstName' },
@@ -69,16 +72,17 @@ onBeforeMount(async () => {
   try {
     const response = await InstituteService.getSchool(selectedSchoolId)
     schoolData.value = response.data
+    //setting district name and number
     if (schoolData.value.districtId) {
       districtInfo.value = appStore.getDistrictByDistrictId(String(schoolData.value.districtId))
     }
-    console.log(districtInfo.value)
+    //setting school address
     if (response.data) {
       if (response.data.addresses.length > 0) {
-        // console.log(response.data)
         filteredAddresses.value = response.data.addresses[0]
       }
     }
+    //setting school contacts
     if (response.data) {
       if (response.data.contacts.length > 0) {
         filteredContacts.value = response.data.contacts
@@ -89,9 +93,17 @@ onBeforeMount(async () => {
       }
     }
     // Formats the grades
-    if (schoolData.value) {
-      if (schoolData.value.grades.length > 0) {
-        schoolData.value.grades = appStore.extractGradeCodes(schoolData.value.grades)
+    if (response.data) {
+      if (response.data.grades.length > 0) {
+        grades.value = appStore.getGradeByGradeCodes
+        for (const obj1 of appStore.getGradeByGradeCodes) {
+          const index = schoolData.value.grades.findIndex(
+            (obj2) => obj2.schoolGradeCode === obj1.schoolGradeCode
+          )
+          if (index !== -1) {
+            schoolData.value.grades[index] = obj1.label
+          }
+        }
       } else {
         schoolData.value.grades = '- N/A'
       }

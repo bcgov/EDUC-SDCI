@@ -165,11 +165,11 @@ export const useAppStore = defineStore('app', {
       })
 
       // set address type codes for institute addresses
-      InstituteService.getAddressTypeCodes().then((response) => {
-        this.addressTypeCodes = response.data
-      }).catch((error) => {
-        console.error(error)
-      })
+      // InstituteService.getAddressTypeCodes().then((response) => {
+      //   this.addressTypeCodes = response.data
+      // }).catch((error) => {
+      //   console.error(error)
+      // })
       InstituteService.getGradeCodes().then((response) => {
         this.gradeCodes = response.data
       }).catch((error) => {
@@ -179,6 +179,7 @@ export const useAppStore = defineStore('app', {
 
   },
   getters: {
+
     // Districts
     getDistricts: (state) => {
       return state.districts
@@ -207,6 +208,9 @@ export const useAppStore = defineStore('app', {
       return () => state.schools
     },
     // Codes
+    getGradeByGradeCodes: (state) => {
+      return state.gradeCodes
+    },
     getContactTypeCodes: (state) => {
       return state.contactTypeCodes
     },
