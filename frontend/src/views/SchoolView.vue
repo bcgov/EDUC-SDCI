@@ -72,10 +72,8 @@ onBeforeMount(async () => {
     if (schoolData.value.districtId) {
       districtInfo.value = appStore.getDistrictByDistrictId(String(schoolData.value.districtId))
     }
-    console.log(districtInfo.value)
     if (response.data) {
       if (response.data.addresses.length > 0) {
-        // console.log(response.data)
         filteredAddresses.value = response.data.addresses[0]
       }
     }

@@ -10,18 +10,11 @@ const path = require('path');
 const {isSafeFilePath} = require("../components/utils")
 const { listCache } = require("../components/cache");
 
-
 const FILE_STORAGE_DIR = path.join(__dirname, '../..', 'public');
-
-
 
 router.get('/excel/*', checkToken, getData, addDistrictLabels, createExcelDownload, getExcelDownload);
 
-
-
-
 async function createExcelDownload(req,res, next){
-  console.log("CREATE EXCEL")
     try {
     const filepath = req.query.filepath;
 
@@ -50,7 +43,6 @@ async function createExcelDownload(req,res, next){
 }
 async function writeFileAsync(filePath, data, encoding) {
   return new Promise((resolve, reject) => {
-    console.log("WRITE EXCEL")  
     fs.writeFile(filePath, data, encoding, (error) => {
       if (error) {
         reject(error);
@@ -101,7 +93,6 @@ async function addDistrictLabels(req, res, next) {
 
 
 async function getData(req, res,next){
-  console.log("GETDATA")
   try {
     const url = `${config.get('server:instituteAPIURL')}` + req.url.replace('/excel', '');
     const response = await axios.get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } });
