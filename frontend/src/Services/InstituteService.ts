@@ -6,6 +6,7 @@ export default {
   getDistricts(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/district/list');
   },
+  //DO NOT USE; TODO: Factor this out and use getDistrictView instead
   getDistrict(districtId: string): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/district/'+districtId);
   },
@@ -36,6 +37,13 @@ export default {
   getGradeCodes(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/grade-codes');
   },
+  getAddressTypeCodes(): Promise<AxiosResponse> {
+    return ApiService.apiAxios.get('/api/v1/institute/address-type-codes');
+  },
+  // searchSchools(req: any): Promise<AxiosResponse> {
+  //   console.log(req.searchCriteriaList)
+  //   return ApiService.apiAxios.get('/api/v1/institute/school/paginated?pageSize=10&searchCriteriaList=' + req.searchCriteriaList);
+  // },
   searchSchools(req: any): Promise<AxiosResponse> {
     const searchCriteriaList = req.searchCriteriaList || '';
     const pageSize = req.pageSize.value || ''; // Set a default value if not provided
