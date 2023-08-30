@@ -58,7 +58,7 @@
                 <p>Facility Code: {{ item.selectable.facilityTypeCode }}</p>
                 <p>
                   District:
-                  <router-link :to="`/district/District${item.selectable.districtId}`">
+                  <router-link :to="`/district/${item.selectable.districtId}`">
                     View District
                   </router-link>
                 </p>
@@ -150,7 +150,6 @@ const handleUpdate = async (options) => {
   currentPage.value = options.page || currentPage.value
   itemsPerPage.value = options.perPage || itemsPerPage.value
   if (isProxy(options.sortBy)) {
-    console.log('is proxy')
     const sortby = toRaw(options.sortBy)
     itemsSort.value = sortby[0]
   }
@@ -213,7 +212,6 @@ const expanded = ref([])
 const searchSchools = async () => {
   // Filter schools based on selected filters
   let currentDate = new Date().toISOString().substring(0, 19)
-  console.log(currentDate)
   const params = [
     {
       condition: null,

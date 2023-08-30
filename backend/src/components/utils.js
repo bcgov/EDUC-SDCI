@@ -43,7 +43,6 @@ function createList(list, fields) {
       });
   }
   function addDistrictLabels(jsonData, districtList) {
-  
       if (jsonData.content && Array.isArray(jsonData.content)) {
         jsonData.content.forEach(dataItem => {
           const district = districtList.find(item => item.districtId === dataItem.districtId);

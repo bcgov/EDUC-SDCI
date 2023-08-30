@@ -24,7 +24,6 @@ export default {
     function handleButtonClick() {
       const test = appStore.convertToCSV(appStore.getDistrictList)
       appStore.exportCSV(test)
-      console.log('Button clicked!');
     }
     return {
       districts,

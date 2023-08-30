@@ -76,7 +76,6 @@ const headers = [
 const downloadCSV = () => {
   const convertedList = appStore.convertToCSV(filteredContacts.value)
   appStore.exportCSV(convertedList)
-  console.log('Button clicked!')
 }
 // const loading = ref(false)
 const resetContactFilters = () => {
@@ -90,7 +89,6 @@ const resetContactFilters = () => {
 const searchContact = async () => {
   // Filter contacts based on selected filters
   let currentDate = new Date().toISOString().substring(0, 19)
-  console.log(currentDate)
   const params = [
     {
       condition: null,
@@ -118,7 +116,6 @@ const searchContact = async () => {
 
   try {
     const searchResults = await InstituteService.searchContactByType(req)
-    console.log(searchResults)
     filteredContacts.value = searchResults.data.content
     results.value = searchResults.data.totalElements
     // Update current page and total pages

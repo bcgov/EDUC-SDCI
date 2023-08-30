@@ -35,7 +35,6 @@ async function removeItemsFromDistrictDataResponse(response, itemsToRemove) {
 
 async function getDistrictCodes(req) {
   if (!listCache.has("districtCodesList")) {
-    console.log("GETTING DISTRICT CODES")
     const url = `${config.get('server:instituteAPIURL')}/institute/district-contact-type-codes`; // Update the URL according to your API endpoint
     try {
       const response = await axios.get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } });
@@ -46,7 +45,6 @@ async function getDistrictCodes(req) {
       log.error('getDistrictList Error', e.response ? e.response.status : e.message);
     }
   } else {
-    console.log("USING DISTRICT LIST CACHE")
     const districtCodeList = await listCache.get("districtCodesList");
     return districtCodeList;
   }

@@ -8,7 +8,6 @@ const appStore = useAppStore()
 const selectedAuthority = ref('')
 
 function goToAuthority() {
-  console.log('goTOAuthority() pressed')
   router.push({
     name: 'authority',
     params: {
