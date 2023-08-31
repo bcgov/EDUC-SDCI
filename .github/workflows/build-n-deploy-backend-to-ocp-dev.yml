@@ -1,5 +1,4 @@
 name: Build & Deploy to DEV
-
 env:
   # 🖊️ EDIT your repository secrets to log into your OpenShift cluster and set up the context.
   # See https://github.com/redhat-actions/oc-login#readme for how to retrieve these values.
@@ -46,9 +45,7 @@ env:
   HOST_ROUTE: ${{ secrets.SITE_URL }}
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   build-and-deploy-dev:
