@@ -40,10 +40,7 @@ export default {
   getAddressTypeCodes(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/address-type-codes');
   },
-  // searchSchools(req: any): Promise<AxiosResponse> {
-  //   console.log(req.searchCriteriaList)
-  //   return ApiService.apiAxios.get('/api/v1/institute/school/paginated?pageSize=10&searchCriteriaList=' + req.searchCriteriaList);
-  // },
+
   searchSchools(req: any): Promise<AxiosResponse> {
     const searchCriteriaList = req.searchCriteriaList || '';
     const pageSize = req.pageSize.value || ''; // Set a default value if not provided
