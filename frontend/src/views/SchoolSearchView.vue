@@ -46,19 +46,19 @@
       @update:options="handleUpdate"
     >
       <template v-slot:item.displayName="{ item }">
-        <a :href="`/school/${item.selectable.schoolId}`">{{ item.selectable.displayName }}</a>
+        <a :href="`/school/${item.columns.schoolId}`">{{ item.columns.displayName }}</a>
       </template>
       <template v-slot:expanded-row="{ columns, item }">
         <tr>
           <td :colspan="columns.length">
             <v-card>
-              <v-card-title> {{ item.selectable.displayName }} School Information </v-card-title>
+              <v-card-title> {{ item.columns.displayName }} School Information </v-card-title>
               <v-card-text>
-                <p>Category Code: {{ item.selectable.schoolCategoryCode }}</p>
-                <p>Facility Code: {{ item.selectable.facilityTypeCode }}</p>
+                <p>Category Code: {{ item.columns.schoolCategoryCode }}</p>
+                <p>Facility Code: {{ item.columns.facilityTypeCode }}</p>
                 <p>
                   District:
-                  <router-link :to="`/district/${item.selectable.districtId}`">
+                  <router-link :to="`/district/${item.columns.districtId}`">
                     View District
                   </router-link>
                 </p>
@@ -67,7 +67,7 @@
                   <v-container>
                     <v-row>
                       <v-col
-                        v-for="(grade, index) in item.selectable.grades"
+                        v-for="(grade, index) in item.columns.grades"
                         :key="index"
                         cols="12"
                         md="4"
@@ -129,23 +129,23 @@ const cities = ref([])
 const types = ref([])
 const grades = ref([])
 
-const selectedJurisdiction = ref(null)
-const selectedCity = ref(null)
-const selectedType = ref(null)
-const selectedGrade = ref(null)
-const results = ref(0)
-const currentPage = ref(1)
-const itemsPerPage = ref(10)
-const itemsSort = ref('')
-const totalPages = ref(0)
-const loading = ref(false)
-const handlePageChange = async (page) => {
+const selectedJurisdiction = ref<any>(null)
+const selectedCity = ref<any>(null)
+const selectedType = ref<any>(null)
+const selectedGrade = ref<any>(null)
+const results = ref<any>(0)
+const currentPage = ref<any>(1)
+const itemsPerPage = ref<any>(10)
+const itemsSort = ref<any>('')
+const totalPages = ref<any>(0)
+const loading = ref<any>(false)
+const handlePageChange = async (page: any) => {
   loading.value = true
   currentPage.value = page
   await searchSchools()
   loading.value = false
 }
-const handleUpdate = async (options) => {
+const handleUpdate = async (options: any) => {
   loading.value = true
   currentPage.value = options.page || currentPage.value
   itemsPerPage.value = options.perPage || itemsPerPage.value
@@ -212,7 +212,7 @@ const expanded = ref([])
 const searchSchools = async () => {
   // Filter schools based on selected filters
   let currentDate = new Date().toISOString().substring(0, 19)
-  const params = [
+  const params: any = [
     {
       condition: null,
       searchCriteriaList: []

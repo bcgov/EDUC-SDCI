@@ -5,7 +5,7 @@ import { useAppStore } from '@/stores/app'
 import { useRoute } from 'vue-router'
 
 const appStore = useAppStore()
-const authorityId = ref(null) // Initialize with null initially
+const authorityId = ref<any>(null) // Initialize with null initially
 
 const authority = reactive({ value: {} })
 

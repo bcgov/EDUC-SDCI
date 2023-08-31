@@ -6,7 +6,7 @@ import { createPinia } from 'pinia'
 
 // Vuetify
 import 'vuetify/styles'
-import { createVuetify, ThemeDefinition } from 'vuetify'
+import { createVuetify, type ThemeDefinition } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import * as labsComponents from 'vuetify/labs/components'
@@ -16,7 +16,7 @@ import { aliases, mdi } from "vuetify/iconsets/mdi"
 import '@mdi/font/css/materialdesignicons.css'
 
 import App from './App.vue'
-import router from './router/index.ts'
+import router from './router/index'
 
 // define custom theme
 const bcGovTheme: ThemeDefinition = {

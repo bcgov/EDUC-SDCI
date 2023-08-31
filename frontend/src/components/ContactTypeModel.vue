@@ -89,7 +89,7 @@ const resetContactFilters = () => {
 const searchContact = async () => {
   // Filter contacts based on selected filters
   let currentDate = new Date().toISOString().substring(0, 19)
-  const params = [
+  const params: any = [
     {
       condition: null,
       searchCriteriaList: []
