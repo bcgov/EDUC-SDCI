@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useAppStore } from '@/stores/app'
+import { formatPostalCode } from '@/utils/common'
 
 const appStore = useAppStore()
 
@@ -13,12 +14,10 @@ const props = defineProps<{
   postal: String
 }>()
 
-console.log('address component - ', props)
-
 // TODO: Move to common utils file
-function formatPostal(postal) {
-  return postal?.toUpperCase().replace(/(...)/, '$1')
-}
+// function formatPostal(postal) {
+//   return postal?.toUpperCase().replace(/(...)/, '$1')
+// }
 </script>
 
 <template>
@@ -29,6 +28,6 @@ function formatPostal(postal) {
     <p class="text-capitalize">{{ addressLine1?.toLowerCase() }}</p>
     <p class="text-capitalize">{{ addressLine2?.toLowerCase() }}</p>
     <p class="text-capitalize">{{ city?.toLowerCase() }}, {{ provinceCode }}</p>
-    <p>{{ formatPostal(postal) }}</p>
+    <p>{{ formatPostalCode(postal) }}</p>
   </div>
 </template>

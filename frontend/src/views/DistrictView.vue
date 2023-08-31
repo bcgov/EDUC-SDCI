@@ -3,16 +3,24 @@ import InstituteService from '@/services/InstituteService'
 import { ref, reactive, onMounted, computed, toValue } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { useRoute } from 'vue-router'
+import { formatPhoneNumber } from '@/utils/common'
 
 // import common components
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
 
 const appStore = useAppStore()
-const districtId = ref(null) // Initialize with null initially
+const districtId = ref<string | null>(null) // Initialize with null initially
 
-const district = reactive({ value: {} })
-const districtContactTypeCodes = reactive({ value: {} })
-const contactTypeCodes = reactive({ value: {} })
+// TODO: create separate types definition file
+// interface District {
+//   districtId: string
+//   displayName: string
+//   districtNumber: string
+// }
+
+const district = reactive({ value: {} as any })
+//const districtContactTypeCodes = reactive({ value: {} })
+//const contactTypeCodes = reactive({ value: {} })
 
 const tabOptions = {
   contacts: 1,
@@ -40,15 +48,17 @@ const schoolHeaders = [
   { title: 'Website', key: 'website' }
 ]
 
+const schoolSearch = ref('')
+const contactSearch = ref('')
+
 onMounted(async () => {
   const route = useRoute()
-  // Set the districtId inside the onMounted hook
-  districtId.value = appStore.getDistrictByDistrictNumber(
-    String(route.params.districtNumber)
-  )?.districtId
+  // Set the districtId inside the onMounted hook; null if districtId not found
+  districtId.value =
+    appStore.getDistrictByDistrictNumber(String(route.params.districtNumber))?.districtId ?? null
   // get district data
   try {
-    const response = await InstituteService.getDistrictView(districtId.value)
+    const response = await InstituteService.getDistrictView(districtId.value as string)
     district.value = response.data
   } catch (error) {
     console.error(error)
@@ -66,23 +76,28 @@ onMounted(async () => {
 <template>
   <div>
     <v-sheet>
-      <h2>
+      <h2 class="mt-3 mb-2">
         {{ district.value.districtData?.districtNumber }} -
         {{ district.value.districtData?.displayName }}
       </h2>
       <v-row v-if="district.value.districtData">
-        <v-col v-for="item in district.value.districtData.addresses">
-          <DisplayAddress v-bind="item" />
-        </v-col>
         <v-col>
-          <p><strong>Phone:</strong> {{ district.value.districtData?.phoneNumber }}</p>
-          <p><strong>Fax:</strong> {{ district.value.districtData?.faxNumber }}</p>
+          <p>
+            <strong>Phone:</strong>
+            {{ formatPhoneNumber(district.value.districtData?.phoneNumber) }}
+          </p>
+          <p>
+            <strong>Fax:</strong> {{ formatPhoneNumber(district.value.districtData?.faxNumber) }}
+          </p>
           <p><strong>Email:</strong> {{ district.value.districtData?.email }}</p>
           <p>
             <a :href="district.value.districtData?.website">{{
               district.value.districtData?.website
             }}</a>
           </p>
+        </v-col>
+        <v-col v-for="item in district.value.districtData.addresses">
+          <DisplayAddress v-bind="item" />
         </v-col>
         <v-col>
           <v-btn class="text-none text-subtitle-1 ma-1" variant="flat"
@@ -104,12 +119,19 @@ onMounted(async () => {
     <v-card-text>
       <v-window v-model="tab">
         <!-- District Contacts tab contents -->
-        <v-window-item :value="tabOptions.contacts"
-          >CONTACTS
+        <v-window-item :value="tabOptions.contacts">
+          <v-text-field
+            v-model="contactSearch"
+            append-icon="mdi-magnify"
+            label="Filter District Contacts"
+            single-line
+            hide-details
+          ></v-text-field>
           <v-data-table
             items-per-page="-1"
             :headers="contactHeaders"
             :items="district.value.districtData?.contacts"
+            :search="contactSearch"
           >
             <template v-slot:item.firstName="{ item }">
               {{ item.selectable.firstName }} {{ item.selectable.lastName }}
@@ -124,15 +146,26 @@ onMounted(async () => {
                 appStore.getDistrictContactTypeCodeLabel(item.selectable.districtContactTypeCode)
               }}
             </template>
+
+            <template v-slot:item.phoneNumber="{ item }">
+              {{ formatPhoneNumber(item.selectable.phoneNumber) }}
+            </template>
           </v-data-table>
         </v-window-item>
         <!-- District Schools tab contents -->
-        <v-window-item :value="tabOptions.schools"
-          >SCHOOLS
+        <v-window-item :value="tabOptions.schools">
+          <v-text-field
+            v-model="schoolSearch"
+            append-icon="mdi-magnify"
+            label="Filter District Schools"
+            single-line
+            hide-details
+          ></v-text-field>
           <v-data-table
             items-per-page="-1"
             :headers="schoolHeaders"
             :items="district.value.districtSchools"
+            :search="schoolSearch"
           >
             <template v-slot:item.schoolCategoryCode="{ item }">
               {{ appStore.getCategoryCodeLabel(item.selectable.schoolCategoryCode) }}
@@ -149,12 +182,21 @@ onMounted(async () => {
             <template v-slot:item.website="{ item }">
               <a :href="item.selectable.website">{{ item.selectable.website }}</a>
             </template>
+
+            <template v-slot:item.phoneNumber="{ item }">
+              {{ formatPhoneNumber(item.selectable.phoneNumber) }}
+            </template>
+
+            <template v-slot:item.faxNumber="{ item }">
+              {{ formatPhoneNumber(item.selectable.faxNumber) }}
+            </template>
           </v-data-table>
         </v-window-item>
       </v-window>
     </v-card-text>
 
     <!-- DEBUG panels for development; remove in TEST and higher -->
+
     <v-expansion-panels id="ui-debug" class="debug">
       <v-expansion-panel title="DEBUG: District JSON">
         <v-expansion-panel-text>
