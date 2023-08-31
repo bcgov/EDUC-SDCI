@@ -6,7 +6,7 @@ import { useSanitizeURL } from '@/composables/string'
 import ContactTypeModal from '@/components/ContactTypeModel.vue'
 const appStore = useAppStore()
 
-const selectedDistrict = ref('') // placeholder
+const selectedDistrict = ref<any>('') // placeholder
 function goToDistrict() {
   router.push({
     name: 'district',
