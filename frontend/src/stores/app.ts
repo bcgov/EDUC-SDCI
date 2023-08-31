@@ -47,7 +47,7 @@ interface GradeCode {
   label: string,
   description: string,
 }
-import InstituteService from '../services/InstituteService'
+import InstituteService from '@/services/InstituteService'
 
 export const useAppStore = defineStore('app', {
   state: () => ({
