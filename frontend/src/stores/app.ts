@@ -37,10 +37,19 @@ interface AddressTypeCode extends Code {
   addressTypeCode: string;
 }
 
-interface ContactTypeCode {
+interface DistrictContactTypeCode extends Code {
+  districtContactTypeCode: string;
+}
+
+interface CodesList {
   authorityContactTypeCodes: [],
-  districtContactTypeCodes: [];
+  districtContactTypeCodes: DistrictContactTypeCode[];
   schoolContactTypeCodes: [];
+}
+
+interface ContactTypeCode {
+  codesList: CodesList,
+
 }
 interface GradeCode {
   schoolGradeCode: string,
@@ -57,11 +66,11 @@ export const useAppStore = defineStore('app', {
     categoryCodes: [] as CategoryCode[],
     facilityCodes: [] as FacilityCode[],
     addressTypeCodes: [] as AddressTypeCode[],
-    contactTypeCodes: [] as ContactTypeCode[],
+    contactTypeCodes: {} as ContactTypeCode,
     gradeCodes: [] as GradeCode[]
   }),
   actions: {
-    convertToCSV(jsonArray) {
+    convertToCSV(jsonArray: any) {
       let csvContent = "";
       if (jsonArray.length === 0) {
         return csvContent;
@@ -70,7 +79,7 @@ export const useAppStore = defineStore('app', {
       const headers = Object.keys(jsonArray[0]);
       csvContent += headers.join(",") + "\n";
       // Extract values
-      jsonArray.forEach((item) => {
+      jsonArray.forEach((item: any) => {
         const values = headers.map((header) => {
           const value = item[header];
           return typeof value === "string" ? `"${value}"` : value;
@@ -79,7 +88,7 @@ export const useAppStore = defineStore('app', {
       });
       return csvContent;
     },
-    exportCSV(csvData) {
+    exportCSV(csvData: any) {
         // Create a blob with the CSV data
         const blob = new Blob([csvData], { type: 'text/csv' });
         // Create a temporary anchor element to trigger the file download
@@ -88,10 +97,10 @@ export const useAppStore = defineStore('app', {
         a.download = 'output.csv';
         a.click();
     },
-    extractGradeCodes(data) {
-      const gradeCodes = data.map(item => item.schoolGradeCode).sort();
+    extractGradeCodes(data: any) {
+      const gradeCodes = data.map((item: any) => item.schoolGradeCode).sort();
       // Extract numeric portion of grade codes and convert to numbers
-      const numericGrades = gradeCodes.map(code => parseInt(code.match(/\d+/)[0], 10));
+      const numericGrades = gradeCodes.map((code: any) => parseInt(code.match(/\d+/)[0], 10));
       // Find the minimum and maximum grades
       const minGrade = Math.min(...numericGrades);
       const maxGrade = Math.max(...numericGrades);
@@ -210,29 +219,29 @@ export const useAppStore = defineStore('app', {
       return state.contactTypeCodes.codesList.districtContactTypeCodes
     },
     getDistrictContactTypeCodeLabel: (state) => {
-      return (searchCode: string | String) => state.contactTypeCodes.codesList.districtContactTypeCodes.find((contactCode) => searchCode === contactCode.districtContactTypeCode)?.label
+      return (searchCode: string ) => state.contactTypeCodes.codesList.districtContactTypeCodes.find((contactCode: any) => searchCode === contactCode.districtContactTypeCode)?.label
     },
     getAllDistrictContactTypeCodesLabel: (state) => {
-      const sortedTypeCode = state.contactTypeCodes.codesList.districtContactTypeCodes.map(item => item.label).sort();
+      const sortedTypeCode = state.contactTypeCodes.codesList.districtContactTypeCodes.map((item: any) => item.label).sort();
       return sortedTypeCode;
     },
     getCategoryCodes: (state) => {
       return state.categoryCodes
     },
     getCategoryCodeLabel: (state) => {
-      return (searchCode: string | String ) => state.categoryCodes.find((categoryCode) => searchCode === categoryCode.schoolCategoryCode)?.label
+      return (searchCode: string ) => state.categoryCodes.find((categoryCode) => searchCode === categoryCode.schoolCategoryCode)?.label
     },
     getFacilityCodes: (state) => {
       return state.facilityCodes
     },
     getFacilityCodeLabel: (state) => {
-      return (searchCode: string | String ) => state.facilityCodes.find((facilityTypeCode) => searchCode === facilityTypeCode.facilityTypeCode)?.label
+      return (searchCode: string ) => state.facilityCodes.find((facilityTypeCode) => searchCode === facilityTypeCode.facilityTypeCode)?.label
     },
     getAddressTypeCodes: (state) => {
       return state.addressTypeCodes
     },
     getAddressTypeCodeLabel: (state) => {
-      return (searchCode: string | String) => state.addressTypeCodes.find((addressTypeCode) => searchCode === addressTypeCode.addressTypeCode)?.label
+      return (searchCode: string ) => state.addressTypeCodes.find((addressTypeCode) => searchCode === addressTypeCode.addressTypeCode)?.label
     },
   }
 });
