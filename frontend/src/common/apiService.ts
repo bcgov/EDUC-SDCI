@@ -31,7 +31,7 @@ const intercept = apiAxios.interceptors.response.use(
     return new Promise<AxiosResponse>((resolve, reject) => {
       resolve(axios(originalRequest));
     }).catch((e) => {
-      reject(e);
+      console.log(e)
     });
   }
 );
