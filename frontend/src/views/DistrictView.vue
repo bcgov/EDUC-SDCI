@@ -96,7 +96,7 @@ onMounted(async () => {
             }}</a>
           </p>
         </v-col>
-        <v-col v-for="item in district.value.districtData.addresses">
+        <v-col v-for="item in district.value.districtData.addresses" :key="item.id">
           <DisplayAddress v-bind="item" />
         </v-col>
         <v-col>
