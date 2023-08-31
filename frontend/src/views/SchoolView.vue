@@ -46,7 +46,7 @@
     </v-card>
   </div>
 </template>
-<script setup>
+<script setup lang="ts">
 import { reactive, onMounted, onBeforeMount, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import InstituteService from '@/services/InstituteService'
