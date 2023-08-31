@@ -180,7 +180,7 @@ export const useAppStore = defineStore('app', {
       return state.districts.map((district) => {return {districtNumber: district.districtNumber, displayName: district.displayName}})
     },
     getDistrictByDistrictId: (state) => {
-      return (districtId: string,authorityNumber: authority.authorityNumber, displayName: authority.displayName) => state.districts.find((district) => districtId === district.districtId)
+      return (districtId: string) => state.districts.find((district) => districtId === district.districtId)
     },
     getDistrictByDistrictNumber: (state) => {
       return (distNum: String): District | undefined => state.districts.find((district: District): Boolean => distNum === district.districtNumber)
