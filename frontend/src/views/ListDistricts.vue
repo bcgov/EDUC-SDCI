@@ -3,7 +3,7 @@
     <h1>Districts</h1>
     <p>App.vue on start up accesses the institute api and store the response using pinia.
     ListDistricts.vue uses the stored response from pinia store</p>
-    <p style="float:left; height: 200px; width:300px overflow: scroll">
+    <p style="float:left; height: 200px; width:300px; overflow: scroll">
       <ul>
         <li v-for="district in districts" :key="district.districtId">{{ district.displayName }}</li>
       </ul>
@@ -11,28 +11,21 @@
     </p>
   </div>
 </template>
-<script>
 
+<script setup lang="ts">
 import { useAppStore } from '@/stores/app'
 import { storeToRefs } from 'pinia'
 
-export default {
-  setup() {
-    const appStore = useAppStore()
-    const { districts } = storeToRefs(appStore);
+const appStore = useAppStore()
+const { districts } = storeToRefs(appStore)
 
-    function handleButtonClick() {
-      const test = appStore.convertToCSV(appStore.getDistrictList)
-      appStore.exportCSV(test)
-    }
-    return {
-      districts,
-      handleButtonClick
-    }
-  }
+function handleButtonClick(): void {
+  const test = appStore.convertToCSV(appStore.getDistrictList)
+  appStore.exportCSV(test)
 }
 </script>
-<style>
+
+<style scoped>
 @media (min-width: 1024px) {
   .about {
     min-height: 100vh;
