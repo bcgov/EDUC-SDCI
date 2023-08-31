@@ -135,14 +135,6 @@ export const useAppStore = defineStore('app', {
 
     },
     setCodes(): void {
-      // set district contact type codes
-      // InstituteService.getDistrictContactTypeCodes().then((response) => {
-      //   this.districtContactTypeCodes = response.data
-      // })
-      // .catch((error) => {
-      //   console.error(error)
-      // })
-
       // set category codes
       InstituteService.getCategoryCodes().then((response) => {
         this.categoryCodes = response.data
@@ -191,7 +183,7 @@ export const useAppStore = defineStore('app', {
       return (districtId: string,authorityNumber: authority.authorityNumber, displayName: authority.displayName) => state.districts.find((district) => districtId === district.districtId)
     },
     getDistrictByDistrictNumber: (state) => {
-      return (distNum: string | String) => state.districts.find((district) => distNum === district.districtNumber)
+      return (distNum: String): District | undefined => state.districts.find((district: District): Boolean => distNum === district.districtNumber)
     },
     // Independent Authorities
     getAuthorities: (state) => {
