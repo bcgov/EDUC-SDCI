@@ -27,7 +27,7 @@
             >{{ schoolData.value.facilityTypeCode }} SCHOOL<br
           /></span>
           <div v-if="schoolData.value.grades">
-            Grades: <span v-for="item in schoolData.value.grades">{{ item }},</span>
+            Grades: <span v-for="item in schoolData.value.grades" :key="item.id">{{ item }},</span>
           </div>
           <br />
           <span v-if="schoolData.value.schoolCategoryCode"
@@ -68,9 +68,9 @@ const headers = [
 ]
 onBeforeMount(async () => {
   const route = useRoute()
-  const selectedSchoolId = route.params.schoolId
+  const selectedSchoolId: string | string[] = route.params.schoolId
   try {
-    const response = await InstituteService.getSchool(selectedSchoolId)
+    const response = await InstituteService.getSchool(selectedSchoolId as string)
     schoolData.value = response.data
     //setting district name and number
     if (schoolData.value.districtId) {
