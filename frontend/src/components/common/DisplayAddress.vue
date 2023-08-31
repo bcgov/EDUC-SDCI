@@ -5,13 +5,13 @@ import { formatPostalCode } from '@/utils/common'
 const appStore = useAppStore()
 
 const props = defineProps<{
-  addressTypeCode: String
-  addressLine1: String
-  addressLine2: String
-  city: String
-  provinceCode: String
-  countryCode?: String
-  postal: String
+  addressTypeCode: string
+  addressLine1: string
+  addressLine2: string
+  city: string
+  provinceCode: string
+  countryCode?: string
+  postal: string
 }>()
 
 // TODO: Move to common utils file
