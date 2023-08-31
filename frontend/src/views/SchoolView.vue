@@ -52,11 +52,11 @@ import { useRoute } from 'vue-router'
 import InstituteService from '@/services/InstituteService'
 import { useAppStore } from '@/stores/app'
 const appStore = useAppStore()
-const schoolData = reactive({ value: {} })
-const filteredContacts = ref([])
-const filteredAddresses = reactive({ value: {} })
-const districtInfo = reactive({ value: {} })
-const grades = reactive([])
+const schoolData = reactive<any>({ value: {} })
+const filteredContacts = ref<any>([])
+const filteredAddresses = reactive<any>({ value: {} })
+const districtInfo = reactive<any>({ value: {} })
+const grades = reactive<any>([])
 const headers = [
   { title: 'Contact', key: 'jobTitle' },
   { title: 'First Name', key: 'firstName' },
@@ -98,7 +98,7 @@ onBeforeMount(async () => {
         grades.value = appStore.getGradeByGradeCodes
         for (const obj1 of appStore.getGradeByGradeCodes) {
           const index = schoolData.value.grades.findIndex(
-            (obj2) => obj2.schoolGradeCode === obj1.schoolGradeCode
+            (obj2: any) => obj2.schoolGradeCode === obj1.schoolGradeCode
           )
           if (index !== -1) {
             schoolData.value.grades[index] = obj1.label
