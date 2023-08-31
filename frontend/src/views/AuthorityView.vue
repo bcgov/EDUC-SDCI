@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import InstituteService from '@/Services/InstituteService'
+import InstituteService from '@/services/InstituteService'
 import { ref, reactive, onMounted, computed, toValue } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { useRoute } from 'vue-router'

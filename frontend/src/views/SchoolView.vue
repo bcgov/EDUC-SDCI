@@ -49,7 +49,7 @@
 <script setup>
 import { reactive, onMounted, onBeforeMount, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import InstituteService from '@/Services/InstituteService'
+import InstituteService from '@/services/InstituteService'
 import { useAppStore } from '@/stores/app'
 const appStore = useAppStore()
 const schoolData = reactive({ value: {} })
