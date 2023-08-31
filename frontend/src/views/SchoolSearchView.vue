@@ -120,7 +120,7 @@
   </v-container>
 </template>
 
-<script setup type="ts">
+<script setup lang="ts">
 import { ref, onMounted, onBeforeMount, isProxy, toRaw } from 'vue'
 import InstituteService from '@/services/InstituteService'
 
