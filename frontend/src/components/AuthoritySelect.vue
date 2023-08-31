@@ -5,7 +5,7 @@ import router from '@/router'
 import { useSanitizeURL } from '@/composables/string'
 
 const appStore = useAppStore()
-const selectedAuthority = ref('')
+const selectedAuthority = ref<any>('')
 
 function goToAuthority() {
   router.push({

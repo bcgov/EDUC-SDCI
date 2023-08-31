@@ -96,7 +96,7 @@ onMounted(async () => {
             }}</a>
           </p>
         </v-col>
-        <v-col v-for="item in district.value.districtData.addresses">
+        <v-col v-for="item in district.value.districtData.addresses" :key="item.id">
           <DisplayAddress v-bind="item" />
         </v-col>
         <v-col>
@@ -134,21 +134,19 @@ onMounted(async () => {
             :search="contactSearch"
           >
             <template v-slot:item.firstName="{ item }">
-              {{ item.selectable.firstName }} {{ item.selectable.lastName }}
+              {{ item.columns.firstName }} {{ item.columns.lastName }}
             </template>
 
             <template v-slot:item.email="{ item }">
-              <a :href="`mailto:${item.selectable.email}`">{{ item.selectable.email }}</a>
+              <a :href="`mailto:${item.columns.email}`">{{ item.columns.email }}</a>
             </template>
 
             <template v-slot:item.districtContactTypeCode="{ item }">
-              {{
-                appStore.getDistrictContactTypeCodeLabel(item.selectable.districtContactTypeCode)
-              }}
+              {{ appStore.getDistrictContactTypeCodeLabel(item.columns.districtContactTypeCode) }}
             </template>
 
             <template v-slot:item.phoneNumber="{ item }">
-              {{ formatPhoneNumber(item.selectable.phoneNumber) }}
+              {{ formatPhoneNumber(item.columns.phoneNumber) }}
             </template>
           </v-data-table>
         </v-window-item>
@@ -168,27 +166,27 @@ onMounted(async () => {
             :search="schoolSearch"
           >
             <template v-slot:item.schoolCategoryCode="{ item }">
-              {{ appStore.getCategoryCodeLabel(item.selectable.schoolCategoryCode) }}
+              {{ appStore.getCategoryCodeLabel(item.columns.schoolCategoryCode) }}
             </template>
 
             <template v-slot:item.facilityTypeCode="{ item }">
-              {{ appStore.getFacilityCodeLabel(item.selectable.facilityTypeCode) }}
+              {{ appStore.getFacilityCodeLabel(item.columns.facilityTypeCode) }}
             </template>
 
             <template v-slot:item.email="{ item }">
-              <a :href="`mailto:${item.selectable.email}`">{{ item.selectable.email }}</a>
+              <a :href="`mailto:${item.columns.email}`">{{ item.columns.email }}</a>
             </template>
 
             <template v-slot:item.website="{ item }">
-              <a :href="item.selectable.website">{{ item.selectable.website }}</a>
+              <a :href="item.columns.website">{{ item.columns.website }}</a>
             </template>
 
             <template v-slot:item.phoneNumber="{ item }">
-              {{ formatPhoneNumber(item.selectable.phoneNumber) }}
+              {{ formatPhoneNumber(item.columns.phoneNumber) }}
             </template>
 
             <template v-slot:item.faxNumber="{ item }">
-              {{ formatPhoneNumber(item.selectable.faxNumber) }}
+              {{ formatPhoneNumber(item.columns.faxNumber) }}
             </template>
           </v-data-table>
         </v-window-item>
