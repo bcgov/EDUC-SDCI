@@ -12,7 +12,7 @@ SOAM_KC_REALM_ID="master"
 SOAM_KC=soam-$envValue.apps.silver.devops.gov.bc.ca
 siteMinderLogoutUrl=""
 HOST_ROUTE="educ-sdci-${OPENSHIFT_NAMESPACE}-${envValue}.apps.silver.devops.gov.bc.ca"
-SERVER_FRONTEND="https://${envValue}.apps.silver.devops.gov.bc.ca"
+SERVER_FRONTEND="https://educ-sdci-${OPENSHIFT_NAMESPACE}-${envValue}.apps.silver.devops.gov.bc.ca"
 
 if [ "$envValue" = "dev" ]
 then

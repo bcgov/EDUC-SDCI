@@ -32,12 +32,17 @@ app.use(express.static(publicPath));
 app.use(express.static('public'));
 app.use(cors());
 app.use(json2xls.middleware);
+app.get('/api/health', (req, res) => {
+  res.status(200).send('OK');
+});
 app.use(/(\/api)?/, apiRouter);
 
 
 apiRouter.use('/v1/download', downloadRouter);
 apiRouter.use('/v1/institute', instituteRouter);
 apiRouter.use('/v1/district', districtRouter);
+
+
 
 
 //Handle 500 error
