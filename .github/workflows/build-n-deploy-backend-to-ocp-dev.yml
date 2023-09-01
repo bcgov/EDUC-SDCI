@@ -23,7 +23,7 @@ env:
   DOCKER_ARTIFACTORY_REPO: artifacts.developer.gov.bc.ca/docker-remote
   ARTIFACTORY_REPO: artifacts.developer.gov.bc.ca
 
-  APP_NAME: "SDCI"
+  APP_NAME: "sdci"
   REPO_NAME: "educ-sdci"
   BRANCH: "main"
   APP_NAME_BACKEND: "sdci-backend-main"
