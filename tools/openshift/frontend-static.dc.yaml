@@ -109,7 +109,7 @@ objects:
         app: "${APP_NAME}-${BRANCH}"
       name: "${APP_NAME}-frontend-${BRANCH}"
     spec:
-      host: "${HOST_ROUTE}"
+      host: "https://${HOST_ROUTE}"
       port:
         targetPort: 2015-tcp
       tls:
