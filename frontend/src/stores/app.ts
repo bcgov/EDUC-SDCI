@@ -1,4 +1,5 @@
 import { storeToRefs, defineStore } from 'pinia';
+import '@/types/codes.d.ts'
 
 interface District {
   districtId: string;
@@ -21,42 +22,42 @@ interface School {
 
 }
 
-interface Code {
-  label: string;
-  description: string;
-}
+// interface Code {
+//   label: string;
+//   description: string;
+// }
 
-interface CategoryCode extends Code {
-  schoolCategoryCode: string;
-}
+// interface CategoryCode extends Code {
+//   schoolCategoryCode: string;
+// }
 
-interface FacilityCode extends Code {
-  facilityTypeCode: string;
-}
+// interface FacilityCode extends Code {
+//   facilityTypeCode: string;
+// }
 
-interface AddressTypeCode extends Code {
-  addressTypeCode: string;
-}
+// interface AddressTypeCode extends Code {
+//   addressTypeCode: string;
+// }
 
-interface DistrictContactTypeCode extends Code {
-  districtContactTypeCode: string;
-}
+// interface DistrictContactTypeCode extends Code {
+//   districtContactTypeCode: string;
+// }
 
-interface CodesList {
-  authorityContactTypeCodes: [],
-  districtContactTypeCodes: DistrictContactTypeCode[];
-  schoolContactTypeCodes: [];
-}
+// interface CodesList {
+//   authorityContactTypeCodes: [],
+//   districtContactTypeCodes: DistrictContactTypeCode[];
+//   schoolContactTypeCodes: [];
+// }
 
-interface ContactTypeCode {
-  codesList: CodesList,
+// interface ContactTypeCode {
+//   codesList: CodesList,
 
-}
-interface GradeCode {
-  schoolGradeCode: string,
-  label: string,
-  description: string,
-}
+// }
+// interface GradeCode {
+//   schoolGradeCode: string,
+//   label: string,
+//   description: string,
+// }
 import InstituteService from '@/services/InstituteService'
 
 export const useAppStore = defineStore('app', {
