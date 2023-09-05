@@ -8,6 +8,7 @@ RUN chmod 775 /public
 
 WORKDIR /opt/app-root/src
 RUN ln -s /logs .
+RUN ln -s /public .
 
 COPY package*.json ./
 RUN npm ci
