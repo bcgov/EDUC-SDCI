@@ -31,6 +31,7 @@ nconf.defaults({
       maxAge: +process.env.SESSION_MAX_AGE
     },
     instituteAPIURL: process.env.INSTITUTE_API_URL,
+    instituteAPITokenExpiry: process.env.INSTITUTE_API_EXPIRY
   },
   oidc: {
     clientId: process.env.SOAM_CLIENT_ID,
