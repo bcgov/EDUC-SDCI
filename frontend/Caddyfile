@@ -28,7 +28,6 @@ header {
 @unspecified_path {
 	not path_regexp ^\/0.0.0.0
 	not path /api/*
-	not path /download/*
 }
 handle @unspecified_path {
 	try_files {path} {path}/ /?_url={uri}
