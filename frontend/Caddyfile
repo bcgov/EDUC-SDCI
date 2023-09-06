@@ -42,3 +42,4 @@ log {
 }
 
 reverse_proxy /api/* {$HOST_ROUTE}
+reverse_proxy /download/* {$HOST_ROUTE}

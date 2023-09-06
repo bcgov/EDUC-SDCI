@@ -11,11 +11,16 @@ export default defineConfig({
   server: {
     port: 8081,
     proxy: {
+      '/download': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      },
       '/api': {
         target: 'http://localhost:8080',
         changeOrigin: true
       }
-    }
+
+    },
   },
   resolve: {
     alias: {
