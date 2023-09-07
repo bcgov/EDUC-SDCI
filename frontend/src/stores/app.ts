@@ -1,68 +1,16 @@
 import { storeToRefs, defineStore } from 'pinia';
+
+// import type definitions
 import '@/types/codes.d.ts'
+import '@/types/school.d.ts'
+import '@/types/district.d.ts'
+import '@/types/authority.d.ts'
 
-interface District {
-  districtId: string;
-  displayName: string;
-  districtNumber: string
-}
-
-interface Authority {
-  independentAuthorityId: string;
-  displayName: string;
-  authorityNumber: string;
-  closedDate?: string;
-}
-
-interface School {
-  id: number;
-  name: string;
-  mincode: string;
-  displayName?: string;
-
-}
-
-// interface Code {
-//   label: string;
-//   description: string;
-// }
-
-// interface CategoryCode extends Code {
-//   schoolCategoryCode: string;
-// }
-
-// interface FacilityCode extends Code {
-//   facilityTypeCode: string;
-// }
-
-// interface AddressTypeCode extends Code {
-//   addressTypeCode: string;
-// }
-
-// interface DistrictContactTypeCode extends Code {
-//   districtContactTypeCode: string;
-// }
-
-// interface CodesList {
-//   authorityContactTypeCodes: [],
-//   districtContactTypeCodes: DistrictContactTypeCode[];
-//   schoolContactTypeCodes: [];
-// }
-
-// interface ContactTypeCode {
-//   codesList: CodesList,
-
-// }
-// interface GradeCode {
-//   schoolGradeCode: string,
-//   label: string,
-//   description: string,
-// }
 import InstituteService from '@/services/InstituteService'
 
 export const useAppStore = defineStore('app', {
   state: () => ({
-    districts: [] as District[],
+    districts: [] as ListDistrict[],
     authorities: [] as Authority[],
     schools: [] as School[],
     categoryCodes: [] as CategoryCode[],
@@ -194,7 +142,7 @@ export const useAppStore = defineStore('app', {
       return (districtId: string) => state.districts.find((district) => districtId === district.districtId)
     },
     getDistrictByDistrictNumber: (state) => {
-      return (distNum: String): District | undefined => state.districts.find((district: District): Boolean => distNum === district.districtNumber)
+      return (distNum: String): ListDistrict | undefined => state.districts.find((district: ListDistrict): Boolean => distNum === district.districtNumber)
     },
     // Independent Authorities
     getAuthorities: (state) => {

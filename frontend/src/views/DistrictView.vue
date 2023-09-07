@@ -5,6 +5,8 @@ import { useAppStore } from '@/stores/app'
 import { useRoute } from 'vue-router'
 import { formatPhoneNumber } from '@/utils/common'
 
+import '@/types/district.d.ts'
+
 // import common components
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
 
@@ -18,7 +20,7 @@ const districtId = ref<string | null>(null) // Initialize with null initially
 //   districtNumber: string
 // }
 
-const district = reactive({ value: {} as any })
+const district = reactive({ value: {} as District })
 //const districtContactTypeCodes = reactive({ value: {} })
 //const contactTypeCodes = reactive({ value: {} })
 
@@ -96,7 +98,7 @@ onMounted(async () => {
             }}</a>
           </p>
         </v-col>
-        <v-col v-for="item in district.value.districtData.addresses" :key="item.id">
+        <v-col v-for="item in district.value.districtData.addresses" :key="item.addressTypeCode">
           <DisplayAddress v-bind="item" />
         </v-col>
         <v-col>
