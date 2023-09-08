@@ -113,11 +113,12 @@ export const useAppStore = defineStore('app', {
       })
 
       // set address type codes for institute addresses
-      // InstituteService.getAddressTypeCodes().then((response) => {
-      //   this.addressTypeCodes = response.data
-      // }).catch((error) => {
-      //   console.error(error)
-      // })
+      InstituteService.getAddressTypeCodes().then((response) => {
+        this.addressTypeCodes = response.data
+      }).catch((error) => {
+        console.error(error)
+      })
+
       InstituteService.getGradeCodes().then((response) => {
         this.gradeCodes = response.data
       }).catch((error) => {
