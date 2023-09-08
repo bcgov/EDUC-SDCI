@@ -35,6 +35,22 @@ export interface Grade {
   schoolId: string,
 }
 
+export interface Address {
+  addressLine1: string,
+  addressLine2: string,
+  addressTypeCode: string,
+  city: string,
+  countryCode: string,
+  createDate: string,
+  createUser: string,
+  districtAddressId: string,
+  districtId: string,
+  postal: string,
+  provinceCode: string,
+  updateDate: string,
+  updateUser: string,
+}
+
 // CODES
 export interface CategoryCode extends Code {
   schoolCategoryCode: string,
@@ -56,14 +72,20 @@ export interface DistrictContactTypeCode extends Code {
   districtContactTypeCode: string,
 }
 
-export interface CodesList {
-  authorityContactTypeCodes: [],
-  districtContactTypeCodes: DistrictContactTypeCode[],
-  schoolContactTypeCodes: [],
+export interface AuthorityContactTypeCode extends Code {
+  authorityContactTypeCode: string,
+}
+
+export interface SchoolContactTypeCode extends Code {
+  schoolContactTypeCode: string,
 }
 
 export interface ContactTypeCode {
-  codesList: CodesList,
+  codesList: {
+    authorityContactTypeCodes: AuthorityContactTypeCode[],
+    districtContactTypeCodes: DistrictContactTypeCode[],
+    schoolContactTypeCodes: SchoolContactTypeCode[],
+  }
 
 }
 
@@ -113,22 +135,6 @@ export interface ListSchool {
 }
 
 // DISTRICT
-
-export interface Address {
-  addressLine1: string,
-  addressLine2: string,
-  addressTypeCode: string,
-  city: string,
-  countryCode: string,
-  createDate: string,
-  createUser: string,
-  districtAddressId: string,
-  districtId: string,
-  postal: string,
-  provinceCode: string,
-  updateDate: string,
-  updateUser: string,
-}
 
 // TODO: create generic interface and extend for district contact specifics; need authority and school contacts.
 export interface DistrictContact {
