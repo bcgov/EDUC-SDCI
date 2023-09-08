@@ -13,21 +13,14 @@ const props = defineProps<{
   countryCode?: string
   postal: string
 }>()
-
-// TODO: Move to common utils file
-// function formatPostal(postal) {
-//   return postal?.toUpperCase().replace(/(...)/, '$1')
-// }
 </script>
 
 <template>
   <div class="px-1 py-2">
-    <p class="font-weight-bold">
-      {{ appStore.getAddressTypeCodeLabel(props.addressTypeCode) }} Address
-    </p>
-    <p class="text-capitalize">{{ addressLine1?.toLowerCase() }}</p>
-    <p class="text-capitalize">{{ addressLine2?.toLowerCase() }}</p>
-    <p class="text-capitalize">{{ city?.toLowerCase() }}, {{ provinceCode }}</p>
+    <p class="font-weight-bold">{{ appStore.getAddressTypeCodeLabel(addressTypeCode) }} Address</p>
+    <p>{{ addressLine1 }}</p>
+    <p>{{ addressLine2 }}</p>
+    <p>{{ city }}, {{ provinceCode }}</p>
     <p>{{ formatPostalCode(postal) }}</p>
   </div>
 </template>

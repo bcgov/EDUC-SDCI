@@ -13,13 +13,6 @@ import DisplayAddress from '@/components/common/DisplayAddress.vue'
 const appStore = useAppStore()
 const districtId = ref<string | null>(null) // Initialize with null initially
 
-// TODO: create separate types definition file
-// interface District {
-//   districtId: string
-//   displayName: string
-//   districtNumber: string
-// }
-
 const district = reactive({ value: {} as District })
 //const districtContactTypeCodes = reactive({ value: {} })
 //const contactTypeCodes = reactive({ value: {} })
