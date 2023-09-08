@@ -16,6 +16,8 @@
 import { useAppStore } from '@/stores/app'
 import { storeToRefs } from 'pinia'
 
+//import {ListDistrict} from '@/types/district.d.ts'
+
 const appStore = useAppStore()
 const { districts } = storeToRefs(appStore)
 
