@@ -18,12 +18,6 @@ import '@mdi/font/css/materialdesignicons.css'
 import App from './App.vue'
 import router from './router/index'
 
-// import type definitions
-import '@/types/codes.d.ts'
-import '@/types/school.d.ts'
-import '@/types/district.d.ts'
-import '@/types/authority.d.ts'
-
 // define custom theme
 const bcGovTheme: ThemeDefinition = {
     dark: false,

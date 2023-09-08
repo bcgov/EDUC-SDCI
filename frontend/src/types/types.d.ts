@@ -1,0 +1,189 @@
+// COMMON - base interfaces for types that share common properties
+interface Code {
+  label: string,
+  description: string,
+  displayOrder: number | string,
+  effectiveDate: string,
+  expiryDate: string,
+  legacyCode?: string,
+}
+
+interface Contact {
+  createUser: string,
+  updateUser: string,
+  createDate: string,
+  updateDate: string,
+  phoneNumber: string,
+  jobTitle: string,
+  phoneExtension: string,
+  alternatePhoneNumber: string,
+  alternatePhoneExtension: string,
+  email: string,
+  firstName: string,
+  lastName: string,
+  effectiveDate: string,
+  expiryDate: string,
+}
+
+export interface Grade {
+  createUser: string,
+  updateUser: string,
+  createDate: string,
+  updateDate: string,
+  schoolGradeCode: string,
+  schoolGradeId: string,
+  schoolId: string,
+}
+
+// CODES
+export interface CategoryCode extends Code {
+  schoolCategoryCode: string,
+}
+
+export interface FacilityCode extends Code {
+  facilityTypeCode: string,
+}
+
+export interface AddressTypeCode extends Code {
+  addressTypeCode: string,
+}
+
+export interface GradeCode extends Code {
+  schoolGradeCode: string,
+}
+
+export interface DistrictContactTypeCode extends Code {
+  districtContactTypeCode: string,
+}
+
+export interface CodesList {
+  authorityContactTypeCodes: [],
+  districtContactTypeCodes: DistrictContactTypeCode[],
+  schoolContactTypeCodes: [],
+}
+
+export interface ContactTypeCode {
+  codesList: CodesList,
+
+}
+
+// SCHOOL
+
+export interface SchoolContact extends Contact {
+  schoolContactId: string,
+  schoolId: string,
+  schoolContactTypeCode: string,
+}
+
+export interface School {
+  createDate: string,
+  createUser: string,
+  id: number,
+  name: string,
+  mincode: string,
+  displayName: string,
+  displayNameNoSpecialChars: string,
+  districtId: string,
+  email: string,
+  facilityTypeCode: string,
+  faxNumber: string,
+  independentAuthorityId: string,
+  mincode: string,
+  openDate: string,
+  phoneNumber: string,
+  schoolCategoryCode: string,
+  schoolId: string,
+  schoolNumber: string,
+  schoolOrganizationCode: string,
+  schoolReportingRequirementCode: string,
+  updateDate: string,
+  updateUser: string,
+  website: string,
+  neighborhoodLearning: [],
+  grades: Grade[],
+  contacts: SchoolContact[],
+  addresses: Address[],
+  notes: [],
+}
+
+export interface ListSchool {
+  displayName: string,
+  mincode: string,
+  schoolId: string,
+}
+
+// DISTRICT
+
+export interface Address {
+  addressLine1: string,
+  addressLine2: string,
+  addressTypeCode: string,
+  city: string,
+  countryCode: string,
+  createDate: string,
+  createUser: string,
+  districtAddressId: string,
+  districtId: string,
+  postal: string,
+  provinceCode: string,
+  updateDate: string,
+  updateUser: string,
+}
+
+// TODO: create generic interface and extend for district contact specifics; need authority and school contacts.
+export interface DistrictContact {
+  districtContactId: string,
+  districtId: string,
+  districtContactTypeCode: string,
+}
+
+export interface District {
+  districtData: {
+    createDate: string,
+    createUser: string,
+    displayName: string,
+    districtId: string,
+    districtNumber: string,
+    districtRegionCode: string,
+    districtStatusCode: string,
+    email: string,
+    faxNumber: string,
+    phoneNumber: string,
+    updateDate: string,
+    updateUser: string,
+    website: string,
+    notes: [],
+    contacts: DistrictContact[],
+    addresses: Address[],
+  },
+  districtSchools: School[]
+}
+
+// used to define lightweight list of all districts for UI components
+export interface ListDistrict {
+  displayName: string,
+  districtNumber: string,
+  districtId: string,
+}
+
+// AUTHORITY
+
+export interface AuthorityContact extends Contact {
+  authorityContactId: string,
+  independentAuthorityId: string,
+  authorityContactTypeCode: string,
+}
+
+export interface Authority {
+  independentAuthorityId: string;
+  displayName: string;
+  authorityNumber: string;
+  closedDate?: string;
+}
+
+export interface ListAuthority {
+  displayName: string,
+  authorityNumber: string,
+  independentAuthorityId: string,
+}
+

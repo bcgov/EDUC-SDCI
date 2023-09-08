@@ -5,7 +5,7 @@ import { useAppStore } from '@/stores/app'
 import { useRoute } from 'vue-router'
 import { formatPhoneNumber } from '@/utils/common'
 
-import '@/types/district.d.ts'
+import type { District } from '@/types/types.d.ts'
 
 // import common components
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
@@ -197,7 +197,7 @@ onMounted(async () => {
 
     <!-- DEBUG panels for development; remove in TEST and higher -->
 
-    <v-expansion-panels id="ui-debug" class="debug">
+    <!-- <v-expansion-panels id="ui-debug" class="debug">
       <v-expansion-panel title="DEBUG: District JSON">
         <v-expansion-panel-text>
           <pre>
@@ -219,6 +219,6 @@ onMounted(async () => {
           </pre>
         </v-expansion-panel-text>
       </v-expansion-panel>
-    </v-expansion-panels>
+    </v-expansion-panels> -->
   </div>
 </template>

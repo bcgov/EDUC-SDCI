@@ -1,10 +1,7 @@
 import { storeToRefs, defineStore } from 'pinia';
 
 // import type definitions
-import '@/types/codes.d.ts'
-import '@/types/school.d.ts'
-import '@/types/district.d.ts'
-import '@/types/authority.d.ts'
+import type {ListDistrict, Authority, School, CategoryCode, FacilityCode, AddressTypeCode, ContactTypeCode, GradeCode} from '@/types/types'
 
 import InstituteService from '@/services/InstituteService'
 

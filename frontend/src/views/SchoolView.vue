@@ -51,6 +51,7 @@ import { reactive, onMounted, onBeforeMount, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import InstituteService from '@/services/InstituteService'
 import { useAppStore } from '@/stores/app'
+//import type { School } from '@/types/types.d.ts'
 const appStore = useAppStore()
 const schoolData = reactive<any>({ value: {} })
 const filteredContacts = ref<any>([])
