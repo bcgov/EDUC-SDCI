@@ -1,15 +1,15 @@
 import { storeToRefs, defineStore } from 'pinia';
 
 // import type definitions
-import type {ListDistrict, Authority, School, CategoryCode, FacilityCode, AddressTypeCode, ContactTypeCode, GradeCode} from '@/types/types'
+import type {ListDistrict, ListAuthority, ListSchool, CategoryCode, FacilityCode, AddressTypeCode, ContactTypeCode, GradeCode} from '@/types/types'
 
 import InstituteService from '@/services/InstituteService'
 
 export const useAppStore = defineStore('app', {
   state: () => ({
     districts: [] as ListDistrict[],
-    authorities: [] as Authority[],
-    schools: [] as School[],
+    authorities: [] as ListAuthority[],
+    schools: [] as ListSchool[],
     categoryCodes: [] as CategoryCode[],
     facilityCodes: [] as FacilityCode[],
     addressTypeCodes: [] as AddressTypeCode[],
@@ -154,7 +154,7 @@ export const useAppStore = defineStore('app', {
     },
     // Schools
     getSchools: (state) => {
-      return () => state.schools
+      return state.schools
     },
     // Codes
     getGradeByGradeCodes: (state) => {
