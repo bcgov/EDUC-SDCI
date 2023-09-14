@@ -80,7 +80,7 @@ onBeforeMount(async () => {
           /></span>
           <div v-if="schoolData.value.grades">
             Grades:
-            <span v-for="item in schoolData.value.grades" :key="item.id"
+            <span v-for="item in schoolData.value.grades" :key="item.schoolGradeCode"
               >{{ item.schoolGradeCode }},</span
             >
           </div>
