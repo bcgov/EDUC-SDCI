@@ -64,7 +64,7 @@ function downloadDistrictsMailing() {
         <v-btn class="text-none text-subtitle-1 ma-1" variant="flat"
           ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>
           <a
-            href="/api/v1/download/excel/institute/district/contact/paginated?pageSize=100&pageNumber=&filepath=exceldistrictcontacts"
+            href="/api/v1/download/excel/institute/district/contact/paginated?pageSize=100&pageNumber=0&filepath=exceldistrictcontacts"
           >
             Contacts for All Districts</a
           ></v-btn

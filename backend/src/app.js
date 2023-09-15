@@ -13,6 +13,7 @@ const apiRouter = express.Router();
 const instituteRouter = require('./routes/institute-router');
 const districtRouter = require('./routes/district-router');
 const downloadRouter = require('./routes/download-router');
+const authorityRouter = require('./routes/authority-router');
 const app = express();
 const publicPath = path.join(__dirname, 'public');
 
@@ -73,10 +74,11 @@ app.get('/download/:fileName', (req, res) => {
 app.use(/(\/api)?/, apiRouter);
 
 
+
 apiRouter.use('/v1/download', downloadRouter);
 apiRouter.use('/v1/institute', instituteRouter);
 apiRouter.use('/v1/district', districtRouter);
-
+apiRouter.use('/v1/authority', authorityRouter);
 
 
 

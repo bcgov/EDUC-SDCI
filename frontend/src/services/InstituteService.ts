@@ -15,7 +15,8 @@ export default {
     return ApiService.apiAxios.get('/api/v1/institute/authority');
   },
   getAuthority(authorityId: string): Promise<AxiosResponse> {
-    return ApiService.apiAxios.get('/api/v1/institute/authority/'+ authorityId)
+    console.log(authorityId)
+    return ApiService.apiAxios.get('/api/v1/authority/'+ authorityId)
   },
   // Schools
   getSchoolList(): Promise<AxiosResponse> {
