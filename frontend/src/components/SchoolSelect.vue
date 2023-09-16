@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useAppStore } from '@/stores/app'
 import router from '@/router'
 import { useSanitizeURL } from '@/composables/string'
-import type { ListDistrict } from '@/types/types'
+import type { ListSchool } from '@/types/types'
 
 const appStore = useAppStore()
 const selectedSchool = ref({

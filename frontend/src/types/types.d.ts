@@ -172,6 +172,7 @@ export interface ListDistrict {
   districtId: string,
 }
 
+
 // AUTHORITY
 
 export interface AuthorityContact extends Contact {
