@@ -3,12 +3,27 @@ import { ref } from 'vue'
 import { useAppStore } from '@/stores/app'
 import router from '@/router'
 import { useSanitizeURL } from '@/composables/string'
+import type { ListDistrict } from '@/types/types'
 
 const appStore = useAppStore()
-const selectedSchool = ref<any>('')
+const selectedSchool = ref({
+  displayName: '',
+  mincode: '',
+  schoolId: ''
+} as ListSchool) // placeholder
 
 function goToSchool() {
-  alert('TODO - Implement school select to navigate to school node')
+  if (selectedSchool.value?.displayName) {
+    console.log('GOING TO SCHOOL')
+    router.push({
+      name: 'school',
+      params: {
+        displayName: useSanitizeURL(String(selectedSchool.value?.displayName)),
+        schoolNumber: useSanitizeURL(String(selectedSchool.value?.mincode)),
+        schoolId: useSanitizeURL(String(selectedSchool.value?.schoolId))
+      }
+    })
+  }
 }
 
 function downloadAllSchoolsInfo() {

@@ -52,12 +52,13 @@ onBeforeMount(async () => {
 
 <template>
   <div>
-    <h1>{{ districtInfo.value.districtNumber }} - {{ districtInfo.value.displayName }} <br /></h1>
     <v-card width="100%" v-if="schoolData.value">
       <v-card-item>
         <v-card-title v-if="schoolData.value.displayName">
           {{ schoolData.value.displayName }} - {{ schoolData.value.mincode }}</v-card-title
         >
+        District: {{ districtInfo.value.districtNumber }} - {{ districtInfo.value.displayName }}
+
         <v-card-subtitle>
           <!-- School Address -->
           <div v-if="filteredAddresses.value != 'N/A'">
