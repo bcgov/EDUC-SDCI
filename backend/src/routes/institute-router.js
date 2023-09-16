@@ -5,10 +5,13 @@ const config = require("../config/index");
 
 const axios = require("axios");
 const { checkToken } = require("../components/auth");
-const { createList, addDistrictLabels } = require("../components/utils");
+const { createList, addDistrictLabels, districtNumberSort } = require("../components/utils");
 const { listCache } = require("../components/cache");
 
-const schoolListFields = ["mincode", "displayName"];
+const schoolListOptions = { fields: ["mincode", "displayName", "schoolId"], fieldToInclude: "closedDate", valueToInclude: null, sortField: "mincode" };
+const districtListOptions = { fields: ["displayName", "districtId","districtNumber"] ,fieldToInclude: "districtStatusCode", valueToInclude: "ACTIVE", sortField: "districtNumber"};
+
+
 //Batch Routes
 router.get("/contact-type-codes", checkToken, getContactTypeCodes);
 router.get("/school/list", checkToken, getSchoolList);
@@ -79,7 +82,7 @@ async function getSchoolList(req, res) {
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
-        const schoolList = createList(response.data, schoolListFields);
+        const schoolList = createList(response.data, schoolListOptions);
         res.json(schoolList);
         listCache.set("schoollist", schoolList);
         log.info(req.url);
@@ -101,8 +104,8 @@ async function getDistrictList(req, res) {
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
-        const districtList = response.data;
-
+        //const districtList = response.data;
+        const districtList = createList(response.data, districtListOptions);
         listCache.set("districtlist", districtList);
         res.json(districtList);
         log.info(req.url);
