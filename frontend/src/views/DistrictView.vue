@@ -14,8 +14,6 @@ const appStore = useAppStore()
 const districtId = ref<string | null>(null) // Initialize with null initially
 
 const district = reactive({ value: {} as District })
-//const districtContactTypeCodes = reactive({ value: {} })
-//const contactTypeCodes = reactive({ value: {} })
 
 const tabOptions = {
   contacts: 1,
