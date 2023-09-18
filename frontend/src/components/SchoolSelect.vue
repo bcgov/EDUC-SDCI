@@ -31,7 +31,7 @@ function downloadAllSchoolsInfo() {
 }
 
 function downloadAllSchoolsMailing() {
-  alert('TODO - Implement all schools mailing extract download')
+  alert('TODO - Implement all schools mailing extract download!')
 }
 </script>
 
