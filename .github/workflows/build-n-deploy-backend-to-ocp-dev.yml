@@ -46,8 +46,6 @@ env:
   HOST_ROUTE_DEV: ${{ secrets.SITE_URL_DEV }}
   HOST_ROUTE_TEST: ${{ secrets.SITE_URL_TEST }}
 
-  https://educ-sdci-de4e16-dev.apps.silver.devops.gov.bc.ca/api/health
-
 on:
   workflow_dispatch:
 
