@@ -113,9 +113,6 @@ objects:
       port:
         targetPort: 2015-tcp
       tls:
-        #caCertificate: "${CA_CERT}"
-        #certificate: "${CERTIFICATE}"
-        #key: "${PRIVATE_KEY}"
         insecureEdgeTerminationPolicy: Redirect
         termination: edge
       to:
@@ -136,9 +133,9 @@ objects:
       port:
         targetPort: 2015-tcp
       tls:
-        #caCertificate: ${CA_CERT}
-        #certificate: ${CERTIFICATE}
-        #key: ${PRIVATE_KEY}
+        caCertificate: ${CA_CERT}
+        certificate: ${CERTIFICATE}
+        key: ${PRIVATE_KEY}
         insecureEdgeTerminationPolicy: Redirect
         termination: edge
       to:
