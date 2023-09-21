@@ -136,10 +136,10 @@ objects:
       port:
         targetPort: 2015-tcp
       tls:
-        caCertificate: ${CA_CERT}
-        certificate: ${CERTIFICATE}
+        #caCertificate: ${CA_CERT}
+        #certificate: ${CERTIFICATE}
+        #key: ${PRIVATE_KEY}
         insecureEdgeTerminationPolicy: Redirect
-        key: ${PRIVATE_KEY}
         termination: edge
       to:
         kind: Service
