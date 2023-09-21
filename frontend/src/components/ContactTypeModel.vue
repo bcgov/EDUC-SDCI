@@ -3,8 +3,8 @@
     <v-row>
       <v-dialog v-model="dialog" width="1000">
         <template v-slot:activator="{ props }">
-          <v-btn color="primary" class="text-none text-subtitle-1" v-bind="props">
-            Contacts by Type
+          <v-btn block color="primary" class="text-none text-subtitle-1" v-bind="props">
+            View Contacts by Type
           </v-btn>
         </template>
         <v-card>

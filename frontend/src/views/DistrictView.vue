@@ -64,127 +64,159 @@ onMounted(async () => {
   //   console.error(error)
   // }
 })
+
+function downloadDistrictContacts() {
+  alert("TODO - Implement CSV download for a district's contacts")
+}
+
+function downloadDistrictSchools() {
+  alert("TODO - Implement CSV download for a district's schools")
+}
 </script>
 
 <template>
   <div>
-    <v-sheet>
-      <h2 class="mt-3 mb-2">
-        {{ district.value.districtData?.districtNumber }} -
-        {{ district.value.districtData?.displayName }}
-      </h2>
-      <v-row v-if="district.value.districtData">
-        <v-col>
-          <p>
-            <strong>Phone:</strong>
-            {{ formatPhoneNumber(district.value.districtData?.phoneNumber) }}
-          </p>
-          <p>
-            <strong>Fax:</strong> {{ formatPhoneNumber(district.value.districtData?.faxNumber) }}
-          </p>
-          <p><strong>Email:</strong> {{ district.value.districtData?.email }}</p>
-          <p>
-            <a :href="district.value.districtData?.website">{{
-              district.value.districtData?.website
-            }}</a>
-          </p>
+    <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
+      <v-row no-gutters justify="space-between">
+        <v-spacer />
+        <v-col cols="6">
+          <v-row v-if="district.value.districtData" no-gutters justify="space-between">
+            <v-col>
+              <h2 class="mt-3 mb-2">
+                {{ district.value.districtData?.districtNumber }} -
+                {{ district.value.districtData?.displayName }}
+              </h2>
+              <p>
+                <strong>Phone:</strong>
+                {{ formatPhoneNumber(district.value.districtData?.phoneNumber) }}
+              </p>
+              <p>
+                <strong>Fax:</strong>
+                {{ formatPhoneNumber(district.value.districtData?.faxNumber) }}
+              </p>
+              <p><strong>Email:</strong> {{ district.value.districtData?.email }}</p>
+              <p>
+                <a :href="district.value.districtData?.website">{{
+                  district.value.districtData?.website
+                }}</a>
+              </p>
+            </v-col>
+            <v-col
+              v-for="item in district.value.districtData.addresses"
+              :key="item.addressTypeCode"
+            >
+              <h2>&nbsp;</h2>
+              <DisplayAddress v-bind="item" />
+            </v-col>
+            <v-col>
+              <h2>&nbsp;</h2>
+              <v-btn
+                block
+                class="text-none text-subtitle-1 ma-1"
+                variant="outlined"
+                @click="downloadDistrictContacts"
+                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>District
+                Contacts</v-btn
+              >
+              <v-btn
+                block
+                class="text-none text-subtitle-1 ma-1"
+                variant="outlined"
+                @click="downloadDistrictSchools"
+                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>District
+                Schools</v-btn
+              >
+            </v-col>
+          </v-row>
         </v-col>
-        <v-col v-for="item in district.value.districtData.addresses" :key="item.addressTypeCode">
-          <DisplayAddress v-bind="item" />
-        </v-col>
-        <v-col>
-          <v-btn class="text-none text-subtitle-1 ma-1" variant="flat"
-            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>District
-            Contacts</v-btn
-          >
-          <v-btn class="text-none text-subtitle-1 ma-1" variant="flat"
-            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>District
-            Schools</v-btn
-          >
-        </v-col>
+        <v-spacer />
       </v-row>
     </v-sheet>
-    <v-tabs v-model="tab">
-      <v-tab :value="tabOptions.contacts"> District Contacts </v-tab>
-      <v-tab :value="tabOptions.schools"> District Schools </v-tab>
-    </v-tabs>
+    <!-- END DISTRICT HEADER INFO -->
 
-    <v-card-text>
-      <v-window v-model="tab">
-        <!-- District Contacts tab contents -->
-        <v-window-item :value="tabOptions.contacts">
-          <v-text-field
-            v-model="contactSearch"
-            append-icon="mdi-magnify"
-            label="Filter District Contacts"
-            single-line
-            hide-details
-          ></v-text-field>
-          <v-data-table
-            items-per-page="-1"
-            :headers="contactHeaders"
-            :items="district.value.districtData?.contacts"
-            :search="contactSearch"
-          >
-            <template v-slot:item.firstName="{ item }">
-              {{ item.columns.firstName }} {{ item.columns.lastName }}
-            </template>
+    <v-sheet class="pa-6">
+      <v-tabs v-model="tab">
+        <v-tab :value="tabOptions.contacts"> District Contacts </v-tab>
+        <v-tab :value="tabOptions.schools"> District Schools </v-tab>
+      </v-tabs>
 
-            <template v-slot:item.email="{ item }">
-              <a :href="`mailto:${item.columns.email}`">{{ item.columns.email }}</a>
-            </template>
+      <v-card-text>
+        <v-window v-model="tab">
+          <!-- District Contacts tab contents -->
+          <v-window-item :value="tabOptions.contacts">
+            <v-text-field
+              v-model="contactSearch"
+              append-icon="mdi-magnify"
+              label="Filter District Contacts"
+              single-line
+              hide-details
+            ></v-text-field>
+            <v-data-table
+              items-per-page="-1"
+              :headers="contactHeaders"
+              :items="district.value.districtData?.contacts"
+              :search="contactSearch"
+            >
+              <template v-slot:item.firstName="{ item }">
+                {{ item.columns.firstName }} {{ item.columns.lastName }}
+              </template>
 
-            <template v-slot:item.districtContactTypeCode="{ item }">
-              {{ appStore.getDistrictContactTypeCodeLabel(item.columns.districtContactTypeCode) }}
-            </template>
+              <template v-slot:item.email="{ item }">
+                <a :href="`mailto:${item.columns.email}`">{{ item.columns.email }}</a>
+              </template>
 
-            <template v-slot:item.phoneNumber="{ item }">
-              {{ formatPhoneNumber(item.columns.phoneNumber) }}
-            </template>
-          </v-data-table>
-        </v-window-item>
-        <!-- District Schools tab contents -->
-        <v-window-item :value="tabOptions.schools">
-          <v-text-field
-            v-model="schoolSearch"
-            append-icon="mdi-magnify"
-            label="Filter District Schools"
-            single-line
-            hide-details
-          ></v-text-field>
-          <v-data-table
-            items-per-page="-1"
-            :headers="schoolHeaders"
-            :items="district.value.districtSchools"
-            :search="schoolSearch"
-          >
-            <template v-slot:item.schoolCategoryCode="{ item }">
-              {{ appStore.getCategoryCodeLabel(item.columns.schoolCategoryCode) }}
-            </template>
+              <template v-slot:item.districtContactTypeCode="{ item }">
+                {{ appStore.getDistrictContactTypeCodeLabel(item.columns.districtContactTypeCode) }}
+              </template>
 
-            <template v-slot:item.facilityTypeCode="{ item }">
-              {{ appStore.getFacilityCodeLabel(item.columns.facilityTypeCode) }}
-            </template>
+              <template v-slot:item.phoneNumber="{ item }">
+                {{ formatPhoneNumber(item.columns.phoneNumber) }}
+              </template>
+            </v-data-table>
+          </v-window-item>
+          <!-- District Schools tab contents -->
+          <v-window-item :value="tabOptions.schools">
+            <v-text-field
+              v-model="schoolSearch"
+              append-icon="mdi-magnify"
+              label="Filter District Schools"
+              single-line
+              hide-details
+            ></v-text-field>
+            <v-data-table
+              items-per-page="-1"
+              :headers="schoolHeaders"
+              :items="district.value.districtSchools"
+              :search="schoolSearch"
+            >
+              <template v-slot:item.schoolCategoryCode="{ item }">
+                {{ appStore.getCategoryCodeLabel(item.columns.schoolCategoryCode) }}
+              </template>
 
-            <template v-slot:item.email="{ item }">
-              <a :href="`mailto:${item.columns.email}`">{{ item.columns.email }}</a>
-            </template>
+              <template v-slot:item.facilityTypeCode="{ item }">
+                {{ appStore.getFacilityCodeLabel(item.columns.facilityTypeCode) }}
+              </template>
 
-            <template v-slot:item.website="{ item }">
-              <a :href="item.columns.website">{{ item.columns.website }}</a>
-            </template>
+              <template v-slot:item.email="{ item }">
+                <a :href="`mailto:${item.columns.email}`">{{ item.columns.email }}</a>
+              </template>
 
-            <template v-slot:item.phoneNumber="{ item }">
-              {{ formatPhoneNumber(item.columns.phoneNumber) }}
-            </template>
+              <template v-slot:item.website="{ item }">
+                <a :href="item.columns.website">{{ item.columns.website }}</a>
+              </template>
 
-            <template v-slot:item.faxNumber="{ item }">
-              {{ formatPhoneNumber(item.columns.faxNumber) }}
-            </template>
-          </v-data-table>
-        </v-window-item>
-      </v-window>
-    </v-card-text>
+              <template v-slot:item.phoneNumber="{ item }">
+                {{ formatPhoneNumber(item.columns.phoneNumber) }}
+              </template>
+
+              <template v-slot:item.faxNumber="{ item }">
+                {{ formatPhoneNumber(item.columns.faxNumber) }}
+              </template>
+            </v-data-table>
+          </v-window-item>
+        </v-window>
+      </v-card-text>
+    </v-sheet>
 
     <!-- DEBUG panels for development; remove in TEST and higher -->
 
