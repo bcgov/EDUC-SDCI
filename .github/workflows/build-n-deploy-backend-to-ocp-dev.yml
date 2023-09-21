@@ -43,8 +43,6 @@ env:
   MAX_REPLICAS_TEST: "2"
   # SITE_URL should have no scheme or port. It will be prepended with https://
   HOST_ROUTE: ${{ secrets.SITE_URL }}
-  HOST_ROUTE_DEV: ${{ secrets.SITE_URL_DEV }}
-  HOST_ROUTE_TEST: ${{ secrets.SITE_URL_TEST }}
 
 on:
   workflow_dispatch:
@@ -55,7 +53,8 @@ jobs:
     # ubuntu-latest can also be used.
     runs-on: ubuntu-22.04
     environment: dev
-
+    env:
+        HOST_ROUTE: ${{ secrets.SITE_URL }}
     outputs:
       ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
       SELECTOR: ${{ steps.deploy-and-expose.outputs.selector }}
@@ -190,14 +189,14 @@ jobs:
           oc tag ${{ steps.push-image-frontend.outputs.registry-path }} ${{ env.REPO_NAME }}-frontend-static:${{ env.TAG }}
 
           # Process and apply deployment template
-          oc process -f tools/openshift/backend.dc.yaml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p BRANCH=${{ env.BRANCH }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE_DEV }} -p TAG=${{ env.TAG }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS_DEV }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS_DEV }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} -p HOST_ROUTE=${{ env.HOST_ROUTE_DEV }}\
+          oc process -f tools/openshift/backend.dc.yaml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p BRANCH=${{ env.BRANCH }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE_DEV }} -p TAG=${{ env.TAG }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS_DEV }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS_DEV }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} -p HOST_ROUTE=${{ env.HOST_ROUTE }}\
           | oc apply -f -
 
           # Process and apply deployment template
-          oc process -f tools/openshift/frontend-static.dc.yaml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p BRANCH=${{ env.BRANCH }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE_DEV }} -p TAG=${{ env.TAG }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS_DEV }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS_DEV }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} -p HOST_ROUTE=${{ env.HOST_ROUTE_DEV }} -p CA_CERT="${{ env.CA_CERT }}" -p CERTIFICATE="${{ env.CERTIFICATE }}" -p PRIVATE_KEY="${{ env.PRIVATE_KEY }}"\
+          oc process -f tools/openshift/frontend-static.dc.yaml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p BRANCH=${{ env.BRANCH }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE_DEV }} -p TAG=${{ env.TAG }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS_DEV }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS_DEV }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} -p HOST_ROUTE=${{ env.HOST_ROUTE }} -p CA_CERT="${{ env.CA_CERT }}" -p CERTIFICATE="${{ env.CERTIFICATE }}" -p PRIVATE_KEY="${{ env.PRIVATE_KEY }}"\
           | oc apply -f -
 
-          curl -s https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/main/tools/config/update-configmap.sh | bash /dev/stdin dev ${{ env.APP_NAME }} ${{ env.NAMESPACE }} ${{env.COMMON_NAMESPACE}} ${{secrets.KC_CLIENT_ID}} ${{secrets.KC_CLIENT_SECRET_DEV}} ${{secrets.KC_TOKEN_URL_DEV}}
+          curl -s https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/main/tools/config/update-configmap.sh | bash /dev/stdin dev ${{ env.APP_NAME }} ${{ env.NAMESPACE }} ${{env.COMMON_NAMESPACE}} ${{secrets.KC_CLIENT_ID}} ${{secrets.KC_CLIENT_SECRET}} ${{secrets.KC_TOKEN_URL}}
 
           # Start rollout (if necessary) and follow it
           oc rollout latest dc/${{ env.IMAGE_NAME }} 2> /dev/null \
@@ -212,13 +211,15 @@ jobs:
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.3.0
         with:
-          target: "https://${{ env.HOST_ROUTE_DEV }}"
+          target: "https://${{ env.HOST_ROUTE }}"
 
   deploy-to-test:
     name: Deploy to TEST
     needs: build-and-deploy-dev
     runs-on: ubuntu-22.04
     environment: test
+    env:
+        HOST_ROUTE: ${{ secrets.SITE_URL }}
 
     outputs:
       ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
@@ -285,7 +286,7 @@ jobs:
           oc tag ${{ env.NAMESPACE }}-test/${{ env.REPO_NAME }}-backend-${{ env.BRANCH }}:${{ env.TAG }} ${{ env.NAMESPACE }}-test/${{ env.REPO_NAME }}-backend-${{ env.BRANCH }}:${{ env.TAG }}
 
           # Process and apply deployment template
-          oc process -f tools/openshift/backend.dc.yaml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p BRANCH=${{ env.BRANCH }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE_TEST }} -p TAG=${{ env.TAG }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS_TEST }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS_TEST }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} -p HOST_ROUTE=${{ env.HOST_ROUTE_TEST }}\
+          oc process -f tools/openshift/backend.dc.yaml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p BRANCH=${{ env.BRANCH }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE_TEST }} -p TAG=${{ env.TAG }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS_TEST }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS_TEST }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} -p HOST_ROUTE=${{ env.HOST_ROUTE }}\
           | oc apply -f -
 
           # Process and apply deployment template
