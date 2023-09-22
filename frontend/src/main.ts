@@ -22,7 +22,7 @@ import router from './router/index'
 const bcGovTheme: ThemeDefinition = {
     dark: false,
     colors: {
-        background: '#FFFFFF',
+        background: '#F9F9F9',
         surface: '#FFFFFF',
         primary: '#38598A',
         secondary: '#7490BA',
