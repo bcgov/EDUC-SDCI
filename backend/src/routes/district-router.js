@@ -95,7 +95,7 @@ async function getDistrict(req, res) {
   const encodedParams = encodeURIComponent(jsonString)
 
   const url = `${config.get('server:instituteAPIURL')}/institute/district/${id}`;
-  const districtSchoolsUrl = `${config.get('server:instituteAPIURL')}/institute/school/paginated?pageNumber=0&pageSize=10&searchCriteriaList=${encodedParams}`;
+  const districtSchoolsUrl = `${config.get('server:instituteAPIURL')}/institute/school/paginated?pageNumber=0&pageSize=100&searchCriteriaList=${encodedParams}`;
   
   try {
     const districtDataResponse = await axios.get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } });
