@@ -89,11 +89,11 @@ onMounted(async () => {
               <DisplayAddress v-bind="item" />
             </v-col>
             <v-col>
-              <v-btn class="text-none text-subtitle-1 ma-1" variant="outlined"
+              <v-btn block class="text-none text-subtitle-1 ma-1" variant="outlined"
                 ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Authority
                 Contacts</v-btn
               >
-              <v-btn class="text-none text-subtitle-1 ma-1" variant="outlined"
+              <v-btn block class="text-none text-subtitle-1 ma-1" variant="outlined"
                 ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Authority
                 Schools</v-btn
               >
