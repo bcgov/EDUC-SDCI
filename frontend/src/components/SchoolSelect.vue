@@ -47,6 +47,7 @@ function downloadAllSchoolsMailing() {
         <v-spacer />
         <img
           src="@/assets/images/BCMapGraphic.png"
+          alt="Map of British Columbia"
           style="height: 268px; position: absolute; top: 78px; left: -80px"
         />
         <v-col class="mr-6">
