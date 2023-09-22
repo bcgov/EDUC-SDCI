@@ -45,6 +45,10 @@ function downloadAllSchoolsMailing() {
     <v-sheet elevation="2" class="py-6 full-width">
       <v-row no-gutters justify="space-between">
         <v-spacer />
+        <img
+          src="@/assets/images/BCMapGraphic.png"
+          style="height: 268px; position: absolute; top: 78px; left: -80px"
+        />
         <v-col class="mr-6">
           <h2 class="mb-3">Find a School in BC</h2>
           <v-autocomplete

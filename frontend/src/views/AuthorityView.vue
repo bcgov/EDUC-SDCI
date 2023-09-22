@@ -62,119 +62,130 @@ onMounted(async () => {
 
 <template>
   <div>
-    <v-sheet>
-      <h2 class="mt-3 mb-2">
-        {{ authority.value.authorityData?.authorityNumber }} -
-        {{ authority.value.authorityData?.displayName }}
-      </h2>
-      <v-row v-if="authority.value.authorityData">
-        <v-col>
-          <p>
-            <strong>Phone:</strong>
-            {{ formatPhoneNumber(authority.value.authorityData?.phoneNumber) }}
-          </p>
-          <p>
-            <strong>Fax:</strong> {{ formatPhoneNumber(authority.value.authorityData?.faxNumber) }}
-          </p>
-          <p><strong>Email:</strong> {{ authority.value.authorityData?.email }}</p>
+    <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
+      <v-row no-gutters justify="space-between">
+        <v-spacer />
+        <v-col cols="6">
+          <h2 class="mt-3 mb-2">
+            {{ authority.value.authorityData?.authorityNumber }} -
+            {{ authority.value.authorityData?.displayName }}
+          </h2>
+          <v-row v-if="authority.value.authorityData">
+            <v-col>
+              <p>
+                <strong>Phone:</strong>
+                {{ formatPhoneNumber(authority.value.authorityData?.phoneNumber) }}
+              </p>
+              <p>
+                <strong>Fax:</strong>
+                {{ formatPhoneNumber(authority.value.authorityData?.faxNumber) }}
+              </p>
+              <p><strong>Email:</strong> {{ authority.value.authorityData?.email }}</p>
+            </v-col>
+            <v-col
+              v-for="item in authority.value.authorityData.addresses"
+              :key="item.addressTypeCode"
+            >
+              <DisplayAddress v-bind="item" />
+            </v-col>
+            <v-col>
+              <v-btn class="text-none text-subtitle-1 ma-1" variant="outlined"
+                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Authority
+                Contacts</v-btn
+              >
+              <v-btn class="text-none text-subtitle-1 ma-1" variant="outlined"
+                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Authority
+                Schools</v-btn
+              >
+            </v-col>
+          </v-row>
         </v-col>
-        <v-col v-for="item in authority.value.authorityData.addresses" :key="item.addressTypeCode">
-          <DisplayAddress v-bind="item" />
-        </v-col>
-        <v-col>
-          <v-btn class="text-none text-subtitle-1 ma-1" variant="flat"
-            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Authority
-            Contacts</v-btn
-          >
-          <v-btn class="text-none text-subtitle-1 ma-1" variant="flat"
-            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Authority
-            Schools</v-btn
-          >
-        </v-col>
+        <v-spacer />
       </v-row>
     </v-sheet>
     <!-- END Authority Info Header Block -->
+    <v-sheet class="pa-6">
+      <v-tabs v-model="tab">
+        <v-tab :value="tabOptions.contacts"> Authority Contacts </v-tab>
+        <v-tab :value="tabOptions.schools"> Authority Schools </v-tab>
+      </v-tabs>
 
-    <v-tabs v-model="tab">
-      <v-tab :value="tabOptions.contacts"> Authority Contacts </v-tab>
-      <v-tab :value="tabOptions.schools"> Authority Schools </v-tab>
-    </v-tabs>
+      <v-card-text>
+        <v-window v-model="tab">
+          <!-- District Contacts tab contents -->
+          <v-window-item :value="tabOptions.contacts">
+            <v-text-field
+              v-model="contactSearch"
+              append-icon="mdi-magnify"
+              label="Filter District Contacts"
+              single-line
+              hide-details
+            ></v-text-field>
+            <v-data-table
+              items-per-page="-1"
+              :headers="contactHeaders"
+              :items="authority.value.authorityData?.contacts"
+              :search="contactSearch"
+            >
+              <template v-slot:item.firstName="{ item }">
+                {{ item.columns.firstName }} {{ item.columns.lastName }}
+              </template>
 
-    <v-card-text>
-      <v-window v-model="tab">
-        <!-- District Contacts tab contents -->
-        <v-window-item :value="tabOptions.contacts">
-          <v-text-field
-            v-model="contactSearch"
-            append-icon="mdi-magnify"
-            label="Filter District Contacts"
-            single-line
-            hide-details
-          ></v-text-field>
-          <v-data-table
-            items-per-page="-1"
-            :headers="contactHeaders"
-            :items="authority.value.authorityData?.contacts"
-            :search="contactSearch"
-          >
-            <template v-slot:item.firstName="{ item }">
-              {{ item.columns.firstName }} {{ item.columns.lastName }}
-            </template>
+              <template v-slot:item.email="{ item }">
+                <a :href="`mailto:${item.columns.email}`">{{ item.columns.email }}</a>
+              </template>
 
-            <template v-slot:item.email="{ item }">
-              <a :href="`mailto:${item.columns.email}`">{{ item.columns.email }}</a>
-            </template>
+              <template v-slot:item.districtContactTypeCode="{ item }">
+                {{ appStore.getDistrictContactTypeCodeLabel(item.columns.districtContactTypeCode) }}
+              </template>
 
-            <template v-slot:item.districtContactTypeCode="{ item }">
-              {{ appStore.getDistrictContactTypeCodeLabel(item.columns.districtContactTypeCode) }}
-            </template>
+              <template v-slot:item.phoneNumber="{ item }">
+                {{ formatPhoneNumber(item.columns.phoneNumber) }}
+              </template>
+            </v-data-table>
+          </v-window-item>
+          <!-- District Schools tab contents -->
+          <v-window-item :value="tabOptions.schools">
+            <v-text-field
+              v-model="schoolSearch"
+              append-icon="mdi-magnify"
+              label="Filter District Schools"
+              single-line
+              hide-details
+            ></v-text-field>
+            <v-data-table
+              items-per-page="-1"
+              :headers="schoolHeaders"
+              :items="authority.value.authoritySchools"
+              :search="schoolSearch"
+            >
+              <template v-slot:item.schoolCategoryCode="{ item }">
+                {{ appStore.getCategoryCodeLabel(item.columns.schoolCategoryCode) }}
+              </template>
 
-            <template v-slot:item.phoneNumber="{ item }">
-              {{ formatPhoneNumber(item.columns.phoneNumber) }}
-            </template>
-          </v-data-table>
-        </v-window-item>
-        <!-- District Schools tab contents -->
-        <v-window-item :value="tabOptions.schools">
-          <v-text-field
-            v-model="schoolSearch"
-            append-icon="mdi-magnify"
-            label="Filter District Schools"
-            single-line
-            hide-details
-          ></v-text-field>
-          <v-data-table
-            items-per-page="-1"
-            :headers="schoolHeaders"
-            :items="authority.value.authoritySchools"
-            :search="schoolSearch"
-          >
-            <template v-slot:item.schoolCategoryCode="{ item }">
-              {{ appStore.getCategoryCodeLabel(item.columns.schoolCategoryCode) }}
-            </template>
+              <template v-slot:item.facilityTypeCode="{ item }">
+                {{ appStore.getFacilityCodeLabel(item.columns.facilityTypeCode) }}
+              </template>
 
-            <template v-slot:item.facilityTypeCode="{ item }">
-              {{ appStore.getFacilityCodeLabel(item.columns.facilityTypeCode) }}
-            </template>
+              <template v-slot:item.email="{ item }">
+                <a :href="`mailto:${item.columns.email}`">{{ item.columns.email }}</a>
+              </template>
 
-            <template v-slot:item.email="{ item }">
-              <a :href="`mailto:${item.columns.email}`">{{ item.columns.email }}</a>
-            </template>
+              <template v-slot:item.website="{ item }">
+                <a :href="item.columns.website">{{ item.columns.website }}</a>
+              </template>
 
-            <template v-slot:item.website="{ item }">
-              <a :href="item.columns.website">{{ item.columns.website }}</a>
-            </template>
+              <template v-slot:item.phoneNumber="{ item }">
+                {{ formatPhoneNumber(item.columns.phoneNumber) }}
+              </template>
 
-            <template v-slot:item.phoneNumber="{ item }">
-              {{ formatPhoneNumber(item.columns.phoneNumber) }}
-            </template>
-
-            <template v-slot:item.faxNumber="{ item }">
-              {{ formatPhoneNumber(item.columns.faxNumber) }}
-            </template>
-          </v-data-table>
-        </v-window-item>
-      </v-window>
-    </v-card-text>
+              <template v-slot:item.faxNumber="{ item }">
+                {{ formatPhoneNumber(item.columns.faxNumber) }}
+              </template>
+            </v-data-table>
+          </v-window-item>
+        </v-window>
+      </v-card-text>
+    </v-sheet>
   </div>
 </template>

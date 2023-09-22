@@ -3,6 +3,7 @@ import { RouterLink, RouterView } from 'vue-router'
 import { ref, onBeforeMount, onMounted } from 'vue'
 import { useAppStore } from './stores/app'
 import Header from './components/Header.vue'
+import Footer from './components/Footer.vue'
 
 const data = ref([]) // Placeholder for the received data
 const appStore = useAppStore()
@@ -23,7 +24,7 @@ onBeforeMount(async () => {
     <v-main>
       <RouterView />
     </v-main>
-    <!-- TODO: Footer -->
+    <Footer />
   </v-app>
 </template>
 
