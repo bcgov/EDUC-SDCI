@@ -10,6 +10,7 @@ export const useAppStore = defineStore('app', {
     districts: [] as ListDistrict[],
     authorities: [] as ListAuthority[],
     schools: [] as ListSchool[],
+    offshoreSchools: [] as ListSchool[],
     categoryCodes: [] as CategoryCode[],
     facilityCodes: [] as FacilityCode[],
     addressTypeCodes: [] as AddressTypeCode[],
@@ -90,6 +91,19 @@ export const useAppStore = defineStore('app', {
       })
 
     },
+    setOffshoreSchoolList(): void {
+
+      InstituteService.getOffshoreSchoolList()
+      .then((response) => {
+        // Handle the response data
+        this.offshoreSchools = response.data
+      })
+      .catch((error) => {
+        // Handle the error
+        console.error(error)
+      })
+
+    },    
     setCodes(): void {
       // set category codes
       InstituteService.getCategoryCodes().then((response) => {
@@ -156,6 +170,9 @@ export const useAppStore = defineStore('app', {
     getSchools: (state) => {
       return state.schools
     },
+    getOffshoreSchools: (state) => {
+      return state.offshoreSchools
+    },    
     // Codes
     getGradeByGradeCodes: (state) => {
       return state.gradeCodes

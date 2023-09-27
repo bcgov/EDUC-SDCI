@@ -12,6 +12,7 @@ onBeforeMount(async () => {
   await appStore.setDistricts()
   await appStore.setAuthorities()
   await appStore.setSchoolList()
+  await appStore.setOffshoreSchoolList()
   await appStore.setCodes()
 })
 </script>

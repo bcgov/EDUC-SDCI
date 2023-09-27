@@ -52,9 +52,9 @@ const router = createRouter({
         await appStore.setAuthorities();
         next();
       }
-    },
+    },  
     {
-      path: '/offshore',
+      path: '/offshore/:offshoreId',
       name: 'offshore',
       component: () => import('../views/OffshoreView.vue')
     },
