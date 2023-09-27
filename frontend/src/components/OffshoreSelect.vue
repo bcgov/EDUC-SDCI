@@ -11,19 +11,10 @@ import type { Ref } from 'vue'
 const appStore = useAppStore()
 const selectedOffshoreSchool: Ref<ListSchool | null> = ref(null)
 
-function goToOffshoreSchools() {
-  console.log('go to')
-  if (selectedOffshoreSchool.value?.displayName) {
-    console.log('go tossss')
-    router.push({
-      name: 'offshore',
-      params: {
-        displayName: useSanitizeURL(String(selectedOffshoreSchool.value?.displayName)),
-        schoolNumber: useSanitizeURL(String(selectedOffshoreSchool.value?.mincode)),
-        offshoreId: useSanitizeURL(String(selectedOffshoreSchool.value?.schoolId))
-      }
-    })
-  }
+function viewOffshoreSchools() {
+  router.push({
+    name: 'offshore'
+  })
 }
 
 function downloadOffshoreSchoolInfo() {
@@ -41,18 +32,11 @@ function downloadOffshoreSchoolReps() {
       <h2 class="mb-3">BC Offshore Schools</h2>
       <v-row no-gutters justify="space-between">
         <v-col class="mr-6">
-          <v-autocomplete
-            v-model="selectedOffshoreSchool"
-            label="Select a Offshore School"
-            :items="appStore.getOffshoreSchools"
-            :item-title="(item) => (item?.mincode ? item.mincode + ' - ' + item.displayName : null)"
-            :item-value="(item) => (item?.mincode ? item : null)"
-          ></v-autocomplete>
           <v-btn
             color="primary"
             class="text-none text-subtitle-1"
             variant="flat"
-            @click="goToOffshoreSchools"
+            @click="viewOffshoreSchools"
             >View Offshore Schools</v-btn
           >
         </v-col>

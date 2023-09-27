@@ -82,7 +82,7 @@ async function getOffshoreSchoolList(req, res) {
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
-        const offshoreSchoolList = createList(response.data.content, schoolListOptions);
+        const offshoreSchoolList = response.data.content;
         res.json(offshoreSchoolList);
         listCache.set("offshoreschoollist", offshoreSchoolList);
         log.info(req.url);

@@ -54,7 +54,7 @@ const router = createRouter({
       }
     },  
     {
-      path: '/offshore/:offshoreId',
+      path: '/offshore',
       name: 'offshore',
       component: () => import('../views/OffshoreView.vue')
     },
