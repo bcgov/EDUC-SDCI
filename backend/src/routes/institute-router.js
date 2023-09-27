@@ -14,8 +14,8 @@ const districtListOptions = { fields: ["displayName", "districtId","districtNumb
 
 //Batch Routes
 router.get("/contact-type-codes", checkToken, getContactTypeCodes);
+router.get("/offshore-school/list", checkToken, getOffshoreSchoolList);
 router.get("/school/list", checkToken, getSchoolList);
-//router.get('/authority/list', checkToken, getAuthorityList);
 router.get("/district/list", checkToken, getDistrictList);
 router.get("/district/contact/*", checkToken, getDistrictContactsAPI);
 router.get("/*", checkToken, getInstituteAPI);
@@ -73,6 +73,29 @@ async function getContactTypeCodes(req, res) {
     console.log("USING SCHOOL LIST CACHE");
     const cachedCodeList = await listCache.get("codesList");
     res.json(cachedCodeList);
+  }
+}
+async function getOffshoreSchoolList(req, res) {
+
+  if (await !listCache.has("offshoreschoollist")) {
+    const url = `${config.get("server:instituteAPIURL")}/institute/school/paginated?pageSize=100&pageNumber=0&searchCriteriaList=%5B%7B%22condition%22%3Anull%2C%22searchCriteriaList%22%3A%5B%7B%22key%22%3A%22schoolCategoryCode%22%2C%22operation%22%3A%22eq%22%2C%22value%22%3A%22OFFSHORE%22%2C%22valueType%22%3A%22STRING%22%2C%22condition%22%3A%22AND%22%7D%2C%7B%22key%22%3A%22openedDate%22%2C%22operation%22%3A%22lte%22%2C%22value%22%3A%222023-09-27T17%3A57%3A46%22%2C%22valueType%22%3A%22DATE_TIME%22%2C%22condition%22%3A%22AND%22%7D%2C%7B%22key%22%3A%22closedDate%22%2C%22operation%22%3A%22eq%22%2C%22value%22%3Anull%2C%22valueType%22%3A%22STRING%22%2C%22condition%22%3A%22AND%22%7D%5D%7D%5D`; // Update the URL according to your API endpoint
+    axios
+      .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
+      .then((response) => {
+        const offshoreSchoolList = response.data.content;
+        res.json(offshoreSchoolList);
+        listCache.set("offshoreschoollist", offshoreSchoolList);
+        log.info(req.url);
+      })
+      .catch((e) => {
+        log.error(
+          "getSchoolsList Error",
+          e.response ? e.response.status : e.message
+        );
+      });
+  } else {
+    const schoolList = await listCache.get("offshoreschoollist");
+    res.json(schoolList);
   }
 }
 

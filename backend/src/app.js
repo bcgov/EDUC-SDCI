@@ -14,6 +14,7 @@ const instituteRouter = require('./routes/institute-router');
 const districtRouter = require('./routes/district-router');
 const downloadRouter = require('./routes/download-router');
 const authorityRouter = require('./routes/authority-router');
+const offshoreRouter = require('./routes/offshore-router');
 const app = express();
 const publicPath = path.join(__dirname, 'public');
 
@@ -79,6 +80,7 @@ apiRouter.use('/v1/download', downloadRouter);
 apiRouter.use('/v1/institute', instituteRouter);
 apiRouter.use('/v1/district', districtRouter);
 apiRouter.use('/v1/authority', authorityRouter);
+apiRouter.use('/v1/offshore', offshoreRouter);
 
 
 
