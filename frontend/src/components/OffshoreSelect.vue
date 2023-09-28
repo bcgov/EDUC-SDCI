@@ -1,11 +1,20 @@
 <script setup lang="ts">
-//import { ref } from 'vue'
+import { ref } from 'vue'
 import { useAppStore } from '@/stores/app'
+import router from '@/router'
+import { useSanitizeURL } from '@/composables/string'
+
+// Type Imports
+import type { ListSchool } from '@/types/types'
+import type { Ref } from 'vue'
 
 const appStore = useAppStore()
+const selectedOffshoreSchool: Ref<ListSchool | null> = ref(null)
 
 function viewOffshoreSchools() {
-  alert('TODO - Implement Button Click to View Offshore Schools')
+  router.push({
+    name: 'offshore'
+  })
 }
 
 function downloadOffshoreSchoolInfo() {

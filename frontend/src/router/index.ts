@@ -52,7 +52,7 @@ const router = createRouter({
         await appStore.setAuthorities();
         next();
       }
-    },
+    },  
     {
       path: '/offshore',
       name: 'offshore',

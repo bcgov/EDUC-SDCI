@@ -13,7 +13,6 @@ const selectedSchool: Ref<ListSchool | null> = ref(null)
 
 function goToSchool() {
   if (selectedSchool.value?.displayName) {
-    console.log('GOING TO SCHOOL')
     router.push({
       name: 'school',
       params: {
