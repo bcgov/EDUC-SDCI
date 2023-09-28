@@ -7,7 +7,6 @@ import SchoolSelect from '../components/SchoolSelect.vue'
 
 <template>
   <div>
-    HELLO
     <SchoolSelect />
     <DistrictSelect />
     <AuthoritySelect />
