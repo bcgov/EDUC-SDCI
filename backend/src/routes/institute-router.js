@@ -10,12 +10,13 @@ const { listCache } = require("../components/cache");
 
 const schoolListOptions = { fields: ["mincode", "displayName", "schoolId"], fieldToInclude: "closedDate", valueToInclude: null, sortField: "mincode" };
 const districtListOptions = { fields: ["displayName", "districtId","districtNumber"] ,fieldToInclude: "districtStatusCode", valueToInclude: "ACTIVE", sortField: "districtNumber"};
-
+const authorityListOptions = { fields: ["displayName", "authorityNumber","independentAuthorityId"], fieldToInclude: "closedDate", valueToInclude: null, sortField: "authorityNumber" };
 
 //Batch Routes
 router.get("/contact-type-codes", checkToken, getContactTypeCodes);
 router.get("/offshore-school/list", checkToken, getOffshoreSchoolList);
 router.get("/school/list", checkToken, getSchoolList);
+router.get("/authority/list", checkToken, getAuthorityList);
 router.get("/district/list", checkToken, getDistrictList);
 router.get("/district/contact/*", checkToken, getDistrictContactsAPI);
 router.get("/*", checkToken, getInstituteAPI);
@@ -94,11 +95,34 @@ async function getOffshoreSchoolList(req, res) {
         );
       });
   } else {
-    const schoolList = await listCache.get("offshoreschoollist");
-    res.json(schoolList);
+    const offshoreSchoolList = await listCache.get("offshoreschoollist");
+    res.json(offshoreSchoolList);
   }
 }
+async function getAuthorityList(req, res) {
 
+  if (await !listCache.has("authoritylist")) {
+    const url = `${config.get("server:instituteAPIURL")}/institute/authority`;
+    axios
+      .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
+      .then((response) => {
+        const authorityList = createList(response.data, authorityListOptions);
+        
+        res.json(authorityList);
+        listCache.set("authoritylist", authorityList);
+        log.info(req.url);
+      })
+      .catch((e) => {
+        log.error(
+          "authorityList Error",
+          e.response ? e.response.status : e.message
+        );
+      });
+  } else {
+    const authorityList = await listCache.get("authoritylist");
+    res.json(authorityList);
+  }
+}
 async function getSchoolList(req, res) {
   if (await !listCache.has("schoollist")) {
     const url = `${config.get("server:instituteAPIURL")}/institute/school`; // Update the URL according to your API endpoint
