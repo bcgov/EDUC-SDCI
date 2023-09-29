@@ -49,7 +49,7 @@ const router = createRouter({
       ),
       beforeEnter: async (to, from, next) => {
         const appStore = useAppStore()
-        await appStore.setAuthorities();
+        await appStore.setAuthorityList();
         next();
       }
     },  

@@ -10,7 +10,7 @@ const appStore = useAppStore()
 
 onBeforeMount(async () => {
   await appStore.setDistricts()
-  await appStore.setAuthorities()
+  await appStore.setAuthorityList()
   await appStore.setSchoolList()
   await appStore.setOffshoreSchoolList()
   await appStore.setCodes()

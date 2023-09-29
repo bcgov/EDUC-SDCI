@@ -68,8 +68,8 @@ export const useAppStore = defineStore('app', {
             console.error(error)
           })
     },
-    setAuthorities(): void {
-      InstituteService.getAuthorities().then((response) => {
+    setAuthorityList(): void {
+      InstituteService.getAuthorityList().then((response) => {
         //handle the response
         this.authorities = response.data
       })
