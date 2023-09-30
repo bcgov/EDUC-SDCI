@@ -137,7 +137,9 @@ function downloadDistrictSchools() {
     <v-sheet class="pa-6">
       <v-tabs v-model="tab">
         <v-tab :value="tabOptions.contacts"> District Contacts </v-tab>
-        <v-tab :value="tabOptions.schools"> District Schools </v-tab>
+        <v-tab :value="tabOptions.schools">
+          District Schools ({{ district.value.districtData?.contacts.length }})
+        </v-tab>
       </v-tabs>
 
       <v-card-text>
