@@ -107,7 +107,9 @@ onMounted(async () => {
     <v-sheet class="pa-6">
       <v-tabs v-model="tab">
         <v-tab :value="tabOptions.contacts"> Authority Contacts </v-tab>
-        <v-tab :value="tabOptions.schools"> Authority Schools </v-tab>
+        <v-tab :value="tabOptions.schools">
+          Authority Schools ({{ authority.value.authoritySchools.length }} )
+        </v-tab>
       </v-tabs>
 
       <v-card-text>
