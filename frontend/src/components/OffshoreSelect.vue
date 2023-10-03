@@ -27,6 +27,7 @@ function downloadOffshoreSchoolReps() {
 </script>
 
 <template>
+
   <v-container fluid>
     <v-card class="pa-6">
       <h2 class="mb-3">BC Offshore Schools</h2>

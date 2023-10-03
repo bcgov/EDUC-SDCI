@@ -1,4 +1,5 @@
 <template>
+  <v-breadcrumbs class="breadcrumbs" bg-color="primary" :items="[{title: 'Home', href:'/'}, 'Search']"></v-breadcrumbs>
   <v-container class="my-4">
     <v-row>
       <v-col cols="12" md="4">
