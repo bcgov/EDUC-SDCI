@@ -4,7 +4,7 @@ const log = require("../components/logger");
 const config = require("../config/index");
 const axios = require("axios");
 const { checkToken } = require("../components/auth");
-const json2xls = require('json2xls');
+const jsonExport = require('jsonexport');
 const fs = require('fs');
 const path = require('path');
 const {isSafeFilePath} = require("../components/utils")
@@ -12,29 +12,16 @@ const { listCache } = require("../components/cache");
 
 const FILE_STORAGE_DIR = path.join(__dirname, '../..', 'public');
 
-router.get('/excel/*', checkToken, getData, addDistrictLabels, createExcelDownload, getExcelDownload);
+router.get('/excel/*', checkToken, getDownload, addDistrictLabels, createExcelDownload, getExcelDownload);
 
 async function createExcelDownload(req,res, next){
     try {
-    const filepath = req.query.filepath;
 
-    if (!filepath) {
-      return res.status(400).send("Missing 'filepath' parameter");
-    }else{
-      if (!isSafeFilePath(filepath)) {
-        return res.status(400).send("Invalid 'filepath' parameter");
-      }
-    }
-
-    const filePath = path.join(FILE_STORAGE_DIR, `${filepath}.xlsx`);
-      
-    if (fs.existsSync(filePath)) {
-      res.setHeader('Content-Disposition', `attachment; filename="${filepath}.xlsx"`);
-      return res.sendFile(filePath);
-    }
-    
-    const xls = json2xls(req.jsonData);
-    await writeFileAsync(filePath, xls, 'binary');
+    const dat = jsonExport(req.jsonData, function(err, csv){
+      if (err) return console.error(err);
+      console.log(csv);
+    });
+    await writeFileAsync(filePath, dat, 'binary');
     next();
   } catch (error) {
     console.error("Error:", error);
@@ -92,16 +79,33 @@ async function addDistrictLabels(req, res, next) {
   };
 
 
-async function getData(req, res,next){
-  try {
-    const url = `${config.get('server:instituteAPIURL')}` + req.url.replace('/excel', '');
-    const response = await axios.get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } });
-    // Attach the fetched data to the request object
-    req.jsonData = response.data.content;
-    next(); // Call the next middleware
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).send("Internal server error");
+async function getDownload(req, res,next){
+
+  const filepath = req.query.filepath;
+
+  if (!filepath) {
+    return res.status(400).send("Missing 'filepath' parameter");
+  }else{
+    if (!isSafeFilePath(filepath)) {
+      return res.status(400).send("Invalid 'filepath' parameter");
+    }
+  }
+  const filePath = path.join(FILE_STORAGE_DIR, `${filepath}.dat`);
+    
+  if (fs.existsSync(filePath)) {
+    res.setHeader('Content-Disposition', `attachment; filename="${filepath}.dat"`);
+    return res.sendFile(filePath);
+  }else{
+    try {
+      const url = `${config.get('server:instituteAPIURL')}` + req.url.replace('/excel', '');
+      const response = await axios.get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } });
+      // Attach the fetched data to the request object
+      req.jsonData = response.data.content;
+      next(); // Call the next middleware
+    } catch (error) {
+      console.error("Error:", error);
+      res.status(500).send("Internal server error");
+    }
   }
 }
 
@@ -116,7 +120,7 @@ async function getExcelDownload(req, res) {
       }
     }
 
-    const filePath = path.join(FILE_STORAGE_DIR, `${filepath}.xlsx`);
+    const filePath = path.join(FILE_STORAGE_DIR, `${filepath}.dat`);
     res.sendFile(filePath);
   } catch (error) {
     console.error("Error:", error);
