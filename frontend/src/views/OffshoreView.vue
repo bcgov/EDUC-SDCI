@@ -8,6 +8,11 @@ const { offshoreSchools } = storeToRefs(appStore)
 
 <template>
   <div>
+    <v-breadcrumbs
+      class="breadcrumbs"
+      bg-color="primary"
+      :items="[{ title: 'Home', href: '/' }, 'Offshore Schools']"
+    ></v-breadcrumbs>
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-row no-gutters justify="space-between">
         <v-spacer />
@@ -38,3 +43,12 @@ const { offshoreSchools } = storeToRefs(appStore)
 </template>
 
 <style></style>
+
+<style>
+/* sizes header to align with content on desktop */
+.v-toolbar__content,
+.v-toolbar__extension {
+  max-width: 1280px;
+  padding: 0 2rem;
+}
+</style>

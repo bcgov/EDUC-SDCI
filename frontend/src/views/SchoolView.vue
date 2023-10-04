@@ -51,8 +51,10 @@ onBeforeMount(async () => {
 </script>
 
 <template>
+  
   <div>
-    <v-card width="100%" v-if="schoolData.value">
+    <v-breadcrumbs class="breadcrumbs" bg-color="primary" :items="[{title: 'Home', href:'/'}, 'School', schoolData.value.displayName]"></v-breadcrumbs>
+    <v-card class="fill-screen-height"  width="100%" v-if="schoolData.value" >
       <v-card-item>
         <v-card-title v-if="schoolData.value.displayName">
           {{ schoolData.value.displayName }} - {{ schoolData.value.mincode }}</v-card-title

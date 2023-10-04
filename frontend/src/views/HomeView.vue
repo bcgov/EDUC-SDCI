@@ -6,6 +6,7 @@ import SchoolSelect from '../components/SchoolSelect.vue'
 </script>
 
 <template>
+  <v-breadcrumbs bg-color="primary" class="breadcrumbs" :items="[{title: 'Home', href:'/'}]"></v-breadcrumbs>
   <div>
     <SchoolSelect />
     <DistrictSelect />

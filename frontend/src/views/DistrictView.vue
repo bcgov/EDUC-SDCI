@@ -75,6 +75,9 @@ function downloadDistrictSchools() {
 </script>
 
 <template>
+  <v-spacer />
+  <v-breadcrumbs class="breadcrumbs" bg-color="primary" :items="[{title: 'Home', href:'/'}, 'District', district.value.districtData?.districtNumber + ' ' + district.value.districtData?.displayName]"></v-breadcrumbs>
+  
   <div>
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-row no-gutters justify="space-between">
@@ -137,7 +140,9 @@ function downloadDistrictSchools() {
     <v-sheet class="pa-6">
       <v-tabs v-model="tab">
         <v-tab :value="tabOptions.contacts"> District Contacts </v-tab>
-        <v-tab :value="tabOptions.schools"> District Schools </v-tab>
+        <v-tab :value="tabOptions.schools">
+          District Schools ({{ district.value.districtData?.contacts.length }})
+        </v-tab>
       </v-tabs>
 
       <v-card-text>

@@ -47,9 +47,9 @@ function downloadAllSchoolsMailing() {
         <img
           src="@/assets/images/BCMapGraphic.png"
           alt="Map of British Columbia"
-          style="height: 268px; position: absolute; top: 78px; left: -80px"
+          style="height: 268px; position: absolute; top: 85px; left: -80px"
         />
-        <v-col class="mr-6">
+        <v-col class="mr-6" >
           <h2 class="mb-3">Find a School in BC</h2>
           <v-autocomplete
             v-model="selectedSchool"
@@ -70,7 +70,7 @@ function downloadAllSchoolsMailing() {
       </v-row>
     </v-sheet>
 
-    <div class="mt-8">
+    <div class="mt-8" >
       <v-card class="pa-6">
         <h2 class="mb-3">School Information</h2>
         <v-row no-gutters justify="space-between">

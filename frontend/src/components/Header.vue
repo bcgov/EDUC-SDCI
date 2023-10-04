@@ -8,19 +8,14 @@
         alt="B.C. Government Logo"
         class="logo"
         src="@/assets/images/bc-gov-logo.svg"
-        width="125"
+        width="200"
         height="125"
       />
     </a>
     <h1>BC School & District Contact Information</h1>
-    <!-- TODO: Move to DEBUG component? Links are temporary until we build out our views.-->
-    <template v-slot:extension>
-      <div>
-        <RouterLink class="mx-2" to="/">Home</RouterLink>
-        <!-- <RouterLink class="mx-2" to="/offshore">Offshore</RouterLink> -->
-      </div>
-    </template>
+
   </v-app-bar>
+  
 </template>
 
 <style>

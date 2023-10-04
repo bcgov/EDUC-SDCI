@@ -62,6 +62,7 @@ onMounted(async () => {
 
 <template>
   <div>
+    <v-breadcrumbs class="breadcrumbs" bg-color="primary" :items="[{title: 'Home', href:'/'}, 'Authority', authority.value.authorityData?.authorityNumber + ' ' + authority.value.authorityData?.displayName]"></v-breadcrumbs>
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-row no-gutters justify="space-between">
         <v-spacer />
@@ -107,7 +108,9 @@ onMounted(async () => {
     <v-sheet class="pa-6">
       <v-tabs v-model="tab">
         <v-tab :value="tabOptions.contacts"> Authority Contacts </v-tab>
-        <v-tab :value="tabOptions.schools"> Authority Schools </v-tab>
+        <v-tab :value="tabOptions.schools">
+          Authority Schools ({{ authority.value.authoritySchools?.length }} )
+        </v-tab>
       </v-tabs>
 
       <v-card-text>
