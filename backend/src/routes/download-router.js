@@ -12,17 +12,19 @@ const { listCache } = require("../components/cache");
 
 const FILE_STORAGE_DIR = path.join(__dirname, '../..', 'public');
 
-router.get('/excel/*', checkToken, getDownload, addDistrictLabels, createExcelDownload, getExcelDownload);
+router.get('/csv/*', checkToken, getDownload, addDistrictLabels, createCSVFile, getCSVDownload);
 
-async function createExcelDownload(req,res, next){
+async function createCSVFile(req,res, next){
     try {
 
-    const dat = jsonExport(req.jsonData, function(err, csv){
+
+    jsonExport(req.jsonData, async function(err, csv){
       if (err) return console.error(err);
-      console.log(csv);
+      await writeFileAsync(filePath, csv, 'binary');
+      next();
     });
-    await writeFileAsync(filePath, dat, 'binary');
-    next();
+    
+    
   } catch (error) {
     console.error("Error:", error);
     res.status(500).send("Internal server error");
@@ -90,14 +92,14 @@ async function getDownload(req, res,next){
       return res.status(400).send("Invalid 'filepath' parameter");
     }
   }
-  const filePath = path.join(FILE_STORAGE_DIR, `${filepath}.dat`);
+  filePath = path.join(FILE_STORAGE_DIR, `${filepath}.csv`);
     
   if (fs.existsSync(filePath)) {
-    res.setHeader('Content-Disposition', `attachment; filename="${filepath}.dat"`);
+    res.setHeader('Content-Disposition', `attachment; filename="${filepath}.csv"`);
     return res.sendFile(filePath);
   }else{
     try {
-      const url = `${config.get('server:instituteAPIURL')}` + req.url.replace('/excel', '');
+      const url = `${config.get('server:instituteAPIURL')}` + req.url.replace('/csv', '');
       const response = await axios.get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } });
       // Attach the fetched data to the request object
       req.jsonData = response.data.content;
@@ -109,7 +111,7 @@ async function getDownload(req, res,next){
   }
 }
 
-async function getExcelDownload(req, res) {
+async function getCSVDownload(req, res) {
   try {
     const filepath = req.query.filepath;
     if (!filepath) {
@@ -120,7 +122,7 @@ async function getExcelDownload(req, res) {
       }
     }
 
-    const filePath = path.join(FILE_STORAGE_DIR, `${filepath}.dat`);
+    const filePath = path.join(FILE_STORAGE_DIR, `${filepath}.csv`);
     res.sendFile(filePath);
   } catch (error) {
     console.error("Error:", error);
