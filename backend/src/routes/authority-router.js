@@ -1,21 +1,16 @@
-
 const express = require("express");
 const router = express.Router();
 const log = require("../components/logger");
 const config = require("../config/index");
 const NodeCache = require("node-cache");
 const axios = require("axios");
-const json2xls = require('json2xls');
-const fs = require('fs');
-const path = require('path');
-const { checkToken } = require("../components/auth"); 
-const { listCache } = require("../components/cache"); 
-
-
+const fs = require("fs");
+const path = require("path");
+const { checkToken } = require("../components/auth");
+const { listCache } = require("../components/cache");
 
 //Batch Routes
-router.get('/:id', checkToken, getAuthority);
-
+router.get("/:id", checkToken, getAuthority);
 
 // async function removeItemsFromDistrictDataResponse(response, itemsToRemove) {
 //   if (response && response.data) {
@@ -35,14 +30,21 @@ router.get('/:id', checkToken, getAuthority);
 
 async function getDistrictCodes(req) {
   if (!listCache.has("districtCodesList")) {
-    const url = `${config.get('server:instituteAPIURL')}/institute/authority-contact-type-codes`; // Update the URL according to your API endpoint
+    const url = `${config.get(
+      "server:instituteAPIURL"
+    )}/institute/authority-contact-type-codes`; // Update the URL according to your API endpoint
     try {
-      const response = await axios.get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } });
+      const response = await axios.get(url, {
+        headers: { Authorization: `Bearer ${req.accessToken}` },
+      });
       const districtCodeList = response.data;
       listCache.set("districtCodesList", districtCodeList);
       return districtCodeList;
     } catch (e) {
-      log.error('getDistrictList Error', e.response ? e.response.status : e.message);
+      log.error(
+        "getDistrictList Error",
+        e.response ? e.response.status : e.message
+      );
     }
   } else {
     const districtCodeList = await listCache.get("districtCodesList");
@@ -74,48 +76,55 @@ async function getDistrictCodes(req) {
 // }
 //api/v1/institute/district/12342525
 async function getAuthority(req, res) {
-  console.log("GET AUTHORITY")
+  console.log("GET AUTHORITY");
   const { id } = req.params;
-  console.log(req.params)
+  console.log(req.params);
   const params = [
     {
       condition: null,
       searchCriteriaList: [
         {
-          key: 'independentAuthorityId',
-          operation: 'eq',
-          value: '9dcb1c79-d626-c708-6405-14b7df75a312', // Convert id to a string
-          valueType: 'UUID',
-          condition: 'AND'
-        }
-      ]
-    }
+          key: "independentAuthorityId",
+          operation: "eq",
+          value: "9dcb1c79-d626-c708-6405-14b7df75a312", // Convert id to a string
+          valueType: "UUID",
+          condition: "AND",
+        },
+      ],
+    },
   ];
 
-  const jsonString = JSON.stringify(params)
-  const encodedParams = encodeURIComponent(jsonString)
+  const jsonString = JSON.stringify(params);
+  const encodedParams = encodeURIComponent(jsonString);
 
-  const url = `${config.get('server:instituteAPIURL')}/institute/authority/${id}`;
-  const authoritySchoolsUrl = `${config.get('server:instituteAPIURL')}/institute/school/paginated?pageNumber=0&pageSize=10&searchCriteriaList=${encodedParams}`;
-  
+  const url = `${config.get(
+    "server:instituteAPIURL"
+  )}/institute/authority/${id}`;
+  const authoritySchoolsUrl = `${config.get(
+    "server:instituteAPIURL"
+  )}/institute/school/paginated?pageNumber=0&pageSize=10&searchCriteriaList=${encodedParams}`;
+
   try {
-    const authorityDataResponse = await axios.get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } });
-    
-    const authoritySchoolsResponse = await axios.get(authoritySchoolsUrl, { headers: { Authorization: `Bearer ${req.accessToken}` } });
+    const authorityDataResponse = await axios.get(url, {
+      headers: { Authorization: `Bearer ${req.accessToken}` },
+    });
+
+    const authoritySchoolsResponse = await axios.get(authoritySchoolsUrl, {
+      headers: { Authorization: `Bearer ${req.accessToken}` },
+    });
     // const contactTypeCodes = await getDistrictCodes(req)
     // const nonPublicContactTypeCodes = getNonPublicContactTypeCodes(contactTypeCodes)
     // const districtDataPublic =  removeContacts(districtDataResponse.data,nonPublicContactTypeCodes)
 
-
     const authorityJSON = {
       authorityData: authorityDataResponse.data,
-      authoritySchools: authoritySchoolsResponse.data.content
+      authoritySchools: authoritySchoolsResponse.data.content,
     };
-    
+
     res.json(authorityJSON);
     log.info(req.url);
   } catch (e) {
-    log.error('getData Error', e.response ? e.response.status : e.message);
+    log.error("getData Error", e.response ? e.response.status : e.message);
   }
 }
 module.exports = router;
