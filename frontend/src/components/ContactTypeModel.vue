@@ -42,16 +42,16 @@ const resetContactFilters = () => {
 const transformContactForDownload = (inputData: any) => {
   return inputData.map(
     (item: {
-      districtNumber: any
-      displayName: any
-      firstName: any
-      lastName: any
-      jobTitle: any
-      phoneNumber: any
-      phoneExtension: any
-      alternatePhoneNumber: any
-      alternatePhoneExtension: any
-      email: any
+      districtNumber: string
+      displayName: string
+      firstName: string
+      lastName: string
+      jobTitle: string
+      phoneNumber: string
+      phoneExtension: string
+      alternatePhoneNumber: string
+      alternatePhoneExtension: string
+      email: string
     }) => ({
       districtNumber: item.districtNumber,
       displayName: item.displayName,
@@ -106,7 +106,7 @@ const searchContact = async () => {
 <template>
   <v-container>
     <v-row>
-      <v-dialog v-model="dialog" width="1000">
+      <v-dialog v-model="dialog" width="100%">
         <template v-slot:activator="{ props }">
           <v-btn block color="primary" class="text-none text-subtitle-1" v-bind="props">
             View Contacts by Type
