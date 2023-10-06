@@ -1,5 +1,5 @@
 import { storeToRefs, defineStore } from 'pinia';
-
+import * as jsonexport from "jsonexport/dist"
 // import type definitions
 import type {ListDistrict, ListAuthority, ListSchool, CategoryCode, FacilityCode, AddressTypeCode, ContactTypeCode, GradeCode} from '@/types/types'
 
@@ -103,7 +103,7 @@ export const useAppStore = defineStore('app', {
         console.error(error)
       })
 
-    },    
+    },
     setCodes(): void {
       // set category codes
       InstituteService.getCategoryCodes().then((response) => {
@@ -172,7 +172,7 @@ export const useAppStore = defineStore('app', {
     },
     getOffshoreSchools: (state) => {
       return state.offshoreSchools
-    },    
+    },
     // Codes
     getGradeByGradeCodes: (state) => {
       return state.gradeCodes
