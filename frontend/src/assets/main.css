@@ -3,14 +3,14 @@
 #app {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0rem;
   font-family: 'BCSans', 'Noto Sans', Verdana, Arial, sans-serif;
   font-weight: normal;
 }
 @media (max-width: 768px) {
   #app {
     min-width: 1130px; /* Adjust as needed */
-    padding: 1rem; /* Adjust as needed */
+    padding: 0; /* Adjust as needed */
   }
 }
 a,
@@ -28,6 +28,13 @@ a,
 .breadcrumbs {
   margin: 0 -40em;
   padding-left: 40em !important;
+}
+
+.territorial-acknowledgement {
+  background-color: #494949;
+  color: #fff;
+  border-bottom: 3px solid #FCBA19;
+  border-top: 3px solid #FCBA19;
 }
 
 .v-toolbar__extension {
@@ -48,6 +55,6 @@ a,
 
   #app {
     display: grid;
-    padding: 0 2rem;
+    padding: 0;
   }
 }
