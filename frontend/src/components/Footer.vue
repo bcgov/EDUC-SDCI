@@ -24,8 +24,8 @@
             /> </a
         ></v-col>
         <v-col cols="4" justify="space-between">
-          MORE INFO
-          <v-row>TEST</v-row>
+          <!-- MORE INFO
+          <v-row>TEST</v-row> -->
           <!-- <v-row>
             <v-col>
               <v-row> MORE INFO </v-row>

@@ -1,53 +1,3 @@
-<template>
-  <v-container>
-    <v-row>
-      <v-dialog v-model="dialog" width="1000">
-        <template v-slot:activator="{ props }">
-          <v-btn block color="primary" class="text-none text-subtitle-1" v-bind="props">
-            View Contacts by Type
-          </v-btn>
-        </template>
-        <v-card>
-          <v-card-title>
-            <span class="text-h5">Contacts by Type</span>
-          </v-card-title>
-          <v-card-text>
-            <v-autocomplete
-              v-model="selectedContactType"
-              label="Select a Contact by Type"
-              :items="appStore.getAllDistrictContactTypeCodesLabel"
-              :item-title="appStore.getAllDistrictContactTypeCodesLabel"
-              :item-value="appStore.getAllDistrictContactTypeCodesLabel"
-            ></v-autocomplete>
-            <v-btn @click="searchContact" color="primary">Search</v-btn>
-            <v-btn @click="resetContactFilters" color="error">Reset</v-btn>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="error" variant="text" @click="dialog = false"> Close </v-btn>
-            </v-card-actions>
-          </v-card-text>
-          <div class="ma-2">TOTAL: {{ results }}</div>
-          <v-btn
-            @click="downloadCSV"
-            class="text-none text-subtitle-1 ma-1"
-            variant="flat"
-            :disabled="results == 0"
-            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download to
-            CSV</v-btn
-          >
-          <v-data-table-virtual
-            :headers="headers"
-            :items="filteredContacts"
-            class="elevation-1"
-            height="700"
-            item-value="name"
-          ></v-data-table-virtual>
-        </v-card>
-      </v-dialog>
-    </v-row>
-  </v-container>
-</template>
-
 <script setup lang="ts">
 import { useAppStore } from '@/stores/app'
 import { ref, reactive, computed } from 'vue'
@@ -127,3 +77,47 @@ const searchContact = async () => {
   }
 }
 </script>
+<template>
+  <v-dialog v-model="dialog" width="1000">
+    <template v-slot:activator="{ props }">
+      <v-btn block color="primary" class="text-none text-subtitle-1 my-1" v-bind="props">
+        View Contacts by Type
+      </v-btn>
+    </template>
+    <v-card>
+      <v-card-title>
+        <span class="text-h5">Contacts by Type</span>
+      </v-card-title>
+      <v-card-text>
+        <v-autocomplete
+          v-model="selectedContactType"
+          label="Select a Contact by Type"
+          :items="appStore.getAllDistrictContactTypeCodesLabel"
+          :item-title="appStore.getAllDistrictContactTypeCodesLabel"
+          :item-value="appStore.getAllDistrictContactTypeCodesLabel"
+        ></v-autocomplete>
+        <v-btn @click="searchContact" color="primary">Search</v-btn>
+        <v-btn @click="resetContactFilters" color="error">Reset</v-btn>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="error" variant="text" @click="dialog = false"> Close </v-btn>
+        </v-card-actions>
+      </v-card-text>
+      <div class="ma-2">TOTAL: {{ results }}</div>
+      <v-btn
+        @click="downloadCSV"
+        class="text-none text-subtitle-1 ma-1"
+        variant="flat"
+        :disabled="results == 0"
+        ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download to CSV</v-btn
+      >
+      <v-data-table-virtual
+        :headers="headers"
+        :items="filteredContacts"
+        class="elevation-1"
+        height="700"
+        item-value="name"
+      ></v-data-table-virtual>
+    </v-card>
+  </v-dialog>
+</template>

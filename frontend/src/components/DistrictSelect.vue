@@ -31,11 +31,11 @@ function downloadDistrictsMailing() {
 </script>
 
 <template>
-  <v-container fluid>
-    <v-card class="pa-6">
-      <h2 class="mb-3">District Information</h2>
-      <v-row no-gutters justify="space-between">
-        <v-col class="mr-6">
+  <v-card class="pa-6">
+    <h2 class="mb-3">School Districts</h2>
+    <v-row no-gutters justify="space-between">
+      <v-col class="ma-1">
+        <v-row>
           <v-autocomplete
             v-model="selectedDistrict"
             label="Select a District"
@@ -46,24 +46,25 @@ function downloadDistrictsMailing() {
             :item-value="(item) => item"
           ></v-autocomplete>
           <v-btn
+            icon="mdi-magnify"
             color="primary"
-            class="text-none text-subtitle-1"
             variant="flat"
+            rounded="lg"
+            size="large"
             @click="goToDistrict"
-            >View District Info</v-btn
-          >
-        </v-col>
-        <v-spacer />
-        <v-col class="ml-6" cols="4">
+            class="text-none text-subtitle-1 ml-3"
+          />
+        </v-row>
+        <v-row>
           <v-btn
             block
-            class="text-none text-subtitle-1 ma-1"
+            class="text-none text-subtitle-1 my-1"
             variant="outlined"
             @click="downloadDistrictsMailing"
             ><template v-slot:prepend> <v-icon icon="mdi-download" /></template> Mailing for All
             Districts</v-btn
           >
-          <v-btn block class="text-none text-subtitle-1 ma-1" variant="outlined"
+          <v-btn block class="text-none text-subtitle-1 my-1" variant="outlined"
             ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>
             <a
               href="/api/v1/download/excel/institute/district/contact/paginated?pageSize=100&pageNumber=0&filepath=exceldistrictcontacts"
@@ -72,12 +73,12 @@ function downloadDistrictsMailing() {
             ></v-btn
           >
           <!-- <v-btn class="text-none text-subtitle-1 ma-1" variant="flat"
-          ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Contacts by
-          Type</v-btn
-        > -->
+            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Contacts by
+            Type</v-btn
+          > -->
           <ContactTypeModal></ContactTypeModal>
-        </v-col>
-      </v-row>
-    </v-card>
-  </v-container>
+        </v-row>
+      </v-col>
+    </v-row>
+  </v-card>
 </template>

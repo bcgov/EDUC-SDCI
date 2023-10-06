@@ -29,31 +29,32 @@ function downloadAuthorityContacts() {
 </script>
 
 <template>
-  <v-container fluid>
-    <v-card class="pa-6">
-      <h2 class="mb-3">Independent Authority Information</h2>
-      <v-row no-gutters>
-        <v-col class="mr-6">
+  <v-card class="pa-6">
+    <h2 class="mb-3">Independent Authorities</h2>
+    <v-row no-gutters>
+      <v-col class="ma-1">
+        <v-row>
           <v-autocomplete
             v-model="selectedAuthority"
-            label="Select an Independent Authority"
+            label="Select an Authority"
             :items="appStore.getAuthoritiesList"
             :item-title="(item) => (item ? item.authorityNumber + ' - ' + item.displayName : '')"
             :item-value="(item) => item"
           ></v-autocomplete>
           <v-btn
+            icon="mdi-magnify"
             color="primary"
-            class="text-none text-subtitle-1"
             variant="flat"
+            rounded="lg"
+            size="large"
             @click="goToAuthority"
-            >View Authority Info</v-btn
-          >
-        </v-col>
-        <v-spacer />
-        <v-col class="ml-6" cols="4">
+            class="text-none text-subtitle-1 ml-3"
+          />
+        </v-row>
+        <v-row>
           <v-btn
             block
-            class="text-none text-subtitle-1 ma-1"
+            class="text-none text-subtitle-1 my-1"
             variant="outlined"
             @click="downloadAuthorityContacts"
             ><template v-slot:prepend> <v-icon icon="mdi-download" /></template> Contacts for All
@@ -61,14 +62,14 @@ function downloadAuthorityContacts() {
           >
           <v-btn
             block
-            class="text-none text-subtitle-1 ma-1"
+            class="text-none text-subtitle-1 my-1"
             variant="outlined"
             @click="downloadAuthorityMailing"
             ><template v-slot:prepend> <v-icon icon="mdi-download" /></template> Mailing for All
             Authorities</v-btn
           >
-        </v-col>
-      </v-row>
-    </v-card>
-  </v-container>
+        </v-row>
+      </v-col>
+    </v-row>
+  </v-card>
 </template>

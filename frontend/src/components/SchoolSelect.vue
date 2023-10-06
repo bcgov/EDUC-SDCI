@@ -47,63 +47,71 @@ function downloadAllSchoolsMailing() {
         <img
           src="@/assets/images/BCMapGraphic.png"
           alt="Map of British Columbia"
-          style="height: 268px; position: absolute; top: 85px; left: -80px"
+          style="height: 268px; position: absolute; top: 50px; left: -80px"
         />
-        <v-col class="mr-6" >
-          <h2 class="mb-3">Find a School in BC</h2>
-          <v-autocomplete
-            v-model="selectedSchool"
-            label="Select a School"
-            :items="appStore.getSchools"
-            :item-title="(item) => (item?.mincode ? item.mincode + ' - ' + item.displayName : null)"
-            :item-value="(item) => (item?.mincode ? item : null)"
-          ></v-autocomplete>
-          <v-btn
-            color="primary"
-            class="text-none text-subtitle-1"
-            variant="flat"
-            @click="goToSchool"
-            >View School Info</v-btn
-          >
+        <v-col class="mr-6">
+          <h2 class="mb-5">Find a School in BC</h2>
+          <v-row>
+            <v-autocomplete
+              v-model="selectedSchool"
+              label="Select a School"
+              :items="appStore.getSchools"
+              :item-title="
+                (item) => (item?.mincode ? item.mincode + ' - ' + item.displayName : null)
+              "
+              :item-value="(item) => (item?.mincode ? item : null)"
+            ></v-autocomplete>
+            <v-btn
+              icon="mdi-magnify"
+              color="primary"
+              variant="flat"
+              rounded="lg"
+              size="large"
+              @click="goToSchool"
+              class="mx-3"
+            />
+            <!-- <v-btn
+              color="primary"
+              class="text-none text-subtitle-1"
+              variant="flat"
+              @click="goToSchool"
+              ><v-icon icon="mdi-magnify"
+            /></v-btn> -->
+          </v-row>
+
+          <v-row>
+            <v-col class="px-0">
+              <v-btn
+                color="primary"
+                class="text-none text-subtitle-1"
+                variant="flat"
+                @click="goToSchoolSearch"
+                >View All Schools</v-btn
+              >
+            </v-col>
+            <v-spacer />
+            <v-col>
+              <v-btn
+                block
+                class="text-none text-subtitle-1 ma-1"
+                variant="outlined"
+                @click="downloadAllSchoolsInfo"
+                ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>All Schools
+                Info</v-btn
+              >
+              <v-btn
+                block
+                class="text-none text-subtitle-1 ma-1"
+                variant="outlined"
+                @click="downloadAllSchoolsMailing"
+                ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Mailing for All
+                Schools</v-btn
+              >
+            </v-col>
+          </v-row>
         </v-col>
         <v-spacer />
       </v-row>
     </v-sheet>
-
-    <div class="mt-8" >
-      <v-card class="pa-6">
-        <h2 class="mb-3">School Information</h2>
-        <v-row no-gutters justify="space-between">
-          <v-col class="mr-6">
-            <v-btn
-              color="primary"
-              class="text-none text-subtitle-1"
-              variant="flat"
-              @click="goToSchoolSearch"
-              >View All Schools</v-btn
-            >
-          </v-col>
-          <v-spacer />
-          <v-col class="ml-6" cols="4">
-            <v-btn
-              block
-              class="text-none text-subtitle-1 ma-1"
-              variant="outlined"
-              @click="downloadAllSchoolsInfo"
-              ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Download All
-              Schools Info</v-btn
-            >
-            <v-btn
-              block
-              class="text-none text-subtitle-1 ma-1"
-              variant="outlined"
-              @click="downloadAllSchoolsMailing"
-              ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Download All
-              Schools Mailing</v-btn
-            >
-          </v-col>
-        </v-row>
-      </v-card>
-    </div>
   </v-container>
 </template>
