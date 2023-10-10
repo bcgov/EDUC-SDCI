@@ -40,6 +40,7 @@ function downloadAuthorityContacts() {
             :items="appStore.getAuthoritiesList"
             :item-title="(item) => (item ? item.authorityNumber + ' - ' + item.displayName : '')"
             :item-value="(item) => item"
+            class="w-75"
           ></v-autocomplete>
           <v-btn
             icon="mdi-magnify"
