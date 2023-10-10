@@ -13,7 +13,7 @@
         ><v-spacer /></v-row
       ><v-row>
         <v-spacer />
-        <v-col cols="4"
+        <!-- <v-col cols="4"
           ><a href="https://www2.gov.bc.ca/">
             <img
               alt="B.C. Government Logo"
@@ -24,9 +24,9 @@
             /> </a
         ></v-col>
         <v-col cols="4" justify="space-between">
-          <!-- MORE INFO
-          <v-row>TEST</v-row> -->
-          <!-- <v-row>
+          MORE INFO
+          <v-row>TEST</v-row>
+          <v-row>
             <v-col>
               <v-row> MORE INFO </v-row>
               <v-row>
@@ -61,12 +61,9 @@
                 >
               </v-row>
             </v-col>
-          </v-row> -->
-        </v-col>
-        <v-spacer />
-      </v-row>
-      <hr />
-      <v-row>
+          </v-row>
+        </v-col> -->
+        <!-- <v-spacer /> -->
         <v-spacer />
         <v-col class="text-center mt-4" cols="12">
           &copy; 2023 Government of British Columbia

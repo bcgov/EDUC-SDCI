@@ -29,8 +29,8 @@ function downloadAuthorityContacts() {
 </script>
 
 <template>
-  <v-card class="pa-6">
-    <h2 class="mb-3">Independent Authorities</h2>
+  <v-card class="pa-6 mt-5">
+    <h2 class="mb-5">Independent Authorities</h2>
     <v-row no-gutters>
       <v-col class="ma-1">
         <v-row>
@@ -52,19 +52,11 @@ function downloadAuthorityContacts() {
           />
         </v-row>
         <v-row>
-          <v-btn
-            block
-            class="text-none text-subtitle-1 my-1"
-            variant="outlined"
-            @click="downloadAuthorityContacts"
+          <v-btn block class="text-none text-subtitle-1 my-1" @click="downloadAuthorityContacts"
             ><template v-slot:prepend> <v-icon icon="mdi-download" /></template> Contacts for All
             Authorities</v-btn
           >
-          <v-btn
-            block
-            class="text-none text-subtitle-1 my-1"
-            variant="outlined"
-            @click="downloadAuthorityMailing"
+          <v-btn block class="text-none text-subtitle-1 my-1" @click="downloadAuthorityMailing"
             ><template v-slot:prepend> <v-icon icon="mdi-download" /></template> Mailing for All
             Authorities</v-btn
           >
