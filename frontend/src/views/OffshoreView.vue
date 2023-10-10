@@ -21,11 +21,11 @@ const { offshoreSchools } = storeToRefs(appStore)
           <v-row>
             <v-spacer />
             <v-col
-              ><v-btn block class="text-none text-subtitle-1 ma-1" variant="outlined"
+              ><v-btn block class="text-none text-subtitle-1 ma-1"
                 ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Offshore School
                 Representatives</v-btn
               >
-              <v-btn block class="text-none text-subtitle-1 ma-1" variant="outlined"
+              <v-btn block class="text-none text-subtitle-1 ma-1"
                 ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Offshore
                 Schools</v-btn
               ></v-col
