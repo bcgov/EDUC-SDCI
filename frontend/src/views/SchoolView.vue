@@ -114,10 +114,6 @@ onBeforeMount(async () => {
     console.error(error)
   }
 })
-
-function downloadSchoolInfo() {
-  alert('TODO - Implement school info extract download')
-}
 </script>
 
 <template>
@@ -158,7 +154,11 @@ function downloadSchoolInfo() {
                   <DisplayAddress v-bind="item" />
                 </v-col>
                 <v-col
-                  ><v-btn block class="text-none text-subtitle-1 ma-1" @click="downloadSchoolInfo"
+                  ><v-btn
+                    block
+                    class="text-none text-subtitle-1 ma-1"
+                    @click="downloadCSV"
+                    :disabled="!schoolData.value"
                     ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>School
                     Info</v-btn
                   ></v-col
@@ -195,14 +195,6 @@ function downloadSchoolInfo() {
         </v-card-subtitle>
       </v-card-item> -->
       <v-card-text>
-        <v-btn
-          @click="downloadCSV"
-          class="text-none text-subtitle-1 ma-1"
-          variant="flat"
-          :disabled="!schoolData.value"
-        >
-          <template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download to CSV
-        </v-btn>
         <v-data-table-virtual
           :headers="headers"
           :items="filteredContacts"
