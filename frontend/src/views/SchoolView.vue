@@ -4,14 +4,14 @@ import { useRoute } from 'vue-router'
 import InstituteService from '@/services/InstituteService'
 import { useAppStore } from '@/stores/app'
 import type { School } from '@/types/types.d.ts'
-import { formatPhoneNumber } from '@/utils/common'
-// import common components
+import * as jsonexport from 'jsonexport/dist'
+import { distNumberFromMincode, formatPhoneNumber } from '@/utils/common'
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
 const appStore = useAppStore()
-const schoolData = reactive({ value: {} as School })
+const districtInfo = reactive<any>({ value: {} })
+const downloadContacts = ref<any>([])
 const filteredContacts = ref<any>([])
 const filteredAddresses = reactive<any>({ value: {} })
-const districtInfo = reactive<any>({ value: {} })
 const headers = [
   { title: 'Contact', key: 'jobTitle' },
   { title: 'First Name', key: 'firstName' },
@@ -21,12 +21,63 @@ const headers = [
   { title: 'Fax', key: 'faxNumber' },
   { title: 'Email', key: 'email' }
 ]
+const schoolData = reactive({ value: {} as School })
+
+// functions
+const downloadCSV = () => {
+  jsonexport(downloadContacts.value, function (err: any, csv: any) {
+    if (err) return console.error(err)
+    appStore.exportCSV(csv)
+  })
+}
+const transformContactForDownload = (inputData: any) => {
+  return inputData.map(
+    (item: {
+      districtNumber: string
+      mincode: string
+      displayName: string
+      addressLine1: string
+      city: string
+      provinceCode: string
+      postal: string
+      jobTitle: string
+      firstName: string
+      lastName: string
+      facilityTypeCode: string
+      schoolCategoryCode: string
+      phoneNumber: string
+      phoneExtension: string
+      alternatePhoneNumber: string
+      alternatePhoneExtension: string
+      email: string
+    }) => ({
+      districtNumber: item.districtNumber,
+      mincode: item.mincode,
+      displayName: item.displayName,
+      addressLine1: item.addressLine1,
+      city: item.city,
+      provinceCode: item.provinceCode,
+      postal: item.postal,
+      jobTitle: item.jobTitle,
+      firstName: item.firstName,
+      lastName: item.lastName,
+      facilityTypeCode: item.facilityTypeCode,
+      schoolCategoryCode: item.schoolCategoryCode,
+      phoneNumber: item.phoneNumber,
+      phoneExtension: item.phoneExtension,
+      alternatePhoneNumber: item.alternatePhoneNumber,
+      alternatePhoneExtension: item.alternatePhoneExtension,
+      email: item.email
+    })
+  )
+}
 onBeforeMount(async () => {
   const route = useRoute()
   const selectedSchoolId: string | string[] = route.params.schoolId
   try {
     const response = await InstituteService.getSchool(selectedSchoolId as string)
     schoolData.value = response.data
+    console.log(schoolData.value)
     //setting district name and number
     if (schoolData.value.districtId) {
       districtInfo.value = appStore.getDistrictByDistrictId(String(schoolData.value.districtId))
@@ -41,20 +92,28 @@ onBeforeMount(async () => {
     if (response.data) {
       if (response.data.contacts.length > 0) {
         filteredContacts.value = response.data.contacts
+        filteredContacts.value[0].districtNumber = distNumberFromMincode(response.data.mincode)
+        filteredContacts.value[0].displayName = response.data.displayName
+        filteredContacts.value[0].schoolCategoryCode = response.data.schoolCategoryCode
+        filteredContacts.value[0].facilityTypeCode = response.data.facilityTypeCode
+        filteredContacts.value[0].mincode = response.data.mincode
         filteredContacts.value[0].phoneNumber = response.data.phoneNumber
         filteredContacts.value[0].phoneExtension = response.data.phoneExtension
         filteredContacts.value[0].email = response.data.email
         filteredContacts.value[0].faxNumber = response.data.faxNumber
+        filteredContacts.value[0].addressLine1 = response.data.addresses[0].addressLine1
+        filteredContacts.value[0].addressLine2 = response.data.addresses[0].addressLine2
+        filteredContacts.value[0].city = response.data.addresses[0].city
+        filteredContacts.value[0].provinceCode = response.data.addresses[0].provinceCode
+        filteredContacts.value[0].countryCode = response.data.addresses[0].countryCode
+        filteredContacts.value[0].postal = response.data.addresses[0].postal
+        downloadContacts.value = transformContactForDownload(filteredContacts.value)
       }
     }
   } catch (error) {
     console.error(error)
   }
 })
-
-function downloadSchoolInfo() {
-  alert('TODO - Implement school info extract download')
-}
 </script>
 
 <template>
@@ -95,7 +154,11 @@ function downloadSchoolInfo() {
                   <DisplayAddress v-bind="item" />
                 </v-col>
                 <v-col
-                  ><v-btn block class="text-none text-subtitle-1 ma-1" @click="downloadSchoolInfo"
+                  ><v-btn
+                    block
+                    class="text-none text-subtitle-1 ma-1"
+                    @click="downloadCSV"
+                    :disabled="!schoolData.value"
                     ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>School
                     Info</v-btn
                   ></v-col
