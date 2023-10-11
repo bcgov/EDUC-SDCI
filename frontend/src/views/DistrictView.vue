@@ -121,19 +121,11 @@ function downloadDistrictSchools() {
             </v-col>
             <v-col>
               <h2>&nbsp;</h2>
-              <v-btn
-                block
-                class="text-none text-subtitle-1 ma-1"
-                variant="outlined"
-                @click="downloadDistrictContacts"
+              <v-btn block class="text-none text-subtitle-1 ma-1" @click="downloadDistrictContacts"
                 ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>District
                 Contacts</v-btn
               >
-              <v-btn
-                block
-                class="text-none text-subtitle-1 ma-1"
-                variant="outlined"
-                @click="downloadDistrictSchools"
+              <v-btn block class="text-none text-subtitle-1 ma-1" @click="downloadDistrictSchools"
                 ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>District
                 Schools</v-btn
               >

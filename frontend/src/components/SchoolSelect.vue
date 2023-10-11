@@ -43,13 +43,15 @@ function downloadAllSchoolsMailing() {
   <v-container fluid class="pt-0">
     <v-sheet elevation="2" class="py-6 full-width">
       <v-row no-gutters justify="space-between">
-        <v-spacer />
-        <img
-          src="@/assets/images/BCMapGraphic.png"
-          alt="Map of British Columbia"
-          style="height: 268px; position: absolute; top: 50px; left: -80px"
-        />
         <v-col class="mr-6">
+          <v-spacer />
+          <img
+            src="@/assets/images/BCMapGraphic.png"
+            alt="Map of British Columbia"
+            style="height: 268px; position: absolute; top: 50px; left: -80px"
+          />
+        </v-col>
+        <v-col lg="5" class="mr-6 py-6 school-search">
           <h2 class="mb-5">Find a School in BC</h2>
           <v-row>
             <v-autocomplete
@@ -91,19 +93,13 @@ function downloadAllSchoolsMailing() {
             </v-col>
             <v-spacer />
             <v-col>
-              <v-btn
-                block
-                class="text-none text-subtitle-1 ma-1"
-                variant="outlined"
-                @click="downloadAllSchoolsInfo"
+              <v-btn block class="text-none text-subtitle-1 ma-1" @click="downloadAllSchoolsInfo"
                 ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>All Schools
                 Info</v-btn
               >
-              <v-btn
-                block
-                class="text-none text-subtitle-1 ma-1"
-                variant="outlined"
-                @click="downloadAllSchoolsMailing"
+            </v-col>
+            <v-col>
+              <v-btn block class="text-none text-subtitle-1 ma-1" @click="downloadAllSchoolsMailing"
                 ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Mailing for All
                 Schools</v-btn
               >

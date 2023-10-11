@@ -31,8 +31,8 @@ function downloadDistrictsMailing() {
 </script>
 
 <template>
-  <v-card class="pa-6">
-    <h2 class="mb-3">School Districts</h2>
+  <v-card class="pa-6 mt-5">
+    <h2 class="mb-5">School Districts</h2>
     <v-row no-gutters justify="space-between">
       <v-col class="ma-1">
         <v-row>
@@ -56,21 +56,17 @@ function downloadDistrictsMailing() {
           />
         </v-row>
         <v-row>
-          <v-btn
-            block
-            class="text-none text-subtitle-1 my-1"
-            variant="outlined"
-            @click="downloadDistrictsMailing"
+          <v-btn block class="text-none text-subtitle-1 my-1" @click="downloadDistrictsMailing"
             ><template v-slot:prepend> <v-icon icon="mdi-download" /></template> Mailing for All
             Districts</v-btn
           >
-          <v-btn block class="text-none text-subtitle-1 my-1" variant="outlined"
+          <v-btn
+            href="/api/v1/download/csv/institute/district/contact/paginated?pageSize=100&pageNumber=0&filepath=exceldistrictcontacts"
+            block
+            class="text-none text-subtitle-1 my-1"
             ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>
-            <a
-              href="/api/v1/download/csv/institute/district/contact/paginated?pageSize=100&pageNumber=0&filepath=exceldistrictcontacts"
-            >
-              Contacts for All Districts</a
-            ></v-btn
+
+            Contacts for All Districts</v-btn
           >
           <!-- <v-btn class="text-none text-subtitle-1 ma-1" variant="flat"
             ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Contacts by

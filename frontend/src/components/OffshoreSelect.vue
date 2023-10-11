@@ -27,8 +27,8 @@ function downloadOffshoreSchoolReps() {
 </script>
 
 <template>
-  <v-card class="pa-6">
-    <h2 class="mb-4">BC Offshore Schools</h2>
+  <v-card class="pa-6 mt-5">
+    <h2 class="mb-5">BC Offshore Schools</h2>
     <v-row no-gutters>
       <v-col class="ma-1">
         <v-row>
@@ -40,19 +40,11 @@ function downloadOffshoreSchoolReps() {
             @click="viewOffshoreSchools"
             >View Offshore Schools</v-btn
           >
-          <v-btn
-            block
-            class="text-none text-subtitle-1 my-1"
-            variant="outlined"
-            @click="downloadOffshoreSchoolInfo"
+          <v-btn block class="text-none text-subtitle-1 my-1" @click="downloadOffshoreSchoolInfo"
             ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Offshore School
             Info</v-btn
           >
-          <v-btn
-            block
-            class="text-none text-subtitle-1 my-1"
-            variant="outlined"
-            @click="downloadOffshoreSchoolReps"
+          <v-btn block class="text-none text-subtitle-1 my-1" @click="downloadOffshoreSchoolReps"
             ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Offshore School
             Representatives</v-btn
           >
