@@ -33,6 +33,12 @@ export interface Grade {
   schoolGradeCode: string;
   schoolGradeId: string;
   schoolId: string;
+  // optional properties
+  label?: string;
+  description?: string;
+  displayOrder?: number | string;
+  effectiveDate?: string;
+  expiryDate?: string;
 }
 
 export interface Address {
