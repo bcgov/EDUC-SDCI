@@ -78,6 +78,11 @@ onBeforeMount(async () => {
     const response = await InstituteService.getSchool(selectedSchoolId as string)
     schoolData.value = response.data
     console.log(schoolData.value)
+    const filteredGrades = appStore.compareSchoolGrades(
+      appStore.getGradeByGradeCodes,
+      schoolData.value.grades
+    )
+    console.log(filteredGrades)
     //setting district name and number
     if (schoolData.value.districtId) {
       districtInfo.value = appStore.getDistrictByDistrictId(String(schoolData.value.districtId))
