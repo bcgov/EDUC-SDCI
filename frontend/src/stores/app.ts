@@ -1,7 +1,7 @@
 import { storeToRefs, defineStore } from 'pinia';
 import * as jsonexport from "jsonexport/dist"
 // import type definitions
-import type {ListDistrict, ListAuthority, ListSchool, CategoryCode, FacilityCode, AddressTypeCode, ContactTypeCode, GradeCode} from '@/types/types'
+import type {ListDistrict, ListAuthority, ListSchool, CategoryCode, FacilityCode, AddressTypeCode, ContactTypeCode, GradeCode, Grade} from '@/types/types'
 
 import InstituteService from '@/services/InstituteService'
 
@@ -15,7 +15,7 @@ export const useAppStore = defineStore('app', {
     facilityCodes: [] as FacilityCode[],
     addressTypeCodes: [] as AddressTypeCode[],
     contactTypeCodes: {} as ContactTypeCode,
-    gradeCodes: [] as GradeCode[]
+    gradeCodes: [] as Grade[]
   }),
   actions: {
     convertToCSV(jsonArray: any) {
@@ -45,19 +45,14 @@ export const useAppStore = defineStore('app', {
         a.download = 'output.csv';
         a.click();
     },
-    extractGradeCodes(data: any) {
-      const gradeCodes = data.map((item: any) => item.schoolGradeCode).sort();
-      // Extract numeric portion of grade codes and convert to numbers
-      const numericGrades = gradeCodes.map((code: any) => parseInt(code.match(/\d+/)[0], 10));
-      // Find the minimum and maximum grades
-      const minGrade = Math.min(...numericGrades);
-      const maxGrade = Math.max(...numericGrades);
-      // Create the desired range string
-      const gradeRange = `${minGrade}-${maxGrade}`;
-      return gradeRange
+    compareSchoolGrades(schoolGradesCode: Grade[], schoolGrades: Grade[]): Grade[] {
+      return schoolGradesCode.filter(sg1 => schoolGrades.some(sg2 => sg1.schoolGradeCode === sg2.schoolGradeCode));
+    },
+    extractGradeLabels(schoolGrades: Grade[]){
+      const gradeLabels: string[] = schoolGrades.map(grade => grade.label)
+      return gradeLabels
     },
     setDistricts(): void {
-
         InstituteService.getDistricts()
           .then((response) => {
             // Handle the response data

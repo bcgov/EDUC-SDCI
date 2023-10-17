@@ -40,31 +40,18 @@ const resetContactFilters = () => {
   results.value = 0
 }
 const transformContactForDownload = (inputData: any) => {
-  return inputData.map(
-    (item: {
-      districtNumber: string
-      displayName: string
-      firstName: string
-      lastName: string
-      jobTitle: string
-      phoneNumber: string
-      phoneExtension: string
-      alternatePhoneNumber: string
-      alternatePhoneExtension: string
-      email: string
-    }) => ({
-      districtNumber: item.districtNumber,
-      displayName: item.displayName,
-      firstName: item.firstName,
-      lastName: item.lastName,
-      jobTitle: item.jobTitle,
-      phoneNumber: item.phoneNumber,
-      phoneExtension: item.phoneExtension,
-      alternatePhoneNumber: item.alternatePhoneNumber,
-      alternatePhoneExtension: item.alternatePhoneExtension,
-      email: item.email
-    })
-  )
+  return inputData.map((item: any) => ({
+    districtNumber: item.districtNumber,
+    displayName: item.displayName,
+    firstName: item.firstName,
+    lastName: item.lastName,
+    jobTitle: item.jobTitle,
+    phoneNumber: item.phoneNumber,
+    phoneExtension: item.phoneExtension,
+    alternatePhoneNumber: item.alternatePhoneNumber,
+    alternatePhoneExtension: item.alternatePhoneExtension,
+    email: item.email
+  }))
 }
 const searchContact = async () => {
   // Filter contacts based on selected filters
@@ -128,14 +115,19 @@ const searchContact = async () => {
           <v-btn color="error" variant="text" @click="dialog = false"> Close </v-btn>
         </v-card-actions>
       </v-card-text>
-      <div class="ma-2">TOTAL: {{ results }}</div>
-      <v-btn
-        @click="downloadCSV"
-        class="text-none text-subtitle-1 ma-1"
-        variant="flat"
-        :disabled="results == 0"
-        ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download to CSV</v-btn
-      >
+      <v-row>
+        <v-col class="ma-2">TOTAL: {{ results }}</v-col>
+        <v-col></v-col>
+        <v-col>
+          <v-btn
+            block
+            class="text-none text-subtitle-1 ma-1"
+            @click="downloadCSV"
+            :disabled="results == 0"
+            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Contact Info</v-btn
+          >
+        </v-col>
+      </v-row>
       <v-data-table-virtual
         :headers="headers"
         :items="filteredContacts"
