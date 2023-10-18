@@ -49,7 +49,7 @@ export const useAppStore = defineStore('app', {
       return schoolGradesCode.filter(sg1 => schoolGrades.some(sg2 => sg1.schoolGradeCode === sg2.schoolGradeCode));
     },
     extractGradeLabels(schoolGrades: Grade[]){
-      const gradeLabels: string[] = schoolGrades.map(grade => grade.label)
+      const gradeLabels: (string | undefined)[] = schoolGrades.map(grade => grade.label)
       return gradeLabels
     },
     setDistricts(): void {
