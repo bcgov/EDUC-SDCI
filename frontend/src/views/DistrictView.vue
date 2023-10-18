@@ -24,7 +24,7 @@ const tab = ref(tabOptions.contacts) // Default to contacts tab
 const contactHeaders = [
   { title: 'Contact Type', key: 'districtContactTypeCode' },
   { title: 'Name', key: 'firstName' },
-  { title: 'Title/Roll', key: 'jobTitle' },
+  { title: 'Title/Role', key: 'jobTitle' },
   { title: 'Phone', key: 'phoneNumber' },
   { title: 'Email', key: 'email' }
 ]
