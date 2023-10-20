@@ -163,6 +163,10 @@ onBeforeMount(async () => {
       </v-row>
     </v-sheet>
     <v-card class="fill-screen-height" width="100%" v-if="schoolData.value">
+      <!-- DISPLAY GRADES -->
+      <div v-for="grade in appStore.getGradeByGradeCodes" :key="grade.schoolGradeCode">
+        {{ grade }}
+      </div>
       <!-- <v-card-item>
         <v-card-title v-if="schoolData.value.displayName">
           {{ schoolData.value.displayName }} - {{ schoolData.value.mincode }}</v-card-title
