@@ -5,7 +5,11 @@ import InstituteService from '@/services/InstituteService'
 import { useAppStore } from '@/stores/app'
 import type { School } from '@/types/types.d.ts'
 import * as jsonexport from 'jsonexport/dist'
-import { distNumberFromMincode, formatPhoneNumber } from '@/utils/common'
+import {
+  distNumberFromMincode,
+  formatPhoneNumber,
+  transformContactForDownload
+} from '@/utils/common'
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
 const appStore = useAppStore()
 
@@ -31,28 +35,6 @@ const downloadCSV = () => {
     if (err) return console.error(err)
     appStore.exportCSV(csv)
   })
-}
-const transformContactForDownload = (inputData: any) => {
-  return inputData.map((item: any) => ({
-    districtNumber: item.districtNumber,
-    mincode: item.mincode,
-    displayName: item.displayName,
-    addressLine1: item.addressLine1,
-    city: item.city,
-    provinceCode: item.provinceCode,
-    postal: item.postal,
-    jobTitle: item.jobTitle,
-    firstName: item.firstName,
-    lastName: item.lastName,
-    facilityTypeCode: item.facilityTypeCode,
-    schoolCategoryCode: item.schoolCategoryCode,
-    phoneNumber: item.phoneNumber,
-    phoneExtension: item.phoneExtension,
-    alternatePhoneNumber: item.alternatePhoneNumber,
-    alternatePhoneExtension: item.alternatePhoneExtension,
-    email: item.email,
-    grades: item.grades
-  }))
 }
 
 // loading component

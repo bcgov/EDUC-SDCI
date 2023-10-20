@@ -4,31 +4,29 @@ import { ref, reactive, onMounted, computed, toValue } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { useRoute } from 'vue-router'
 import { formatPhoneNumber } from '@/utils/common'
-
 import type { District } from '@/types/types.d.ts'
-
+import * as jsonexport from 'jsonexport/dist'
 // import common components
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
 
 const appStore = useAppStore()
 const districtId = ref<string | null>(null) // Initialize with null initially
-
 const district = reactive({ value: {} as District })
-
+const contacts = ref<any>([])
+const filteredContacts = ref<any>([])
+// const downloadContacts = ref<any>([])
 const tabOptions = {
   contacts: 1,
   schools: 2
 }
 const tab = ref(tabOptions.contacts) // Default to contacts tab
-
 const contactHeaders = [
   { title: 'Contact Type', key: 'districtContactTypeCode' },
   { title: 'Name', key: 'firstName' },
-  { title: 'Title/Roll', key: 'jobTitle' },
+  { title: 'Title/Role', key: 'jobTitle' },
   { title: 'Phone', key: 'phoneNumber' },
   { title: 'Email', key: 'email' }
 ]
-
 const schoolHeaders = [
   { title: 'School Name', key: 'displayName' },
   { title: 'Mincode', key: 'mincode' },
@@ -43,6 +41,16 @@ const schoolHeaders = [
 
 const schoolSearch = ref('')
 const contactSearch = ref('')
+// functions
+function downloadDistrictContacts() {
+  jsonexport(filteredContacts.value, function (err: any, csv: any) {
+    if (err) return console.error(err)
+    appStore.exportCSV(csv)
+  })
+}
+function downloadDistrictSchools() {
+  alert("TODO - Implement CSV download for a district's schools")
+}
 
 onMounted(async () => {
   const route = useRoute()
@@ -52,7 +60,32 @@ onMounted(async () => {
   // get district data
   try {
     const response = await InstituteService.getDistrictView(districtId.value as string)
-    district.value = response.data
+    if (response.data?.districtData?.contacts) {
+      district.value = response.data
+      contacts.value = response.data.districtData.contacts
+      filteredContacts.value = contacts.value.map((item: any) => {
+        return {
+          districtNumber: response.data.districtData.districtNumber,
+          displayName: response.data.districtData.displayName,
+          jobTitle: item.jobTitle,
+          firstName: item.firstName,
+          lastName: item.lastName,
+          phoneNumber: item.phoneNumber,
+          phoneExtension: item.phoneExtension,
+          alternatePhoneNumber: item.alternatePhoneNumber,
+          alternatePhoneExtension: item.alternatePhoneExtension,
+          email: item.email,
+          mailingAddress: response.data.districtData.addresses[0].addressLine1,
+          mailingCity: response.data.districtData.addresses[0].city,
+          mailingProvince: response.data.districtData.addresses[0].provinceCode,
+          mailingPostalCode: response.data.districtData.addresses[0].postal,
+          districtPhone: response.data.districtData.phoneNumber,
+          districtFax: response.data.districtData.faxNumber,
+          website: response.data.districtData.website
+        }
+      })
+      console.log(filteredContacts.value)
+    }
   } catch (error) {
     console.error(error)
   }
@@ -64,14 +97,6 @@ onMounted(async () => {
   //   console.error(error)
   // }
 })
-
-function downloadDistrictContacts() {
-  alert("TODO - Implement CSV download for a district's contacts")
-}
-
-function downloadDistrictSchools() {
-  alert("TODO - Implement CSV download for a district's schools")
-}
 </script>
 
 <template>

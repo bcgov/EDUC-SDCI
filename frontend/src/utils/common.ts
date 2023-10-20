@@ -13,3 +13,25 @@ export function useSanitizeURL(input: string | String): String {
     input = input.toLowerCase().replace(/^a-zA-Z0-9 ]/g, '')
     return input
 }
+export function transformContactForDownload  (inputData: any): {} {
+    return inputData.map((item: any) => ({
+      districtNumber: item.districtNumber,
+      mincode: item.mincode,
+      displayName: item.displayName,
+      addressLine1: item.addressLine1,
+      city: item.city,
+      provinceCode: item.provinceCode,
+      postal: item.postal,
+      jobTitle: item.jobTitle,
+      firstName: item.firstName,
+      lastName: item.lastName,
+      facilityTypeCode: item.facilityTypeCode,
+      schoolCategoryCode: item.schoolCategoryCode,
+      phoneNumber: item.phoneNumber,
+      phoneExtension: item.phoneExtension,
+      alternatePhoneNumber: item.alternatePhoneNumber,
+      alternatePhoneExtension: item.alternatePhoneExtension,
+      email: item.email,
+      grades: item.grades
+    }))
+}
