@@ -127,8 +127,8 @@ onMounted(async () => {
       })
       filteredContacts.value = contacts.value.map((item: any) => {
         return {
-          districtNumber: response.data.districtData.districtNumber,
-          displayName: response.data.districtData.displayName,
+          districtNumber: response.data.districtData?.districtNumber,
+          displayName: response.data.districtData?.displayName,
           jobTitle: item.jobTitle,
           firstName: item.firstName,
           lastName: item.lastName,
@@ -137,13 +137,13 @@ onMounted(async () => {
           alternatePhoneNumber: item.alternatePhoneNumber,
           alternatePhoneExtension: item.alternatePhoneExtension,
           email: item.email,
-          mailingAddress: response.data.districtData.addresses[0].addressLine1,
-          mailingCity: response.data.districtData.addresses[0].city,
-          mailingProvince: response.data.districtData.addresses[0].provinceCode,
-          mailingPostalCode: response.data.districtData.addresses[0].postal,
-          districtPhone: response.data.districtData.phoneNumber,
-          districtFax: response.data.districtData.faxNumber,
-          website: response.data.districtData.website
+          mailingAddress: response.data.districtData?.addresses[0].addressLine1,
+          mailingCity: response.data.districtData?.addresses[0].city,
+          mailingProvince: response.data.districtData?.addresses[0].provinceCode,
+          mailingPostalCode: response.data.districtData?.addresses[0].postal,
+          districtPhone: response.data.districtData?.phoneNumber,
+          districtFax: response.data.districtData?.faxNumber,
+          website: response.data.districtData?.website
         }
       })
     }
