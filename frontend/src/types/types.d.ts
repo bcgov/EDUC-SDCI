@@ -9,10 +9,10 @@ interface Code {
 }
 
 interface Contact {
-  createUser: string;
-  updateUser: string;
-  createDate: string;
-  updateDate: string;
+  createUser?: string;
+  updateUser?: string;
+  createDate?: string;
+  updateDate?: string;
   phoneNumber: string;
   jobTitle: string;
   phoneExtension: string;
@@ -21,8 +21,8 @@ interface Contact {
   email: string;
   firstName: string;
   lastName: string;
-  effectiveDate: string;
-  expiryDate: string;
+  effectiveDate?: string;
+  expiryDate?: string;
 }
 
 export interface Grade {
@@ -47,14 +47,14 @@ export interface Address {
   addressTypeCode: string;
   city: string;
   countryCode: string;
-  createDate: string;
-  createUser: string;
-  districtAddressId: string;
-  districtId: string;
+  createDate?: string;
+  createUser?: string;
+  districtAddressId?: string;
+  districtId?: string;
   postal: string;
   provinceCode: string;
-  updateDate: string;
-  updateUser: string;
+  updateDate?: string;
+  updateUser?: string;
 }
 
 // CODES
@@ -104,34 +104,34 @@ export interface SchoolContact extends Contact {
 }
 
 export interface School {
-  createDate: string;
-  createUser: string;
-  id: number;
+  createDate?: string;
+  createUser?: string;
+  id?: number;
   name: string;
   mincode: string;
   displayName: string;
-  displayNameNoSpecialChars: string;
-  districtId: string;
+  displayNameNoSpecialChars?: string;
+  districtId?: string;
   email: string;
   facilityTypeCode: string;
   faxNumber: string;
-  independentAuthorityId: string;
+  independentAuthorityId?: string;
   mincode: string;
-  openDate: string;
+  openDate?: string;
   phoneNumber: string;
   schoolCategoryCode: string;
-  schoolId: string;
-  schoolNumber: string;
-  schoolOrganizationCode: string;
-  schoolReportingRequirementCode: string;
-  updateDate: string;
-  updateUser: string;
+  schoolId?: string;
+  schoolNumber?: string;
+  schoolOrganizationCode?: string;
+  schoolReportingRequirementCode?: string;
+  updateDate?: string;
+  updateUser?: string;
   website: string;
-  neighborhoodLearning: [];
+  neighborhoodLearning?: [];
   grades: Grade[];
   contacts: SchoolContact[];
   addresses: Address[];
-  notes: [];
+  notes?: [];
 }
 
 export interface ListSchool {
@@ -186,7 +186,17 @@ export interface AuthorityContact extends Contact {
   independentAuthorityId: string;
   authorityContactTypeCode: string;
 }
-
+export interface Note {
+  createUser: string;
+  updateUser: string;
+  createDate: string;
+  updateDate: string;
+  noteId: string;
+  schoolId: string;
+  districtId: string | null;
+  independentAuthorityId: string | null;
+  content: string;
+}
 export interface Authority {
   authorityData: {
     authorityNumber: string;
