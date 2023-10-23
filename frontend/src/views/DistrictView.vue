@@ -3,17 +3,18 @@ import InstituteService from '@/services/InstituteService'
 import { ref, reactive, onMounted, computed, toValue } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { useRoute } from 'vue-router'
-import { formatPhoneNumber } from '@/utils/common'
-import type { District } from '@/types/types.d.ts'
+import { formatPhoneNumber, transformContactForDownload } from '@/utils/common'
+import type { District, School, Grade, Address, Contact } from '@/types/types.d.ts'
 import * as jsonexport from 'jsonexport/dist'
 // import common components
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
-
 const appStore = useAppStore()
 const districtId = ref<string | null>(null) // Initialize with null initially
 const district = reactive({ value: {} as District })
+const schools = ref<any>([])
 const contacts = ref<any>([])
 const filteredContacts = ref<any>([])
+const filteredSchools = ref<any>([])
 // const downloadContacts = ref<any>([])
 const tabOptions = {
   contacts: 1,
@@ -49,7 +50,10 @@ function downloadDistrictContacts() {
   })
 }
 function downloadDistrictSchools() {
-  alert("TODO - Implement CSV download for a district's schools")
+  jsonexport(filteredSchools.value, function (err: any, csv: any) {
+    if (err) return console.error(err)
+    appStore.exportCSV(csv)
+  })
 }
 
 onMounted(async () => {
@@ -63,6 +67,64 @@ onMounted(async () => {
     if (response.data?.districtData?.contacts) {
       district.value = response.data
       contacts.value = response.data.districtData.contacts
+      schools.value = district.value.districtSchools
+
+      //Change School date for DL
+      const transformedSchoolData = schools.value.map((school: School) => {
+        const { contacts, addresses, ...rest } = school
+        const transformedContacts = contacts.map(({ schoolContactTypeCode, ...contactRest }) => ({
+          schoolContactTypeCode,
+          ...contactRest
+        }))
+        const physicalAddress = addresses.find(
+          (address: Address) => address.addressTypeCode === 'PHYSICAL'
+        )
+        const mailingAddress = addresses.find(
+          (address: Address) => address.addressTypeCode === 'MAILING'
+        )
+        return {
+          ...rest,
+          contacts: transformedContacts.reduce((acc, contact) => ({ ...acc, ...contact }), {}),
+          physicalAddress: physicalAddress,
+          mailingAddress: mailingAddress,
+          grades: [],
+          neighborhoodLearning: [],
+          schoolMove: []
+        }
+      })
+      // console.log(response.data)
+      console.log(transformedSchoolData)
+      //Change School data for DL
+      filteredSchools.value = transformedSchoolData.map((item: any) => {
+        return {
+          districtNumber: response.data.districtData.districtNumber,
+          displayName: item.displayName,
+          mincode: item.mincode,
+          facilityTypeCode: item.facilityTypeCode,
+          contactJobTitle: item.contacts?.jobTitle,
+          contactFirstName: item.contacts?.firstName,
+          contactLastName: item.contacts?.lastName,
+          contactPhoneExtension: item.contacts?.phoneExtension,
+          contactPhoneNumber: item.contacts?.phoneNumber,
+          schoolEmail: item.email,
+          mailingAddress: item.mailingAddress?.addressLine1,
+          mailingAddressLine2: item.mailingAddress?.addressLine2,
+          mailingAddressCity: item.mailingAddress?.city,
+          mailingAddressProvince: item.mailingAddress?.provinceCode,
+          mailingAddressPostalCode: item.mailingAddress?.postal,
+          physicalAddress: item.physicalAddress?.addressLine1,
+          physicalAddressLine2: item.physicalAddress?.addressLine2,
+          physicalAddressCity: item.physicalAddress?.city,
+          physicalAddressProvince: item.physicalAddress?.provinceCode,
+          physicalAddressPostalCode: item.physicalAddress?.postal,
+          districtPhoneNumber: item.phoneNumber,
+          districtFax: item.faxNumber,
+          districtWebsite: item.website,
+          schoolCategoryCode: item.schoolCategoryCode,
+          schoolOrganizationCode: item.schoolOrganizationCode,
+          schoolReportingRequirementCode: item.schoolReportingRequirementCode
+        }
+      })
       filteredContacts.value = contacts.value.map((item: any) => {
         return {
           districtNumber: response.data.districtData.districtNumber,
@@ -84,7 +146,6 @@ onMounted(async () => {
           website: response.data.districtData.website
         }
       })
-      console.log(filteredContacts.value)
     }
   } catch (error) {
     console.error(error)
