@@ -84,9 +84,9 @@ function downloadAllSchoolsMailing() {
           <v-row>
             <v-col class="px-0">
               <v-btn
-                color="primary"
+                color="bcGovBlue"
                 class="text-none text-subtitle-1"
-                variant="flat"
+                variant="outlined"
                 @click="goToSchoolSearch"
                 >View All Schools</v-btn
               >
