@@ -44,6 +44,7 @@ function downloadDistrictsMailing() {
               (item) => (item?.districtNumber ? item.districtNumber + ' - ' + item.displayName : '')
             "
             :item-value="(item) => item"
+            class="selectDistrictInput"
           ></v-autocomplete>
           <v-btn
             icon="mdi-magnify"

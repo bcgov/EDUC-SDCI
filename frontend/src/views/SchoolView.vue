@@ -109,7 +109,7 @@ function goToDistrict() {
     <v-breadcrumbs
       class="breadcrumbs"
       bg-color="white"
-      :items="[{ title: 'Home', href: '/' }, 'School', schoolData.value.displayName]"
+      :items="[{ title: 'Home', href: '/' }, 'School', {title: schoolData?.value?.displayName, href:''}]"
     ></v-breadcrumbs>
 
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
