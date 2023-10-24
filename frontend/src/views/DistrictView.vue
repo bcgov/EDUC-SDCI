@@ -177,10 +177,10 @@ onMounted(async () => {
         <v-col cols="6">
           <v-row v-if="district.value.districtData" no-gutters justify="space-between">
             <v-col>
-              <h2 class="mt-3 mb-2">
+              <h1 class="mt-3 mb-2">
                 {{ district.value.districtData?.districtNumber }} -
                 {{ district.value.districtData?.displayName }}
-              </h2>
+              </h1>
               <p>
                 <strong>Phone:</strong>
                 {{ formatPhoneNumber(district.value.districtData?.phoneNumber) }}
@@ -200,11 +200,11 @@ onMounted(async () => {
               v-for="item in district.value.districtData.addresses"
               :key="item.addressTypeCode"
             >
-              <h2>&nbsp;</h2>
+              <h1>&nbsp;</h1>
               <DisplayAddress v-bind="item" />
             </v-col>
             <v-col>
-              <h2>&nbsp;</h2>
+              <h1>&nbsp;</h1>
               <v-btn block class="text-none text-subtitle-1 ma-1" @click="downloadDistrictContacts"
                 ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>District
                 Contacts</v-btn

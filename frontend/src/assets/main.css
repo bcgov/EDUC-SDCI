@@ -27,6 +27,13 @@
   padding-left: 40em !important;
 }
 
+/* styles button to look like links */
+button.link-btn, .link-btn .v-btn__content {
+  opacity: 1;
+  color: #0000EE;
+  text-decoration: underline;
+}
+
 .territorial-acknowledgement {
   background-color: #494949;
   color: #fff;
