@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { reactive, onBeforeMount, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import router from '@/router'
 import InstituteService from '@/services/InstituteService'
 import { useAppStore } from '@/stores/app'
-import type { School } from '@/types/types.d.ts'
+import type { School, Grade } from '@/types/types.d.ts'
 import * as jsonexport from 'jsonexport/dist'
 import {
   distNumberFromMincode,
@@ -11,6 +12,7 @@ import {
   transformContactForDownload
 } from '@/utils/common'
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
+import { useSanitizeURL } from '@/composables/string'
 const appStore = useAppStore()
 
 // props
@@ -44,6 +46,8 @@ onBeforeMount(async () => {
   try {
     const response = await InstituteService.getSchool(selectedSchoolId as string)
     schoolData.value = response.data
+    console.log(schoolData.value)
+
     //add the missing labels
     const filteredGrades = appStore.compareSchoolGrades(
       appStore.getGradeByGradeCodes,
@@ -88,6 +92,16 @@ onBeforeMount(async () => {
     console.error(error)
   }
 })
+
+function goToDistrict() {
+  router.push({
+    name: 'district',
+    params: {
+      districtNumber: useSanitizeURL(String(districtInfo.value?.districtNumber)),
+      displayName: useSanitizeURL(String(districtInfo.value?.displayName))
+    }
+  })
+}
 </script>
 
 <template>
@@ -105,14 +119,20 @@ onBeforeMount(async () => {
           <v-row v-if="schoolData.value" no-gutters justify="space-between">
             <v-col>
               <v-row>
-                <h2 class="mt-3 mb-2">
+                <h1 class="mt-3 mb-2">
                   {{ schoolData.value.displayName }} - {{ schoolData.value.mincode }}
-                </h2>
+                </h1>
               </v-row>
-              <v-row
-                >District {{ districtInfo.value.districtNumber }} -
-                {{ districtInfo.value.displayName }}</v-row
-              >
+              <v-row>
+                <a
+                  :href="`/district/${useSanitizeURL(
+                    String(districtInfo.value?.districtNumber)
+                  )}-${useSanitizeURL(String(districtInfo.value?.displayName))}`"
+                >
+                  District {{ districtInfo.value.districtNumber }} -
+                  {{ districtInfo.value.displayName }}
+                </a>
+              </v-row>
               <v-row>
                 <v-col class="pl-0">
                   <p>
@@ -121,7 +141,9 @@ onBeforeMount(async () => {
                   <p><strong>Fax:</strong> {{ formatPhoneNumber(schoolData.value.faxNumber) }}</p>
                   <p>
                     <strong>Email: </strong>
-                    <a :href="schoolData.value?.email"> {{ schoolData.value.email }} </a>
+                    <a :href="'mailto:' + schoolData.value?.email">
+                      {{ schoolData.value.email }}
+                    </a>
                   </p>
                 </v-col>
                 <v-col v-for="item in schoolData.value.addresses" :key="item.addressTypeCode">
@@ -146,9 +168,18 @@ onBeforeMount(async () => {
     </v-sheet>
     <v-card class="fill-screen-height" width="100%" v-if="schoolData.value">
       <!-- DISPLAY GRADES -->
-      <div v-for="grade in appStore.getGradeByGradeCodes" :key="grade.schoolGradeCode">
-        {{ grade }}
-      </div>
+      <!-- <v-chip
+        label
+        v-for="schoolGrade in schoolData.value.grades"
+        :key="schoolGrade.schoolGradeCode"
+      >
+        {{
+          appStore.getGradeByGradeCodes
+            .sort((a, b) => a.displayOrder - b.displayOrder)
+            .find((grade) => schoolGrade.schoolGradeCode == grade.schoolGradeCode)?.label
+        }}
+      </v-chip> -->
+
       <!-- <v-card-item>
         <v-card-title v-if="schoolData.value.displayName">
           {{ schoolData.value.displayName }} - {{ schoolData.value.mincode }}</v-card-title
@@ -172,6 +203,7 @@ onBeforeMount(async () => {
           >
         </v-card-subtitle>
       </v-card-item> -->
+      <h2>School Contacts</h2>
       <v-card-text>
         <v-data-table-virtual
           :headers="headers"
@@ -180,6 +212,18 @@ onBeforeMount(async () => {
           item-value="name"
         ></v-data-table-virtual>
       </v-card-text>
+
+      <h2>Grades</h2>
+      <div label v-for="grade in appStore.getGradeByGradeCodes" :key="grade.schoolGradeCode">
+        {{
+          schoolData.value.grades.find(
+            (schoolGrade: Grade) => schoolGrade.schoolGradeCode == grade.schoolGradeCode
+          )
+            ? grade.label
+            : undefined
+        }}
+      </div>
     </v-card>
+    <pre>{{ schoolData.value }}</pre>
   </div>
 </template>
