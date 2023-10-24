@@ -66,8 +66,8 @@ onMounted(async () => {
     const response = await InstituteService.getDistrictView(districtId.value as string)
     if (response.data?.districtData?.contacts) {
       district.value = response.data
-      contacts.value = response.data.districtData.contacts
-      schools.value = district.value.districtSchools
+      contacts.value = response.data?.districtData?.contacts
+      schools.value = district.value?.districtSchools
 
       //Change School date for DL
       const transformedSchoolData = schools.value.map((school: School) => {
@@ -77,10 +77,10 @@ onMounted(async () => {
           ...contactRest
         }))
         const physicalAddress = addresses.find(
-          (address: Address) => address.addressTypeCode === 'PHYSICAL'
+          (address: Address) => address?.addressTypeCode === 'PHYSICAL'
         )
         const mailingAddress = addresses.find(
-          (address: Address) => address.addressTypeCode === 'MAILING'
+          (address: Address) => address?.addressTypeCode === 'MAILING'
         )
         return {
           ...rest,
@@ -92,8 +92,6 @@ onMounted(async () => {
           schoolMove: []
         }
       })
-      // console.log(response.data)
-      console.log(transformedSchoolData)
       //Change School data for DL
       filteredSchools.value = transformedSchoolData.map((item: any) => {
         return {

@@ -14,7 +14,7 @@ const appStore = useAppStore()
 const authorityId = ref<any>(null) // Initialize with null initially
 
 const authority = reactive({ value: {} as Authority }) // cast to Authority type
-
+const filteredContacts = ref<any>([])
 const tabOptions = {
   contacts: 1,
   schools: 2
@@ -54,6 +54,27 @@ onMounted(async () => {
   try {
     const response = await InstituteService.getAuthority(authorityId.value)
     authority.value = response.data
+    // console.log(authority.value)
+    filteredContacts.value = {
+      authorityNumber: authority.value?.authorityData?.authorityNumber,
+      authorityTypeCode: authority.value?.authorityData?.authorityTypeCode,
+      displayName: authority.value?.authorityData?.displayName,
+      addressLine1: authority.value?.authorityData?.addresses[0]?.addressLine1,
+      addressLine2: authority.value?.authorityData?.addresses[0]?.addressLine2,
+      city: authority.value?.authorityData?.addresses[0]?.city,
+      postal: authority.value?.authorityData?.addresses[0]?.postal,
+      addressTypeCode: authority.value?.authorityData?.addresses[0]?.addressTypeCode,
+      provinceCode: authority.value?.authorityData?.addresses[0]?.provinceCode,
+      countryCode: authority.value?.authorityData?.addresses[0]?.countryCode,
+      firstName: authority.value?.authorityData?.contacts[0]?.firstName,
+      lastName: authority.value?.authorityData?.contacts[0]?.lastName,
+      email: authority.value?.authorityData?.email,
+      faxNumber: authority.value?.authorityData?.faxNumber,
+      phoneNumber: authority.value?.authorityData?.phoneNumber,
+      openedDate: authority.value?.authorityData?.openedDate,
+      closedDate: authority.value?.authorityData?.closedDate
+    }
+    console.log(filteredContacts.value)
   } catch (error) {
     console.error(error)
   }
@@ -104,10 +125,10 @@ onMounted(async () => {
                 ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Authority
                 Contacts</v-btn
               >
-              <v-btn block class="text-none text-subtitle-1 ma-1"
+              <!-- <v-btn block class="text-none text-subtitle-1 ma-1"
                 ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Authority
                 Schools</v-btn
-              >
+              > -->
             </v-col>
           </v-row>
         </v-col>

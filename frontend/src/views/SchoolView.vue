@@ -5,11 +5,7 @@ import InstituteService from '@/services/InstituteService'
 import { useAppStore } from '@/stores/app'
 import type { School } from '@/types/types.d.ts'
 import * as jsonexport from 'jsonexport/dist'
-import {
-  distNumberFromMincode,
-  formatPhoneNumber,
-  transformContactForDownload
-} from '@/utils/common'
+import { distNumberFromMincode, formatPhoneNumber } from '@/utils/common'
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
 const appStore = useAppStore()
 
@@ -36,7 +32,28 @@ const downloadCSV = () => {
     appStore.exportCSV(csv)
   })
 }
-
+const transformContactForDownload = (inputData: any): {} => {
+  return inputData.map((item: any) => ({
+    districtNumber: item.districtNumber,
+    mincode: item.mincode,
+    displayName: item.displayName,
+    addressLine1: item.addressLine1,
+    city: item.city,
+    provinceCode: item.provinceCode,
+    postal: item.postal,
+    jobTitle: item.jobTitle,
+    firstName: item.firstName,
+    lastName: item.lastName,
+    facilityTypeCode: item.facilityTypeCode,
+    schoolCategoryCode: item.schoolCategoryCode,
+    phoneNumber: item.phoneNumber,
+    phoneExtension: item.phoneExtension,
+    alternatePhoneNumber: item.alternatePhoneNumber,
+    alternatePhoneExtension: item.alternatePhoneExtension,
+    email: item.email,
+    grades: item.grades
+  }))
+}
 // loading component
 onBeforeMount(async () => {
   const route = useRoute()
@@ -64,24 +81,26 @@ onBeforeMount(async () => {
     //setting school contacts
     if (response.data) {
       if (response.data.contacts.length > 0) {
-        filteredContacts.value = response.data.contacts
-        filteredContacts.value[0].districtNumber = distNumberFromMincode(response.data.mincode)
-        filteredContacts.value[0].displayName = response.data.displayName
-        filteredContacts.value[0].schoolCategoryCode = response.data.schoolCategoryCode
-        filteredContacts.value[0].facilityTypeCode = response.data.facilityTypeCode
-        filteredContacts.value[0].mincode = response.data.mincode
-        filteredContacts.value[0].phoneNumber = response.data.phoneNumber
-        filteredContacts.value[0].phoneExtension = response.data.phoneExtension
-        filteredContacts.value[0].email = response.data.email
-        filteredContacts.value[0].faxNumber = response.data.faxNumber
-        filteredContacts.value[0].addressLine1 = response.data.addresses[0].addressLine1
-        filteredContacts.value[0].addressLine2 = response.data.addresses[0].addressLine2
-        filteredContacts.value[0].city = response.data.addresses[0].city
-        filteredContacts.value[0].provinceCode = response.data.addresses[0].provinceCode
-        filteredContacts.value[0].countryCode = response.data.addresses[0].countryCode
-        filteredContacts.value[0].postal = response.data.addresses[0].postal
-        filteredContacts.value[0].grades = filteredGradesLabels
-        downloadContacts.value = transformContactForDownload(filteredContacts.value)
+        for (let i = 0; i < response.data.contacts.length; i++) {
+          filteredContacts.value = response.data.contacts
+          filteredContacts.value[i].districtNumber = distNumberFromMincode(response.data.mincode)
+          filteredContacts.value[i].displayName = response.data.displayName
+          filteredContacts.value[i].schoolCategoryCode = response.data.schoolCategoryCode
+          filteredContacts.value[i].facilityTypeCode = response.data.facilityTypeCode
+          filteredContacts.value[i].mincode = response.data.mincode
+          filteredContacts.value[i].phoneNumber = response.data.phoneNumber
+          filteredContacts.value[i].phoneExtension = response.data.phoneExtension
+          filteredContacts.value[i].email = response.data.email
+          filteredContacts.value[i].faxNumber = response.data.faxNumber
+          filteredContacts.value[i].addressLine1 = response.data.addresses[0].addressLine1
+          filteredContacts.value[i].addressLine2 = response.data.addresses[0].addressLine2
+          filteredContacts.value[i].city = response.data.addresses[0].city
+          filteredContacts.value[i].provinceCode = response.data.addresses[0].provinceCode
+          filteredContacts.value[i].countryCode = response.data.addresses[0].countryCode
+          filteredContacts.value[i].postal = response.data.addresses[0].postal
+          filteredContacts.value[i].grades = filteredGradesLabels
+          downloadContacts.value = transformContactForDownload(filteredContacts.value)
+        }
       }
     }
   } catch (error) {
