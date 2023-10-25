@@ -16,4 +16,4 @@ jobs:
       - uses: cypress-io/github-action@v5
         with:
           browser: chrome
-          working-directory: ./frontend/cypress/e2e
+          working-directory: ./tests-e2e
