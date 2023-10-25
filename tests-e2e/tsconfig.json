@@ -9,7 +9,6 @@
         "strict": true,
         "module": "commonjs",
         "allowSyntheticDefaultImports": true,
-        "moduleResolution": "node"
         
     },
     "include": ["./cypress/e2e/*.ts", "./cypress.config.ts"],

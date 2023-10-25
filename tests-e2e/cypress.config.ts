@@ -12,6 +12,6 @@ export default defineConfig({
   viewportWidth: 1920,
   defaultCommandTimeout: 5000,
   e2e: {
-    baseUrl: ''
+    baseUrl: process.env.CYPRESS_BASE_URL_SECRET || ''
   }
 })
