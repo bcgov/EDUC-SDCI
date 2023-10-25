@@ -78,7 +78,7 @@ async function getDistrictCodes(req) {
 async function getAuthority(req, res) {
   console.log("GET AUTHORITY");
   const { id } = req.params;
-  console.log(req.params);
+  console.log("id: " + id);
   const params = [
     {
       condition: null,
@@ -86,7 +86,7 @@ async function getAuthority(req, res) {
         {
           key: "independentAuthorityId",
           operation: "eq",
-          value: "9dcb1c79-d626-c708-6405-14b7df75a312", // Convert id to a string
+          value: id, // Convert id to a string
           valueType: "UUID",
           condition: "AND",
         },
@@ -115,7 +115,6 @@ async function getAuthority(req, res) {
     // const contactTypeCodes = await getDistrictCodes(req)
     // const nonPublicContactTypeCodes = getNonPublicContactTypeCodes(contactTypeCodes)
     // const districtDataPublic =  removeContacts(districtDataResponse.data,nonPublicContactTypeCodes)
-
     const authorityJSON = {
       authorityData: authorityDataResponse.data,
       authoritySchools: authoritySchoolsResponse.data.content,
