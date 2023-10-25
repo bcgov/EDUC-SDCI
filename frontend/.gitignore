@@ -8,6 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+./tests-e2e/node_modules
 .DS_Store
 dist
 dist-ssr
@@ -17,6 +18,10 @@ coverage
 /cypress/videos/
 /cypress/screenshots/
 /cypress/downloads/
+
+/tests-e2e/cypress/videos/
+/tests-e2e/cypress/screenshots/
+/tests-e2e/cypress/downloads/
 
 # Editor directories and files
 .vscode/*
