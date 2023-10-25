@@ -1,4 +1,4 @@
-describe('Testing HomePage', () => {
+describe('Testing Home Page', () => {
   before(() => {
     // Visit the root URL before running any test case.
     cy.visit('/');
