@@ -1,19 +1,26 @@
 name: Daily Regression
+
 on:
   workflow_dispatch:
   schedule:
     - cron: "0 11 * * 1-5"
+
 jobs:
   Regression:
     runs-on: ubuntu-latest
-    # Cypress Docker image with Chrome v91
-    # and Firefox v89 pre-installed
     container: cypress/browsers:node-18.16.0-chrome-112.0.5615.121-1-ff-112.0.1-edge-112.0.1722.48-1
-    environment: dev
+
     steps:
-      - uses: actions/checkout@v1
-        name: Checkout
-      - uses: cypress-io/github-action@v5
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Set Environment Variable
+        run: echo "CYPRESS_BASE_URL_SECRET=$CYPRESS_BASE_URL_SECRET" >> $GITHUB_ENV
+
+      - name: Cypress Tests
+        uses: cypress-io/github-action@v5
         with:
           browser: chrome
           working-directory: ./tests-e2e
+        env:
+          CYPRESS_BASE_URL_SECRET: ${{ secrets.CYPRESS_BASE_URL_SECRET }
