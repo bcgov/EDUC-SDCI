@@ -5,16 +5,33 @@ const config = require("../config/index");
 
 const axios = require("axios");
 const { checkToken } = require("../components/auth");
-const { createList, addDistrictLabels, districtNumberSort } = require("../components/utils");
+const { createList, addDistrictLabels, districtNumberSort, isAllowedSchoolCategory } = require("../components/utils");
 const { listCache } = require("../components/cache");
 
 const schoolListOptions = { fields: ["mincode", "displayName", "schoolId"], fieldToInclude: "closedDate", valueToInclude: null, sortField: "mincode" };
 const districtListOptions = { fields: ["displayName", "districtId","districtNumber"] ,fieldToInclude: "districtStatusCode", valueToInclude: "ACTIVE", sortField: "districtNumber"};
 const authorityListOptions = { fields: ["displayName", "authorityNumber","independentAuthorityId"], fieldToInclude: "closedDate", valueToInclude: null, sortField: "authorityNumber" };
+const openSchoolListOptions = { fields: [
+  "schoolId",
+  "districtId",
+  "mincode",
+  "schoolNumber",
+  "faxNumber",
+  "phoneNumber",
+  "email",
+  "website",
+  "displayName",
+  "schoolCategoryCode",
+  "facilityTypeCode",
+  "openedDate",
+  "closedDate",
+  "districtNumber"
+],fieldToInclude: "closedDate", valueToInclude: null, sortField: "mincode" };
 
 //Batch Routes
 router.get("/contact-type-codes", checkToken, getContactTypeCodes);
 router.get("/offshore-school/list", checkToken, getOffshoreSchoolList);
+// router.get("/school", checkToken, getOpenSchools);
 router.get("/school/list", checkToken, getSchoolList);
 router.get("/authority/list", checkToken, getAuthorityList);
 router.get("/district/list", checkToken, getDistrictList);
@@ -121,6 +138,30 @@ async function getAuthorityList(req, res) {
   } else {
     const authorityList = await listCache.get("authoritylist");
     res.json(authorityList);
+  }
+}
+async function getOpenSchools(req, res) {
+   
+
+  if (await !listCache.has("openschoollist")) {
+    const url = `${config.get("server:instituteAPIURL")}/institute/school`; // Update the URL according to your API endpoint
+    axios
+      .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
+      .then((response) => {
+        const openSchoolList = createList(response.data, openSchoolListOptions);
+        res.json(openSchoolList);
+        listCache.set("openschoollist", openSchoolList);
+        log.info(req.url);
+      })
+      .catch((e) => {
+        log.error(
+          "getSchoolsList Error",
+          e.response ? e.response.status : e.message
+        );
+      });
+  } else {
+    const openSchoolList = await listCache.get("openschoollist");
+    res.json(openSchoolList);
   }
 }
 async function getSchoolList(req, res) {

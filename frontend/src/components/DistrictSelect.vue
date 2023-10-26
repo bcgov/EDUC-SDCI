@@ -69,10 +69,6 @@ function downloadDistrictsMailing() {
 
             Contacts for All Districts</v-btn
           >
-          <!-- <v-btn class="text-none text-subtitle-1 ma-1" variant="flat"
-            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Contacts by
-            Type</v-btn
-          > -->
           <ContactTypeModal></ContactTypeModal>
         </v-row>
       </v-col>
