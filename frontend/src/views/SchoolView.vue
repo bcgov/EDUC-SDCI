@@ -1,16 +1,14 @@
 <script setup lang="ts">
 import { reactive, onBeforeMount, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import router from '@/router'
 import InstituteService from '@/services/InstituteService'
 import { useAppStore } from '@/stores/app'
-import type { School } from '@/types/types.d.ts'
+import type { School, Grade } from '@/types/types.d.ts'
 import * as jsonexport from 'jsonexport/dist'
-import {
-  distNumberFromMincode,
-  formatPhoneNumber,
-  transformContactForDownload
-} from '@/utils/common'
+import { distNumberFromMincode, formatPhoneNumber } from '@/utils/common'
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
+import { useSanitizeURL } from '@/composables/string'
 const appStore = useAppStore()
 
 // props
@@ -36,7 +34,28 @@ const downloadCSV = () => {
     appStore.exportCSV(csv)
   })
 }
-
+const transformContactForDownload = (inputData: any): {} => {
+  return inputData.map((item: any) => ({
+    districtNumber: item.districtNumber,
+    mincode: item.mincode,
+    displayName: item.displayName,
+    addressLine1: item.addressLine1,
+    city: item.city,
+    provinceCode: item.provinceCode,
+    postal: item.postal,
+    jobTitle: item.jobTitle,
+    firstName: item.firstName,
+    lastName: item.lastName,
+    facilityTypeCode: item.facilityTypeCode,
+    schoolCategoryCode: item.schoolCategoryCode,
+    phoneNumber: item.phoneNumber,
+    phoneExtension: item.phoneExtension,
+    alternatePhoneNumber: item.alternatePhoneNumber,
+    alternatePhoneExtension: item.alternatePhoneExtension,
+    email: item.email,
+    grades: item.grades
+  }))
+}
 // loading component
 onBeforeMount(async () => {
   const route = useRoute()
@@ -44,6 +63,8 @@ onBeforeMount(async () => {
   try {
     const response = await InstituteService.getSchool(selectedSchoolId as string)
     schoolData.value = response.data
+    console.log(schoolData.value)
+
     //add the missing labels
     const filteredGrades = appStore.compareSchoolGrades(
       appStore.getGradeByGradeCodes,
@@ -64,30 +85,42 @@ onBeforeMount(async () => {
     //setting school contacts
     if (response.data) {
       if (response.data.contacts.length > 0) {
-        filteredContacts.value = response.data.contacts
-        filteredContacts.value[0].districtNumber = distNumberFromMincode(response.data.mincode)
-        filteredContacts.value[0].displayName = response.data.displayName
-        filteredContacts.value[0].schoolCategoryCode = response.data.schoolCategoryCode
-        filteredContacts.value[0].facilityTypeCode = response.data.facilityTypeCode
-        filteredContacts.value[0].mincode = response.data.mincode
-        filteredContacts.value[0].phoneNumber = response.data.phoneNumber
-        filteredContacts.value[0].phoneExtension = response.data.phoneExtension
-        filteredContacts.value[0].email = response.data.email
-        filteredContacts.value[0].faxNumber = response.data.faxNumber
-        filteredContacts.value[0].addressLine1 = response.data.addresses[0].addressLine1
-        filteredContacts.value[0].addressLine2 = response.data.addresses[0].addressLine2
-        filteredContacts.value[0].city = response.data.addresses[0].city
-        filteredContacts.value[0].provinceCode = response.data.addresses[0].provinceCode
-        filteredContacts.value[0].countryCode = response.data.addresses[0].countryCode
-        filteredContacts.value[0].postal = response.data.addresses[0].postal
-        filteredContacts.value[0].grades = filteredGradesLabels
-        downloadContacts.value = transformContactForDownload(filteredContacts.value)
+        for (let i = 0; i < response.data.contacts.length; i++) {
+          filteredContacts.value = response.data.contacts
+          filteredContacts.value[i].districtNumber = distNumberFromMincode(response.data.mincode)
+          filteredContacts.value[i].displayName = response.data.displayName
+          filteredContacts.value[i].schoolCategoryCode = response.data.schoolCategoryCode
+          filteredContacts.value[i].facilityTypeCode = response.data.facilityTypeCode
+          filteredContacts.value[i].mincode = response.data.mincode
+          filteredContacts.value[i].phoneNumber = response.data.phoneNumber
+          filteredContacts.value[i].phoneExtension = response.data.phoneExtension
+          filteredContacts.value[i].email = response.data.email
+          filteredContacts.value[i].faxNumber = response.data.faxNumber
+          filteredContacts.value[i].addressLine1 = response.data.addresses[0].addressLine1
+          filteredContacts.value[i].addressLine2 = response.data.addresses[0].addressLine2
+          filteredContacts.value[i].city = response.data.addresses[0].city
+          filteredContacts.value[i].provinceCode = response.data.addresses[0].provinceCode
+          filteredContacts.value[i].countryCode = response.data.addresses[0].countryCode
+          filteredContacts.value[i].postal = response.data.addresses[0].postal
+          filteredContacts.value[i].grades = filteredGradesLabels
+          downloadContacts.value = transformContactForDownload(filteredContacts.value)
+        }
       }
     }
   } catch (error) {
     console.error(error)
   }
 })
+
+function goToDistrict() {
+  router.push({
+    name: 'district',
+    params: {
+      districtNumber: useSanitizeURL(String(districtInfo.value?.districtNumber)),
+      displayName: useSanitizeURL(String(districtInfo.value?.displayName))
+    }
+  })
+}
 </script>
 
 <template>
@@ -95,7 +128,7 @@ onBeforeMount(async () => {
     <v-breadcrumbs
       class="breadcrumbs"
       bg-color="white"
-      :items="[{ title: 'Home', href: '/' }, 'School', schoolData.value.displayName]"
+      :items="[{ title: 'Home', href: '/' }, 'School', {title: schoolData?.value?.displayName, href:''}]"
     ></v-breadcrumbs>
 
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
@@ -105,14 +138,20 @@ onBeforeMount(async () => {
           <v-row v-if="schoolData.value" no-gutters justify="space-between">
             <v-col>
               <v-row>
-                <h2 class="mt-3 mb-2">
+                <h1 class="mt-3 mb-2">
                   {{ schoolData.value.displayName }} - {{ schoolData.value.mincode }}
-                </h2>
+                </h1>
               </v-row>
-              <v-row
-                >District {{ districtInfo.value.districtNumber }} -
-                {{ districtInfo.value.displayName }}</v-row
-              >
+              <v-row>
+                <a
+                  :href="`/district/${useSanitizeURL(
+                    String(districtInfo.value?.districtNumber)
+                  )}-${useSanitizeURL(String(districtInfo.value?.displayName))}`"
+                >
+                  District {{ districtInfo.value.districtNumber }} -
+                  {{ districtInfo.value.displayName }}
+                </a>
+              </v-row>
               <v-row>
                 <v-col class="pl-0">
                   <p>
@@ -121,7 +160,9 @@ onBeforeMount(async () => {
                   <p><strong>Fax:</strong> {{ formatPhoneNumber(schoolData.value.faxNumber) }}</p>
                   <p>
                     <strong>Email: </strong>
-                    <a :href="schoolData.value?.email"> {{ schoolData.value.email }} </a>
+                    <a :href="'mailto:' + schoolData.value?.email">
+                      {{ schoolData.value.email }}
+                    </a>
                   </p>
                 </v-col>
                 <v-col v-for="item in schoolData.value.addresses" :key="item.addressTypeCode">
@@ -146,9 +187,18 @@ onBeforeMount(async () => {
     </v-sheet>
     <v-card class="fill-screen-height" width="100%" v-if="schoolData.value">
       <!-- DISPLAY GRADES -->
-      <div v-for="grade in appStore.getGradeByGradeCodes" :key="grade.schoolGradeCode">
-        {{ grade }}
-      </div>
+      <!-- <v-chip
+        label
+        v-for="schoolGrade in schoolData.value.grades"
+        :key="schoolGrade.schoolGradeCode"
+      >
+        {{
+          appStore.getGradeByGradeCodes
+            .sort((a, b) => a.displayOrder - b.displayOrder)
+            .find((grade) => schoolGrade.schoolGradeCode == grade.schoolGradeCode)?.label
+        }}
+      </v-chip> -->
+
       <!-- <v-card-item>
         <v-card-title v-if="schoolData.value.displayName">
           {{ schoolData.value.displayName }} - {{ schoolData.value.mincode }}</v-card-title
@@ -172,6 +222,7 @@ onBeforeMount(async () => {
           >
         </v-card-subtitle>
       </v-card-item> -->
+      <h2>School Contacts</h2>
       <v-card-text>
         <v-data-table-virtual
           :headers="headers"
@@ -180,6 +231,18 @@ onBeforeMount(async () => {
           item-value="name"
         ></v-data-table-virtual>
       </v-card-text>
+
+      <h2>Grades</h2>
+      <div label v-for="grade in appStore.getGradeByGradeCodes" :key="grade.schoolGradeCode">
+        {{
+          schoolData.value.grades.find(
+            (schoolGrade: Grade) => schoolGrade.schoolGradeCode == grade.schoolGradeCode
+          )
+            ? grade.label
+            : undefined
+        }}
+      </div>
     </v-card>
+    <pre>{{ schoolData.value }}</pre>
   </div>
 </template>

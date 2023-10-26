@@ -34,9 +34,9 @@ function downloadOffshoreSchoolReps() {
         <v-row>
           <v-btn
             block
-            color="primary"
+            color="bcGovBlue"
             class="text-none text-subtitle-1 my-1"
-            variant="flat"
+            variant="outlined"
             @click="viewOffshoreSchools"
             >View Offshore Schools</v-btn
           >

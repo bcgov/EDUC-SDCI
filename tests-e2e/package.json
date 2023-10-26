@@ -1,0 +1,31 @@
+{
+  "name": "cypress-starter-kit",
+  "version": "10.1.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "cypress": "cypress run --e2e",
+    "cypress:open": "cypress open --e2e"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "keywords": [
+    ""
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@faker-js/faker": "^8.0.1",
+    "@js-joda/core": "^5.5.3",
+    "@vue/tsconfig": "^0.4.0",
+    "axios": "^1.3.6",
+    "cypress": "^12.10.0",
+    "generate-password-ts": "^1.6.3",
+    "http-status-codes": "^1.4.0",
+    "typescript": "^4.9.5"
+  }
+}
