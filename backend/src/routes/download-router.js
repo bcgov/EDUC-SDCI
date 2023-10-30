@@ -47,8 +47,8 @@ async function addDistrictLabels(req, res, next) {
       let districtList = [];
 
 
-      if (listCache.has("districtList")) {
-        districtList=  listCache.get("districtList");
+      if (listCache.has("districtlist")) {
+        districtList=  listCache.get("districtlist");
       } else {
         try {
           const path = "/api/v1/institute/district/list"
@@ -56,7 +56,7 @@ async function addDistrictLabels(req, res, next) {
 
           const response = await axios.get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } }); 
             const districts = response.data;
-            listCache.set("districtList", districts);
+            listCache.set("districtlist", districts);
             districtList = districts
       
         } catch (error) {

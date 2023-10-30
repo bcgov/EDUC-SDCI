@@ -21,7 +21,9 @@ const ALLOWED_FILENAMES = new Set([
   'secretary-treasurer',
   'executive-admin-assistant',
   'exceldistrictcontacts',
-  'excelschoolcontacts'
+  'publicschoolcontacts',
+  'independschoolcontacts',
+  'allschoolcontacts'
   // Add more allowed filepaths as needed
 ]);
 const ALLOWED_SCHOOLCATEGORYCODES = new Set([
@@ -99,83 +101,138 @@ function addDistrictLabels(jsonData, districtList) {
     }
     return 0;
   }
-  function createSchoolCache(schoolData, schoolGrades) {
-    const propertyOrder = ["mincode", "schoolNumber","mailing_addressLine1","mailing_addressLine2","mailing_postal","mailing_provinceCode","mailing_countryCode"];
 
+  function rearrangeAndRelabelObjectProperties(object, propertyList) {
+      const reorderedObject = {};
+      propertyList.forEach((propertyInfo) => {
+          const prop = propertyInfo.property;
+          const label = propertyInfo.label;
+          reorderedObject[label] = object.hasOwnProperty(prop) ? object[prop] : "";
+      });
+      return reorderedObject;
+  }
+  function createSchoolCache(schoolData, schoolGrades) {
     // Preload convertedGrades with schoolGrades.schoolGradeCode and set the value to "N"
-    const convertedGrades = {};
-    schoolGrades.forEach((grade) => {
-        convertedGrades[grade.schoolGradeCode] = "N";
-    });
+
 
     // Map over each school object
     return schoolData.map((school) => {
-        const addressFields = {
-            mailing: {},
-            physical: {},
-        };
+      const convertedGrades = {};
+      schoolGrades.forEach((grade) => {
+          convertedGrades[grade.schoolGradeCode] = "N";
+      });
 
-        // Loop through the grades and set the value to "Y" for each grade
-        school.grades.forEach((grade) => {
-            convertedGrades[grade.schoolGradeCode] = "Y";
-        });
+      const addressFields = {
+          mailing: {},
+          physical: {},
+      };
 
-        // Extract and format principal contact information if it exists
-        const principalContact = school.contacts.find((contact) => contact.schoolContactTypeCode === "PRINCIPAL");
-        if (principalContact) {
-            school.firstName = principalContact.firstName;
-            school.lastName = principalContact.lastName;
-            school.email = principalContact.email;
-            school.phoneNumber = principalContact.phoneNumber;
-        }
+      // Loop through the grades and set the value to "Y" for each grade
+      school.grades.forEach((grade) => {
+          convertedGrades[grade.schoolGradeCode] = "Y";
+      });
 
-        // Loop through addresses and update the fields based on addressTypeCode
-        school.addresses.forEach((address) => {
-            if (address.addressTypeCode === "MAILING") {
-                Object.keys(address).forEach((field) => {
-                    // Exclude the specified fields
-                    if (![
-                        "createUser",
-                        "updateUser",
-                        "createDate",
-                        "updateDate",
-                        "schoolAddressId",
-                        "schoolId",
-                        "addressTypeCode"
-                    ].includes(field)) {
-                        addressFields.mailing[`mailing_${field}`] = address[field];
-                    }
-                });
-            } else if (address.addressTypeCode === "PHYSICAL") {
-                Object.keys(address).forEach((field) => {
-                    if (![
-                        "createUser",
-                        "updateUser",
-                        "createDate",
-                        "updateDate",
-                        "schoolAddressId",
-                        "schoolId",
-                        "addressTypeCode"
-                    ].includes(field)) {
-                        addressFields.mailing[`physical_${field}`] = address[field];
-                    }
-                });
+      // Extract and format principal contact information if it exists
+      const principalContact = school.contacts.find((contact) => contact.schoolContactTypeCode === "PRINCIPAL");
+      if (principalContact) {
+          school.firstName = principalContact.firstName;
+          school.lastName = principalContact.lastName;
+          school.email = principalContact.email;
+          school.phoneNumber = principalContact.phoneNumber;
+      }
+
+      // Loop through addresses and update the fields based on addressTypeCode
+      school.addresses.forEach((address) => {
+          if (address.addressTypeCode === "MAILING") {
+              Object.keys(address).forEach((field) => {
+                  // Exclude the specified fields
+                  if (![
+                      "createUser",
+                      "updateUser",
+                      "createDate",
+                      "updateDate",
+                      "schoolAddressId",
+                      "schoolId",
+                      "addressTypeCode"
+                  ].includes(field)) {
+                      addressFields.mailing[`mailing_${field}`] = address[field];
+                  }
+              });
+          } else if (address.addressTypeCode === "PHYSICAL") {
+              Object.keys(address).forEach((field) => {
+                  if (![
+                      "createUser",
+                      "updateUser",
+                      "createDate",
+                      "updateDate",
+                      "schoolAddressId",
+                      "schoolId",
+                      "addressTypeCode"
+                  ].includes(field)) {
+                      addressFields.mailing[`physical_${field}`] = address[field];
+                  }
+              });
             }
         });
 
         // Concatenate neighborhoodLearningTypeCode into a single string
         const nlc = school.neighborhoodLearning.map(learning => learning.neighborhoodLearningTypeCode).join(' | ');
 
-        // Create a new object with the properties rearranged
-        const rearrangedSchool = {};
-        propertyOrder.forEach((prop) => {
-            rearrangedSchool[prop] = school[prop];
-        });
-
         // Merge the address fields and nlc into the school object
-        Object.assign(rearrangedSchool, convertedGrades, addressFields.mailing, addressFields.physical, { nlc });
+        Object.assign(school, convertedGrades, addressFields.mailing, addressFields.physical, { nlc });
 
-        return rearrangedSchool;
+        // Remove the original grades property and the updated address object
+        delete school.grades;
+        delete school.addresses;
+        delete school.neighborhoodLearning;
+        delete school.createUser;
+        delete school.updateUser;
+        delete school.updateDate;
+        delete school.createDate;
+        delete school.schoolId;
+        delete school.openedDate;
+        delete school.closedDate;
+        delete school.notes;
+        delete school.schoolMove.createUser;
+        delete school.schoolMove;
+
+        // Remove the contacts property
+        delete school.contacts;
+        const propertyOrder = [
+          { property: "districtNumber", label: "District Number" },
+          { property: "mincode", label: "School Code" },
+          { property: "displayName", label: "School Name" },
+          { property: "mailing_addressLine1", label: "Address" },
+          { property: "mailing_city", label: "City" },
+          { property: "mailing_provinceCode", label: "Province" },
+          { property: "mailing_postal", label: "Postal Code" },
+          // { property: "principalTitle", label: "Principal Title" },
+          { property: "firstName", label: "Principal First Name" },
+          { property: "lastName", label: "Principal Last Name" },
+          { property: "schoolCategoryCode", label: "Type" },
+          // { property: "gradeRange", label: "Grade Range" },
+          // { property: "schoolCategory", label: "School Category" },
+          // { property: "fundingGroups", label: "Funding Group(s)" },
+          { property: "phoneNumber", label: "Phone" },
+          // { property: "fax", label: "Fax" },
+          { property: "email", label: "Email" },
+          { property: "GRADE01", label: "Grade 1 Enrollment" },
+          { property: "GRADE02", label: "Grade 2 Enrollment" },
+          { property: "GRADE03", label: "Grade 3 Enrollment" },
+          { property: "GRADE04", label: "Grade 4 Enrollment" },
+          { property: "GRADE05", label: "Grade 5 Enrollment" },
+          { property: "GRADE06", label: "Grade 6 Enrollment" },
+          { property: "GRADE07", label: "Grade 7 Enrollment" },
+          { property: "GRADE08", label: "Grade 8 Enrollment" },
+          { property: "GRADE09", label: "Grade 9 Enrollment" },
+          { property: "GRADE10", label: "Grade 10 Enrollment" },
+          { property: "GRADE11", label: "Grade 11 Enrollment" },
+          { property: "GRADE12", label: "Grade 12 Enrollment" }
+          
+          
+      ];
+        const schools = rearrangeAndRelabelObjectProperties(school,propertyOrder)
+        return schools;
     });
 }
   module.exports = { createList, isSafeFilePath,isAllowedSchoolCategory, addDistrictLabels, districtNumberSort, createSchoolCache };

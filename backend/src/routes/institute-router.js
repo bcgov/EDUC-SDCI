@@ -30,6 +30,7 @@ const openSchoolListOptions = { fields: [
 
 //Batch Routes
 router.get("/contact-type-codes", checkToken, getContactTypeCodes);
+router.get("/grade-codes", checkToken, getGradeCodes);
 router.get("/offshore-school/list", checkToken, getOffshoreSchoolList);
 // router.get("/school", checkToken, getOpenSchools);
 router.get("/school/list", checkToken, getSchoolList);
@@ -241,5 +242,29 @@ async function getDistrictContactsAPI(req, res) {
     .catch((e) => {
       log.error("getData Error", e.response ? e.response.status : e.message);
     });
+}
+
+async function getGradeCodes(req, res) {
+  if (await !codeCache.has("gradelist")) {
+    const url = `${config.get("server:instituteAPIURL")}/institute/grade-codes`; // Update the URL according to your API endpoint
+    axios
+      .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
+      .then((response) => {
+        //const districtList = response.data;
+        const gradeCodes = response.data;
+        codeCache.set("gradelist", gradeList);
+        res.json(gradeCodes);
+        log.info(req.url);
+      })
+      .catch((e) => {
+        log.error(
+          "getDistrictList Error",
+          e.response ? e.response.status : e.message
+        );
+      });
+  } else {
+    const gradeList = await codeCache.get("gradelist");
+    res.json(gradeList);
+  }
 }
 module.exports = router;

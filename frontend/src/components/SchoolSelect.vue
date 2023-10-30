@@ -90,7 +90,7 @@ function downloadAllSchoolsMailing() {
             <v-spacer />
             <v-col>
               <v-btn
-                href="/api/v1/download/csv/institute/school?filepath=excelschoolcontacts"
+                href="/api/v1/download/csv/school/ALL?filepath=allschoolcontacts"
                 block
                 class="text-none text-subtitle-1 my-1"
                 ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>
