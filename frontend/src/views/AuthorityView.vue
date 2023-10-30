@@ -4,8 +4,8 @@ import { ref, reactive, onMounted, computed, toValue } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { useRoute } from 'vue-router'
 import { formatPhoneNumber } from '@/utils/common'
-
-import type { Authority } from '@/types/types.d.ts'
+import * as jsonexport from 'jsonexport/dist'
+import type { Authority, School, Address } from '@/types/types.d.ts'
 
 // import common components
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
@@ -14,7 +14,11 @@ const appStore = useAppStore()
 const authorityId = ref<any>(null) // Initialize with null initially
 
 const authority = reactive({ value: {} as Authority }) // cast to Authority type
+const schools = ref<any>([])
+const contacts = ref<any>([])
+const downloadContacts = ref<any>([])
 const filteredContacts = ref<any>([])
+const filteredSchools = ref<any>([])
 const tabOptions = {
   contacts: 1,
   schools: 2
@@ -44,7 +48,42 @@ const schoolHeaders = [
 
 const schoolSearch = ref('')
 const contactSearch = ref('')
-
+function downloadAuthorityContacts() {
+  jsonexport(downloadContacts.value, function (err: any, csv: any) {
+    if (err) return console.error(err)
+    appStore.exportCSV(csv)
+  })
+}
+function downloadAuthoritySchools() {
+  jsonexport(filteredSchools.value, function (err: any, csv: any) {
+    if (err) return console.error(err)
+    appStore.exportCSV(csv)
+  })
+}
+const transformContactForDownload = (inputData: any): {} => {
+  return inputData.map((item: any) => ({
+    authorityNumber: item.authorityNumber,
+    displayName: item.displayName,
+    authorityContactTypeCode: item.authorityContactTypeCode,
+    firstName: item.firstName,
+    lastName: item.lastName,
+    email: item.email,
+    phoneNumber: item.phoneNumber,
+    phoneExtension: item.phoneExtension,
+    alternatePhoneNumber: item.alternatePhoneNumber,
+    alternatePhoneExtension: item.alternatePhoneExtension,
+    mailingAddress: item.mailingAddress,
+    mailingAddressCity: item.mailingAddressCity,
+    mailingAddressLine2: item.mailingAddressLine2,
+    mailingAddressPostalCode: item.mailingAddressPostalCode,
+    mailingAddressProvince: item.mailingAddressProvince,
+    physicalAddress: item.physicalAddress,
+    physicalAddressCity: item.physicalAddressCity,
+    physicalAddressLine2: item.physicalAddressLine2,
+    physicalAddressPostalCode: item.physicalAddressPostalCode,
+    physicalAddressProvince: item.physicalAddressProvince
+  }))
+}
 onMounted(async () => {
   const route = useRoute()
   authorityId.value = appStore.getAuthorityByAuthorityNumber(
@@ -54,27 +93,92 @@ onMounted(async () => {
   try {
     const response = await InstituteService.getAuthority(authorityId.value)
     authority.value = response.data
-    // console.log(authority.value)
-    filteredContacts.value = {
-      authorityNumber: authority.value?.authorityData?.authorityNumber,
-      authorityTypeCode: authority.value?.authorityData?.authorityTypeCode,
-      displayName: authority.value?.authorityData?.displayName,
-      addressLine1: authority.value?.authorityData?.addresses[0]?.addressLine1,
-      addressLine2: authority.value?.authorityData?.addresses[0]?.addressLine2,
-      city: authority.value?.authorityData?.addresses[0]?.city,
-      postal: authority.value?.authorityData?.addresses[0]?.postal,
-      addressTypeCode: authority.value?.authorityData?.addresses[0]?.addressTypeCode,
-      provinceCode: authority.value?.authorityData?.addresses[0]?.provinceCode,
-      countryCode: authority.value?.authorityData?.addresses[0]?.countryCode,
-      firstName: authority.value?.authorityData?.contacts[0]?.firstName,
-      lastName: authority.value?.authorityData?.contacts[0]?.lastName,
-      email: authority.value?.authorityData?.email,
-      faxNumber: authority.value?.authorityData?.faxNumber,
-      phoneNumber: authority.value?.authorityData?.phoneNumber,
-      openedDate: authority.value?.authorityData?.openedDate,
-      closedDate: authority.value?.authorityData?.closedDate
+    schools.value = response.data?.authoritySchools
+    contacts.value = response.data?.authorityData?.contacts
+    //Change Auth School date for DL
+    const transformedSchoolData = schools.value.map((school: School) => {
+      const { contacts, addresses, ...rest } = school
+      const transformedContacts = contacts.map(({ schoolContactTypeCode, ...contactRest }) => ({
+        schoolContactTypeCode,
+        ...contactRest
+      }))
+      const physicalAddress = addresses.find(
+        (address: Address) => address?.addressTypeCode === 'PHYSICAL'
+      )
+      const mailingAddress = addresses.find(
+        (address: Address) => address?.addressTypeCode === 'MAILING'
+      )
+      return {
+        ...rest,
+        contacts: transformedContacts.reduce((acc, contact) => ({ ...acc, ...contact }), {}),
+        physicalAddress: physicalAddress,
+        mailingAddress: mailingAddress,
+        grades: [],
+        neighborhoodLearning: [],
+        schoolMove: []
+      }
+    })
+
+    filteredSchools.value = transformedSchoolData.map((item: any) => {
+      return {
+        authorityNumber: authority.value?.authorityData?.authorityNumber,
+        displayName: item.displayName,
+        mincode: item.mincode,
+        facilityTypeCode: item.facilityTypeCode,
+        contactJobTitle: item.contacts?.jobTitle,
+        contactFirstName: item.contacts?.firstName,
+        contactLastName: item.contacts?.lastName,
+        contactPhoneExtension: item.contacts?.phoneExtension,
+        contactPhoneNumber: item.contacts?.phoneNumber,
+        schoolEmail: item.email,
+        mailingAddress: item.mailingAddress?.addressLine1,
+        mailingAddressLine2: item.mailingAddress?.addressLine2,
+        mailingAddressCity: item.mailingAddress?.city,
+        mailingAddressProvince: item.mailingAddress?.provinceCode,
+        mailingAddressPostalCode: item.mailingAddress?.postal,
+        physicalAddress: item.physicalAddress?.addressLine1,
+        physicalAddressLine2: item.physicalAddress?.addressLine2,
+        physicalAddressCity: item.physicalAddress?.city,
+        physicalAddressProvince: item.physicalAddress?.provinceCode,
+        physicalAddressPostalCode: item.physicalAddress?.postal,
+        districtPhoneNumber: item.phoneNumber,
+        districtFax: item.faxNumber,
+        districtWebsite: item.website,
+        schoolCategoryCode: item.schoolCategoryCode,
+        schoolOrganizationCode: item.schoolOrganizationCode,
+        schoolReportingRequirementCode: item.schoolReportingRequirementCode
+      }
+    })
+
+    //Change Auth Contacts data for DL
+    if (contacts?.value?.length > 0) {
+      for (let i = 0; i < contacts?.value?.length; i++) {
+        filteredContacts.value = response.data?.authorityData?.contacts
+        filteredContacts.value[i].authorityNumber = authority.value?.authorityData?.authorityNumber
+        filteredContacts.value[i].displayName = authority.value.authorityData?.displayName
+        filteredContacts.value[i].mailingAddress =
+          authority.value.authorityData.addresses[1]?.addressLine1
+        filteredContacts.value[i].mailingAddressLine2 =
+          authority.value.authorityData.addresses[1]?.addressLine2
+        filteredContacts.value[i].mailingAddressCity =
+          authority.value.authorityData.addresses[1]?.city
+        filteredContacts.value[i].mailingAddressProvince =
+          authority.value.authorityData.addresses[1]?.provinceCode
+        filteredContacts.value[i].mailingAddressPostalCode =
+          authority.value.authorityData.addresses[1]?.postal
+        filteredContacts.value[i].physicalAddress =
+          authority.value.authorityData.addresses[0]?.addressLine1
+        filteredContacts.value[i].physicalAddressLine2 =
+          authority.value.authorityData.addresses[0]?.addressLine2
+        filteredContacts.value[i].physicalAddressCity =
+          authority.value.authorityData.addresses[0]?.city
+        filteredContacts.value[i].physicalAddressProvince =
+          authority.value.authorityData.addresses[0]?.provinceCode
+        filteredContacts.value[i].physicalAddressPostalCode =
+          authority.value.authorityData.addresses[0]?.postal
+      }
+      downloadContacts.value = transformContactForDownload(filteredContacts.value)
     }
-    console.log(filteredContacts.value)
   } catch (error) {
     console.error(error)
   }
@@ -121,14 +225,20 @@ onMounted(async () => {
               <DisplayAddress v-bind="item" />
             </v-col>
             <v-col>
-              <v-btn block class="text-none text-subtitle-1 ma-1"
+              <v-btn
+                block
+                class="text-none text-subtitle-1 ma-1"
+                @click="downloadAuthorityContacts()"
                 ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Authority
                 Contacts</v-btn
               >
-              <!-- <v-btn block class="text-none text-subtitle-1 ma-1"
+              <v-btn
+                block
+                class="text-none text-subtitle-1 ma-1"
+                @click="downloadAuthoritySchools()"
                 ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Authority
                 Schools</v-btn
-              > -->
+              >
             </v-col>
           </v-row>
         </v-col>
