@@ -47,13 +47,16 @@ async function addDistrictLabels(req, res, next) {
       let districtList = [];
 
 
-      if (listCache.has("districtList")) {
-        districtList=  listCache.get("districtList");
+      if (listCache.has("districtlist")) {
+        districtList=  listCache.get("districtlist");
       } else {
         try {
-          const response = await axios.get('http://localhost:8080/api/v1/institute/district/list', { headers: { Authorization: `Bearer ${req.accessToken}` } }); 
+          const path = "/api/v1/institute/district/list"
+          const url = `${req.protocol}://${req.hostname}:8080${path}`;
+
+          const response = await axios.get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } }); 
             const districts = response.data;
-            listCache.set("districtList", districts);
+            listCache.set("districtlist", districts);
             districtList = districts
       
         } catch (error) {
@@ -99,10 +102,17 @@ async function getDownload(req, res,next){
     return res.sendFile(filePath);
   }else{
     try {
-      const url = `${config.get('server:instituteAPIURL')}` + req.url.replace('/csv', '');
+      const path = req.url.replace('/csv', ''); // Modify the URL path as needed
+      const url = `${req.protocol}://${req.hostname}:8080/api/v1${path}`;
+      console.log(url)
       const response = await axios.get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } });
       // Attach the fetched data to the request object
-      req.jsonData = response.data.content;
+      if (response.data?.content) {
+        req.jsonData = response.data.content;
+      }else{
+        req.jsonData = response.data;
+      }
+      
       next(); // Call the next middleware
     } catch (error) {
       console.error("Error:", error);

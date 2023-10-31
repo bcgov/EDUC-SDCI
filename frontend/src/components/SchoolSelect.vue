@@ -30,10 +30,6 @@ function goToSchoolSearch() {
   })
 }
 
-function downloadAllSchoolsInfo() {
-  alert('TODO - Implement all schools info extract download')
-}
-
 function downloadAllSchoolsMailing() {
   alert('TODO - Implement all schools mailing extract download')
 }
@@ -93,9 +89,13 @@ function downloadAllSchoolsMailing() {
             </v-col>
             <v-spacer />
             <v-col>
-              <v-btn block class="text-none text-subtitle-1 ma-1" @click="downloadAllSchoolsInfo"
-                ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>All Schools
-                Info</v-btn
+              <v-btn
+                href="/api/v1/download/csv/school/ALL?filepath=allschoolcontacts"
+                block
+                class="text-none text-subtitle-1 my-1"
+                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>
+
+                All Schools Info</v-btn
               >
             </v-col>
             <v-col>
