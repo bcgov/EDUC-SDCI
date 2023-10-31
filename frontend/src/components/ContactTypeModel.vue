@@ -96,16 +96,18 @@ const searchContact = async () => {
         block
         variant="outlined"
         color="bcGovBlue"
-        class="text-none text-subtitle-1 my-1"
+        class="v-btn-align-left text-none text-subtitle-1 my-1"
         v-bind="props"
       >
         View Contacts by Type
       </v-btn>
+      
     </template>
     <v-card>
       <v-card-title>
         <span class="text-h5">Contacts by Type</span>
       </v-card-title>
+      <v-divider></v-divider>
       <v-card-text>
         <v-autocomplete
           v-model="selectedContactType"

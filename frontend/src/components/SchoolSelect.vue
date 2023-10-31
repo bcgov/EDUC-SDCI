@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useAppStore } from '@/stores/app'
 import router from '@/router'
 import { useSanitizeURL } from '@/composables/string'
+import DownloadSchoolsModal from '@/components/DownloadSchoolsModal.vue'
 
 // Type Imports
 import type { ListSchool } from '@/types/types'
@@ -89,17 +90,10 @@ function downloadAllSchoolsMailing() {
             </v-col>
             <v-spacer />
             <v-col>
-              <v-btn
-                href="/api/v1/download/csv/school/ALL?filepath=allschoolcontacts"
-                block
-                class="text-none text-subtitle-1 my-1"
-                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>
-
-                All Schools Info</v-btn
-              >
+              <DownloadSchoolsModal></DownloadSchoolsModal>
             </v-col>
             <v-col>
-              <v-btn block class="text-none text-subtitle-1 ma-1" @click="downloadAllSchoolsMailing"
+              <v-btn block class="v-btn-align-left text-none text-subtitle-1 ma-1" @click="downloadAllSchoolsMailing"
                 ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Mailing for All
                 Schools</v-btn
               >
