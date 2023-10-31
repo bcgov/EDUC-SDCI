@@ -196,6 +196,7 @@ onMounted(async () => {
                 }}</a>
               </p>
             </v-col>
+
             <v-col
               v-for="item in district.value.districtData.addresses"
               :key="item.addressTypeCode"
@@ -203,6 +204,7 @@ onMounted(async () => {
               <h1>&nbsp;</h1>
               <DisplayAddress v-bind="item" />
             </v-col>
+
             <v-col>
               <h1>&nbsp;</h1>
               <v-btn block class="text-none text-subtitle-1 ma-1" @click="downloadDistrictContacts"

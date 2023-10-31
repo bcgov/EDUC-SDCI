@@ -98,10 +98,10 @@ onMounted(async () => {
       <v-row no-gutters justify="space-between">
         <v-spacer />
         <v-col cols="6">
-          <h2 class="mt-3 mb-2">
+          <h1 class="mt-3 mb-2">
             {{ authority.value.authorityData?.authorityNumber }} -
             {{ authority.value.authorityData?.displayName }}
-          </h2>
+          </h1>
           <v-row v-if="authority.value.authorityData">
             <v-col>
               <p>
@@ -112,7 +112,12 @@ onMounted(async () => {
                 <strong>Fax:</strong>
                 {{ formatPhoneNumber(authority.value.authorityData?.faxNumber) }}
               </p>
-              <p><strong>Email:</strong> {{ authority.value.authorityData?.email }}</p>
+              <p>
+                <strong>Email: </strong>
+                <a :href="'mailto:' + authority.value.authorityData?.email">{{
+                  authority.value.authorityData?.email
+                }}</a>
+              </p>
             </v-col>
             <v-col
               v-for="item in authority.value.authorityData.addresses"
