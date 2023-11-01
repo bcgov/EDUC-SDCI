@@ -26,7 +26,7 @@ export default {
     return ApiService.apiAxios.get('/api/v1/institute/offshore-school/list');
   },  
   getSchool(schoolId: string): Promise<AxiosResponse> {
-    return ApiService.apiAxios.get('/api/v1/institute/school/'+schoolId);
+    return ApiService.apiAxios.get('/api/v1/school/'+schoolId);
   },
   // Codes
   getFacilityCodes(): Promise<AxiosResponse> {
