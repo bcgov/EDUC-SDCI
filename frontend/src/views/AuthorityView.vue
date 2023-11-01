@@ -200,44 +200,52 @@ onMounted(async () => {
     ></v-breadcrumbs>
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-row no-gutters justify="space-between">
-        <h1 class="mt-3 mb-2">
-          {{ authority.value.authorityData?.authorityNumber }} -
-          {{ authority.value.authorityData?.displayName }}
-        </h1>
-        <v-row v-if="authority.value.authorityData">
-          <v-col>
-            <p>
-              <strong>Phone:</strong>
-              {{ formatPhoneNumber(authority.value.authorityData?.phoneNumber) }}
-            </p>
-            <p>
-              <strong>Fax:</strong>
-              {{ formatPhoneNumber(authority.value.authorityData?.faxNumber) }}
-            </p>
-            <p>
-              <strong>Email: </strong>
-              <a :href="'mailto:' + authority.value.authorityData?.email">{{
-                authority.value.authorityData?.email
-              }}</a>
-            </p>
-          </v-col>
-          <v-col
-            v-for="item in authority.value.authorityData.addresses"
-            :key="item.addressTypeCode"
-          >
-            <DisplayAddress v-bind="item" />
-          </v-col>
-          <v-col>
-            <v-btn block class="text-none text-subtitle-1 ma-1" @click="downloadAuthorityContacts()"
-              ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Authority
-              Contacts</v-btn
+        <v-col>
+          <h1 class="mt-3 mb-2">
+            {{ authority.value.authorityData?.authorityNumber }} -
+            {{ authority.value.authorityData?.displayName }}
+          </h1>
+          <v-row v-if="authority.value.authorityData">
+            <v-col>
+              <p>
+                <strong>Phone:</strong>
+                {{ formatPhoneNumber(authority.value.authorityData?.phoneNumber) }}
+              </p>
+              <p>
+                <strong>Fax:</strong>
+                {{ formatPhoneNumber(authority.value.authorityData?.faxNumber) }}
+              </p>
+              <p>
+                <strong>Email: </strong>
+                <a :href="'mailto:' + authority.value.authorityData?.email">{{
+                  authority.value.authorityData?.email
+                }}</a>
+              </p>
+            </v-col>
+            <v-col
+              v-for="item in authority.value.authorityData.addresses"
+              :key="item.addressTypeCode"
             >
-            <v-btn block class="text-none text-subtitle-1 ma-1" @click="downloadAuthoritySchools()"
-              ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Authority
-              Schools</v-btn
-            >
-          </v-col>
-        </v-row>
+              <DisplayAddress v-bind="item" />
+            </v-col>
+            <v-col>
+              <v-btn
+                block
+                class="text-none text-subtitle-1 ma-1"
+                @click="downloadAuthorityContacts()"
+                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Authority
+                Contacts</v-btn
+              >
+              <v-btn
+                block
+                class="text-none text-subtitle-1 ma-1"
+                @click="downloadAuthoritySchools()"
+                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Authority
+                Schools</v-btn
+              >
+            </v-col>
+          </v-row>
+        </v-col>
       </v-row>
     </v-sheet>
     <!-- END Authority Info Header Block -->
@@ -267,19 +275,19 @@ onMounted(async () => {
               :search="contactSearch"
             >
               <template v-slot:item.firstName="{ item }">
-                {{ item.columns.firstName }} {{ item.columns.lastName }}
+                {{ item.firstName }} {{ item.lastName }}
               </template>
 
               <template v-slot:item.email="{ item }">
-                <a :href="`mailto:${item.columns.email}`">{{ item.columns.email }}</a>
+                <a :href="`mailto:${item.email}`">{{ item.email }}</a>
               </template>
 
               <template v-slot:item.districtContactTypeCode="{ item }">
-                {{ appStore.getDistrictContactTypeCodeLabel(item.columns.districtContactTypeCode) }}
+                {{ appStore.getDistrictContactTypeCodeLabel(item.districtContactTypeCode) }}
               </template>
 
               <template v-slot:item.phoneNumber="{ item }">
-                {{ formatPhoneNumber(item.columns.phoneNumber) }}
+                {{ formatPhoneNumber(item.phoneNumber) }}
               </template>
             </v-data-table>
           </v-window-item>
@@ -299,27 +307,27 @@ onMounted(async () => {
               :search="schoolSearch"
             >
               <template v-slot:item.schoolCategoryCode="{ item }">
-                {{ appStore.getCategoryCodeLabel(item.columns.schoolCategoryCode) }}
+                {{ appStore.getCategoryCodeLabel(item.schoolCategoryCode) }}
               </template>
 
               <template v-slot:item.facilityTypeCode="{ item }">
-                {{ appStore.getFacilityCodeLabel(item.columns.facilityTypeCode) }}
+                {{ appStore.getFacilityCodeLabel(item.facilityTypeCode) }}
               </template>
 
               <template v-slot:item.email="{ item }">
-                <a :href="`mailto:${item.columns.email}`">{{ item.columns.email }}</a>
+                <a :href="`mailto:${item.email}`">{{ item.email }}</a>
               </template>
 
               <template v-slot:item.website="{ item }">
-                <a :href="item.columns.website">{{ item.columns.website }}</a>
+                <a :href="item.website">{{ item.website }}</a>
               </template>
 
               <template v-slot:item.phoneNumber="{ item }">
-                {{ formatPhoneNumber(item.columns.phoneNumber) }}
+                {{ formatPhoneNumber(item.phoneNumber) }}
               </template>
 
               <template v-slot:item.faxNumber="{ item }">
-                {{ formatPhoneNumber(item.columns.faxNumber) }}
+                {{ formatPhoneNumber(itemfax.Number) }}
               </template>
             </v-data-table>
           </v-window-item>

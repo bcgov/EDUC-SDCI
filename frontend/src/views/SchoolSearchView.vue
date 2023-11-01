@@ -68,32 +68,25 @@
         @update:options="handleUpdate"
       >
         <template v-slot:item.displayName="{ item }">
-          <a :href="`/school/${item.columns.schoolId}`">{{ item.columns.displayName }}</a>
+          <a :href="`/school/${item.schoolId}`">{{ item.displayName }}</a>
         </template>
-        <template v-slot:expanded-row="{ columns, item }">
+        <template v-slot:expanded-row="{ item }">
           <tr>
-            <td :colspan="columns.length">
+            <td :colspan="headers.length">
               <v-card>
-                <v-card-title> {{ item.columns.displayName }} School Information </v-card-title>
+                <v-card-title> {{ item.displayName }} School Information </v-card-title>
                 <v-card-text>
-                  <p>Category Code: {{ item.columns.schoolCategoryCode }}</p>
-                  <p>Facility Code: {{ item.columns.facilityTypeCode }}</p>
+                  <p>Category Code: {{ item.schoolCategoryCode }}</p>
+                  <p>Facility Code: {{ item.facilityTypeCode }}</p>
                   <p>
                     District:
-                    <router-link :to="`/district/${item.columns.districtId}`">
-                      View District
-                    </router-link>
+                    <router-link :to="`/district/${item.districtId}`"> View District </router-link>
                   </p>
                   <p>
                     Grades:
                     <v-container>
                       <v-row>
-                        <v-col
-                          v-for="(grade, index) in item.columns.grades"
-                          :key="index"
-                          cols="12"
-                          md="4"
-                        >
+                        <v-col v-for="(grade, index) in item.grades" :key="index" cols="12" md="4">
                           {{ grade.schoolGradeCode }}
                         </v-col>
                       </v-row>
@@ -104,7 +97,7 @@
                     <v-container>
                       <v-row>
                         <v-col
-                          v-for="(address, index) in item.raw.addresses"
+                          v-for="(address, index) in item?.raw?.addresses"
                           :key="index"
                           cols="12"
                           md="4"
