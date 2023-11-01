@@ -53,18 +53,18 @@ function downloadDistrictsMailing() {
             rounded="lg"
             size="large"
             @click="goToDistrict"
-            class="text-none text-subtitle-1 ml-3"
+            class="v-btn-align-left text-none text-subtitle-1 ml-3"
           />
         </v-row>
         <v-row>
-          <v-btn block class="text-none text-subtitle-1 my-1" @click="downloadDistrictsMailing"
+          <v-btn block class="v-btn-align-left text-none text-subtitle-1 my-1" @click="downloadDistrictsMailing"
             ><template v-slot:prepend> <v-icon icon="mdi-download" /></template> Mailing for All
             Districts</v-btn
           >
           <v-btn
             href="/api/v1/download/csv/institute/district/contact/paginated?pageSize=100&pageNumber=0&filepath=exceldistrictcontacts"
             block
-            class="text-none text-subtitle-1 my-1"
+            class="v-btn-align-left text-none text-subtitle-1 my-1"
             ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>
 
             Contacts for All Districts</v-btn
