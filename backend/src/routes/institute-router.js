@@ -6,7 +6,7 @@ const config = require("../config/index");
 const axios = require("axios");
 const { checkToken } = require("../components/auth");
 const {removeFieldsByCriteria, createList, addDistrictLabels, districtNumberSort, isAllowedSchoolCategory } = require("../components/utils");
-const { listCache } = require("../components/cache");
+const { listCache, codeCache } = require("../components/cache");
 
 const schoolListOptions = { fields: ["mincode", "displayName", "schoolId"], fieldToInclude: "closedDate", valueToInclude: null, sortField: "mincode" };
 const districtListOptions = { fields: ["displayName", "districtId","districtNumber"] ,fieldToInclude: "districtStatusCode", valueToInclude: "ACTIVE", sortField: "districtNumber"};
@@ -247,8 +247,11 @@ async function getGradeCodes(req, res) {
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
+        console.log("eee")
+        console.log(response.data)
         const gradeCodes = response.data;
-        codeCache.set("gradelist", gradeList);
+        
+        codeCache.set("gradelist", gradeCodes);
         res.json(gradeCodes);
         log.info(req.url);
       })
@@ -259,8 +262,8 @@ async function getGradeCodes(req, res) {
         );
       });
   } else {
-    const gradeList = await codeCache.get("gradelist");
-    res.json(gradeList);
+    const gradeCodes = await codeCache.get("gradelist");
+    res.json(gradeCodes);
   }
 }
 module.exports = router;
