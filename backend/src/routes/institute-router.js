@@ -5,7 +5,7 @@ const config = require("../config/index");
 
 const axios = require("axios");
 const { checkToken } = require("../components/auth");
-const { createList, addDistrictLabels, districtNumberSort, isAllowedSchoolCategory } = require("../components/utils");
+const { removeFieldsByCriteria, createList, addDistrictLabels, districtNumberSort, isAllowedSchoolCategory } = require("../components/utils");
 const { listCache } = require("../components/cache");
 
 const schoolListOptions = { fields: ["mincode", "displayName", "schoolId"], fieldToInclude: "closedDate", valueToInclude: null, sortField: "mincode" };
@@ -74,9 +74,9 @@ async function getContactTypeCodes(req, res) {
       );
 
       const codes = {
-        authorityContactTypeCodes: authorityContactTypeCodesResponse.data,
-        districtContactTypeCodes: districtContactTypeCodesResponse.data,
-        schoolContactTypeCodes: schoolContactTypeCodesResponse.data,
+        authorityContactTypeCodes: removeFieldsByCriteria(authorityContactTypeCodesResponse.data, [{ fieldToRemove: "publiclyAvailable", value: false }]),
+        districtContactTypeCodes: removeFieldsByCriteria(districtContactTypeCodesResponse.data,[{ fieldToRemove: "publiclyAvailable", value: false }]),
+        schoolContactTypeCodes: removeFieldsByCriteria(schoolContactTypeCodesResponse.data,[{ fieldToRemove: "publiclyAvailable", value: false }]),
       };
 
       res.json(codes);
@@ -250,7 +250,6 @@ async function getGradeCodes(req, res) {
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
-        //const districtList = response.data;
         const gradeCodes = response.data;
         codeCache.set("gradelist", gradeList);
         res.json(gradeCodes);

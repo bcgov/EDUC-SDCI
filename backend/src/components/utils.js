@@ -74,7 +74,27 @@ function createList(list, options = {}) {
 
   return filteredList;
 }
+function removeFieldsByCriteria(inputData, criteria) {
+  if (!Array.isArray(criteria) || criteria.length === 0) {
+    return inputData; // Return the original data if the criteria is empty or not an array.
+  }
 
+  // Loop through the criteria and filter the fields based on the specified conditions.
+  for (const item of criteria) {
+    inputData = inputData.filter((itemData) => {
+      if (itemData[item.fieldToRemove] !== item.value) {
+        return true; // Keep the field if the condition is not met.
+      }
+    });
+  }
+
+  return inputData;
+}
+
+// Example usage:
+const inputData = {
+  // Your JSON data goes here
+}
 function addDistrictLabels(jsonData, districtList) {
     if (jsonData.content && Array.isArray(jsonData.content)) {
       jsonData.content.forEach(dataItem => {
@@ -235,4 +255,4 @@ function addDistrictLabels(jsonData, districtList) {
         return schools;
     });
 }
-  module.exports = { createList, isSafeFilePath,isAllowedSchoolCategory, addDistrictLabels, districtNumberSort, createSchoolCache };
+  module.exports = { removeFieldsByCriteria, createList, isSafeFilePath,isAllowedSchoolCategory, addDistrictLabels, districtNumberSort, createSchoolCache };
