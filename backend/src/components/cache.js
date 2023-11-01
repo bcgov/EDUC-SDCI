@@ -4,5 +4,5 @@ const schoolCache = new NodeCache({ stdTTL: 21600 });
 const codeCache = new NodeCache({ stdTTL: 21600 });
 
 module.exports = {
-    listCache,schoolCache
+    listCache,schoolCache,codeCache
   };
