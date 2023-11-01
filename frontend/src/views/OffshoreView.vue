@@ -7,7 +7,7 @@ const appStore = useAppStore()
 const { offshoreSchools } = storeToRefs(appStore)
 const schoolSearch = ref('')
 const schoolHeaders = [
-  { title: 'mincode', key: 'mincode' },
+  { title: 'School Code', key: 'mincode' },
   { title: 'Name', key: 'displayName' },
   { title: 'Address', key: 'addresses' },
   { title: 'Contact', key: 'contact' }
