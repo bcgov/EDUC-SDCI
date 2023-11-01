@@ -22,7 +22,7 @@ const ALLOWED_FILENAMES = new Set([
   'executive-admin-assistant',
   'exceldistrictcontacts',
   'publicschoolcontacts',
-  'independschoolcontacts',
+  'independentschoolcontacts',
   'allschoolcontacts'
   // Add more allowed filepaths as needed
 ]);
@@ -90,11 +90,6 @@ function removeFieldsByCriteria(inputData, criteria) {
 
   return inputData;
 }
-
-// Example usage:
-const inputData = {
-  // Your JSON data goes here
-}
 function addDistrictLabels(jsonData, districtList) {
     if (jsonData.content && Array.isArray(jsonData.content)) {
       jsonData.content.forEach(dataItem => {
@@ -121,7 +116,26 @@ function addDistrictLabels(jsonData, districtList) {
     }
     return 0;
   }
+  function formatGrades(grades, schoolGrades) {
+    const result = {};
 
+    // Create a set of all school grade codes from the provided grades
+    const gradeCodesSet = new Set(grades.map(grade => grade.schoolGradeCode));
+  
+    // Include all school grade codes in the result object
+    for (const grade of grades) {
+      result[grade.schoolGradeCode] = "Y";
+    }
+  
+    // Set the value to "N" for school grade codes not in the provided grades
+    for (const grade of schoolGrades) {
+      if (!gradeCodesSet.has(grade.schoolGradeCode)) {
+        result[grade.schoolGradeCode] = "N";
+      }
+    }
+  
+    return result;
+  }
   function rearrangeAndRelabelObjectProperties(object, propertyList) {
       const reorderedObject = {};
       propertyList.forEach((propertyInfo) => {
@@ -255,4 +269,4 @@ function addDistrictLabels(jsonData, districtList) {
         return schools;
     });
 }
-  module.exports = { removeFieldsByCriteria, createList, isSafeFilePath,isAllowedSchoolCategory, addDistrictLabels, districtNumberSort, createSchoolCache };
+  module.exports = {removeFieldsByCriteria, createList, isSafeFilePath,isAllowedSchoolCategory, addDistrictLabels, districtNumberSort, createSchoolCache, formatGrades};
