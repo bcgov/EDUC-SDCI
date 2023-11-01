@@ -45,6 +45,9 @@ button.link-btn, .link-btn .v-btn__content {
   max-width: 1280px;
   padding: 0 2rem;
 }
+.v-btn{
+
+}
 .v-btn-align-left {
   justify-content: normal !important;
 }
