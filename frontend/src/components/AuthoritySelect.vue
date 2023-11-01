@@ -56,16 +56,16 @@ function downloadAuthorityContacts() {
           <v-btn
             href="/api/v1/download/csv/school/INDEPEND?filepath=independschoolcontacts"
             block
-            class="text-none text-subtitle-1 my-1"
+            class="v-btn-align-left text-none text-subtitle-1 my-1"
             ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>
 
             All Independent Schools</v-btn
           >
-          <v-btn block class="text-none text-subtitle-1 my-1" @click="downloadAuthorityContacts"
+          <v-btn block class="v-btn-align-left text-none text-subtitle-1 my-1" @click="downloadAuthorityContacts"
             ><template v-slot:prepend> <v-icon icon="mdi-download" /></template> Contacts for All
             Authorities</v-btn
           >
-          <v-btn block class="text-none text-subtitle-1 my-1" @click="downloadAuthorityMailing"
+          <v-btn block class="v-btn-align-left text-none text-subtitle-1 my-1" @click="downloadAuthorityMailing"
             ><template v-slot:prepend> <v-icon icon="mdi-download" /></template> Mailing for All
             Authorities</v-btn
           >

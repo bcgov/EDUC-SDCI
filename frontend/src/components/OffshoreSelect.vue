@@ -35,16 +35,16 @@ function downloadOffshoreSchoolReps() {
           <v-btn
             block
             color="bcGovBlue"
-            class="text-none text-subtitle-1 my-1"
+            class="v-btn-align-left text-none text-subtitle-1 my-1"
             variant="outlined"
             @click="viewOffshoreSchools"
             >View Offshore Schools</v-btn
           >
-          <v-btn block class="text-none text-subtitle-1 my-1" @click="downloadOffshoreSchoolInfo"
+          <v-btn block class="v-btn-align-left text-none text-subtitle-1 my-1" @click="downloadOffshoreSchoolInfo"
             ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Offshore School
             Info</v-btn
           >
-          <v-btn block class="text-none text-subtitle-1 my-1" @click="downloadOffshoreSchoolReps"
+          <v-btn block class="v-btn-align-left text-none text-subtitle-1 my-1" @click="downloadOffshoreSchoolReps"
             ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Offshore School
             Representatives</v-btn
           >
