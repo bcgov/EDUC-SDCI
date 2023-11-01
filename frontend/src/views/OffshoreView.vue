@@ -1,9 +1,24 @@
 <script setup lang="ts">
 import { useAppStore } from '@/stores/app'
 import { storeToRefs } from 'pinia'
-
+import { reactive, onBeforeMount, ref } from 'vue'
+import DisplayAddress from '@/components/common/DisplayAddress.vue'
 const appStore = useAppStore()
 const { offshoreSchools } = storeToRefs(appStore)
+const schoolSearch = ref('')
+const schoolHeaders = [
+  { title: 'School Code', key: 'mincode' },
+  { title: 'Name', key: 'displayName' },
+  { title: 'Address', key: 'addresses' },
+  { title: 'Contact', key: 'contact' }
+]
+const headers = ref([
+  {
+    text: 'Name',
+    value: 'schoolDisplayName'
+  }
+  // Add more header objects for additional columns
+])
 </script>
 
 <template>
@@ -36,9 +51,37 @@ const { offshoreSchools } = storeToRefs(appStore)
       </v-row>
     </v-sheet>
 
-    <ul>
-      <li v-for="school in offshoreSchools" :key="school.mincode">{{ school.displayName }}</li>
-    </ul>
+    <v-container>
+      <v-text-field
+        v-model="schoolSearch"
+        append-icon="mdi-magnify"
+        label="Filter Offshore School"
+        single-line
+        hide-details
+      ></v-text-field>
+      <v-data-table
+        :headers="schoolHeaders"
+        :hide-default-footer="true"
+        items-per-page="50"
+        :items="offshoreSchools"
+        :search="schoolSearch"
+      >
+        <template v-slot:item.displayName="{ item }">
+          <a :href="`/school/${item.raw.schoolId}`"> {{ item.raw.displayName }} </a>
+        </template>
+
+        <template v-slot:item.addresses="{ item }">
+          <div v-for="address in item.raw.addresses">
+            <DisplayAddress v-bind="address" />
+          </div>
+        </template>
+        <template v-slot:item.contact="{ item }">
+          <strong>Phone:</strong> {{ item.raw.phoneNumber }} <br />
+          <strong>Fax:</strong> {{ item.raw.faxNumber }} <br />
+          <strong>Email:</strong> {{ item.raw.email }}
+        </template>
+      </v-data-table>
+    </v-container>
   </div>
 </template>
 
