@@ -159,7 +159,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div style="max-width: 1280px">
+  <div>
     <v-spacer />
     <v-breadcrumbs
       class="breadcrumbs"
@@ -305,31 +305,5 @@ onMounted(async () => {
         </v-window>
       </v-card-text>
     </v-sheet>
-
-    <!-- DEBUG panels for development; remove in TEST and higher -->
-
-    <!-- <v-expansion-panels id="ui-debug" class="debug">
-      <v-expansion-panel title="DEBUG: District JSON">
-        <v-expansion-panel-text>
-          <pre>
-            {{ district }}
-          </pre>
-        </v-expansion-panel-text>
-      </v-expansion-panel>
-      <v-expansion-panel title="DEBUG: DistrictContactTypeCodes JSON">
-        <v-expansion-panel-text>
-          <pre>
-            {{ appStore.getDistrictContactTypeCodes }}
-          </pre>
-        </v-expansion-panel-text>
-      </v-expansion-panel>
-      <v-expansion-panel title="DEBUG: ContactTypeCodes">
-        <v-expansion-panel-text>
-          <pre>
-            {{ appStore.getContactTypeCodes }}
-          </pre>
-        </v-expansion-panel-text>
-      </v-expansion-panel>
-    </v-expansion-panels> -->
   </div>
 </template>

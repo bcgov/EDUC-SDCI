@@ -93,7 +93,10 @@ function downloadAllSchoolsMailing() {
               <DownloadSchoolsModal></DownloadSchoolsModal>
             </v-col>
             <v-col>
-              <v-btn block class="v-btn-align-left text-none text-subtitle-1 ma-1" @click="downloadAllSchoolsMailing"
+              <v-btn
+                block
+                class="v-btn-align-left text-none text-subtitle-1 ma-1"
+                @click="downloadAllSchoolsMailing"
                 ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Mailing for All
                 Schools</v-btn
               >

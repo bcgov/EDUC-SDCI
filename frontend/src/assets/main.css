@@ -7,6 +7,7 @@
   font-family: 'BCSans', 'Noto Sans', Verdana, Arial, sans-serif;
   font-weight: normal;
 }
+
 @media (max-width: 768px) {
   #app {
     min-width: 1130px; /* Adjust as needed */
@@ -25,10 +26,10 @@
 .fill-screen-height{
   height: calc(100vh - 200px) !important
 }
-.full-width {
+/* .full-width {
   margin: 0 calc(-1*(100vw - 1280px)/2);
   padding: 0 calc((100vw - 1280px)/2);
-}
+} */
 .breadcrumbs {
   margin: 0 -40em;
   padding-left: 40em !important;

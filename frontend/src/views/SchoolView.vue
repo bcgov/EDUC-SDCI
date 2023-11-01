@@ -137,56 +137,50 @@ function goToDistrict() {
 
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-row no-gutters justify="space-between">
-        <v-spacer />
-        <v-col cols="6">
-          <v-row v-if="schoolData.value" no-gutters justify="space-between">
-            <v-col>
-              <v-row>
-                <h1 class="mt-3 mb-2">
-                  {{ schoolData.value.displayName }} - {{ schoolData.value.mincode }}
-                </h1>
-              </v-row>
-              <v-row>
-                <a
-                  :href="`/district/${useSanitizeURL(
-                    String(districtInfo.value?.districtNumber)
-                  )}-${useSanitizeURL(String(districtInfo.value?.displayName))}`"
-                >
-                  District {{ districtInfo.value.districtNumber }} -
-                  {{ districtInfo.value.displayName }}
-                </a>
-              </v-row>
-              <v-row>
-                <v-col class="pl-0">
-                  <p>
-                    <strong>Phone:</strong> {{ formatPhoneNumber(schoolData.value.phoneNumber) }}
-                  </p>
-                  <p><strong>Fax:</strong> {{ formatPhoneNumber(schoolData.value.faxNumber) }}</p>
-                  <p>
-                    <strong>Email: </strong>
-                    <a :href="'mailto:' + schoolData.value?.email">
-                      {{ schoolData.value.email }}
-                    </a>
-                  </p>
-                </v-col>
-                <v-col v-for="item in schoolData.value.addresses" :key="item.addressTypeCode">
-                  <DisplayAddress v-bind="item" />
-                </v-col>
-                <v-col
-                  ><v-btn
-                    block
-                    class="text-none text-subtitle-1 ma-1"
-                    @click="downloadCSV"
-                    :disabled="!schoolData.value"
-                    ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>School
-                    Info</v-btn
-                  ></v-col
-                >
-              </v-row>
-            </v-col>
-          </v-row>
-        </v-col>
-        <v-spacer />
+        <v-row v-if="schoolData.value" no-gutters justify="space-between">
+          <v-col>
+            <v-row>
+              <h1 class="mt-3 mb-2">
+                {{ schoolData.value.displayName }} - {{ schoolData.value.mincode }}
+              </h1>
+            </v-row>
+            <v-row>
+              <a
+                :href="`/district/${useSanitizeURL(
+                  String(districtInfo.value?.districtNumber)
+                )}-${useSanitizeURL(String(districtInfo.value?.displayName))}`"
+              >
+                District {{ districtInfo.value.districtNumber }} -
+                {{ districtInfo.value.displayName }}
+              </a>
+            </v-row>
+            <v-row>
+              <v-col class="pl-0">
+                <p><strong>Phone:</strong> {{ formatPhoneNumber(schoolData.value.phoneNumber) }}</p>
+                <p><strong>Fax:</strong> {{ formatPhoneNumber(schoolData.value.faxNumber) }}</p>
+                <p>
+                  <strong>Email: </strong>
+                  <a :href="'mailto:' + schoolData.value?.email">
+                    {{ schoolData.value.email }}
+                  </a>
+                </p>
+              </v-col>
+              <v-col v-for="item in schoolData.value.addresses" :key="item.addressTypeCode">
+                <DisplayAddress v-bind="item" />
+              </v-col>
+              <v-col
+                ><v-btn
+                  block
+                  class="text-none text-subtitle-1 ma-1"
+                  @click="downloadCSV"
+                  :disabled="!schoolData.value"
+                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>School
+                  Info</v-btn
+                ></v-col
+              >
+            </v-row>
+          </v-col>
+        </v-row>
       </v-row>
     </v-sheet>
     <v-card class="fill-screen-height" width="100%" v-if="schoolData.value">
