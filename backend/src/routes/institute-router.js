@@ -5,8 +5,8 @@ const config = require("../config/index");
 
 const axios = require("axios");
 const { checkToken } = require("../components/auth");
-const { removeFieldsByCriteria, createList, addDistrictLabels, districtNumberSort, isAllowedSchoolCategory } = require("../components/utils");
-const { listCache } = require("../components/cache");
+const {removeFieldsByCriteria, createList, addDistrictLabels, districtNumberSort, isAllowedSchoolCategory } = require("../components/utils");
+const { listCache, codeCache } = require("../components/cache");
 
 const schoolListOptions = { fields: ["mincode", "displayName", "schoolId"], fieldToInclude: "closedDate", valueToInclude: null, sortField: "mincode" };
 const districtListOptions = { fields: ["displayName", "districtId","districtNumber"] ,fieldToInclude: "districtStatusCode", valueToInclude: "ACTIVE", sortField: "districtNumber"};
@@ -32,7 +32,6 @@ const openSchoolListOptions = { fields: [
 router.get("/contact-type-codes", checkToken, getContactTypeCodes);
 router.get("/grade-codes", checkToken, getGradeCodes);
 router.get("/offshore-school/list", checkToken, getOffshoreSchoolList);
-// router.get("/school", checkToken, getOpenSchools);
 router.get("/school/list", checkToken, getSchoolList);
 router.get("/authority/list", checkToken, getAuthorityList);
 router.get("/district/list", checkToken, getDistrictList);
@@ -78,10 +77,8 @@ async function getContactTypeCodes(req, res) {
         districtContactTypeCodes: removeFieldsByCriteria(districtContactTypeCodesResponse.data,[{ fieldToRemove: "publiclyAvailable", value: false }]),
         schoolContactTypeCodes: removeFieldsByCriteria(schoolContactTypeCodesResponse.data,[{ fieldToRemove: "publiclyAvailable", value: false }]),
       };
-
       res.json(codes);
       listCache.set("codesList", { codesList: codes });
-      log.info(req.url);
     } catch (error) {
       const statusCode = error.response ? error.response.status : 500;
       log.error("getSchoolsList Error", statusCode, error.message);
@@ -250,8 +247,11 @@ async function getGradeCodes(req, res) {
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
+        console.log("eee")
+        console.log(response.data)
         const gradeCodes = response.data;
-        codeCache.set("gradelist", gradeList);
+        
+        codeCache.set("gradelist", gradeCodes);
         res.json(gradeCodes);
         log.info(req.url);
       })
@@ -262,8 +262,8 @@ async function getGradeCodes(req, res) {
         );
       });
   } else {
-    const gradeList = await codeCache.get("gradelist");
-    res.json(gradeList);
+    const gradeCodes = await codeCache.get("gradelist");
+    res.json(gradeCodes);
   }
 }
 module.exports = router;

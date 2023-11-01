@@ -17,47 +17,52 @@ const dialog = ref(false)
         class="text-none text-subtitle-1 my-1"
         v-bind="props"
       >
-      Download Schools
+        Download Schools
       </v-btn>
-      
     </template>
     <template v-slot:default="{ isActive }">
       <v-card title="Download Schools">
         <v-card-actions>
           <v-column>
             <v-row class="pt-2">
-              <v-col class="py-1 my-0"><v-btn
-                href="/api/v1/download/csv/school/PUBLIC?filepath=publicschoolcontacts"
-                block
-                class="v-btn-align-left text-none text-subtitle-1 my-1"
-                @click="dialog = false"
-                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>
-                Public Schools (CSV)</v-btn
-              ></v-col>
+              <v-col class="py-1 my-0"
+                ><v-btn
+                  href="/api/v1/download/csv/school/all/PUBLIC?filepath=publicschoolcontacts"
+                  block
+                  class="v-btn-align-left text-none text-subtitle-1 my-1"
+                  @click="dialog = false"
+                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template> Public
+                  Schools (CSV)</v-btn
+                ></v-col
+              >
             </v-row>
             <v-row>
-              <v-col class="py-1 my-0">   <v-btn
-                href="/api/v1/download/csv/school/INDEPEND?filepath=independentschoolcontacts"
-                block
-                style="text-align: left"
-                class="v-btn-align-left text-left text-none text-subtitle-1 my-1"
-                @click="dialog = false"
-                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>
-    
-                Independent Schools (CSV)</v-btn
-              ></v-col>
+              <v-col class="py-1 my-0">
+                <v-btn
+                  href="/api/v1/download/csv/school/all/INDEPEND?filepath=independentschoolcontacts"
+                  block
+                  style="text-align: left"
+                  class="v-btn-align-left text-left text-none text-subtitle-1 my-1"
+                  @click="dialog = false"
+                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>
+
+                  Independent Schools (CSV)</v-btn
+                ></v-col
+              >
             </v-row>
             <v-row>
-              <v-col class="py-1 my-0"> <v-btn
-                href="/api/v1/download/csv/school/ALL?filepath=allschoolcontacts"
-                block
-                class="v-btn-align-left text-left text-none text-subtitle-1 my-1"
-                @click="dialog = false"
-                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>
-               All Schools (CSV)</v-btn
-              ></v-col>
+              <v-col class="py-1 my-0">
+                <v-btn
+                  href="/api/v1/download/csv/school/all/ALL?filepath=allschoolcontacts"
+                  block
+                  class="v-btn-align-left text-left text-none text-subtitle-1 my-1"
+                  @click="dialog = false"
+                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template> All Schools
+                  (CSV)</v-btn
+                ></v-col
+              >
             </v-row>
-        </v-column>
+          </v-column>
         </v-card-actions>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -65,6 +70,5 @@ const dialog = ref(false)
         </v-card-actions>
       </v-card>
     </template>
-      
   </v-dialog>
 </template>
