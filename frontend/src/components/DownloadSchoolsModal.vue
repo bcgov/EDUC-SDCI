@@ -6,6 +6,10 @@ const appStore = useAppStore()
 // used for open and close modal
 const dialog = ref(false)
 // varibles used for search
+
+function downloadAllSchoolsMailing() {
+  alert('TODO - Implement all schools mailing extract download')
+}
 </script>
 <template>
   <v-dialog v-model="dialog" width="25%">
@@ -17,7 +21,7 @@ const dialog = ref(false)
         class="text-none text-subtitle-1 my-1"
         v-bind="props"
       >
-        Download Schools
+        Download School Info
       </v-btn>
     </template>
     <template v-slot:default="{ isActive }">
@@ -60,6 +64,15 @@ const dialog = ref(false)
                   ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template> All Schools
                   (CSV)</v-btn
                 ></v-col
+              >
+            </v-row>
+            <v-row>
+              <v-btn
+                block
+                class="v-btn-align-left text-none text-subtitle-1 ma-1"
+                @click="downloadAllSchoolsMailing"
+                ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Mailing for All
+                Schools</v-btn
               >
             </v-row>
           </v-column>
