@@ -262,10 +262,6 @@ onMounted(async () => {
               :items="district.value.districtData?.contacts"
               :search="contactSearch"
             >
-              <template v-slot:item.firstName="{ item }">
-                {{ item.firstName }} {{ item.lastName }}
-              </template>
-
               <template v-slot:item.email="{ item }">
                 <a :href="`mailto:${item.email}`">{{ item.email }}</a>
               </template>
