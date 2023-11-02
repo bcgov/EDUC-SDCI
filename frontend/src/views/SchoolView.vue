@@ -17,7 +17,7 @@ const downloadContacts = ref<any>([])
 const filteredContacts = ref<any>([])
 const filteredAddresses = reactive<any>({ value: {} })
 const headers = [
-  { title: 'Contact', key: 'jobTitle' },
+  { title: 'Role', key: 'jobTitle' },
   { title: 'First Name', key: 'firstName' },
   { title: 'Last Name', key: 'lastName' },
   { title: 'Phone', key: 'phoneNumber' },
@@ -26,6 +26,11 @@ const headers = [
   { title: 'Email', key: 'email' }
 ]
 const schoolData = reactive({ value: {} as School })
+const tabOptions = {
+  contacts: 1,
+  learning: 2 //can we display grades and NLCs on their own tab?
+}
+const tab = ref(tabOptions.contacts)
 
 // functions
 const downloadCSV = () => {
@@ -78,7 +83,6 @@ onBeforeMount(async () => {
   try {
     const response = await InstituteService.getSchool(selectedSchoolId as string)
     schoolData.value = response.data
-    console.log(schoolData.value)
 
     //add the missing labels
     const filteredGrades = appStore.compareSchoolGrades(
@@ -186,6 +190,24 @@ function goToDistrict() {
               </a>
             </v-row>
             <v-row>
+              <!-- <p>
+                <strong>Grades: </strong>{{ appStore.extractGradeLabels(schoolData.value?.grades) }}
+              </p> -->
+              <!-- <div
+                label
+                v-for="grade in appStore.getGradeByGradeCodes"
+                :key="grade.schoolGradeCode"
+              >
+                {{
+                  schoolData.value.grades.find(
+                    (schoolGrade: Grade) => schoolGrade.schoolGradeCode == grade.schoolGradeCode
+                  )
+                    ? grade.label
+                    : undefined
+                }}
+              </div> -->
+            </v-row>
+            <v-row>
               <v-col class="pl-0">
                 <p><strong>Phone:</strong> {{ formatPhoneNumber(schoolData.value.phoneNumber) }}</p>
                 <p><strong>Fax:</strong> {{ formatPhoneNumber(schoolData.value.faxNumber) }}</p>
@@ -214,63 +236,23 @@ function goToDistrict() {
         </v-row>
       </v-row>
     </v-sheet>
-    <v-card class="fill-screen-height" width="100%" v-if="schoolData.value">
-      <!-- DISPLAY GRADES -->
-      <!-- <v-chip
-        label
-        v-for="schoolGrade in schoolData.value.grades"
-        :key="schoolGrade.schoolGradeCode"
-      >
-        {{
-          appStore.getGradeByGradeCodes
-            .sort((a, b) => a.displayOrder - b.displayOrder)
-            .find((grade) => schoolGrade.schoolGradeCode == grade.schoolGradeCode)?.label
-        }}
-      </v-chip> -->
 
-      <!-- <v-card-item>
-        <v-card-title v-if="schoolData.value.displayName">
-          {{ schoolData.value.displayName }} - {{ schoolData.value.mincode }}</v-card-title
-        >
-        District: {{ districtInfo.value.districtNumber }} - {{ districtInfo.value.displayName }}
-
-        <v-card-subtitle> -->
-      <!-- School type info. -->
-      <!-- <span v-if="schoolData.value.facilityTypeCode"
-            >{{ schoolData.value.facilityTypeCode }} SCHOOL<br
-          /></span>
-          <div v-if="schoolData.value.grades">
-            Grades:
-            <span v-for="item in schoolData.value.grades" :key="item.schoolGradeCode"
-              >{{ item.schoolGradeCode }},</span
-            >
-          </div>
-          <br />
-          <span v-if="schoolData.value.schoolCategoryCode"
-            >{{ schoolData.value.schoolCategoryCode }} SCHOOL</span
-          >
-        </v-card-subtitle>
-      </v-card-item> -->
-      <h2>School Contacts</h2>
+    <v-card class="fill-screen-height pa-6" width="100%" v-if="schoolData.value">
+      <v-tabs v-model="tab">
+        <v-tab :value="tabOptions.contacts">School Contacts</v-tab>
+      </v-tabs>
       <v-card-text>
-        <v-data-table-virtual
-          :headers="headers"
-          :items="filteredContacts"
-          class="elevation-1"
-          item-value="name"
-        ></v-data-table-virtual>
+        <v-window v-model="tab">
+          <v-window-item :value="tabOptions.contacts">
+            <v-data-table-virtual
+              :headers="headers"
+              :items="filteredContacts"
+              class="elevation-1"
+              item-value="name"
+            ></v-data-table-virtual>
+          </v-window-item>
+        </v-window>
       </v-card-text>
-
-      <h2>Grades</h2>
-      <div label v-for="grade in appStore.getGradeByGradeCodes" :key="grade.schoolGradeCode">
-        {{
-          schoolData.value.grades?.find(
-            (schoolGrade: Grade) => schoolGrade.schoolGradeCode == grade.schoolGradeCode
-          )
-            ? grade.label
-            : undefined
-        }}
-      </div>
     </v-card>
     <pre>{{ schoolData.value }}</pre>
   </div>

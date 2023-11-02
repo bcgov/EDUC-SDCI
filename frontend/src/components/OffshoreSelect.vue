@@ -27,7 +27,6 @@ function downloadOffshoreSchoolReps() {
 </script>
 
 <template>
-  {{ offshoreSchools }}
   <v-card class="pa-6 mt-5">
     <h2 class="mb-5">BC Offshore Schools</h2>
     <v-row no-gutters>

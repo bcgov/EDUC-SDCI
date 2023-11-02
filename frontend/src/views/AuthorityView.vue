@@ -327,7 +327,7 @@ onMounted(async () => {
               </template>
 
               <template v-slot:item.faxNumber="{ item }">
-                {{ formatPhoneNumber(itemfax.Number) }}
+                {{ formatPhoneNumber(item.faxNumber) }}
               </template>
             </v-data-table>
           </v-window-item>
