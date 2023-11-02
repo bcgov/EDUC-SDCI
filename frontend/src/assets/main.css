@@ -7,10 +7,17 @@
   font-family: 'BCSans', 'Noto Sans', Verdana, Arial, sans-serif;
   font-weight: normal;
 }
+
 @media (max-width: 768px) {
   #app {
     min-width: 1130px; /* Adjust as needed */
     padding: 0; /* Adjust as needed */
+  }
+
+  .full-width {
+    margin: 0 calc(-1*(100vw - 768px)/2);
+    padding: 0 calc((100vw - 768px)/2);
+    background-color: red;
   }
 }
 .school-search{
@@ -19,9 +26,10 @@
 .fill-screen-height{
   height: calc(100vh - 200px) !important
 }
-.full-width {
-  margin: 0 -40em;
-}
+/* .full-width {
+  margin: 0 calc(-1*(100vw - 1280px)/2);
+  padding: 0 calc((100vw - 1280px)/2);
+} */
 .breadcrumbs {
   margin: 0 -40em;
   padding-left: 40em !important;
@@ -45,6 +53,9 @@ button.link-btn, .link-btn .v-btn__content {
   max-width: 1280px;
   padding: 0 2rem;
 }
+.v-btn{
+
+}
 .v-btn-align-left {
   justify-content: normal !important;
 }
@@ -63,5 +74,11 @@ button.link-btn, .link-btn .v-btn__content {
   #app {
     display: grid;
     padding: 0;
+  }
+
+  .full-width {
+    margin: 0 calc(-1*(100vw - 1024px)/2);
+    padding: 0 calc((100vw - 1024px)/2);
+    background-color: red;
   }
 }
