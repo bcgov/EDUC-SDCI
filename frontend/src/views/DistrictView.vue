@@ -22,10 +22,12 @@ const tabOptions = {
 }
 const tab = ref(tabOptions.contacts) // Default to contacts tab
 const contactHeaders = [
+  { title: 'Role', key: 'jobTitle' },
   { title: 'Contact Type', key: 'districtContactTypeCode' },
-  { title: 'Name', key: 'firstName' },
-  { title: 'Title/Role', key: 'jobTitle' },
+  { title: 'First Name', key: 'firstName' },
+  { title: 'Last Name', key: 'lastName' },
   { title: 'Phone', key: 'phoneNumber' },
+  { title: 'Extension', key: 'phoneExtension' },
   { title: 'Email', key: 'email' }
 ]
 const schoolHeaders = [

@@ -66,7 +66,7 @@ function goToSchoolSearch() {
           </v-row>
 
           <v-row>
-            <v-col class="px-0 ma-1">
+            <v-col class="px-0 my-1">
               <v-btn
                 color="bcGovBlue"
                 class="text-none text-subtitle-1"
