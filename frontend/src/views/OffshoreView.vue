@@ -25,7 +25,7 @@ const headers = ref([
   <div>
     <v-breadcrumbs
       class="breadcrumbs"
-      bg-color="primary"
+      bg-color="white"
       :items="[{ title: 'Home', href: '/' }, 'Offshore Schools']"
     ></v-breadcrumbs>
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
