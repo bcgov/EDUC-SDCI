@@ -4,7 +4,7 @@ import { ref, reactive, onMounted, computed, toValue } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { useRoute } from 'vue-router'
 import router from '@/router'
-import { formatPhoneNumber, transformContactForDownload } from '@/utils/common'
+import { formatPhoneNumber } from '@/utils/common'
 import type { District, School, Grade, Address, Contact } from '@/types/types.d.ts'
 import * as jsonexport from 'jsonexport/dist'
 import { useSanitizeURL } from '@/composables/string'
@@ -47,7 +47,7 @@ const schoolHeaders = [
 const schoolSearch = ref('')
 const contactSearch = ref('')
 // functions
-function goToSchool(displayName, mincode, id) {
+function goToSchool(displayName: string, mincode: string, id: string) {
   console.log(displayName)
   console.log(mincode)
   console.log(id)
