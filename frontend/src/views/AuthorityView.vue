@@ -200,12 +200,11 @@ onMounted(async () => {
     ></v-breadcrumbs>
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-row no-gutters justify="space-between">
-        <v-spacer />
-        <v-col cols="6">
-          <h2 class="mt-3 mb-2">
+        <v-col>
+          <h1 class="mt-3 mb-2">
             {{ authority.value.authorityData?.authorityNumber }} -
             {{ authority.value.authorityData?.displayName }}
-          </h2>
+          </h1>
           <v-row v-if="authority.value.authorityData">
             <v-col>
               <p>
@@ -216,7 +215,12 @@ onMounted(async () => {
                 <strong>Fax:</strong>
                 {{ formatPhoneNumber(authority.value.authorityData?.faxNumber) }}
               </p>
-              <p><strong>Email:</strong> {{ authority.value.authorityData?.email }}</p>
+              <p>
+                <strong>Email: </strong>
+                <a :href="'mailto:' + authority.value.authorityData?.email">{{
+                  authority.value.authorityData?.email
+                }}</a>
+              </p>
             </v-col>
             <v-col
               v-for="item in authority.value.authorityData.addresses"
@@ -242,7 +246,6 @@ onMounted(async () => {
             </v-col>
           </v-row>
         </v-col>
-        <v-spacer />
       </v-row>
     </v-sheet>
     <!-- END Authority Info Header Block -->
@@ -272,19 +275,19 @@ onMounted(async () => {
               :search="contactSearch"
             >
               <template v-slot:item.firstName="{ item }">
-                {{ item.columns.firstName }} {{ item.columns.lastName }}
+                {{ item.firstName }} {{ item.lastName }}
               </template>
 
               <template v-slot:item.email="{ item }">
-                <a :href="`mailto:${item.columns.email}`">{{ item.columns.email }}</a>
+                <a :href="`mailto:${item.email}`">{{ item.email }}</a>
               </template>
 
               <template v-slot:item.districtContactTypeCode="{ item }">
-                {{ appStore.getDistrictContactTypeCodeLabel(item.columns.districtContactTypeCode) }}
+                {{ appStore.getDistrictContactTypeCodeLabel(item.districtContactTypeCode) }}
               </template>
 
               <template v-slot:item.phoneNumber="{ item }">
-                {{ formatPhoneNumber(item.columns.phoneNumber) }}
+                {{ formatPhoneNumber(item.phoneNumber) }}
               </template>
             </v-data-table>
           </v-window-item>
@@ -304,27 +307,27 @@ onMounted(async () => {
               :search="schoolSearch"
             >
               <template v-slot:item.schoolCategoryCode="{ item }">
-                {{ appStore.getCategoryCodeLabel(item.columns.schoolCategoryCode) }}
+                {{ appStore.getCategoryCodeLabel(item.schoolCategoryCode) }}
               </template>
 
               <template v-slot:item.facilityTypeCode="{ item }">
-                {{ appStore.getFacilityCodeLabel(item.columns.facilityTypeCode) }}
+                {{ appStore.getFacilityCodeLabel(item.facilityTypeCode) }}
               </template>
 
               <template v-slot:item.email="{ item }">
-                <a :href="`mailto:${item.columns.email}`">{{ item.columns.email }}</a>
+                <a :href="`mailto:${item.email}`">{{ item.email }}</a>
               </template>
 
               <template v-slot:item.website="{ item }">
-                <a :href="item.columns.website">{{ item.columns.website }}</a>
+                <a :href="item.website">{{ item.website }}</a>
               </template>
 
               <template v-slot:item.phoneNumber="{ item }">
-                {{ formatPhoneNumber(item.columns.phoneNumber) }}
+                {{ formatPhoneNumber(item.phoneNumber) }}
               </template>
 
               <template v-slot:item.faxNumber="{ item }">
-                {{ formatPhoneNumber(item.columns.faxNumber) }}
+                {{ formatPhoneNumber(itemfax.Number) }}
               </template>
             </v-data-table>
           </v-window-item>

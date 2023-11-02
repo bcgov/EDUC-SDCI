@@ -159,7 +159,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div style="max-width: 1280px">
+  <div>
     <v-spacer />
     <v-breadcrumbs
       class="breadcrumbs"
@@ -173,50 +173,49 @@ onMounted(async () => {
 
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-row no-gutters justify="space-between">
-        <v-spacer />
-        <v-col cols="6">
-          <v-row v-if="district.value.districtData" no-gutters justify="space-between">
-            <v-col>
-              <h1 class="mt-3 mb-2">
-                {{ district.value.districtData?.districtNumber }} -
-                {{ district.value.districtData?.displayName }}
-              </h1>
-              <p>
-                <strong>Phone:</strong>
-                {{ formatPhoneNumber(district.value.districtData?.phoneNumber) }}
-              </p>
-              <p>
-                <strong>Fax:</strong>
-                {{ formatPhoneNumber(district.value.districtData?.faxNumber) }}
-              </p>
-              <p><strong>Email:</strong> {{ district.value.districtData?.email }}</p>
-              <p>
-                <a :href="district.value.districtData?.website">{{
-                  district.value.districtData?.website
-                }}</a>
-              </p>
-            </v-col>
-            <v-col
-              v-for="item in district.value.districtData.addresses"
-              :key="item.addressTypeCode"
+        <!-- <v-spacer />
+        <v-col cols="6"> -->
+        <v-row v-if="district.value.districtData" no-gutters justify="space-between">
+          <v-col>
+            <h1 class="mt-3 mb-2">
+              {{ district.value.districtData?.districtNumber }} -
+              {{ district.value.districtData?.displayName }}
+            </h1>
+            <p>
+              <strong>Phone:</strong>
+              {{ formatPhoneNumber(district.value.districtData?.phoneNumber) }}
+            </p>
+            <p>
+              <strong>Fax:</strong>
+              {{ formatPhoneNumber(district.value.districtData?.faxNumber) }}
+            </p>
+            <p><strong>Email:</strong> {{ district.value.districtData?.email }}</p>
+            <p>
+              <a :href="district.value.districtData?.website">{{
+                district.value.districtData?.website
+              }}</a>
+            </p>
+          </v-col>
+
+          <v-col v-for="item in district.value.districtData.addresses" :key="item.addressTypeCode">
+            <h1>&nbsp;</h1>
+            <DisplayAddress v-bind="item" />
+          </v-col>
+
+          <v-col>
+            <h1>&nbsp;</h1>
+            <v-btn block class="text-none text-subtitle-1 ma-1" @click="downloadDistrictContacts"
+              ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>District
+              Contacts</v-btn
             >
-              <h1>&nbsp;</h1>
-              <DisplayAddress v-bind="item" />
-            </v-col>
-            <v-col>
-              <h1>&nbsp;</h1>
-              <v-btn block class="text-none text-subtitle-1 ma-1" @click="downloadDistrictContacts"
-                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>District
-                Contacts</v-btn
-              >
-              <v-btn block class="text-none text-subtitle-1 ma-1" @click="downloadDistrictSchools"
-                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>District
-                Schools</v-btn
-              >
-            </v-col>
-          </v-row>
-        </v-col>
-        <v-spacer />
+            <v-btn block class="text-none text-subtitle-1 ma-1" @click="downloadDistrictSchools"
+              ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>District
+              Schools</v-btn
+            >
+          </v-col>
+        </v-row>
+        <!-- </v-col>
+        <v-spacer /> -->
       </v-row>
     </v-sheet>
     <!-- END DISTRICT HEADER INFO -->
@@ -247,19 +246,19 @@ onMounted(async () => {
               :search="contactSearch"
             >
               <template v-slot:item.firstName="{ item }">
-                {{ item.columns.firstName }} {{ item.columns.lastName }}
+                {{ item.firstName }} {{ item.lastName }}
               </template>
 
               <template v-slot:item.email="{ item }">
-                <a :href="`mailto:${item.columns.email}`">{{ item.columns.email }}</a>
+                <a :href="`mailto:${item.email}`">{{ item.email }}</a>
               </template>
 
               <template v-slot:item.districtContactTypeCode="{ item }">
-                {{ appStore.getDistrictContactTypeCodeLabel(item.columns.districtContactTypeCode) }}
+                {{ appStore.getDistrictContactTypeCodeLabel(item.districtContactTypeCode) }}
               </template>
 
               <template v-slot:item.phoneNumber="{ item }">
-                {{ formatPhoneNumber(item.columns.phoneNumber) }}
+                {{ formatPhoneNumber(item.phoneNumber) }}
               </template>
             </v-data-table>
           </v-window-item>
@@ -279,58 +278,32 @@ onMounted(async () => {
               :search="schoolSearch"
             >
               <template v-slot:item.schoolCategoryCode="{ item }">
-                {{ appStore.getCategoryCodeLabel(item.columns.schoolCategoryCode) }}
+                {{ appStore.getCategoryCodeLabel(item.schoolCategoryCode) }}
               </template>
 
               <template v-slot:item.facilityTypeCode="{ item }">
-                {{ appStore.getFacilityCodeLabel(item.columns.facilityTypeCode) }}
+                {{ appStore.getFacilityCodeLabel(item.facilityTypeCode) }}
               </template>
 
               <template v-slot:item.email="{ item }">
-                <a :href="`mailto:${item.columns.email}`">{{ item.columns.email }}</a>
+                <a :href="`mailto:${item.email}`">{{ item.email }}</a>
               </template>
 
               <template v-slot:item.website="{ item }">
-                <a :href="item.columns.website">{{ item.columns.website }}</a>
+                <a :href="item.website">{{ item.website }}</a>
               </template>
 
               <template v-slot:item.phoneNumber="{ item }">
-                {{ formatPhoneNumber(item.columns.phoneNumber) }}
+                {{ formatPhoneNumber(item.phoneNumber) }}
               </template>
 
               <template v-slot:item.faxNumber="{ item }">
-                {{ formatPhoneNumber(item.columns.faxNumber) }}
+                {{ formatPhoneNumber(item.faxNumber) }}
               </template>
             </v-data-table>
           </v-window-item>
         </v-window>
       </v-card-text>
     </v-sheet>
-
-    <!-- DEBUG panels for development; remove in TEST and higher -->
-
-    <!-- <v-expansion-panels id="ui-debug" class="debug">
-      <v-expansion-panel title="DEBUG: District JSON">
-        <v-expansion-panel-text>
-          <pre>
-            {{ district }}
-          </pre>
-        </v-expansion-panel-text>
-      </v-expansion-panel>
-      <v-expansion-panel title="DEBUG: DistrictContactTypeCodes JSON">
-        <v-expansion-panel-text>
-          <pre>
-            {{ appStore.getDistrictContactTypeCodes }}
-          </pre>
-        </v-expansion-panel-text>
-      </v-expansion-panel>
-      <v-expansion-panel title="DEBUG: ContactTypeCodes">
-        <v-expansion-panel-text>
-          <pre>
-            {{ appStore.getContactTypeCodes }}
-          </pre>
-        </v-expansion-panel-text>
-      </v-expansion-panel>
-    </v-expansion-panels> -->
   </div>
 </template>
