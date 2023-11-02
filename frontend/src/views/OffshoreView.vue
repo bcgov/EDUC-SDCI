@@ -67,18 +67,18 @@ const headers = ref([
         :search="schoolSearch"
       >
         <template v-slot:item.displayName="{ item }">
-          <a :href="`/school/${item.raw.schoolId}`"> {{ item.raw.displayName }} </a>
+          <a :href="`/school/${item.schoolId}`"> {{ item.displayName }} </a>
         </template>
 
         <template v-slot:item.addresses="{ item }">
-          <div v-for="address in item.raw.addresses">
+          <div v-for="address in item.addresses">
             <DisplayAddress v-bind="address" />
           </div>
         </template>
         <template v-slot:item.contact="{ item }">
-          <strong>Phone:</strong> {{ item.raw.phoneNumber }} <br />
-          <strong>Fax:</strong> {{ item.raw.faxNumber }} <br />
-          <strong>Email:</strong> {{ item.raw.email }}
+          <strong>Phone:</strong> {{ item.phoneNumber }} <br />
+          <strong>Fax:</strong> {{ item.faxNumber }} <br />
+          <strong>Email:</strong> {{ item.email }}
         </template>
       </v-data-table>
     </v-container>
