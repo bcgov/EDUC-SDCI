@@ -42,7 +42,7 @@ const transformContactForDownload = (inputData: any): {} => {
     addressLine1: item.addressLine1,
     city: item.city,
     provinceCode: item.provinceCode,
-    postal: item.postal,
+    Postal: item.postal,
     jobTitle: item.jobTitle,
     firstName: item.firstName,
     lastName: item.lastName,
@@ -53,7 +53,22 @@ const transformContactForDownload = (inputData: any): {} => {
     alternatePhoneNumber: item.alternatePhoneNumber,
     alternatePhoneExtension: item.alternatePhoneExtension,
     email: item.email,
-    grades: item.grades
+    ElementaryUngraded: item.ELEMUNGR,
+    SecondaryUngraded: item.SECUNGR,
+    KindergartenHalf: item.KINDHALF,
+    KindergartenFull: item.KINDFULL,
+    GRADE01: item.GRADE01,
+    GRADE02: item.GRADE02,
+    GRADE03: item.GRADE03,
+    GRADE04: item.GRADE04,
+    GRADE05: item.GRADE05,
+    GRADE06: item.GRADE06,
+    GRADE07: item.GRADE07,
+    GRADE08: item.GRADE08,
+    GRADE09: item.GRADE09,
+    GRADE10: item.GRADE10,
+    GRADE11: item.GRADE11,
+    GRADE12: item.GRADE12
   }))
 }
 // loading component
@@ -102,7 +117,23 @@ onBeforeMount(async () => {
           filteredContacts.value[i].provinceCode = response.data.addresses[0].provinceCode
           filteredContacts.value[i].countryCode = response.data.addresses[0].countryCode
           filteredContacts.value[i].postal = response.data.addresses[0].postal
-          filteredContacts.value[i].grades = filteredGradesLabels
+          filteredContacts.value[i].ELEMUNGR = response.data.ELEMUNGR
+          filteredContacts.value[i].SECUNGR = response.data.SECUNGR
+          filteredContacts.value[i].KINDHALF = response.data.KINDHALF
+          filteredContacts.value[i].KINDFULL = response.data.KINDFULL
+          filteredContacts.value[i].GRADE01 = response.data.GRADE01
+          filteredContacts.value[i].GRADE02 = response.data.GRADE02
+          filteredContacts.value[i].GRADE03 = response.data.GRADE03
+          filteredContacts.value[i].GRADE03 = response.data.GRADE03
+          filteredContacts.value[i].GRADE04 = response.data.GRADE04
+          filteredContacts.value[i].GRADE05 = response.data.GRADE05
+          filteredContacts.value[i].GRADE06 = response.data.GRADE06
+          filteredContacts.value[i].GRADE07 = response.data.GRADE07
+          filteredContacts.value[i].GRADE08 = response.data.GRADE08
+          filteredContacts.value[i].GRADE09 = response.data.GRADE09
+          filteredContacts.value[i].GRADE10 = response.data.GRADE10
+          filteredContacts.value[i].GRADE11 = response.data.GRADE11
+          filteredContacts.value[i].GRADE12 = response.data.GRADE12
         }
         downloadContacts.value = transformContactForDownload(filteredContacts.value)
       }
@@ -233,7 +264,7 @@ function goToDistrict() {
       <h2>Grades</h2>
       <div label v-for="grade in appStore.getGradeByGradeCodes" :key="grade.schoolGradeCode">
         {{
-          schoolData.value.grades.find(
+          schoolData.value.grades?.find(
             (schoolGrade: Grade) => schoolGrade.schoolGradeCode == grade.schoolGradeCode
           )
             ? grade.label
