@@ -3,9 +3,11 @@ import InstituteService from '@/services/InstituteService'
 import { ref, reactive, onMounted, computed, toValue } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { useRoute } from 'vue-router'
+import router from '@/router'
 import { formatPhoneNumber, transformContactForDownload } from '@/utils/common'
 import type { District, School, Grade, Address, Contact } from '@/types/types.d.ts'
 import * as jsonexport from 'jsonexport/dist'
+import { useSanitizeURL } from '@/composables/string'
 // import common components
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
 const appStore = useAppStore()
@@ -43,6 +45,19 @@ const schoolHeaders = [
 const schoolSearch = ref('')
 const contactSearch = ref('')
 // functions
+function goToSchool(displayName, mincode, id) {
+  console.log(displayName)
+  console.log(mincode)
+  console.log(id)
+  router.push({
+    name: 'school',
+    params: {
+      displayName: useSanitizeURL(String(displayName)),
+      schoolNumber: useSanitizeURL(String(mincode)),
+      schoolId: id
+    }
+  })
+}
 function downloadDistrictContacts() {
   jsonexport(filteredContacts.value, function (err: any, csv: any) {
     if (err) return console.error(err)
@@ -277,6 +292,14 @@ onMounted(async () => {
               :items="district.value.districtSchools"
               :search="schoolSearch"
             >
+              <template v-slot:item.displayName="{ item }">
+                <a
+                  @click="
+                    goToSchool(item.columns.displayName, item.columns.mincode, item.raw.schoolId)
+                  "
+                  >{{ item.columns.displayName }} {{ item.columns.schoolId }}</a
+                >
+              </template>
               <template v-slot:item.schoolCategoryCode="{ item }">
                 {{ appStore.getCategoryCodeLabel(item.schoolCategoryCode) }}
               </template>
