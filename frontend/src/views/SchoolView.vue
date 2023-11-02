@@ -254,6 +254,5 @@ function goToDistrict() {
         </v-window>
       </v-card-text>
     </v-card>
-    <pre>{{ schoolData.value }}</pre>
   </div>
 </template>
