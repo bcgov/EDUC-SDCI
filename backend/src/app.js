@@ -44,7 +44,6 @@ app.get("/download/:fileName", (req, res) => {
     // Construct the file path based on the requested file name
 
     const filePath = path.join(__dirname, "../public", fileName);
-    console.log(filePath);
     // Check if the file exists
     if (!filePath || !fileName || !fs.existsSync(filePath)) {
       // If the file doesn't exist, send a 404 Not Found response

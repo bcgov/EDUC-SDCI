@@ -44,10 +44,7 @@ async function writeFileAsync(filePath, data, encoding) {
 
 async function addDistrictLabels(req, res, next) {
     try {
-      console.log("Add District Labels")
       let districtList = [];
-
-
       if (listCache.has("districtlist")) {
         districtList=  listCache.get("districtlist");
       } else {

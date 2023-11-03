@@ -76,9 +76,7 @@ async function getDistrictCodes(req) {
 // }
 //api/v1/institute/district/12342525
 async function getAuthority(req, res) {
-  console.log("GET AUTHORITY");
   const { id } = req.params;
-  console.log("id: " + id);
   const params = [
     {
       condition: null,

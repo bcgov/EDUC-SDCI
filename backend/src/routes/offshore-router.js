@@ -40,7 +40,6 @@ async function getOffshore(req, res) {
 
   // try {
     const schoolResponse = await axios.get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } });
-    console.log(schoolResponse)
     res.json(schoolResponse.data)
      
   //   log.info(req.url);
