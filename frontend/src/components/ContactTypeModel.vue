@@ -96,10 +96,10 @@ const searchContact = async () => {
         block
         variant="outlined"
         color="bcGovBlue"
-        class="text-none text-subtitle-1 my-1"
+        class="text-none text-subtitle-1 mb-4"
         v-bind="props"
         ><template v-slot:append> <v-icon icon="mdi-chevron-right" /> </template>
-        View Contacts by Type
+        View District Contacts
       </v-btn>
     </template>
     <v-card>

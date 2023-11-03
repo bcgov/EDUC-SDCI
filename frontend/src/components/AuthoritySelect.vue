@@ -29,7 +29,7 @@ function downloadAuthorityContacts() {
 </script>
 
 <template>
-  <v-card class="pa-6 mt-5">
+  <v-card class="px-6 py-4 mt-5">
     <h2 class="mb-5">Independent Authorities</h2>
     <v-row no-gutters>
       <v-col class="ma-1">

@@ -16,6 +16,7 @@ const districtInfo = reactive<any>({ value: {} })
 const downloadContacts = ref<any>([])
 const filteredContacts = ref<any>([])
 const filteredAddresses = reactive<any>({ value: {} })
+const filteredGradesLabels = reactive<any>([])
 const headers = [
   { title: 'Role', key: 'jobTitle' },
   { title: 'First Name', key: 'firstName' },
@@ -89,9 +90,12 @@ onBeforeMount(async () => {
       appStore.getGradeByGradeCodes,
       schoolData.value.grades
     )
-    console.log(filteredGrades)
-    //extract only the labels
-    const filteredGradesLabels = appStore.extractGradeLabels(filteredGrades)
+    //extract only the labels for UI (no longer used for extract)
+    if (filteredGradesLabels.length == 0) {
+      filteredGradesLabels.push(...appStore.extractGradeLabels(filteredGrades))
+      console.log(filteredGradesLabels)
+    }
+
     //setting district name and number
     if (schoolData.value.districtId) {
       districtInfo.value = appStore.getDistrictByDistrictId(String(schoolData.value.districtId))
@@ -177,10 +181,10 @@ function goToDistrict() {
           <v-col>
             <v-row>
               <h1 class="mt-3 mb-2">
-                {{ schoolData.value.displayName }} - {{ schoolData.value.mincode }}
+                {{ schoolData.value.mincode }} - {{ schoolData.value.displayName }}
               </h1>
             </v-row>
-            <v-row>
+            <v-row class="mt-0 mb-1">
               <a
                 :href="`/district/${useSanitizeURL(
                   String(districtInfo.value?.districtNumber)
@@ -189,6 +193,16 @@ function goToDistrict() {
                 District {{ districtInfo.value.districtNumber }} -
                 {{ districtInfo.value.displayName }}
               </a>
+            </v-row>
+            <v-row>
+              <v-chip
+                v-for="grade in filteredGradesLabels"
+                :key="grade"
+                class="mr-1"
+                size="small"
+                label
+                >{{ grade }}</v-chip
+              >
             </v-row>
             <v-row>
               <!-- <div
@@ -214,10 +228,6 @@ function goToDistrict() {
                   <a :href="'mailto:' + schoolData.value?.email">
                     {{ schoolData.value.email }}
                   </a>
-                </p>
-                <p>
-                  <strong>Grades: </strong
-                  >{{ appStore.extractGradeLabels(schoolData.value?.grades) }}
                 </p>
               </v-col>
               <v-col v-for="item in schoolData.value.addresses" :key="item.addressTypeCode">

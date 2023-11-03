@@ -30,7 +30,7 @@ function downloadDistrictsMailing() {
 </script>
 
 <template>
-  <v-card class="pa-6 mt-5">
+  <v-card class="px-6 py-4 mt-5">
     <h2 class="mb-5">School Districts</h2>
     <v-row no-gutters justify="space-between">
       <v-col class="ma-1">
@@ -59,6 +59,7 @@ function downloadDistrictsMailing() {
           <ContactTypeModal></ContactTypeModal>
           <v-btn
             variant="text"
+            block
             class="v-btn-align-left text-none text-subtitle-1 my-1"
             @click="downloadDistrictsMailing"
             ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Mailing for All
