@@ -13,6 +13,7 @@ const appStore = useAppStore()
 
 // props
 const districtInfo = reactive<any>({ value: {} })
+const authorityInfo = reactive<any>({ value: {} })
 const downloadContacts = ref<any>([])
 const filteredContacts = ref<any>([])
 const filteredAddresses = reactive<any>({ value: {} })
@@ -93,12 +94,18 @@ onBeforeMount(async () => {
     //extract only the labels for UI (no longer used for extract)
     if (filteredGradesLabels.length == 0) {
       filteredGradesLabels.push(...appStore.extractGradeLabels(filteredGrades))
-      console.log(filteredGradesLabels)
     }
 
     //setting district name and number
     if (schoolData.value.districtId) {
       districtInfo.value = appStore.getDistrictByDistrictId(String(schoolData.value.districtId))
+    }
+    //setting authority name and number if school is independent
+    console.log(schoolData.value.independentAuthorityId)
+    if (schoolData.value.independentAuthorityId) {
+      authorityInfo.value = appStore.getAuthorityByAuthorityId(
+        String(schoolData.value.independentAuthorityId)
+      )
     }
     //setting school address
     if (response.data) {
@@ -193,6 +200,10 @@ function goToDistrict() {
                 District {{ districtInfo.value.districtNumber }} -
                 {{ districtInfo.value.displayName }}
               </a>
+              <p v-if="authorityInfo.value" class="mt-0 mb-1 ml-1">
+                | Independent Authority {{ authorityInfo.value.authorityNumber }} -
+                {{ authorityInfo.value.displayName }}
+              </p>
             </v-row>
             <v-row>
               <v-chip
@@ -204,21 +215,7 @@ function goToDistrict() {
                 >{{ grade }}</v-chip
               >
             </v-row>
-            <v-row>
-              <!-- <div
-                label
-                v-for="grade in appStore.getGradeByGradeCodes"
-                :key="grade.schoolGradeCode"
-              >
-                {{
-                  schoolData.value.grades.find(
-                    (schoolGrade: Grade) => schoolGrade.schoolGradeCode == grade.schoolGradeCode
-                  )
-                    ? grade.label
-                    : undefined
-                }}
-              </div> -->
-            </v-row>
+            <v-row> </v-row>
             <v-row>
               <v-col class="pl-0">
                 <p><strong>Phone:</strong> {{ formatPhoneNumber(schoolData.value.phoneNumber) }}</p>
@@ -235,8 +232,8 @@ function goToDistrict() {
               </v-col>
               <v-col
                 ><v-btn
-                  block
-                  class="text-none text-subtitle-1 ma-1"
+                  variant="text"
+                  class="text-none text-subtitle-1 ma-1 v-btn-align-left"
                   @click="downloadCSV"
                   :disabled="!schoolData.value"
                   ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>School
@@ -261,7 +258,14 @@ function goToDistrict() {
               :items="filteredContacts"
               class="elevation-1"
               item-value="name"
-            ></v-data-table-virtual>
+            >
+              <template v-slot:item.phoneNumber="{ item }">
+                {{ formatPhoneNumber(item.phoneNumber) }}
+              </template>
+              <template v-slot:item.faxNumber="{ item }">
+                {{ formatPhoneNumber(item.faxNumber) }}
+              </template>
+            </v-data-table-virtual>
           </v-window-item>
         </v-window>
       </v-card-text>
