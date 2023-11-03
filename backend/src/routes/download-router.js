@@ -27,7 +27,7 @@ async function createCSVFile(req,res, next){
     
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).send("Internal server error");
+    res.status(500).send("Internal server error- Write File Sync issue");
   }
 }
 async function writeFileAsync(filePath, data, encoding) {
@@ -44,6 +44,7 @@ async function writeFileAsync(filePath, data, encoding) {
 
 async function addDistrictLabels(req, res, next) {
     try {
+      console.log("Add District Labels")
       let districtList = [];
 
 
@@ -102,9 +103,11 @@ async function getDownload(req, res,next){
     return res.sendFile(filePath);
   }else{
     try {
+
+      
       const path = req.url.replace('/csv', ''); // Modify the URL path as needed
-      const url = `${req.protocol}://${req.hostname}:8080/api/v1${path}`;
-      console.log(url)
+
+      const url =`${config.get("server:backend")}/v1${path}`
       const response = await axios.get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } });
       // Attach the fetched data to the request object
       if (response.data?.content) {
@@ -116,7 +119,7 @@ async function getDownload(req, res,next){
       next(); // Call the next middleware
     } catch (error) {
       console.error("Error:", error);
-      res.status(500).send("Internal server error");
+      res.status(500).send("Internal server error - Getting Download");
     }
   }
 }
@@ -136,7 +139,7 @@ async function getCSVDownload(req, res) {
     res.sendFile(filePath);
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).send("Internal server error");
+    res.status(500).send("Internal server error - getCSVDownload");
   }
 }
 
