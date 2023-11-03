@@ -92,8 +92,13 @@ const searchContact = async () => {
 <template>
   <v-dialog v-model="dialog" width="100%">
     <template v-slot:activator="{ props }">
-      <v-btn block class="v-btn-align-left text-none text-subtitle-1 my-1" v-bind="props"
-        ><template v-slot:prepend> <v-icon icon="mdi-magnify" /> </template>
+      <v-btn
+        block
+        variant="outlined"
+        color="bcGovBlue"
+        class="text-none text-subtitle-1 my-1"
+        v-bind="props"
+        ><template v-slot:append> <v-icon icon="mdi-chevron-right" /> </template>
         View Contacts by Type
       </v-btn>
     </template>

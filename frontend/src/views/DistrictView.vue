@@ -291,11 +291,8 @@ onMounted(async () => {
               :search="schoolSearch"
             >
               <template v-slot:item.displayName="{ item }">
-                <a
-                  @click="
-                    goToSchool(item.columns.displayName, item.columns.mincode, item.raw.schoolId)
-                  "
-                  >{{ item.columns.displayName }} {{ item.columns.schoolId }}</a
+                <a @click="goToSchool(item.displayName, item.mincode, item.raw.schoolId)"
+                  >{{ item.displayName }} {{ item.schoolId }}</a
                 >
               </template>
               <template v-slot:item.schoolCategoryCode="{ item }">

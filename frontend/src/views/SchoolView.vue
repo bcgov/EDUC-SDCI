@@ -89,6 +89,7 @@ onBeforeMount(async () => {
       appStore.getGradeByGradeCodes,
       schoolData.value.grades
     )
+    console.log(filteredGrades)
     //extract only the labels
     const filteredGradesLabels = appStore.extractGradeLabels(filteredGrades)
     //setting district name and number
@@ -190,9 +191,6 @@ function goToDistrict() {
               </a>
             </v-row>
             <v-row>
-              <!-- <p>
-                <strong>Grades: </strong>{{ appStore.extractGradeLabels(schoolData.value?.grades) }}
-              </p> -->
               <!-- <div
                 label
                 v-for="grade in appStore.getGradeByGradeCodes"
@@ -216,6 +214,10 @@ function goToDistrict() {
                   <a :href="'mailto:' + schoolData.value?.email">
                     {{ schoolData.value.email }}
                   </a>
+                </p>
+                <p>
+                  <strong>Grades: </strong
+                  >{{ appStore.extractGradeLabels(schoolData.value?.grades) }}
                 </p>
               </v-col>
               <v-col v-for="item in schoolData.value.addresses" :key="item.addressTypeCode">

@@ -34,9 +34,11 @@ function downloadOffshoreSchoolReps() {
         <v-row>
           <v-btn
             block
-            class="v-btn-align-left text-none text-subtitle-1 my-1"
+            color="bcGovBlue"
+            variant="outlined"
+            class="text-none text-subtitle-1 my-1"
             @click="viewOffshoreSchools"
-            ><template v-slot:prepend> <v-icon icon="mdi-magnify" /></template>View Offshore
+            ><template v-slot:append> <v-icon icon="mdi-chevron-right" /></template>View Offshore
             Schools</v-btn
           >
           <v-btn
