@@ -211,6 +211,7 @@ function goToDistrict() {
                 :key="grade"
                 class="mr-1"
                 size="small"
+                color="primary"
                 label
                 >{{ grade }}</v-chip
               >
