@@ -187,49 +187,56 @@ onMounted(async () => {
 
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-row no-gutters justify="space-between">
-        <!-- <v-spacer />
-        <v-col cols="6"> -->
-        <v-row v-if="district.value.districtData" no-gutters justify="space-between">
-          <v-col>
+        <v-col v-if="district.value.districtData">
+          <v-row no-gutters>
             <h1 class="mt-3 mb-2">
               {{ district.value.districtData?.districtNumber }} -
               {{ district.value.districtData?.displayName }}
             </h1>
-            <p>
-              <strong>Phone:</strong>
-              {{ formatPhoneNumber(district.value.districtData?.phoneNumber) }}
-            </p>
-            <p>
-              <strong>Fax:</strong>
-              {{ formatPhoneNumber(district.value.districtData?.faxNumber) }}
-            </p>
-            <p><strong>Email:</strong> {{ district.value.districtData?.email }}</p>
-            <p>
-              <a :href="district.value.districtData?.website">{{
-                district.value.districtData?.website
-              }}</a>
-            </p>
-          </v-col>
+          </v-row>
+          <v-row no-gutters justify="space-between">
+            <v-col>
+              <p>
+                <strong>Phone:</strong>
+                {{ formatPhoneNumber(district.value.districtData?.phoneNumber) }}
+              </p>
+              <p>
+                <strong>Fax:</strong>
+                {{ formatPhoneNumber(district.value.districtData?.faxNumber) }}
+              </p>
+              <p><strong>Email:</strong> {{ district.value.districtData?.email }}</p>
+              <p>
+                <a :href="district.value.districtData?.website">{{
+                  district.value.districtData?.website
+                }}</a>
+              </p>
+            </v-col>
 
-          <v-col v-for="item in district.value.districtData.addresses" :key="item.addressTypeCode">
-            <h1>&nbsp;</h1>
-            <DisplayAddress v-bind="item" />
-          </v-col>
+            <v-col
+              v-for="item in district.value.districtData.addresses"
+              :key="item.addressTypeCode"
+            >
+              <DisplayAddress v-bind="item" />
+            </v-col>
 
-          <v-col>
-            <h1>&nbsp;</h1>
-            <v-btn block class="text-none text-subtitle-1 ma-1" @click="downloadDistrictContacts"
-              ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>District
-              Contacts</v-btn
-            >
-            <v-btn block class="text-none text-subtitle-1 ma-1" @click="downloadDistrictSchools"
-              ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>District
-              Schools</v-btn
-            >
-          </v-col>
-        </v-row>
-        <!-- </v-col>
-        <v-spacer /> -->
+            <v-col>
+              <v-btn
+                variant="text"
+                class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+                @click="downloadDistrictContacts"
+                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>District
+                Contacts</v-btn
+              >
+              <v-btn
+                variant="text"
+                class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+                @click="downloadDistrictSchools"
+                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>District
+                Schools</v-btn
+              >
+            </v-col>
+          </v-row>
+        </v-col>
       </v-row>
     </v-sheet>
     <!-- END DISTRICT HEADER INFO -->

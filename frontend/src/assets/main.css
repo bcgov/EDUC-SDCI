@@ -8,6 +8,10 @@
   font-weight: normal;
 }
 
+a {
+  color: #2a6496;
+}
+
 @media (max-width: 768px) {
   #app {
     min-width: 1130px; /* Adjust as needed */
@@ -26,10 +30,6 @@
 .fill-screen-height{
   height: calc(100vh - 200px) !important
 }
-/* .full-width {
-  margin: 0 calc(-1*(100vw - 1280px)/2);
-  padding: 0 calc((100vw - 1280px)/2);
-} */
 .breadcrumbs {
   margin: 0 -40em;
   padding-left: 40em !important;
@@ -38,7 +38,7 @@
 /* styles button to look like links */
 button.link-btn, .link-btn .v-btn__content {
   opacity: 1;
-  color: #0000EE;
+  color: #003366;
   text-decoration: underline;
 }
 
@@ -53,15 +53,18 @@ button.link-btn, .link-btn .v-btn__content {
   max-width: 1280px;
   padding: 0 2rem;
 }
-.v-btn{
 
-}
 .v-btn-align-left {
   justify-content: normal !important;
 }
 @media (hover: hover) {
   a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
+    background-color: #0000;
+    color: #0000EE;
+  }
+
+  a.v-btn:hover {
+    color: inherit; /*overrides blue hover for links on href buttons */
   }
 }
 
@@ -79,6 +82,5 @@ button.link-btn, .link-btn .v-btn__content {
   .full-width {
     margin: 0 calc(-1*(100vw - 1024px)/2);
     padding: 0 calc((100vw - 1024px)/2);
-    background-color: red;
   }
 }

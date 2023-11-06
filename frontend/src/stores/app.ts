@@ -149,7 +149,7 @@ export const useAppStore = defineStore('app', {
       return (districtId: string) => state.districts.find((district) => districtId === district.districtId)
     },
     getDistrictByDistrictNumber: (state) => {
-      return (distNum: String): ListDistrict | undefined => state.districts.find((district: ListDistrict): Boolean => distNum === district.districtNumber)
+      return (distNum: string): ListDistrict | undefined => state.districts.find((district: ListDistrict): Boolean => distNum === district.districtNumber)
     },
     // Independent Authorities
     getAuthorities: (state) => {
@@ -157,6 +157,9 @@ export const useAppStore = defineStore('app', {
     },
     getAuthoritiesList: (state) => {
       return state.authorities.map((authority) => {return {authorityNumber: authority.authorityNumber, displayName: authority.displayName}})
+    },
+    getAuthorityByAuthorityId: (state) => {
+      return (authorityId: string) => state.authorities.find((authority) => authorityId === authority.independentAuthorityId)
     },
     getAuthorityByAuthorityNumber: (state) => {
       return (authNum: string | String) => state.authorities.find((authority) => authNum === authority.authorityNumber)

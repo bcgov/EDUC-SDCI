@@ -42,7 +42,7 @@ function goToSchoolSearch() {
           style="height: 268px; position: absolute; top: 50px; left: -80px"
         />
         <v-spacer />
-        <v-col lg="6" class="ml-0 py-6 school-search">
+        <v-col lg="6" md="8" class="ml-0 py-6 school-search">
           <h2 class="mb-5">Find a School in BC</h2>
           <v-row>
             <v-autocomplete
@@ -72,7 +72,8 @@ function goToSchoolSearch() {
                 class="text-none text-subtitle-1"
                 variant="outlined"
                 @click="goToSchoolSearch"
-                >View All Schools</v-btn
+                ><template v-slot:append> <v-icon icon="mdi-chevron-right" /></template>View All
+                Schools</v-btn
               >
             </v-col>
             <v-spacer />
