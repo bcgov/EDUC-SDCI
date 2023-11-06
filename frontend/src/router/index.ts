@@ -52,7 +52,12 @@ const router = createRouter({
         await appStore.setAuthorityList();
         next();
       }
-    },  
+    },
+    {
+      path: '/contacts',
+      name: 'contacts',
+      component: () => import('../views/ContactsView.vue')
+    },
     {
       path: '/offshore',
       name: 'offshore',
@@ -61,7 +66,7 @@ const router = createRouter({
     {
       path: '/:catchAll(.*)', // This pattern will match any route that hasn't been matched by other routes
       name: 'not-found',
-      component: () => import('../views/ErrorView.vue') // Use your error page component here   
+      component: () => import('../views/ErrorView.vue') // Use your error page component here
     }
 
   ]

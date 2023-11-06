@@ -73,6 +73,13 @@ function downloadDistrictsMailing() {
 
             Contacts for All Districts (CSV)</v-btn
           >
+          <v-btn
+            @click="$router.push('contacts')"
+            block
+            class="v-btn-align-left text-none text-subtitle-1 my-1"
+            ><template v-slot:prepend> <v-icon icon="mdi-magnify" /> </template>
+            View Contacts by Type
+          </v-btn>
         </v-row>
       </v-col>
     </v-row>
