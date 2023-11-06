@@ -27,31 +27,33 @@ function downloadOffshoreSchoolReps() {
 </script>
 
 <template>
-  <v-card class="pa-6 mt-5">
+  <v-card class="px-6 py-4 mt-5">
     <h2 class="mb-5">BC Offshore Schools</h2>
     <v-row no-gutters>
       <v-col class="ma-1">
         <v-row>
           <v-btn
             block
-            class="v-btn-align-left text-none text-subtitle-1 my-1"
+            color="bcGovBlue"
+            variant="outlined"
+            class="text-none text-subtitle-1 mt-1 mb-4"
             @click="viewOffshoreSchools"
-            ><template v-slot:prepend> <v-icon icon="mdi-magnify" /></template>View Offshore
+            ><template v-slot:append> <v-icon icon="mdi-chevron-right" /></template>View Offshore
             Schools</v-btn
           >
           <v-btn
-            block
+            variant="text"
             class="v-btn-align-left text-none text-subtitle-1 my-1"
             @click="downloadOffshoreSchoolInfo"
-            ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Offshore School
-            Info</v-btn
+            ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Offshore Schools
+            Info (CSV)</v-btn
           >
           <v-btn
-            block
+            variant="text"
             class="v-btn-align-left text-none text-subtitle-1 my-1"
             @click="downloadOffshoreSchoolReps"
-            ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Offshore School
-            Representatives</v-btn
+            ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Offshore Schools
+            Representatives (CSV)</v-btn
           >
         </v-row>
       </v-col>

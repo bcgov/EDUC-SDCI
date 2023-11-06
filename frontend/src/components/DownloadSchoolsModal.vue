@@ -21,13 +21,13 @@ function downloadAllSchoolsMailing() {
         class="text-none text-subtitle-1 my-1"
         v-bind="props"
       >
-        Download School Info
+        Download Schools Info
       </v-btn>
     </template>
     <template v-slot:default="{ isActive }">
-      <v-card title="Download Schools">
+      <v-card title="School Information Downloads">
         <v-card-actions>
-          <v-column>
+          <v-column class="pl-3">
             <v-row class="pt-2">
               <v-col class="py-1 my-0"
                 ><v-btn
@@ -67,13 +67,15 @@ function downloadAllSchoolsMailing() {
               >
             </v-row>
             <v-row>
-              <v-btn
-                block
-                class="v-btn-align-left text-none text-subtitle-1 ma-1"
-                @click="downloadAllSchoolsMailing"
-                ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Mailing for All
-                Schools</v-btn
-              >
+              <v-col class="py-1 my-0">
+                <v-btn
+                  block
+                  class="v-btn-align-left text-none text-subtitle-1 my-1"
+                  @click="downloadAllSchoolsMailing"
+                  ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Mailing for
+                  All Schools (CSV)</v-btn
+                >
+              </v-col>
             </v-row>
           </v-column>
         </v-card-actions>

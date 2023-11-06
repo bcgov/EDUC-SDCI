@@ -29,7 +29,7 @@ function downloadAuthorityContacts() {
 </script>
 
 <template>
-  <v-card class="pa-6 mt-5">
+  <v-card class="px-6 py-4 mt-5">
     <h2 class="mb-5">Independent Authorities</h2>
     <v-row no-gutters>
       <v-col class="ma-1">
@@ -54,26 +54,20 @@ function downloadAuthorityContacts() {
         </v-row>
         <v-row>
           <v-btn
-            href="/api/v1/download/csv/school/all/INDEPEND?filepath=independentschoolcontacts"
             block
-            class="v-btn-align-left text-none text-subtitle-1 my-1"
-            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>
-
-            All Independent Schools</v-btn
-          >
-          <v-btn
-            block
-            class="v-btn-align-left text-none text-subtitle-1 my-1"
-            @click="downloadAuthorityContacts"
-            ><template v-slot:prepend> <v-icon icon="mdi-download" /></template> Contacts for All
-            Authorities</v-btn
-          >
-          <v-btn
-            block
+            variant="text"
             class="v-btn-align-left text-none text-subtitle-1 my-1"
             @click="downloadAuthorityMailing"
             ><template v-slot:prepend> <v-icon icon="mdi-download" /></template> Mailing for All
-            Authorities</v-btn
+            Authorities (CSV)</v-btn
+          >
+          <v-btn
+            block
+            variant="text"
+            class="v-btn-align-left text-none text-subtitle-1 my-1"
+            @click="downloadAuthorityContacts"
+            ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Contacts for All
+            Authorities (CSV)</v-btn
           >
         </v-row>
       </v-col>
