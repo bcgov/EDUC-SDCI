@@ -40,8 +40,6 @@ router.get("/*", checkToken, getInstituteAPI);
 
 async function getContactTypeCodes(req, res) {
   if (await !listCache.has("codesList")) {
-    console.log("GETTING NEW SCHOOL LIST");
-
     //const codes = [];
 
     try {
@@ -86,7 +84,6 @@ async function getContactTypeCodes(req, res) {
     }
     listCache.set("codesList", codes);
   } else {
-    console.log("USING SCHOOL LIST CACHE");
     const cachedCodeList = await listCache.get("codesList");
     res.json(cachedCodeList);
   }
@@ -247,8 +244,6 @@ async function getGradeCodes(req, res) {
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
-        console.log("eee")
-        console.log(response.data)
         const gradeCodes = response.data;
         
         codeCache.set("gradelist", gradeCodes);

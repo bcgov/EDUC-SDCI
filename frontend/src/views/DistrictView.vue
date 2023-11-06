@@ -25,7 +25,7 @@ const tabOptions = {
 const tab = ref(tabOptions.contacts) // Default to contacts tab
 const contactHeaders = [
   { title: 'Role', key: 'jobTitle' },
-  { title: 'Contact Type', key: 'districtContactTypeCode' },
+  { title: 'Contact', key: 'label' },
   { title: 'First Name', key: 'firstName' },
   { title: 'Last Name', key: 'lastName' },
   { title: 'Phone', key: 'phoneNumber' },
@@ -48,9 +48,6 @@ const schoolSearch = ref('')
 const contactSearch = ref('')
 // functions
 function goToSchool(displayName: string, mincode: string, id: string) {
-  console.log(displayName)
-  console.log(mincode)
-  console.log(id)
   router.push({
     name: 'school',
     params: {
@@ -273,10 +270,6 @@ onMounted(async () => {
                 <a :href="`mailto:${item.email}`">{{ item.email }}</a>
               </template>
 
-              <template v-slot:item.districtContactTypeCode="{ item }">
-                {{ appStore.getDistrictContactTypeCodeLabel(item.districtContactTypeCode) }}
-              </template>
-
               <template v-slot:item.phoneNumber="{ item }">
                 {{ formatPhoneNumber(item.phoneNumber) }}
               </template>
@@ -298,7 +291,7 @@ onMounted(async () => {
               :search="schoolSearch"
             >
               <template v-slot:item.displayName="{ item }">
-                <a @click="goToSchool(item.displayName, item.mincode, item.raw.schoolId)">{{
+                <a @click="goToSchool(item.displayName, item.mincode, item.schoolId)">{{
                   item.displayName
                 }}</a>
               </template>

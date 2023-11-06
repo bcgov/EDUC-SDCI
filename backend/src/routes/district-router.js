@@ -62,6 +62,28 @@ function getNonPublicContactTypeCodes(contactTypes) {
 
   return nonPublicContactTypeCodes;
 }
+function addContactTypeLabels(districtDataResponse, nonPublicContactTypeCodes) {
+
+  const updatedDistrictData = { ...districtDataResponse };
+  if (
+    updatedDistrictData.contacts &&
+    Array.isArray(updatedDistrictData.contacts)
+  ) {
+    updatedDistrictData.contacts.forEach(contact => {
+      const matchingType = nonPublicContactTypeCodes.find(
+        codeObj => codeObj.districtContactTypeCode === contact.districtContactTypeCode
+      );
+
+      if (matchingType) {
+        contact.label = matchingType.label;
+      } else {
+        
+      }
+    });
+  }
+
+  return updatedDistrictData;
+}
 function removeContacts(districtDataResponse, nonPublicContactTypeCodes) {
   const updatedDistrictData = { ...districtDataResponse };
 
@@ -117,15 +139,18 @@ async function getDistrict(req, res) {
       headers: { Authorization: `Bearer ${req.accessToken}` },
     });
     const contactTypeCodes = await getDistrictCodes(req);
-    const nonPublicContactTypeCodes =
-      getNonPublicContactTypeCodes(contactTypeCodes);
+    const nonPublicContactTypeCodes = getNonPublicContactTypeCodes(contactTypeCodes);
     const districtDataPublic = removeContacts(
       districtDataResponse.data,
       nonPublicContactTypeCodes
     );
-
+    const districtDataPublicWithLabels = addContactTypeLabels(
+      districtDataPublic,
+      contactTypeCodes
+    );
+  
     const districtJSON = {
-      districtData: districtDataPublic,
+      districtData: districtDataPublicWithLabels,
       districtSchools: districtSchoolsResponse.data.content,
     };
 

@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import InstituteService from '@/services/InstituteService'
 import { ref, reactive, onMounted, computed, toValue } from 'vue'
+import router from '@/router'
 import { useAppStore } from '@/stores/app'
 import { useRoute } from 'vue-router'
 import { formatPhoneNumber } from '@/utils/common'
 import * as jsonexport from 'jsonexport/dist'
 import type { Authority, School, Address } from '@/types/types.d.ts'
+import { useSanitizeURL } from '@/composables/string'
 
 // import common components
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
@@ -48,6 +50,17 @@ const schoolHeaders = [
 
 const schoolSearch = ref('')
 const contactSearch = ref('')
+
+function goToSchool(displayName: string, mincode: string, id: string) {
+  router.push({
+    name: 'school',
+    params: {
+      displayName: useSanitizeURL(String(displayName)),
+      schoolNumber: useSanitizeURL(String(mincode)),
+      schoolId: id
+    }
+  })
+}
 function downloadAuthorityContacts() {
   jsonexport(downloadContacts.value, function (err: any, csv: any) {
     if (err) return console.error(err)
@@ -282,10 +295,6 @@ onMounted(async () => {
                 <a :href="`mailto:${item.email}`">{{ item.email }}</a>
               </template>
 
-              <template v-slot:item.districtContactTypeCode="{ item }">
-                {{ appStore.getDistrictContactTypeCodeLabel(item.districtContactTypeCode) }}
-              </template>
-
               <template v-slot:item.phoneNumber="{ item }">
                 {{ formatPhoneNumber(item.phoneNumber) }}
               </template>
@@ -306,6 +315,11 @@ onMounted(async () => {
               :items="authority.value.authoritySchools"
               :search="schoolSearch"
             >
+              <template v-slot:item.displayName="{ item }">
+                <a @click="goToSchool(item.displayName, item.mincode, item.schoolId)">{{
+                  item.displayName
+                }}</a>
+              </template>
               <template v-slot:item.schoolCategoryCode="{ item }">
                 {{ appStore.getCategoryCodeLabel(item.schoolCategoryCode) }}
               </template>

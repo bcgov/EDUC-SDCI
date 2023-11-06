@@ -17,7 +17,6 @@ router.get("/:schoolId", checkToken, getSchool);
 
 async function getSchool(req, res) {
     const {schoolId} = req.params;
-  console.log(schoolId)
     const url = `${config.get(
       "server:instituteAPIURL"
     )}/institute/school/` + schoolId;
