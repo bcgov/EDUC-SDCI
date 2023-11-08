@@ -216,7 +216,6 @@ function goToDistrict() {
                 >{{ grade }}</v-chip
               >
             </v-row>
-            <v-row> </v-row>
             <v-row>
               <v-col class="pl-0">
                 <p><strong>Phone:</strong> {{ formatPhoneNumber(schoolData.value.phoneNumber) }}</p>
