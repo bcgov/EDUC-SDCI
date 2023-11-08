@@ -1,5 +1,3 @@
-import type {Grade} from '@/types/types'
-
 export function distNumberFromMincode(input: string | String) {
     return input.slice(0, 3);
 }

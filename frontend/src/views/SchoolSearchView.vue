@@ -17,9 +17,9 @@
             multiple
           ></v-select>
         </v-col>
-        <v-col cols="12" md="3">
+        <!-- <v-col cols="12" md="3">
           <v-select v-model="selectedCity" :items="cities" label="City"></v-select>
-        </v-col>
+        </v-col> -->
         <v-col cols="12" md="3">
           <v-select
             v-model="selectedType"
@@ -216,9 +216,9 @@ const schools = [
 const headers = [
   { title: '', key: 'data-table-expand' },
   { title: 'School Name', key: 'displayName' },
-  { title: 'ID', key: 'schoolId' },
-  { title: 'school Category', key: 'schoolCategoryCode' },
-  { title: 'Mincode', key: 'mincode' }
+  { title: 'Mincode', key: 'mincode' },
+  { title: 'Category', key: 'schoolCategoryCode' },
+  { title: 'Type', key: 'facilityTypeCode' }
 ]
 
 const filteredSchools = ref(schools)
