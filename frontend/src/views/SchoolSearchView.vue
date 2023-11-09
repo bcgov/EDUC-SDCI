@@ -1,145 +1,10 @@
-<template>
-  <div>
-    <v-breadcrumbs
-      class="breadcrumbs"
-      bg-color="white"
-      :items="[{ title: 'Home', href: '/' }, 'Search']"
-    ></v-breadcrumbs>
-    <v-container class="my-4">
-      <v-row>
-        <v-col cols="12" md="3">
-          <v-select
-            v-model="selectedJurisdiction"
-            :items="jurisdictions"
-            item-title="label"
-            item-value="schoolCategoryCode"
-            label="Jurisdiction"
-            multiple
-          ></v-select>
-        </v-col>
-        <!-- <v-col cols="12" md="3">
-          <v-select v-model="selectedCity" :items="cities" label="City"></v-select>
-        </v-col> -->
-        <v-col cols="12" md="3">
-          <v-select
-            v-model="selectedType"
-            item-title="label"
-            item-value="facilityTypeCode"
-            :items="types"
-            label="Types"
-            multiple
-          ></v-select>
-        </v-col>
-        <v-col cols="12" md="3"
-          ><v-btn
-            icon="mdi-magnify"
-            color="primary"
-            variant="flat"
-            rounded="lg"
-            size="large"
-            @click="searchSchools"
-            class="text-none text-subtle-1 ml-3"
-        /></v-col>
-        <v-col cols="12">
-          <v-btn @click="resetFilters" variant="outlined" color="bcGovBlue">Reset</v-btn>
-          <!-- <v-btn @click="searchSchools" color="primary">Search</v-btn> -->
-        </v-col>
-      </v-row>
-
-      <!-- Search Results Table -->
-      TOTAL: {{ results }} Current Page {{ currentPage }}
-      <v-data-table-server
-        v-model:items-per-page="itemsPerPage"
-        :items-per-page-options="[
-          { value: 10, title: '10' },
-          { value: 25, title: '25' },
-          { value: 50, title: '50' },
-          { value: 100, title: '100' }
-        ]"
-        :expanded="expanded"
-        :headers="headers"
-        :items-length="results"
-        :items="filteredSchools"
-        show-expand
-        class="elevation-1"
-        item-value="schoolId"
-        :loading="loading"
-        @page-change:page="handlePageChange"
-        @update:options="handleUpdate"
-      >
-        <template v-slot:item.displayName="{ item }">
-          <a :href="`/school/${item.schoolId}`">{{ item.displayName }}</a>
-        </template>
-        <template v-slot:expanded-row="{ item }">
-          <tr>
-            <td :colspan="headers.length">
-              <v-card>
-                <v-card-title> {{ item.displayName }} School Information </v-card-title>
-                <v-card-text>
-                  <p>Category Code: {{ item.schoolCategoryCode }}</p>
-                  <p>Facility Code: {{ item.facilityTypeCode }}</p>
-                  <p>
-                    District:
-                    <router-link :to="`/district/${item.districtId}`"> View District </router-link>
-                  </p>
-                  <p>
-                    Grades:
-                    <v-container>
-                      <v-row>
-                        <v-col v-for="(grade, index) in item.grades" :key="index" cols="12" md="4">
-                          {{ grade.schoolGradeCode }}
-                        </v-col>
-                      </v-row>
-                    </v-container>
-                  </p>
-                  <p>
-                    Addresses:
-                    <v-container>
-                      <v-row>
-                        <v-col
-                          v-for="(address, index) in item?.raw?.addresses"
-                          :key="index"
-                          cols="12"
-                          md="4"
-                        >
-                          <v-card>
-                            <v-card-text>
-                              <v-list dense>
-                                <v-list-item>
-                                  <v-list-item-content>
-                                    <v-list-item-title>
-                                      <p>addressLine1 {{ address.addressLine1 }}</p>
-                                      <p>addressLine2 {{ address.addressLine2 }}</p>
-                                      <p>city {{ address.city }}</p>
-                                      <p>postal {{ address.postal }}</p>
-                                      <p>addressTypeCode {{ address.addressTypeCode }}</p>
-                                      <p>provinceCode {{ address.provinceCode }}</p>
-                                      <p>countryCode {{ address.countryCode }}</p>
-                                      <p>schoolAddressId {{ address.schoolAddressId }}</p>
-                                    </v-list-item-title>
-                                  </v-list-item-content>
-                                </v-list-item>
-                              </v-list>
-                            </v-card-text>
-                          </v-card>
-                        </v-col>
-                      </v-row>
-                    </v-container>
-                  </p>
-                </v-card-text>
-              </v-card>
-            </td>
-          </tr>
-        </template>
-      </v-data-table-server>
-    </v-container>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { ref, onMounted, onBeforeMount, isProxy, toRaw } from 'vue'
+import { useAppStore } from '@/stores/app'
 import InstituteService from '@/services/InstituteService'
+import DisplayAddress from '@/components/common/DisplayAddress.vue'
 
+const appStore = useAppStore()
 const jurisdictions = ref([])
 const cities = ref([])
 const types = ref([])
@@ -306,6 +171,136 @@ onBeforeMount(async () => {
   await fetchTypes()
 })
 </script>
+
+<template>
+  <div>
+    <v-breadcrumbs
+      class="breadcrumbs"
+      bg-color="white"
+      :items="[{ title: 'Home', href: '/' }, 'Search']"
+    ></v-breadcrumbs>
+    <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
+      <h2>Find Schools</h2>
+      <v-row>
+        <v-col cols="12" md="3">
+          <v-select
+            v-model="selectedJurisdiction"
+            :items="jurisdictions"
+            item-title="label"
+            item-value="schoolCategoryCode"
+            label="Jurisdiction"
+            multiple
+          ></v-select>
+        </v-col>
+        <!-- <v-col cols="12" md="3">
+          <v-select v-model="selectedCity" :items="cities" label="City"></v-select>
+        </v-col> -->
+        <v-col cols="12" md="3">
+          <v-select
+            v-model="selectedType"
+            item-title="label"
+            item-value="facilityTypeCode"
+            :items="types"
+            label="Types"
+            multiple
+          ></v-select>
+        </v-col>
+        <v-col cols="12" md="3"
+          ><v-btn
+            icon="mdi-magnify"
+            color="primary"
+            variant="flat"
+            rounded="lg"
+            size="large"
+            @click="searchSchools"
+            class="text-none text-subtle-1 ml-3"
+        /></v-col>
+        <v-col cols="12">
+          <v-btn @click="resetFilters" variant="outlined" color="primary" class="text-none"
+            >Reset</v-btn
+          >
+          <!-- <v-btn @click="searchSchools" color="primary">Search</v-btn> -->
+        </v-col>
+      </v-row>
+    </v-sheet>
+
+    <v-card class="pa-6" width="100%">
+      <!-- Search Results Table -->
+      TOTAL: {{ results }} Current Page {{ currentPage }}
+      <v-data-table-server
+        v-model:items-per-page="itemsPerPage"
+        :items-per-page-options="[
+          { value: 10, title: '10' },
+          { value: 25, title: '25' },
+          { value: 50, title: '50' },
+          { value: 100, title: '100' }
+        ]"
+        :expanded="expanded"
+        :headers="headers"
+        :items-length="results"
+        :items="filteredSchools"
+        show-expand
+        class="elevation-1"
+        item-value="schoolId"
+        :loading="loading"
+        @page-change:page="handlePageChange"
+        @update:options="handleUpdate"
+      >
+        <template v-slot:item.displayName="{ item }">
+          <a :href="`/school/${item.schoolId}`">{{ item.displayName }}</a>
+        </template>
+        <template v-slot:expanded-row="{ item }">
+          <tr>
+            <td :colspan="headers.length">
+              <v-card>
+                <v-card-text>
+                  <p>
+                    <router-link
+                      class="pl-2"
+                      :to="`/district/${
+                        appStore.getDistrictByDistrictId(item.districtId)?.districtNumber
+                      }-${appStore.getDistrictByDistrictId(item.districtId)?.displayName}`"
+                    >
+                      District
+                      {{ appStore.getDistrictByDistrictId(item.districtId)?.districtNumber }} -
+                      {{ appStore.getDistrictByDistrictId(item.districtId)?.displayName }}
+                    </router-link>
+                  </p>
+                  <v-container>
+                    <v-row class="mt-1">
+                      <v-chip
+                        v-for="(grade, index) in item.grades"
+                        :key="index"
+                        class="ml-1"
+                        size="small"
+                        color="primary"
+                        label
+                      >
+                        {{ grade.schoolGradeCode }}</v-chip
+                      >
+                    </v-row>
+                  </v-container>
+                  <v-container>
+                    <v-row>
+                      <v-col
+                        v-for="(address, index) in item?.addresses"
+                        :key="index"
+                        cols="12"
+                        md="4"
+                      >
+                        <DisplayAddress v-bind="address" />
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                </v-card-text>
+              </v-card>
+            </td>
+          </tr>
+        </template>
+      </v-data-table-server>
+    </v-card>
+  </div>
+</template>
 
 <style>
 /* Add custom styles here if needed */

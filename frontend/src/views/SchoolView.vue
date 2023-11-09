@@ -186,12 +186,12 @@ function goToDistrict() {
       <v-row no-gutters justify="space-between">
         <v-row v-if="schoolData.value" no-gutters justify="space-between">
           <v-col>
-            <v-row>
+            <v-row no-gutters>
               <h1 class="mt-3 mb-2">
                 {{ schoolData.value.mincode }} - {{ schoolData.value.displayName }}
               </h1>
             </v-row>
-            <v-row class="mt-0 mb-1">
+            <v-row no-gutters class="mt-0 mb-1">
               <a
                 :href="`/district/${useSanitizeURL(
                   String(districtInfo.value?.districtNumber)
@@ -205,7 +205,7 @@ function goToDistrict() {
                 {{ authorityInfo.value.displayName }}
               </p>
             </v-row>
-            <v-row>
+            <v-row no-gutters>
               <v-chip
                 v-for="grade in filteredGradesLabels"
                 :key="grade"
@@ -216,7 +216,7 @@ function goToDistrict() {
                 >{{ grade }}</v-chip
               >
             </v-row>
-            <v-row>
+            <v-row no-gutters>
               <v-col class="pl-0">
                 <p><strong>Phone:</strong> {{ formatPhoneNumber(schoolData.value.phoneNumber) }}</p>
                 <p><strong>Fax:</strong> {{ formatPhoneNumber(schoolData.value.faxNumber) }}</p>
