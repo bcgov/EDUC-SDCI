@@ -8,7 +8,11 @@ const fs = require("fs");
 const path = require("path");
 const { checkToken } = require("../components/auth");
 const { listCache } = require("../components/cache");
-
+const {
+  getDistrictCodes,
+  getNonPublicContactTypeCodes,
+  removeContacts,
+} = require("../components/utils");
 //Batch Routes
 router.get("/:id", checkToken, getDistrict);
 
@@ -28,81 +32,28 @@ async function removeItemsFromDistrictDataResponse(response, itemsToRemove) {
   }
 }
 
-async function getDistrictCodes(req) {
-  if (!listCache.has("districtCodesList")) {
-    const url = `${config.get(
-      "server:instituteAPIURL"
-    )}/institute/district-contact-type-codes`; // Update the URL according to your API endpoint
-    try {
-      const response = await axios.get(url, {
-        headers: { Authorization: `Bearer ${req.accessToken}` },
-      });
-      const districtCodeList = response.data;
-      listCache.set("districtCodesList", districtCodeList);
-      return districtCodeList;
-    } catch (e) {
-      log.error(
-        "getDistrictList Error",
-        e.response ? e.response.status : e.message
-      );
-    }
-  } else {
-    const districtCodeList = await listCache.get("districtCodesList");
-    return districtCodeList;
-  }
-}
-function getNonPublicContactTypeCodes(contactTypes) {
-  const nonPublicContactTypeCodes = [];
-
-  for (const contactType of contactTypes) {
-    if (!contactType.publiclyAvailable) {
-      nonPublicContactTypeCodes.push(contactType.districtContactTypeCode);
-    }
-  }
-
-  return nonPublicContactTypeCodes;
-}
 function addContactTypeLabels(districtDataResponse, nonPublicContactTypeCodes) {
-
   const updatedDistrictData = { ...districtDataResponse };
   if (
     updatedDistrictData.contacts &&
     Array.isArray(updatedDistrictData.contacts)
   ) {
-    updatedDistrictData.contacts.forEach(contact => {
+    updatedDistrictData.contacts.forEach((contact) => {
       const matchingType = nonPublicContactTypeCodes.find(
-        codeObj => codeObj.districtContactTypeCode === contact.districtContactTypeCode
+        (codeObj) =>
+          codeObj.districtContactTypeCode === contact.districtContactTypeCode
       );
 
       if (matchingType) {
         contact.label = matchingType.label;
       } else {
-        
       }
     });
   }
 
   return updatedDistrictData;
 }
-function removeContacts(districtDataResponse, nonPublicContactTypeCodes) {
-  const updatedDistrictData = { ...districtDataResponse };
 
-  if (
-    updatedDistrictData.contacts &&
-    Array.isArray(updatedDistrictData.contacts)
-  ) {
-    updatedDistrictData.contacts = updatedDistrictData.contacts.filter(
-      (contact) => {
-        return !nonPublicContactTypeCodes.includes(
-          contact.districtContactTypeCode
-        );
-      }
-    );
-  }
-
-  return updatedDistrictData;
-}
-//api/v1/institute/district/12342525
 async function getDistrict(req, res) {
   const { id } = req.params;
 
@@ -138,8 +89,11 @@ async function getDistrict(req, res) {
     const districtSchoolsResponse = await axios.get(districtSchoolsUrl, {
       headers: { Authorization: `Bearer ${req.accessToken}` },
     });
+
     const contactTypeCodes = await getDistrictCodes(req);
-    const nonPublicContactTypeCodes = getNonPublicContactTypeCodes(contactTypeCodes);
+    const nonPublicContactTypeCodes =
+      getNonPublicContactTypeCodes(contactTypeCodes);
+
     const districtDataPublic = removeContacts(
       districtDataResponse.data,
       nonPublicContactTypeCodes
@@ -148,7 +102,7 @@ async function getDistrict(req, res) {
       districtDataPublic,
       contactTypeCodes
     );
-  
+    // console.log(districtDataPublic);
     const districtJSON = {
       districtData: districtDataPublicWithLabels,
       districtSchools: districtSchoolsResponse.data.content,
