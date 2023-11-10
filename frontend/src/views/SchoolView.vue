@@ -101,7 +101,6 @@ onBeforeMount(async () => {
       districtInfo.value = appStore.getDistrictByDistrictId(String(schoolData.value.districtId))
     }
     //setting authority name and number if school is independent
-    console.log(schoolData.value.independentAuthorityId)
     if (schoolData.value.independentAuthorityId) {
       authorityInfo.value = appStore.getAuthorityByAuthorityId(
         String(schoolData.value.independentAuthorityId)
