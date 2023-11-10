@@ -101,42 +101,54 @@ const searchContact = async () => {
       <v-row no-gutters justify="space-between">
         <v-spacer />
         <v-col cols="12">
-          <h2 class="mt-3 mb-2">Contacts by Type</h2>
-          <v-autocomplete
-            v-model="selectedContactType"
-            label="Select a Contact by Type"
-            :items="appStore.getAllDistrictContactTypeCodesLabel"
-            :item-title="appStore.getAllDistrictContactTypeCodesLabel"
-            :item-value="appStore.getAllDistrictContactTypeCodesLabel"
-          ></v-autocomplete>
-          <v-btn @click="searchContact" color="primary">Search</v-btn>
-          <v-btn @click="resetContactFilters" color="error">Reset</v-btn>
-          <v-container>
-            <v-row>
-              <v-col class="ma-2">TOTAL: {{ results }}</v-col>
-              <v-col></v-col>
-              <v-col>
-                <v-btn
-                  block
-                  class="text-none text-subtitle-1 ma-1"
-                  @click="downloadCSV"
-                  :disabled="results == 0"
-                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Contact
-                  Info</v-btn
-                >
-              </v-col>
-            </v-row>
-            <v-data-table-virtual
-              :headers="headers"
-              :items="filteredContacts"
-              class="elevation-1"
-              height="700"
-              item-value="name"
-            ></v-data-table-virtual>
-          </v-container>
+          <h2 class="mt-3 mb-2">Find District Contacts by Type</h2>
+          <v-row>
+            <v-autocomplete
+              v-model="selectedContactType"
+              label="Select a Contact by Type"
+              :items="appStore.getAllDistrictContactTypeCodesLabel"
+              :item-title="appStore.getAllDistrictContactTypeCodesLabel"
+              :item-value="appStore.getAllDistrictContactTypeCodesLabel"
+            ></v-autocomplete>
+            <v-btn
+              @click="searchContact"
+              icon="mdi-magnify"
+              color="primary"
+              variant="flat"
+              rounded="lg"
+              size="large"
+              class="text-none text-subtle-1 ml-3"
+            />
+          </v-row>
+          <v-btn @click="resetContactFilters" variant="outlined" color="primary" class="text-none"
+            >Reset</v-btn
+          >
         </v-col>
       </v-row>
     </v-sheet>
+    <!-- END Contacts by Type header-->
+    <v-container>
+      <v-row>
+        <v-col class="ma-2">TOTAL: {{ results }}</v-col>
+        <v-col></v-col>
+        <v-col>
+          <v-btn
+            block
+            class="text-none text-subtitle-1 ma-1"
+            @click="downloadCSV"
+            :disabled="results == 0"
+            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Contact Info</v-btn
+          >
+        </v-col>
+      </v-row>
+      <v-data-table-virtual
+        :headers="headers"
+        :items="filteredContacts"
+        class="elevation-1"
+        height="700"
+        item-value="name"
+      ></v-data-table-virtual>
+    </v-container>
   </div>
 </template>
 

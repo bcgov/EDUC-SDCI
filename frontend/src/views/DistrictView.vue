@@ -243,9 +243,17 @@ onMounted(async () => {
 
     <v-sheet class="pa-6">
       <v-tabs v-model="tab">
-        <v-tab :value="tabOptions.contacts"> District Contacts </v-tab>
+        <v-tab :value="tabOptions.contacts">
+          District Contacts
+          <v-chip color="bcGovBlue" size="small" class="ml-1" variant="tonal">{{
+            district.value.districtData?.contacts.length
+          }}</v-chip>
+        </v-tab>
         <v-tab :value="tabOptions.schools">
-          District Schools ({{ district.value.districtData?.contacts.length }})
+          District Schools
+          <v-chip color="bcGovBlue" size="small" class="ml-1" variant="tonal">{{
+            district.value.districtSchools?.length
+          }}</v-chip>
         </v-tab>
       </v-tabs>
 

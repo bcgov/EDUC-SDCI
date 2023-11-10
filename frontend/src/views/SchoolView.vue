@@ -101,7 +101,6 @@ onBeforeMount(async () => {
       districtInfo.value = appStore.getDistrictByDistrictId(String(schoolData.value.districtId))
     }
     //setting authority name and number if school is independent
-    console.log(schoolData.value.independentAuthorityId)
     if (schoolData.value.independentAuthorityId) {
       authorityInfo.value = appStore.getAuthorityByAuthorityId(
         String(schoolData.value.independentAuthorityId)
@@ -186,13 +185,14 @@ function goToDistrict() {
       <v-row no-gutters justify="space-between">
         <v-row v-if="schoolData.value" no-gutters justify="space-between">
           <v-col>
-            <v-row>
+            <v-row no-gutters>
               <h1 class="mt-3 mb-2">
                 {{ schoolData.value.mincode }} - {{ schoolData.value.displayName }}
               </h1>
             </v-row>
-            <v-row class="mt-0 mb-1">
+            <v-row no-gutters class="mt-0 mb-1">
               <a
+                id="district-link"
                 :href="`/district/${useSanitizeURL(
                   String(districtInfo.value?.districtNumber)
                 )}-${useSanitizeURL(String(districtInfo.value?.displayName))}`"
@@ -200,12 +200,17 @@ function goToDistrict() {
                 District {{ districtInfo.value.districtNumber }} -
                 {{ districtInfo.value.displayName }}
               </a>
-              <p v-if="authorityInfo.value" class="mt-0 mb-1 ml-1">
-                | Independent Authority {{ authorityInfo.value.authorityNumber }} -
+              <a
+                id="authority-link"
+                :href="`/authority/${authorityInfo.value.authorityNumber}-${authorityInfo.value.displayName}`"
+                v-if="schoolData.value?.independentAuthorityId && authorityInfo.value"
+                class="ml-1"
+              >
+                Independent Authority {{ authorityInfo.value.authorityNumber }} -
                 {{ authorityInfo.value.displayName }}
-              </p>
+              </a>
             </v-row>
-            <v-row>
+            <v-row no-gutters class="mt-1 mb-4">
               <v-chip
                 v-for="grade in filteredGradesLabels"
                 :key="grade"
@@ -216,7 +221,7 @@ function goToDistrict() {
                 >{{ grade }}</v-chip
               >
             </v-row>
-            <v-row>
+            <v-row no-gutters>
               <v-col class="pl-0">
                 <p><strong>Phone:</strong> {{ formatPhoneNumber(schoolData.value.phoneNumber) }}</p>
                 <p><strong>Fax:</strong> {{ formatPhoneNumber(schoolData.value.faxNumber) }}</p>

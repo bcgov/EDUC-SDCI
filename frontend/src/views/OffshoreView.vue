@@ -30,58 +30,57 @@ const headers = ref([
     ></v-breadcrumbs>
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-row no-gutters justify="space-between">
-        <v-spacer />
-        <v-col cols="6">
+        <v-col>
           <h2 class="mt-3 mb-2">Offshore Schools</h2>
-          <v-row>
-            <v-spacer />
-            <v-col
-              ><v-btn block class="text-none text-subtitle-1 ma-1"
-                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Offshore School
-                Representatives</v-btn
-              >
-              <v-btn block class="text-none text-subtitle-1 ma-1"
-                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Offshore
-                Schools</v-btn
-              ></v-col
-            >
-          </v-row>
         </v-col>
         <v-spacer />
+        <v-col cols="3"
+          ><v-btn variant="text" class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Offshore School
+            Representatives</v-btn
+          >
+          <v-btn variant="text" class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Offshore
+            Schools</v-btn
+          >
+        </v-col>
       </v-row>
     </v-sheet>
+    <!-- END Offshore Schools Header Block -->
 
-    <v-container>
-      <v-text-field
-        v-model="schoolSearch"
-        append-icon="mdi-magnify"
-        label="Filter Offshore School"
-        single-line
-        hide-details
-      ></v-text-field>
-      <v-data-table
-        :headers="schoolHeaders"
-        :hide-default-footer="true"
-        items-per-page="50"
-        :items="offshoreSchools"
-        :search="schoolSearch"
-      >
-        <template v-slot:item.displayName="{ item }">
-          <a :href="`/school/${item.schoolId}`"> {{ item.displayName }} </a>
-        </template>
+    <v-sheet class="pa-6">
+      <v-container>
+        <v-text-field
+          v-model="schoolSearch"
+          append-icon="mdi-magnify"
+          label="Filter Offshore School"
+          single-line
+          hide-details
+        ></v-text-field>
+        <v-data-table
+          :headers="schoolHeaders"
+          :hide-default-footer="true"
+          items-per-page="50"
+          :items="offshoreSchools"
+          :search="schoolSearch"
+        >
+          <template v-slot:item.displayName="{ item }">
+            <a :href="`/school/${item.schoolId}`"> {{ item.displayName }} </a>
+          </template>
 
-        <template v-slot:item.addresses="{ item }">
-          <div v-for="address in item.addresses">
-            <DisplayAddress v-bind="address" />
-          </div>
-        </template>
-        <template v-slot:item.contact="{ item }">
-          <strong>Phone:</strong> {{ item.phoneNumber }} <br />
-          <strong>Fax:</strong> {{ item.faxNumber }} <br />
-          <strong>Email:</strong> {{ item.email }}
-        </template>
-      </v-data-table>
-    </v-container>
+          <template v-slot:item.addresses="{ item }">
+            <div v-for="address in item.addresses">
+              <DisplayAddress v-bind="address" />
+            </div>
+          </template>
+          <template v-slot:item.contact="{ item }">
+            <strong>Phone:</strong> {{ item.phoneNumber }} <br />
+            <strong>Fax:</strong> {{ item.faxNumber }} <br />
+            <strong>Email:</strong> {{ item.email }}
+          </template>
+        </v-data-table>
+      </v-container>
+    </v-sheet>
   </div>
 </template>
 
