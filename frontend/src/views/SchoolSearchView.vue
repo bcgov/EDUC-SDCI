@@ -252,11 +252,23 @@ onBeforeMount(async () => {
         <template v-slot:expanded-row="{ item }">
           <tr>
             <td :colspan="headers.length">
-              <v-card>
-                <v-card-text>
+              <v-col>
+                <v-row class="my-1 pl-2">
+                  <v-chip
+                    v-for="(grade, index) in item.grades"
+                    :key="index"
+                    class="ml-1"
+                    size="small"
+                    color="primary"
+                    label
+                  >
+                    {{ grade.schoolGradeCode }}</v-chip
+                  >
+                </v-row>
+                <v-row>
                   <p>
                     <router-link
-                      class="pl-2"
+                      class="pl-4"
                       :to="`/district/${
                         appStore.getDistrictByDistrictId(item.districtId)?.districtNumber
                       }-${appStore.getDistrictByDistrictId(item.districtId)?.displayName}`"
@@ -266,34 +278,13 @@ onBeforeMount(async () => {
                       {{ appStore.getDistrictByDistrictId(item.districtId)?.displayName }}
                     </router-link>
                   </p>
-                  <v-container>
-                    <v-row class="mt-1">
-                      <v-chip
-                        v-for="(grade, index) in item.grades"
-                        :key="index"
-                        class="ml-1"
-                        size="small"
-                        color="primary"
-                        label
-                      >
-                        {{ grade.schoolGradeCode }}</v-chip
-                      >
-                    </v-row>
-                  </v-container>
-                  <v-container>
-                    <v-row>
-                      <v-col
-                        v-for="(address, index) in item?.addresses"
-                        :key="index"
-                        cols="12"
-                        md="4"
-                      >
-                        <DisplayAddress v-bind="address" />
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                </v-card-text>
-              </v-card>
+                </v-row>
+                <v-row>
+                  <v-col v-for="(address, index) in item?.addresses" :key="index" cols="12" md="4">
+                    <DisplayAddress v-bind="address" />
+                  </v-col>
+                </v-row>
+              </v-col>
             </td>
           </tr>
         </template>

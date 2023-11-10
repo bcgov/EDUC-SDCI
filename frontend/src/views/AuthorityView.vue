@@ -243,15 +243,15 @@ onMounted(async () => {
             </v-col>
             <v-col>
               <v-btn
-                block
-                class="text-none text-subtitle-1 ma-1"
+                variant="text"
+                class="text-none text-subtitle-1 ma-1 v-btn-align-left"
                 @click="downloadAuthorityContacts()"
                 ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Authority
                 Contacts</v-btn
               >
               <v-btn
-                block
-                class="text-none text-subtitle-1 ma-1"
+                variant="text"
+                class="text-none text-subtitle-1 ma-1 v-btn-align-left"
                 @click="downloadAuthoritySchools()"
                 ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Authority
                 Schools</v-btn
@@ -264,9 +264,17 @@ onMounted(async () => {
     <!-- END Authority Info Header Block -->
     <v-sheet class="pa-6">
       <v-tabs v-model="tab">
-        <v-tab :value="tabOptions.contacts"> Authority Contacts </v-tab>
+        <v-tab :value="tabOptions.contacts">
+          Authority Contacts
+          <v-chip color="bcGovBlue" size="small" class="ml-1" variant="tonal">{{
+            authority.value?.authorityData?.contacts.length
+          }}</v-chip></v-tab
+        >
         <v-tab :value="tabOptions.schools">
-          Authority Schools ({{ authority.value.authoritySchools?.length }} )
+          Authority Schools
+          <v-chip color="bcGovBlue" size="small" class="ml-1" variant="tonal">{{
+            authority.value.authoritySchools?.length
+          }}</v-chip>
         </v-tab>
       </v-tabs>
 

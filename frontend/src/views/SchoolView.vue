@@ -193,6 +193,7 @@ function goToDistrict() {
             </v-row>
             <v-row no-gutters class="mt-0 mb-1">
               <a
+                id="district-link"
                 :href="`/district/${useSanitizeURL(
                   String(districtInfo.value?.districtNumber)
                 )}-${useSanitizeURL(String(districtInfo.value?.displayName))}`"
@@ -200,12 +201,17 @@ function goToDistrict() {
                 District {{ districtInfo.value.districtNumber }} -
                 {{ districtInfo.value.displayName }}
               </a>
-              <p v-if="authorityInfo.value" class="mt-0 mb-1 ml-1">
-                | Independent Authority {{ authorityInfo.value.authorityNumber }} -
+              <a
+                id="authority-link"
+                :href="`/authority/${authorityInfo.value.authorityNumber}-${authorityInfo.value.displayName}`"
+                v-if="schoolData.value?.independentAuthorityId && authorityInfo.value"
+                class="ml-1"
+              >
+                Independent Authority {{ authorityInfo.value.authorityNumber }} -
                 {{ authorityInfo.value.displayName }}
-              </p>
+              </a>
             </v-row>
-            <v-row no-gutters>
+            <v-row no-gutters class="mt-1 mb-4">
               <v-chip
                 v-for="grade in filteredGradesLabels"
                 :key="grade"
