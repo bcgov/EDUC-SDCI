@@ -42,7 +42,7 @@ const resetContactFilters = () => {
 const transformContactForDownload = (inputData: any) => {
   return inputData.map((item: any) => ({
     districtNumber: item.districtNumber,
-    displayName: item.displayName,
+    districtName: item.districtName,
     firstName: item.firstName,
     lastName: item.lastName,
     jobTitle: item.jobTitle,
