@@ -2,12 +2,9 @@ const express = require("express");
 const router = express.Router();
 const log = require("../components/logger");
 const config = require("../config/index");
-const NodeCache = require("node-cache");
 const axios = require("axios");
-const fs = require("fs");
-const path = require("path");
 
-const { createSchoolCache, addDistrictLabels, formatGrades } = require("../components/utils");
+const { createSchoolCache, addDistrictLabels, formatGrades, sortJSONBySchoolCode} = require("../components/utils");
 const { checkToken } = require("../components/auth");
 const { schoolCache, listCache, codeCache } = require("../components/cache");
 
@@ -97,7 +94,7 @@ async function getAllSchools(req, res) {
         //const openSchoolList = createList(response.data, openSchoolListOptions);
         
         const openSchoolListWithDistrictLabels = addDistrictLabels(response.data, districtList)
-        const openSchoolList = createSchoolCache(openSchoolListWithDistrictLabels.content, schoolGrades);
+        const openSchoolList = sortJSONBySchoolCode(createSchoolCache(openSchoolListWithDistrictLabels.content, schoolGrades));
         res.json(openSchoolList);
         schoolCache.set("openschoollist" + schoolCategory, openSchoolList);
         log.info(req.url);

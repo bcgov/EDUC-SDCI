@@ -190,7 +190,7 @@ objects:
                   args:
                     - >
                       curl -X GET
-                      "https://educ-sdci-${NAMESPACE}.apps.silver.devops.gov.bc.ca/api/v1/download/csv/institute/district/contact/paginated?pageSize=100&pageNumber=&filepath=exceldistrictcontacts"
+                      "https://educ-sdci-${NAMESPACE}.apps.silver.devops.gov.bc.ca/api/v1/download/csv/institute/district/contact/paginated?pageSize=3000&pageNumber=&filepath=districtcontacts"
                   resources: {}
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File

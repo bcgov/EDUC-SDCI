@@ -62,12 +62,12 @@ function downloadAuthorityContacts() {
             Authorities (CSV)</v-btn
           >
           <v-btn
-            block
+            href="/api/v1/download/csv/institute/authority?filepath=authoritycontacts"
             variant="text"
             class="v-btn-align-left text-none text-subtitle-1 my-1"
-            @click="downloadAuthorityContacts"
-            ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Contacts for All
-            Authorities (CSV)</v-btn
+            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>
+
+            Contacts for All Authorities (CSV)</v-btn
           >
         </v-row>
       </v-col>

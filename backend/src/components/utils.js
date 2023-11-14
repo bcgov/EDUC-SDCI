@@ -20,15 +20,20 @@ const ALLOWED_FILENAMES = new Set([
   'chairperson',
   'secretary-treasurer',
   'executive-admin-assistant',
-  'exceldistrictcontacts',
+  'districtcontacts',
+  'districtmailing',
   'publicschoolcontacts',
+  'offshoreschoolcontacts',
   'independentschoolcontacts',
-  'allschoolcontacts'
+  'allschoolcontacts',
+  'authoritycontacts'
   // Add more allowed filepaths as needed
 ]);
+
 const ALLOWED_SCHOOLCATEGORYCODES = new Set([
   'PUBLIC',
-  'INDEPEND'
+  'INDEPEND',
+  'OFFSHORE'
   // Add more allowed filepaths as needed
 ]);
 function isAllowedSchoolCategory(category) {
@@ -96,7 +101,8 @@ function addDistrictLabels(jsonData, districtList) {
         const district = districtList.find(item => item.districtId === dataItem.districtId);
         if (district) {
           dataItem.districtNumber = district.districtNumber;
-          dataItem.displayName = district.displayName;
+          dataItem.districtName = district.displayName;
+         
         }
       });
     }
@@ -136,6 +142,22 @@ function addDistrictLabels(jsonData, districtList) {
   
     return result;
   }
+
+  function sortJSONByDistrictNumber(districts) {
+    return districts.slice().sort((a, b) => {
+      const districtNumberA = a.districtNumber || '';
+      const districtNumberB = b.districtNumber || '';
+      return districtNumberA.localeCompare(districtNumberB, undefined, { numeric: true, sensitivity: 'base' });
+    });
+  }
+  function sortJSONBySchoolCode(schools) {
+    return schools.slice().sort((a, b) => {
+      const schoolCodeA = a.mincode || '';
+      const schoolCodeB = b.mincode || '';
+      return schoolCodeA.localeCompare(schoolCodeB, undefined, { numeric: true, sensitivity: 'base' });
+    });
+  }  
+  
   function rearrangeAndRelabelObjectProperties(object, propertyList) {
       const reorderedObject = {};
       propertyList.forEach((propertyInfo) => {
@@ -144,6 +166,25 @@ function addDistrictLabels(jsonData, districtList) {
           reorderedObject[label] = object.hasOwnProperty(prop) ? object[prop] : "";
       });
       return reorderedObject;
+  }
+  function normalizeJsonObject(sourceArray, referenceArray, matchKey, condition, includeFields) {
+    return sourceArray.map((item) => {
+      const matchingItem = referenceArray.find(
+        (info) => info[matchKey] === item[matchKey] && (!condition || condition(info))
+      );
+  
+      if (matchingItem) {
+        return {
+          ...item,
+          ...includeFields.reduce((result, field) => {
+            result[field] = matchingItem[field];
+            return result;
+          }, {}),
+        };
+      }
+  
+      return item;
+    });
   }
   function createSchoolCache(schoolData, schoolGrades) {
     // Preload convertedGrades with schoolGrades.schoolGradeCode and set the value to "N"
@@ -233,9 +274,12 @@ function addDistrictLabels(jsonData, districtList) {
         // Remove the contacts property
         delete school.contacts;
         const propertyOrder = [
-          { property: "districtNumber", label: "District Number" },
-          { property: "mincode", label: "School Code" },
+          
           { property: "displayName", label: "School Name" },
+          { property: "mincode", label: "mincode" },
+          { property: "districtNumber", label: "District Number" },
+          { property: "districtName", label: "District Name" },
+          
           { property: "mailing_addressLine1", label: "Address" },
           { property: "mailing_city", label: "City" },
           { property: "mailing_provinceCode", label: "Province" },
@@ -269,4 +313,4 @@ function addDistrictLabels(jsonData, districtList) {
         return schools;
     });
 }
-  module.exports = {removeFieldsByCriteria, createList, isSafeFilePath,isAllowedSchoolCategory, addDistrictLabels, districtNumberSort, createSchoolCache, formatGrades};
+  module.exports = {sortJSONBySchoolCode,sortJSONByDistrictNumber,normalizeJsonObject, removeFieldsByCriteria, createList, isSafeFilePath,isAllowedSchoolCategory, addDistrictLabels, districtNumberSort, createSchoolCache, formatGrades, rearrangeAndRelabelObjectProperties};

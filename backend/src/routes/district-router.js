@@ -8,9 +8,13 @@ const fs = require("fs");
 const path = require("path");
 const { checkToken } = require("../components/auth");
 const { listCache } = require("../components/cache");
+const {rearrangeAndRelabelObjectProperties, addDistrictLabels, normalizeJsonObject, sortJSONByDistrictNumber} = require("../components/utils.js")
 
 //Batch Routes
+router.get("/all-contacts", checkToken, getAllDistrictContacts);
+router.get("/all-mailing", checkToken, getAllDistrictMailing);
 router.get("/:id", checkToken, getDistrict);
+
 
 async function removeItemsFromDistrictDataResponse(response, itemsToRemove) {
   if (response && response.data) {
@@ -102,6 +106,141 @@ function removeContacts(districtDataResponse, nonPublicContactTypeCodes) {
 
   return updatedDistrictData;
 }
+async function getAllDistrictContacts(req, res) {
+  const districtList = await listCache.get("districtlist")
+  const contactTypeCodes= await listCache.get("codesList")
+  const url = await `${config.get(
+    "server:instituteAPIURL"
+  )}/institute/district/contact/paginated?pageSize=4000`
+  try {
+    const districtContactResponse = await axios.get(url, {
+      headers: { Authorization: `Bearer ${req.accessToken}` },
+    });
+    const propertyOrder = [
+      { property: "displayName", label: "District Name" },
+      { property: "districtNumber", label: "District Number" },
+      { property: "districtContactTypeCode", label: "District Contact" },
+      { property: "description", label: "Contact Description" },
+      { property: "firstName", label: "Contact First Name" },
+      { property: "lastName", label: "Contact Last name" },
+      { property: "jobTitle", label: "Position Title" },
+      { property: "phoneNumber", label: "Contact Phone" },
+      { property: "phoneExtension", label: "Contact Phone Extension" },
+      { property: "email", label: "Contact Email" },
+      // //{ property: "fax", label: "Contact Fax" },
+       
+      // { property: "email", label: "Mailing City" },
+      // { property: "GRADE01", label: "Mailing Province" },
+      // { property: "GRADE02", label: "Mailing Postal Code" },
+      // { property: "GRADE03", label: "Courier Address" },
+      // { property: "GRADE04", label: "Courier City" },
+      // { property: "GRADE05", label: "Courier Province" },
+      // { property: "GRADE06", label: "Courier Postal Code" },
+      // { property: "GRADE07", label: "District Phone" },
+      // { property: "GRADE08", label: "District Fax" },
+      // { property: "GRADE09", label: "Web Address" },
+    ];
+
+    //let content = addDistrictLabels(districtContactResponse.data,districtList);
+
+    const includedFields = ['createUser', 'updateUser', 'districtContactTypeCode', 'label', 'description'];
+    let content = normalizeJsonObject(districtContactResponse.data.content, contactTypeCodes.codesList.districtContactTypeCodes, 'districtContactTypeCode', (info) => info.publiclyAvailable === true, includedFields);
+    content = normalizeJsonObject(content, districtList, 'districtId', null, ['displayName', 'districtNumber']);    
+    content = sortJSONByDistrictNumber(content)
+    content.forEach((currentElement, index, array) => {
+      const rearrangedElement = rearrangeAndRelabelObjectProperties(currentElement, propertyOrder);
+      array[index] = rearrangedElement;
+    });
+    res.json(content);
+    //res.json(districtContactsReorderedAndRelabeled );
+  } catch (e) {
+    log.error("getData Error", e.response ? e.response.status : e.message);
+  }
+}
+function appendMailingAddressDetailsAndRemoveAddresses(district) {
+  if (district && district.addresses && district.addresses.length > 0) {
+      const mailingAddress = district.addresses.find(address => address.addressTypeCode === 'MAILING');
+
+      if (mailingAddress) {
+          // Extract specific name-value pairs from the mailing address
+          const { addressLine1, addressLine2, city, postal, provinceCode, countryCode } = mailingAddress;
+
+          // Add these name-value pairs to the original district object
+          district.mailingAddressLine1 = addressLine1;
+          district.mailingAddressLine2 = addressLine2;
+          district.mailingCity = city;
+          district.mailingPostal = postal;
+          district.mailingProvinceCode = provinceCode;
+          district.mailingCountryCode = countryCode;
+
+          // Remove the "addresses" property
+          delete district.addresses;
+          delete district.contacts;
+      }
+  }
+}
+
+async function getAllDistrictMailing(req, res) {
+  const districtList = await listCache.get("districtlist")
+  const contactTypeCodes= await listCache.get("codesList")
+
+  const propertyOrder = [
+    { property: "districtStatusCode", label: "STATUS" },
+    { property: "displayName", label: "District Name" },
+    { property: "districtNumber", label: "districtNumber" },
+    { property: "mailingAddressLine1", label: "Address Line 1" },
+    { property: "mailingAddressLine2", label: "Address Line 2" },
+    { property: "mailingCity", label: "City" },
+    { property: "mailingPostal", label: "Postal" },
+    { property: "mailingProvinceCode", label: "Province" },
+    { property: "mailingCountryCode", label: "Country" },
+    { property: "districtRegionCode", label: "Region" },
+    { property: "phoneNumber", label: "Phone" },
+    { property: "email", label: "Email" },
+    { property: "website", label: "Website" },
+    
+  ];
+
+ const params = [
+  {
+    condition: null,
+    searchCriteriaList: [
+      {
+        key: "districtStatusCode",
+        operation: "eq",
+        value: "ACTIVE",
+        valueType: "STRING",
+        condition: "AND",
+      },
+    ],
+  }]
+  const jsonString = JSON.stringify(params);
+  const encodedParams = encodeURIComponent(jsonString);
+  const url = await `${config.get(
+    "server:instituteAPIURL"
+  )}/institute/district/paginated?pageSize=100&sort["districtNumber"]=ASC&searchCriteriaList=${encodedParams}`
+  
+
+  try {
+    const districtContactResponse = await axios.get(url, {
+      headers: { Authorization: `Bearer ${req.accessToken}` },
+    });
+    districtContactResponse.data.content.forEach(appendMailingAddressDetailsAndRemoveAddresses);
+  
+    const content =  districtContactResponse.data.content
+    content.forEach((currentElement, index, array) => {
+      const rearrangedElement = rearrangeAndRelabelObjectProperties(currentElement, propertyOrder);
+      array[index] = rearrangedElement;
+    });
+    const contentByDistrict = sortJSONByDistrictNumber(content)
+
+    res.json(contentByDistrict);
+    //res.json(districtContactsReorderedAndRelabeled );
+  } catch (e) {
+    log.error("getData Error", e.response ? e.response.status : e.message);
+  }
+}
+
 //api/v1/institute/district/12342525
 async function getDistrict(req, res) {
   const { id } = req.params;
@@ -129,7 +268,7 @@ async function getDistrict(req, res) {
   )}/institute/district/${id}`;
   const districtSchoolsUrl = `${config.get(
     "server:instituteAPIURL"
-  )}/institute/school/paginated?pageNumber=0&pageSize=100&searchCriteriaList=${encodedParams}`;
+  )}/institute/school/paginated?pageNumber=0&pageSize=500&searchCriteriaList=${encodedParams}`;
 
   try {
     const districtDataResponse = await axios.get(url, {
