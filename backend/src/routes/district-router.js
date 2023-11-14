@@ -117,7 +117,7 @@ async function getAllDistrictContacts(req, res) {
       headers: { Authorization: `Bearer ${req.accessToken}` },
     });
     const propertyOrder = [
-      { property: "displayName", label: "District Name" },
+      { property: "districtName", label: "District Name" },
       { property: "districtNumber", label: "District Number" },
       { property: "districtContactTypeCode", label: "District Contact" },
       { property: "description", label: "Contact Description" },
@@ -185,8 +185,7 @@ async function getAllDistrictMailing(req, res) {
   const contactTypeCodes= await listCache.get("codesList")
 
   const propertyOrder = [
-    { property: "districtStatusCode", label: "STATUS" },
-    { property: "displayName", label: "District Name" },
+    { property: "districtName", label: "District Name" },
     { property: "districtNumber", label: "districtNumber" },
     { property: "mailingAddressLine1", label: "Address Line 1" },
     { property: "mailingAddressLine2", label: "Address Line 2" },
