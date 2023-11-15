@@ -64,7 +64,7 @@ const searchContact = async () => {
   ]
   if (selectedContactType.value) {
     params[0].searchCriteriaList.push({
-      key: 'jobTitle',
+      key: 'districtContactTypeCode',
       operation: 'eq',
       value: selectedContactType.value,
       valueType: 'STRING',
@@ -106,9 +106,9 @@ const searchContact = async () => {
             <v-autocomplete
               v-model="selectedContactType"
               label="Select a Contact by Type"
-              :items="appStore.getAllDistrictContactTypeCodesLabel"
-              :item-title="appStore.getAllDistrictContactTypeCodesLabel"
-              :item-value="appStore.getAllDistrictContactTypeCodesLabel"
+              :items="appStore.getDistrictContactTypeCodes"
+              item-title="label"
+              item-value="districtContactTypeCode"
             ></v-autocomplete>
             <v-btn
               @click="searchContact"
