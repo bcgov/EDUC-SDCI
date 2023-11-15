@@ -212,8 +212,8 @@ function addDistrictLabels(jsonData, districtList) {
       if (principalContact) {
           school.firstName = principalContact.firstName;
           school.lastName = principalContact.lastName;
-          school.email = principalContact.email;
-          school.phoneNumber = principalContact.phoneNumber;
+         
+          
       }
 
       // Loop through addresses and update the fields based on addressTypeCode
@@ -292,7 +292,7 @@ function addDistrictLabels(jsonData, districtList) {
           // { property: "schoolCategory", label: "School Category" },
           // { property: "fundingGroups", label: "Funding Group(s)" },
           { property: "phoneNumber", label: "Phone" },
-          // { property: "fax", label: "Fax" },
+          { property: "faxNumber", label: "Fax" },
           { property: "email", label: "Email" },
           { property: "GRADE01", label: "Grade 1 Enrollment" },
           { property: "GRADE02", label: "Grade 2 Enrollment" },

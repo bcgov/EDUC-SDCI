@@ -127,18 +127,6 @@ async function getAllDistrictContacts(req, res) {
       { property: "phoneNumber", label: "Contact Phone" },
       { property: "phoneExtension", label: "Contact Phone Extension" },
       { property: "email", label: "Contact Email" },
-      // //{ property: "fax", label: "Contact Fax" },
-       
-      // { property: "email", label: "Mailing City" },
-      // { property: "GRADE01", label: "Mailing Province" },
-      // { property: "GRADE02", label: "Mailing Postal Code" },
-      // { property: "GRADE03", label: "Courier Address" },
-      // { property: "GRADE04", label: "Courier City" },
-      // { property: "GRADE05", label: "Courier Province" },
-      // { property: "GRADE06", label: "Courier Postal Code" },
-      // { property: "GRADE07", label: "District Phone" },
-      // { property: "GRADE08", label: "District Fax" },
-      // { property: "GRADE09", label: "Web Address" },
     ];
 
     //let content = addDistrictLabels(districtContactResponse.data,districtList);
