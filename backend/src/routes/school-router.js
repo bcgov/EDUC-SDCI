@@ -10,6 +10,7 @@ const { schoolCache, listCache, codeCache } = require("../components/cache");
 
 //Batch Routes
 router.get("/all/:schoolCategory", checkToken, getAllSchools);
+router.get("/all-mailing", checkToken, getAllSchools);
 router.get("/:schoolId", checkToken, getSchool);
 
 async function getSchool(req, res) {

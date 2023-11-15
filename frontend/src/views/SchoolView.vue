@@ -264,6 +264,9 @@ function goToDistrict() {
               class="elevation-1"
               item-value="name"
             >
+              <template v-slot:item.jobTitle="{ item }">
+                {{ item.jobTitle ? item.jobTitle : item.schoolContactTypeCode }}
+              </template>
               <template v-slot:item.phoneNumber="{ item }">
                 {{ formatPhoneNumber(item.phoneNumber) }}
               </template>

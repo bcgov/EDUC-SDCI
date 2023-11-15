@@ -26,7 +26,9 @@ const ALLOWED_FILENAMES = new Set([
   'offshoreschoolcontacts',
   'independentschoolcontacts',
   'allschoolcontacts',
-  'authoritycontacts'
+  'authoritycontacts',
+  'authoritymailing',
+  'offshoreschoolrepresentatives'
   // Add more allowed filepaths as needed
 ]);
 
@@ -94,6 +96,45 @@ function removeFieldsByCriteria(inputData, criteria) {
   }
 
   return inputData;
+}
+function appendMailingAddressDetailsAndRemoveAddresses(data) {
+  if (data && data.addresses && data.addresses.length > 0) {
+      const physicalAddress = data.addresses.find(address => address.addressTypeCode === 'PHYSICAL');
+
+      if (physicalAddress) {
+          // Extract specific name-value pairs from the mailing address
+          const { addressLine1, addressLine2, city, postal, provinceCode, countryCode } = physicalAddress;
+
+          // Add these name-value pairs to the original district object
+          data.physicalAddressLine1 = addressLine1;
+          data.physicalAddressLine2 = addressLine2;
+          data.physicalCity = city;
+          data.physicalPostal = postal;
+          data.physicalProvinceCode = provinceCode;
+          data.physicalCountryCode = countryCode;
+
+          // Remove the "addresses" property
+        
+      }
+      const courierAddress = data.addresses.find(address => address.addressTypeCode === 'MAILING');
+      if (courierAddress) {
+          // Extract specific name-value pairs from the mailing address
+          const { addressLine1, addressLine2, city, postal, provinceCode, countryCode } = courierAddress;
+
+          // Add these name-value pairs to the original district object
+          data.mailingAddressLine1 = addressLine1;
+          data.mailingAddressLine2 = addressLine2;
+          data.mailingCity = city;
+          data.mailingPostal = postal;
+          data.mailingProvinceCode = provinceCode;
+          data.mailingCountryCode = countryCode;
+
+          // Remove the "addresses" property
+        
+      }  
+      delete data.addresses;
+      delete data.contacts;
+  }
 }
 function addDistrictLabels(jsonData, districtList) {
     if (jsonData.content && Array.isArray(jsonData.content)) {
@@ -313,4 +354,4 @@ function addDistrictLabels(jsonData, districtList) {
         return schools;
     });
 }
-  module.exports = {sortJSONBySchoolCode,sortJSONByDistrictNumber,normalizeJsonObject, removeFieldsByCriteria, createList, isSafeFilePath,isAllowedSchoolCategory, addDistrictLabels, districtNumberSort, createSchoolCache, formatGrades, rearrangeAndRelabelObjectProperties};
+  module.exports = {appendMailingAddressDetailsAndRemoveAddresses,sortJSONBySchoolCode,sortJSONByDistrictNumber,normalizeJsonObject, removeFieldsByCriteria, createList, isSafeFilePath,isAllowedSchoolCategory, addDistrictLabels, districtNumberSort, createSchoolCache, formatGrades, rearrangeAndRelabelObjectProperties};

@@ -8,7 +8,7 @@ const fs = require("fs");
 const path = require("path");
 const { checkToken } = require("../components/auth");
 const { listCache } = require("../components/cache");
-const {rearrangeAndRelabelObjectProperties, addDistrictLabels, normalizeJsonObject, sortJSONByDistrictNumber} = require("../components/utils.js")
+const {appendMailingAddressDetailsAndRemoveAddresses, rearrangeAndRelabelObjectProperties, addDistrictLabels, normalizeJsonObject, sortJSONByDistrictNumber} = require("../components/utils.js")
 
 //Batch Routes
 router.get("/all-contacts", checkToken, getAllDistrictContacts);
@@ -117,7 +117,7 @@ async function getAllDistrictContacts(req, res) {
       headers: { Authorization: `Bearer ${req.accessToken}` },
     });
     const propertyOrder = [
-      { property: "districtName", label: "District Name" },
+      { property: "displayName", label: "District Name" },
       { property: "districtNumber", label: "District Number" },
       { property: "districtContactTypeCode", label: "District Contact" },
       { property: "description", label: "Contact Description" },
@@ -145,35 +145,14 @@ async function getAllDistrictContacts(req, res) {
     log.error("getData Error", e.response ? e.response.status : e.message);
   }
 }
-function appendMailingAddressDetailsAndRemoveAddresses(district) {
-  if (district && district.addresses && district.addresses.length > 0) {
-      const mailingAddress = district.addresses.find(address => address.addressTypeCode === 'MAILING');
 
-      if (mailingAddress) {
-          // Extract specific name-value pairs from the mailing address
-          const { addressLine1, addressLine2, city, postal, provinceCode, countryCode } = mailingAddress;
-
-          // Add these name-value pairs to the original district object
-          district.mailingAddressLine1 = addressLine1;
-          district.mailingAddressLine2 = addressLine2;
-          district.mailingCity = city;
-          district.mailingPostal = postal;
-          district.mailingProvinceCode = provinceCode;
-          district.mailingCountryCode = countryCode;
-
-          // Remove the "addresses" property
-          delete district.addresses;
-          delete district.contacts;
-      }
-  }
-}
 
 async function getAllDistrictMailing(req, res) {
   const districtList = await listCache.get("districtlist")
   const contactTypeCodes= await listCache.get("codesList")
 
   const propertyOrder = [
-    { property: "districtName", label: "District Name" },
+    { property: "displayName", label: "District Name" },
     { property: "districtNumber", label: "districtNumber" },
     { property: "mailingAddressLine1", label: "Address Line 1" },
     { property: "mailingAddressLine2", label: "Address Line 2" },
@@ -181,8 +160,16 @@ async function getAllDistrictMailing(req, res) {
     { property: "mailingPostal", label: "Postal" },
     { property: "mailingProvinceCode", label: "Province" },
     { property: "mailingCountryCode", label: "Country" },
-    { property: "districtRegionCode", label: "Region" },
+
+    { property: "physicalAddressLine1", label: "Courier Address Line 1" },
+    { property: "physicalAddressLine2", label: "Courier Address Line 2" },
+    { property: "physicalCity", label: "Courier City" },
+    { property: "physicalPostal", label: "Courier Postal" },
+    { property: "physicalProvinceCode", label: "Courier Province" },
+    { property: "physicalCountryCode", label: "Courier Country" },    
+    { property: "districtRegionCode", label: "Courier Region" },
     { property: "phoneNumber", label: "Phone" },
+    { property: "faxNumber", label: "Fax" },
     { property: "email", label: "Email" },
     { property: "website", label: "Website" },
     
@@ -212,9 +199,11 @@ async function getAllDistrictMailing(req, res) {
     const districtContactResponse = await axios.get(url, {
       headers: { Authorization: `Bearer ${req.accessToken}` },
     });
+      
     districtContactResponse.data.content.forEach(appendMailingAddressDetailsAndRemoveAddresses);
-  
-    const content =  districtContactResponse.data.content
+    
+    
+    const content = normalizeJsonObject(districtContactResponse.data.content, districtList, 'districtId', null, ['displayName', 'districtNumber']);  
     content.forEach((currentElement, index, array) => {
       const rearrangedElement = rearrangeAndRelabelObjectProperties(currentElement, propertyOrder);
       array[index] = rearrangedElement;

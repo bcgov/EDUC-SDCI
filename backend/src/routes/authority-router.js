@@ -8,9 +8,12 @@ const fs = require("fs");
 const path = require("path");
 const { checkToken } = require("../components/auth");
 const { listCache } = require("../components/cache");
-
+const {appendMailingAddressDetailsAndRemoveAddresses, rearrangeAndRelabelObjectProperties} = require("../components/utils.js")
 //Batch Routes
+router.get("/all-mailing/:type", checkToken, getAllAuthorityMailing);
 router.get("/:id", checkToken, getAuthority);
+//router.get("/all-contacts", checkToken, getAllAuthorityContacts);
+
 
 // async function removeItemsFromDistrictDataResponse(response, itemsToRemove) {
 //   if (response && response.data) {
@@ -28,6 +31,71 @@ router.get("/:id", checkToken, getAuthority);
 //   }
 // }
 
+async function getAllAuthorityMailing(req, res) {
+  const {type} = req.params
+
+ const params = [
+  {
+    condition: null,
+    searchCriteriaList: [
+      {
+        key: "closedDate",
+        operation: "eq",
+        value: null,
+        valueType: "STRING",
+        condition: "AND",
+      },
+      {
+        key: "authorityTypeCode",
+        operation: "eq",
+        value: type,
+        valueType: "STRING",
+        condition: "AND",
+      }      
+    ]
+  }]
+  const jsonString = JSON.stringify(params);
+  const encodedParams = encodeURIComponent(jsonString);
+  const url = await `${config.get(
+    "server:instituteAPIURL"
+  )}/institute/authority/paginated?pageSize=1000&sort[authorityNumber]=ASC&searchCriteriaList=${encodedParams}`
+  try {
+    const authorityResponse = await axios.get(url, {
+      headers: { Authorization: `Bearer ${req.accessToken}` },
+    });
+    const propertyOrder = [
+      { property: "authorityNumber", label: "Number" },
+      { property: "displayName", label: "Name" },
+      { property: "mailingAddressLine1", label: "Address" },
+      { property: "mailingAddressLine2", label: "Address Line 2" },
+      { property: "mailingCity", label: "City" },
+      { property: "mailingProvinceCode", label: "Province" },
+      { property: "mailingPostal", label: "Postal Code" },
+      { property: "phoneNumber", label: "Phone Number" },
+      { property: "faxNumber", label: "Fax" },
+      { property: "email", label: "Email" },
+      { property: "authorityTypeCode", label: "Type" },
+      { property: "closedDate", label: "Closed" },
+
+    ];
+
+    authorityResponse.data.content.forEach(appendMailingAddressDetailsAndRemoveAddresses);
+  //   const includedFields = ['createUser', 'updateUser', 'districtContactTypeCode', 'label', 'description'];
+  //   let content = normalizeJsonObject(districtContactResponse.data.content, contactTypeCodes.codesList.districtContactTypeCodes, 'districtContactTypeCode', (info) => info.publiclyAvailable === true, includedFields);
+  //   content = normalizeJsonObject(content, districtList, 'districtId', null, ['displayName', 'districtNumber']);    
+  //   content = sortJSONByDistrictNumber(content)
+  authorityResponse.data.content.forEach((currentElement, index, array) => {
+      const rearrangedElement = rearrangeAndRelabelObjectProperties(currentElement, propertyOrder);
+      array[index] = rearrangedElement;
+    });
+
+   
+    res.json(authorityResponse.data.content);
+    //res.json(districtContactsReorderedAndRelabeled );
+  } catch (e) {
+    log.error("getData Error", e.response ? e.response.status : e.message);
+  }
+}
 async function getDistrictCodes(req) {
   if (!listCache.has("districtCodesList")) {
     const url = `${config.get(
@@ -51,30 +119,6 @@ async function getDistrictCodes(req) {
     return districtCodeList;
   }
 }
-// function getNonPublicContactTypeCodes(contactTypes) {
-
-//   const nonPublicContactTypeCodes = [];
-
-//   for (const contactType of contactTypes) {
-//     if (!contactType.publiclyAvailable) {
-//       nonPublicContactTypeCodes.push(contactType.districtContactTypeCode);
-//     }
-//   }
-
-//   return nonPublicContactTypeCodes;
-// }
-// function removeContacts(districtDataResponse, nonPublicContactTypeCodes) {
-//   const updatedDistrictData = { ...districtDataResponse };
-
-//   if (updatedDistrictData.contacts && Array.isArray(updatedDistrictData.contacts)) {
-//     updatedDistrictData.contacts = updatedDistrictData.contacts.filter(contact => {
-//       return !nonPublicContactTypeCodes.includes(contact.districtContactTypeCode);
-//     });
-//   }
-
-//   return updatedDistrictData;
-// }
-//api/v1/institute/district/12342525
 async function getAuthority(req, res) {
   const { id } = req.params;
   const params = [
