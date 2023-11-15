@@ -15,7 +15,7 @@ const itemsPerPage = ref(100)
 const itemsSort = ref('')
 const totalPages = ref(1)
 const headers = [
-  { title: 'District Name', key: 'districtName' },
+  { title: 'District Name', key: 'displayName' },
   { title: 'District', key: 'districtNumber' },
   { title: 'Title', key: 'jobTitle' },
   { title: 'First Name', key: 'firstName' },
@@ -42,7 +42,7 @@ const resetContactFilters = () => {
 const transformContactForDownload = (inputData: any) => {
   return inputData.map((item: any) => ({
     districtNumber: item.districtNumber,
-    districtName: item.districtName,
+    displayName: item.displayName,
     firstName: item.firstName,
     lastName: item.lastName,
     jobTitle: item.jobTitle,
