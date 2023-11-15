@@ -15,7 +15,7 @@ const itemsPerPage = ref(100)
 const itemsSort = ref('')
 const totalPages = ref(1)
 const headers = [
-  { title: 'District Name', key: 'displayName' },
+  { title: 'District Name', key: 'districtName' },
   { title: 'District', key: 'districtNumber' },
   { title: 'Title', key: 'jobTitle' },
   { title: 'First Name', key: 'firstName' },

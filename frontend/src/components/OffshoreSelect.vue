@@ -42,16 +42,9 @@ function downloadOffshoreSchoolReps() {
             Schools</v-btn
           >
           <v-btn
+            href="/api/v1/download/csv/authority/all-mailing/OFFSHORE?filepath=offshoreschoolrepresentatives"
             variant="text"
             class="v-btn-align-left text-none text-subtitle-1 my-1"
-            @click="downloadOffshoreSchoolInfo"
-            ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Offshore Schools
-            Info (CSV)</v-btn
-          >
-          <v-btn
-            variant="text"
-            class="v-btn-align-left text-none text-subtitle-1 my-1"
-            @click="downloadOffshoreSchoolReps"
             ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Offshore Schools
             Representatives (CSV)</v-btn
           >

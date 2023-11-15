@@ -15,9 +15,7 @@ router.get('/:id', checkToken, getOffshore);
 
 
 async function getOffshore(req, res) {
-  
   const { id } = req.params;
-  console.log(id)
   const params = [
     {
       condition: null,

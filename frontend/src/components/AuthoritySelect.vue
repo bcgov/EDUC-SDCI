@@ -54,20 +54,19 @@ function downloadAuthorityContacts() {
         </v-row>
         <v-row>
           <v-btn
-            block
+            href="/api/v1/download/csv/authority/all-mailing/INDEPENDNT?filepath=authoritymailing"
             variant="text"
             class="v-btn-align-left text-none text-subtitle-1 my-1"
-            @click="downloadAuthorityMailing"
-            ><template v-slot:prepend> <v-icon icon="mdi-download" /></template> Mailing for All
+            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template> Mailing for All
             Authorities (CSV)</v-btn
           >
           <v-btn
-            block
+            href="/api/v1/download/csv/institute/authority?filepath=authoritycontacts"
             variant="text"
             class="v-btn-align-left text-none text-subtitle-1 my-1"
-            @click="downloadAuthorityContacts"
-            ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Contacts for All
-            Authorities (CSV)</v-btn
+            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>
+
+            Contacts for All Authorities (CSV)</v-btn
           >
         </v-row>
       </v-col>
