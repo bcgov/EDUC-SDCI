@@ -6,7 +6,7 @@ import { useRoute } from 'vue-router'
 import router from '@/router'
 import { formatPhoneNumber } from '@/utils/common'
 import type { District, School, Grade, Address, Contact } from '@/types/types.d.ts'
-const jsonexport = require('jsonexport/dist')
+import * as jsonexport from 'jsonexport/dist'
 import { useSanitizeURL } from '@/composables/string'
 // import common components
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
