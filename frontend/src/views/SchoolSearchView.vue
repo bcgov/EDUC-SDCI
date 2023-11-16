@@ -151,7 +151,8 @@ const searchSchools = async () => {
       return {
         ...rest,
         schoolCategoryCodeLabel: appStore.getCategoryCodeLabel(item.schoolCategoryCode),
-        facilityTypeCodeLabel: appStore.getFacilityCodeLabel(item.facilityTypeCode)
+        facilityTypeCodeLabel: appStore.getFacilityCodeLabel(item.facilityTypeCode),
+        grades: appStore.compareSchoolGrades(appStore.getGradeByGradeCodes, item.grades)
       }
     })
     results.value = searchresults.data.totalElements
@@ -273,7 +274,7 @@ onBeforeMount(async () => {
                     color="primary"
                     label
                   >
-                    {{ grade.schoolGradeCode }}</v-chip
+                    {{ grade.label }}</v-chip
                   >
                 </v-row>
                 <v-row>
