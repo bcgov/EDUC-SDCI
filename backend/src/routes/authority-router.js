@@ -66,16 +66,14 @@ async function getAllAuthorityMailing(req, res) {
     const propertyOrder = [
       { property: "authorityNumber", label: "Number" },
       { property: "displayName", label: "Name" },
-      { property: "mailingAddressLine1", label: "Address" },
-      { property: "mailingAddressLine2", label: "Address Line 2" },
-      { property: "mailingCity", label: "City" },
-      { property: "mailingProvinceCode", label: "Province" },
-      { property: "mailingPostal", label: "Postal Code" },
+      { property: "physicalAddressLine1", label: "Address" },
+      { property: "physicalAddressLine2", label: "Address Line 2" },
+      { property: "physicalCity", label: "City" },
+      { property: "physicalProvinceCode", label: "Province" },
+      { property: "physicalPostal", label: "Postal Code" },
       { property: "phoneNumber", label: "Phone Number" },
       { property: "faxNumber", label: "Fax" },
       { property: "email", label: "Email" },
-      { property: "authorityTypeCode", label: "Type" },
-      { property: "closedDate", label: "Closed" },
 
     ];
 

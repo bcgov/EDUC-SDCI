@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@bcgov/bc-sans": "^2.0.0",
+    "@types/jsonexport": "^3.0.5",
     "jsonexport": "^3.2.0",
     "pinia": "^2.1.4",
     "vue": "^3.3.4",
