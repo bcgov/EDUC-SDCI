@@ -68,7 +68,14 @@ const searchContact = async () => {
       operation: 'eq',
       value: selectedContactType.value,
       valueType: 'STRING',
-      condition: 'OR'
+      condition: 'AND'
+    })
+    params[0].searchCriteriaList.push({
+      key: 'expiryDate',
+      operation: 'eq',
+      value: null,
+      valueType: 'STRING',
+      condition: 'AND'
     })
   }
   const jsonString = JSON.stringify(params)
