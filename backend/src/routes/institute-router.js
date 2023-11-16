@@ -8,9 +8,9 @@ const { checkToken } = require("../components/auth");
 const {removeFieldsByCriteria, createList, addDistrictLabels, districtNumberSort, isAllowedSchoolCategory } = require("../components/utils");
 const { listCache, codeCache } = require("../components/cache");
 
-const schoolListOptions = { fields: ["mincode", "displayName", "schoolId"], fieldToInclude: "closedDate", valueToInclude: null, sortField: "mincode" };
-const districtListOptions = { fields: ["displayName", "districtId","districtNumber"] ,fieldToInclude: "districtStatusCode", valueToInclude: "ACTIVE", sortField: "districtNumber"};
-const authorityListOptions = { fields: ["displayName", "authorityNumber","independentAuthorityId"], fieldToInclude: "closedDate", valueToInclude: null, sortField: "authorityNumber" };
+const schoolListOptions = { fields: ["mincode", "displayName", "schoolId, closedDate"], fieldToInclude: "closedDate", valueToInclude: null, sortField: "mincode" };
+const districtListOptions = { fields: ["displayName", "districtId","districtNumber, closedDate"] ,fieldToInclude: "districtStatusCode", valueToInclude: "ACTIVE", sortField: "districtNumber"};
+const authorityListOptions = { fields: ["displayName", "authorityNumber","independentAuthorityId", "closedDate"], sortField: "authorityNumber" };
 const openSchoolListOptions = { fields: [
   "schoolId",
   "districtId",
@@ -114,11 +114,38 @@ async function getOffshoreSchoolList(req, res) {
 async function getAuthorityList(req, res) {
 
   if (await !listCache.has("authoritylist")) {
-    const url = `${config.get("server:instituteAPIURL")}/institute/authority`;
+
+    let currentDate = new Date().toISOString().substring(0, 19)
+    const params = [
+      {
+        condition: null,
+        searchCriteriaList: [
+          {
+            key: 'closedDate',
+            operation: 'eq',
+            value: null,
+            valueType: 'STRING',
+            condition: 'OR'
+          },
+          {
+            key: 'closedDate',
+            operation: 'lte',
+            value: currentDate,
+            valueType: 'DATE_TIME',
+            condition: 'OR'
+          }          
+        ]
+      }
+    ];
+  
+    const jsonString = JSON.stringify(params)
+    const encodedParams = encodeURIComponent(jsonString)
+    
+    const url = `${config.get('server:instituteAPIURL')}/institute/authority/paginated?pageSize=1000&searchCriteriaList=${encodedParams}`;
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
-        const authorityList = createList(response.data, authorityListOptions);
+        const authorityList = createList(response.data.content, authorityListOptions);
         
         res.json(authorityList);
         listCache.set("authoritylist", authorityList);
