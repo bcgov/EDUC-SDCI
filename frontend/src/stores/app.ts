@@ -52,6 +52,9 @@ export const useAppStore = defineStore('app', {
       const gradeLabels: (string | undefined)[] = schoolGrades.map(grade => grade.label)
       return gradeLabels
     },
+    isIndependentSchool(schoolCategoryCode: String){
+      return schoolCategoryCode == 'INDEPEND'
+    },
     setDistricts(): void {
         InstituteService.getDistricts()
           .then((response) => {

@@ -85,7 +85,6 @@ onBeforeMount(async () => {
   try {
     const response = await InstituteService.getSchool(selectedSchoolId as string)
     schoolData.value = response.data
-
     //add the missing labels
     const filteredGrades = appStore.compareSchoolGrades(
       appStore.getGradeByGradeCodes,
@@ -192,6 +191,7 @@ function goToDistrict() {
             </v-row>
             <v-row no-gutters class="mt-0 mb-1">
               <a
+                v-if="!appStore.isIndependentSchool(schoolData.value?.schoolCategoryCode)"
                 id="district-link"
                 :href="`/district/${useSanitizeURL(
                   String(districtInfo.value?.districtNumber)
