@@ -186,8 +186,8 @@ function addDistrictLabels(jsonData, districtList) {
 
   function sortJSONByDistrictNumber(districts) {
     return districts.slice().sort((a, b) => {
-      const districtNumberA = a.districtNumber || '';
-      const districtNumberB = b.districtNumber || '';
+      const districtNumberA = a['District Number'] || '';
+      const districtNumberB = b['District Number'] || '';
       return districtNumberA.localeCompare(districtNumberB, undefined, { numeric: true, sensitivity: 'base' });
     });
   }
@@ -197,7 +197,15 @@ function addDistrictLabels(jsonData, districtList) {
       const schoolCodeB = b.mincode || '';
       return schoolCodeA.localeCompare(schoolCodeB, undefined, { numeric: true, sensitivity: 'base' });
     });
-  }  
+  } 
+
+  function sortByProperty(arr, propertyName, options = { numeric: true, sensitivity: 'base' }) {
+    return arr.slice().sort((a, b) => {
+      const valueA = a[propertyName] || '';
+      const valueB = b[propertyName] || '';
+      return valueA.localeCompare(valueB, undefined, options);
+    });
+  }
   
   function rearrangeAndRelabelObjectProperties(object, propertyList) {
       const reorderedObject = {};
@@ -226,6 +234,30 @@ function addDistrictLabels(jsonData, districtList) {
   
       return item;
     });
+  }
+  function filterByField(jsonArray, fieldName, stringsToRemove) {
+    // Filter the array based on the condition
+    const filteredArray = jsonArray.filter(item => {
+      // Extract the field value (or use an empty string if the field is not present)
+      const fieldValue = item[fieldName] || '';
+  
+      // Check if the fieldValue exactly matches any string from the stringsToRemove array
+      return !stringsToRemove.includes(fieldValue);
+    });
+  
+    return filteredArray;
+  }
+  function getArrayofNonPubliclyAvailableCodes(codes, field) {
+    if (!Array.isArray(codes)) {
+      throw new Error('Invalid input. Expecting an array of objects.');
+    }
+  
+    // Filter out objects where "publiclyAvailable" is false
+    const nonPubliclyAvailableCodes = codes
+      .filter(item => item && item.publiclyAvailable !== true)
+      .map(item => item[field]);
+  
+    return nonPubliclyAvailableCodes;
   }
   function createSchoolCache(schoolData, schoolGrades) {
     // Preload convertedGrades with schoolGrades.schoolGradeCode and set the value to "N"
@@ -314,44 +346,8 @@ function addDistrictLabels(jsonData, districtList) {
 
         // Remove the contacts property
         delete school.contacts;
-        const propertyOrder = [
-          
-          { property: "displayName", label: "School Name" },
-          { property: "mincode", label: "mincode" },
-          { property: "districtNumber", label: "District Number" },
-          { property: "districtName", label: "District Name" },
-          
-          { property: "mailing_addressLine1", label: "Address" },
-          { property: "mailing_city", label: "City" },
-          { property: "mailing_provinceCode", label: "Province" },
-          { property: "mailing_postal", label: "Postal Code" },
-          // { property: "principalTitle", label: "Principal Title" },
-          { property: "firstName", label: "Principal First Name" },
-          { property: "lastName", label: "Principal Last Name" },
-          { property: "schoolCategoryCode", label: "Type" },
-          // { property: "gradeRange", label: "Grade Range" },
-          // { property: "schoolCategory", label: "School Category" },
-          // { property: "fundingGroups", label: "Funding Group(s)" },
-          { property: "phoneNumber", label: "Phone" },
-          { property: "faxNumber", label: "Fax" },
-          { property: "email", label: "Email" },
-          { property: "GRADE01", label: "Grade 1 Enrollment" },
-          { property: "GRADE02", label: "Grade 2 Enrollment" },
-          { property: "GRADE03", label: "Grade 3 Enrollment" },
-          { property: "GRADE04", label: "Grade 4 Enrollment" },
-          { property: "GRADE05", label: "Grade 5 Enrollment" },
-          { property: "GRADE06", label: "Grade 6 Enrollment" },
-          { property: "GRADE07", label: "Grade 7 Enrollment" },
-          { property: "GRADE08", label: "Grade 8 Enrollment" },
-          { property: "GRADE09", label: "Grade 9 Enrollment" },
-          { property: "GRADE10", label: "Grade 10 Enrollment" },
-          { property: "GRADE11", label: "Grade 11 Enrollment" },
-          { property: "GRADE12", label: "Grade 12 Enrollment" }
-          
-          
-      ];
-        const schools = rearrangeAndRelabelObjectProperties(school,propertyOrder)
-        return schools;
+        
+        return school;
     });
 }
-  module.exports = {appendMailingAddressDetailsAndRemoveAddresses,sortJSONBySchoolCode,sortJSONByDistrictNumber,normalizeJsonObject, removeFieldsByCriteria, createList, isSafeFilePath,isAllowedSchoolCategory, addDistrictLabels, districtNumberSort, createSchoolCache, formatGrades, rearrangeAndRelabelObjectProperties};
+  module.exports = {sortByProperty,getArrayofNonPubliclyAvailableCodes,filterByField,appendMailingAddressDetailsAndRemoveAddresses,sortJSONBySchoolCode,sortJSONByDistrictNumber,normalizeJsonObject, removeFieldsByCriteria, createList, isSafeFilePath,isAllowedSchoolCategory, addDistrictLabels, districtNumberSort, createSchoolCache, formatGrades, rearrangeAndRelabelObjectProperties};

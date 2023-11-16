@@ -8,7 +8,7 @@ const fs = require("fs");
 const path = require("path");
 const { checkToken } = require("../components/auth");
 const { listCache } = require("../components/cache");
-const {appendMailingAddressDetailsAndRemoveAddresses, rearrangeAndRelabelObjectProperties} = require("../components/utils.js")
+const {appendMailingAddressDetailsAndRemoveAddresses, rearrangeAndRelabelObjectProperties, sortByProperty} = require("../components/utils.js")
 //Batch Routes
 router.get("/all-mailing/:type", checkToken, getAllAuthorityMailing);
 router.get("/:id", checkToken, getAuthority);
@@ -32,6 +32,7 @@ router.get("/:id", checkToken, getAuthority);
 // }
 
 async function getAllAuthorityMailing(req, res) {
+  //type = OFFSHORE or INDEPENDNT
   const {type} = req.params
 
  const params = [
@@ -66,11 +67,11 @@ async function getAllAuthorityMailing(req, res) {
     const propertyOrder = [
       { property: "authorityNumber", label: "Number" },
       { property: "displayName", label: "Name" },
-      { property: "physicalAddressLine1", label: "Address" },
-      { property: "physicalAddressLine2", label: "Address Line 2" },
-      { property: "physicalCity", label: "City" },
-      { property: "physicalProvinceCode", label: "Province" },
-      { property: "physicalPostal", label: "Postal Code" },
+      { property: "mailingAddressLine1", label: "Address" },
+      { property: "mailingAddressLine2", label: "Address Line 2" },
+      { property: "mailingCity", label: "City" },
+      { property: "mailingProvinceCode", label: "Province" },
+      { property: "mailingPostal", label: "Postal Code" },
       { property: "phoneNumber", label: "Phone Number" },
       { property: "faxNumber", label: "Fax" },
       { property: "email", label: "Email" },
@@ -78,17 +79,14 @@ async function getAllAuthorityMailing(req, res) {
     ];
 
     authorityResponse.data.content.forEach(appendMailingAddressDetailsAndRemoveAddresses);
-  //   const includedFields = ['createUser', 'updateUser', 'districtContactTypeCode', 'label', 'description'];
-  //   let content = normalizeJsonObject(districtContactResponse.data.content, contactTypeCodes.codesList.districtContactTypeCodes, 'districtContactTypeCode', (info) => info.publiclyAvailable === true, includedFields);
-  //   content = normalizeJsonObject(content, districtList, 'districtId', null, ['displayName', 'districtNumber']);    
-  //   content = sortJSONByDistrictNumber(content)
-  authorityResponse.data.content.forEach((currentElement, index, array) => {
+    
+    authorityResponse.data.content.forEach((currentElement, index, array) => {
       const rearrangedElement = rearrangeAndRelabelObjectProperties(currentElement, propertyOrder);
       array[index] = rearrangedElement;
     });
-
+    const authorityResponseSorted = sortByProperty(authorityResponse.data.content, 'Number')
    
-    res.json(authorityResponse.data.content);
+    res.json(authorityResponseSorted);
     //res.json(districtContactsReorderedAndRelabeled );
   } catch (e) {
     log.error("getData Error", e.response ? e.response.status : e.message);

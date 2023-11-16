@@ -4,13 +4,13 @@ const log = require("../components/logger");
 const config = require("../config/index");
 const axios = require("axios");
 
-const { createSchoolCache, addDistrictLabels, formatGrades, sortJSONBySchoolCode} = require("../components/utils");
+const { createSchoolCache, addDistrictLabels, formatGrades, sortJSONBySchoolCode, rearrangeAndRelabelObjectProperties} = require("../components/utils");
 const { checkToken } = require("../components/auth");
 const { schoolCache, listCache, codeCache } = require("../components/cache");
 
 //Batch Routes
+router.get("/all/mailing", checkToken, getAllSchoolMailing);
 router.get("/all/:schoolCategory", checkToken, getAllSchools);
-router.get("/all-mailing", checkToken, getAllSchools);
 router.get("/:schoolId", checkToken, getSchool);
 
 async function getSchool(req, res) {
@@ -36,7 +36,12 @@ async function getSchool(req, res) {
       });
 
 }
+async function getAllSchoolMailing(req, res) {
+  const allSchools = await getAllSchools(req,res)
+  console.log(allSchools)
+  res.json(allSchools)
 
+}
 async function getAllSchools(req, res) {
    
   const {schoolCategory} = req.params
@@ -96,6 +101,48 @@ async function getAllSchools(req, res) {
         
         const openSchoolListWithDistrictLabels = addDistrictLabels(response.data, districtList)
         const openSchoolList = sortJSONBySchoolCode(createSchoolCache(openSchoolListWithDistrictLabels.content, schoolGrades));
+        const propertyOrder = [
+          
+          { property: "displayName", label: "School Name" },
+          { property: "mincode", label: "School Code" },
+          { property: "districtName", label: "District Name" },
+          { property: "districtNumber", label: "District Number" },
+          
+          { property: "mailing_addressLine1", label: "Address" },
+          { property: "mailing_city", label: "City" },
+          { property: "mailing_provinceCode", label: "Province" },
+          { property: "mailing_postal", label: "Postal Code" },
+          // { property: "principalTitle", label: "Principal Title" },
+          { property: "firstName", label: "Principal First Name" },
+          { property: "lastName", label: "Principal Last Name" },
+          { property: "schoolCategoryCode", label: "School Category" },
+          // { property: "gradeRange", label: "Grade Range" },
+          // { property: "fundingGroups", label: "Funding Group(s)" },
+          { property: "phoneNumber", label: "Phone" },
+          { property: "faxNumber", label: "Fax" },
+          { property: "email", label: "Email" },
+          { property: "KINDHALF", label: "Kindergarten Half Enrollment" },
+          { property: "KINDFULL", label: "Kindergarten Full Enrollment" },
+          { property: "GRADE01", label: "Grade 1 Enrollment" },
+          { property: "GRADE02", label: "Grade 2 Enrollment" },
+          { property: "GRADE03", label: "Grade 3 Enrollment" },
+          { property: "GRADE04", label: "Grade 4 Enrollment" },
+          { property: "GRADE05", label: "Grade 5 Enrollment" },
+          { property: "GRADE06", label: "Grade 6 Enrollment" },
+          { property: "GRADE07", label: "Grade 7 Enrollment" },
+          { property: "GRADE08", label: "Grade 8 Enrollment" },
+          { property: "GRADE09", label: "Grade 9 Enrollment" },
+          { property: "GRADE10", label: "Grade 10 Enrollment" },
+          { property: "GRADE11", label: "Grade 11 Enrollment" },
+          { property: "GRADE12", label: "Grade 12 Enrollment" }
+          
+          
+      ];
+
+      openSchoolList.forEach((currentElement, index, array) => {
+        const rearrangedElement = rearrangeAndRelabelObjectProperties(currentElement, propertyOrder);
+        array[index] = rearrangedElement;
+      });
         res.json(openSchoolList);
         schoolCache.set("openschoollist" + schoolCategory, openSchoolList);
         log.info(req.url);
