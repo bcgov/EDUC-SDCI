@@ -320,11 +320,16 @@ onMounted(async () => {
               </template>
 
               <template v-slot:item.phoneNumber="{ item }">
-                {{ formatPhoneNumber(item.phoneNumber) }}
+                <div style="min-width: 125px">
+                  <!-- Adjust the min-width value as needed -->
+                  {{ formatPhoneNumber(item.phoneNumber) }}
+                </div>
               </template>
 
               <template v-slot:item.faxNumber="{ item }">
-                {{ formatPhoneNumber(item.faxNumber) }}
+                <div style="min-width: 125px">
+                  {{ formatPhoneNumber(item.faxNumber) }}
+                </div>
               </template>
             </v-data-table>
           </v-window-item>
