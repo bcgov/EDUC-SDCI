@@ -82,14 +82,14 @@ const headers = [
   { title: '', key: 'data-table-expand' },
   { title: 'School Name', key: 'displayName' },
   { title: 'Mincode', key: 'mincode' },
-  { title: 'Category', key: 'schoolCategoryCode' },
-  { title: 'Type', key: 'facilityTypeCode' }
+  { title: 'Category', key: 'schoolCategoryCodeLabel' },
+  { title: 'Type', key: 'facilityTypeCodeLabel' }
 ]
 
 const filteredSchools = ref(schools)
 const search = ref('')
 const expanded = ref([])
-
+const transformedSchools = ref(schools)
 const searchSchools = async () => {
   // Filter schools based on selected filters
   let currentDate = new Date().toISOString().substring(0, 19)
@@ -145,9 +145,16 @@ const searchSchools = async () => {
 
   try {
     const searchresults = await InstituteService.searchSchools(req)
-    filteredSchools.value = searchresults.data.content
+    filteredSchools.value = searchresults.data?.content
+    transformedSchools.value = filteredSchools.value.map((item: any) => {
+      const { ...rest } = item
+      return {
+        ...rest,
+        schoolCategoryCodeLabel: appStore.getCategoryCodeLabel(item.schoolCategoryCode),
+        facilityTypeCodeLabel: appStore.getFacilityCodeLabel(item.facilityTypeCode)
+      }
+    })
     results.value = searchresults.data.totalElements
-
     // Update current page and total pages
     currentPage.value = req.pageNumber
     totalPages.value = searchresults.data.totalPages
@@ -163,7 +170,7 @@ const resetFilters = () => {
   selectedType.value = null
   selectedGrade.value = null
   search.value = ''
-  filteredSchools.value = schools
+  transformedSchools.value = schools
 }
 
 onBeforeMount(async () => {
@@ -238,7 +245,7 @@ onBeforeMount(async () => {
         :expanded="expanded"
         :headers="headers"
         :items-length="results"
-        :items="filteredSchools"
+        :items="transformedSchools"
         show-expand
         class="elevation-1"
         item-value="schoolId"
