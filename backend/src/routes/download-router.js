@@ -4,7 +4,7 @@ const log = require("../components/logger");
 const config = require("../config/index");
 const axios = require("axios");
 const { checkToken } = require("../components/auth");
-const jsonExport = require('jsonexport');
+const jsonexport = require("jsonexport/dist")
 const fs = require('fs');
 const path = require('path');
 const {isSafeFilePath} = require("../components/utils")
@@ -46,7 +46,7 @@ async function addDistrictLabels(req, res, next) {
     try {
       let districtList = [];
       if (listCache.has("districtlist")) {
-        districtList=  listCache.get("districtlist");
+        districtList= listCache.get("districtlist");
       } else {
         try {
           const path = "/api/v1/institute/district/list"

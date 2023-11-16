@@ -5,7 +5,7 @@ import router from '@/router'
 import { useAppStore } from '@/stores/app'
 import { useRoute } from 'vue-router'
 import { formatPhoneNumber } from '@/utils/common'
-const jsonexport = require('jsonexport')
+const jsonexport = require('jsonexport/dist')
 import type { Authority, School, Address } from '@/types/types.d.ts'
 import { useSanitizeURL } from '@/composables/string'
 

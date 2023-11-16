@@ -2,7 +2,7 @@
 import { useAppStore } from '@/stores/app'
 import { ref } from 'vue'
 import InstituteService from '@/services/InstituteService'
-import * as jsonexport from 'jsonexport/dist'
+const jsonexport = require('jsonexport/dist')
 
 const appStore = useAppStore()
 // used for open and close modal
