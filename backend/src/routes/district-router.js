@@ -244,6 +244,13 @@ async function getDistrict(req, res) {
           valueType: "STRING",
           condition: "AND",
         },    
+        {
+          key: "facilityTypeCode",
+          operation: "neq",
+          value: "SUMMER",
+          valueType: "STRING",
+          condition: "AND",
+        },            
       ],
     },
   ];

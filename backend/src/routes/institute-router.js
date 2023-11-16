@@ -188,7 +188,9 @@ async function getDistrictList(req, res) {
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
         //const districtList = response.data;
-        const districtList = createList(response.data, districtListOptions);
+        const filteredDistrictList = response.data.filter(district => !["YUKON", "OFFSHORE", "PSI"].includes(district.districtRegionCode));
+        const districtList = createList(filteredDistrictList, districtListOptions);
+        
         listCache.set("districtlist", districtList);
         res.json(districtList);
         log.info(req.url);

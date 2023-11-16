@@ -320,7 +320,10 @@ onMounted(async () => {
               </template>
 
               <template v-slot:item.phoneNumber="{ item }">
-                {{ formatPhoneNumber(item.phoneNumber) }}
+                <span :style="{ width: '350px' }"
+                  >ss
+                  {{ formatPhoneNumber(item.phoneNumber) }}
+                </span>
               </template>
 
               <template v-slot:item.faxNumber="{ item }">
