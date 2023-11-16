@@ -171,6 +171,9 @@ const resetFilters = () => {
   selectedGrade.value = null
   search.value = ''
   transformedSchools.value = schools
+  results.value = 0
+  currentPage.value = 0
+  totalPages.value = 0
 }
 
 onBeforeMount(async () => {
@@ -233,8 +236,9 @@ onBeforeMount(async () => {
 
     <v-card class="pa-6" width="100%">
       <!-- Search Results Table -->
-      Total: {{ results }} Current Page {{ currentPage + 1 }}
+      Total: {{ results }} <span v-if="results != 0">Current Page {{ currentPage + 1 }}</span>
       <v-data-table-server
+        v-if="results != 0"
         v-model:items-per-page="itemsPerPage"
         :items-per-page-options="[
           { value: 10, title: '10' },
