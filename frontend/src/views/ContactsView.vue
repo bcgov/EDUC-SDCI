@@ -2,7 +2,7 @@
 import { useAppStore } from '@/stores/app'
 import { ref } from 'vue'
 import InstituteService from '@/services/InstituteService'
-import * as jsonexport from 'jsonexport/dist'
+import jsonexport from 'jsonexport/dist'
 
 const appStore = useAppStore()
 // used for open and close modal
@@ -68,7 +68,14 @@ const searchContact = async () => {
       operation: 'eq',
       value: selectedContactType.value,
       valueType: 'STRING',
-      condition: 'OR'
+      condition: 'AND'
+    })
+    params[0].searchCriteriaList.push({
+      key: 'expiryDate',
+      operation: 'eq',
+      value: null,
+      valueType: 'STRING',
+      condition: 'AND'
     })
   }
   const jsonString = JSON.stringify(params)
