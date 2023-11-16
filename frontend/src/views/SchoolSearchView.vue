@@ -137,7 +137,7 @@ const searchSchools = async () => {
   const encodedParams = encodeURIComponent(jsonString)
 
   const req = {
-    pageNumber: currentPage.value,
+    pageNumber: currentPage.value !== 0 ? currentPage.value - 1 : currentPage.value,
     pageSize: itemsPerPage,
     searchCriteriaList: encodedParams,
     sort: itemsSort.value
@@ -233,7 +233,7 @@ onBeforeMount(async () => {
 
     <v-card class="pa-6" width="100%">
       <!-- Search Results Table -->
-      TOTAL: {{ results }} Current Page {{ currentPage }}
+      Total: {{ results }} Current Page {{ currentPage + 1 }}
       <v-data-table-server
         v-model:items-per-page="itemsPerPage"
         :items-per-page-options="[
