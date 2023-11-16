@@ -117,8 +117,8 @@ async function getAllDistrictContacts(req, res) {
       headers: { Authorization: `Bearer ${req.accessToken}` },
     });
     const propertyOrder = [
-      { property: "displayName", label: "District Name" },
       { property: "districtNumber", label: "District Number" },
+      { property: "displayName", label: "District Name" },
       { property: "districtContactTypeCode", label: "District Contact" },
       { property: "description", label: "Contact Description" },
       { property: "firstName", label: "Contact First Name" },
@@ -152,26 +152,24 @@ async function getAllDistrictMailing(req, res) {
   const contactTypeCodes= await listCache.get("codesList")
 
   const propertyOrder = [
+    { property: "districtNumber", label: "District Number" },
     { property: "displayName", label: "District Name" },
-    { property: "districtNumber", label: "districtNumber" },
     { property: "mailingAddressLine1", label: "Address Line 1" },
     { property: "mailingAddressLine2", label: "Address Line 2" },
     { property: "mailingCity", label: "City" },
-    { property: "mailingPostal", label: "Postal" },
     { property: "mailingProvinceCode", label: "Province" },
+    { property: "mailingPostal", label: "Postal Code" },
     { property: "mailingCountryCode", label: "Country" },
-
     { property: "physicalAddressLine1", label: "Courier Address Line 1" },
     { property: "physicalAddressLine2", label: "Courier Address Line 2" },
     { property: "physicalCity", label: "Courier City" },
-    { property: "physicalPostal", label: "Courier Postal" },
     { property: "physicalProvinceCode", label: "Courier Province" },
+    { property: "physicalPostal", label: "Courier Postal Code" },
     { property: "physicalCountryCode", label: "Courier Country" },    
-    { property: "districtRegionCode", label: "Courier Region" },
+    { property: "website", label: "Web Address" },
     { property: "phoneNumber", label: "Phone" },
     { property: "faxNumber", label: "Fax" },
-    { property: "email", label: "Email" },
-    { property: "website", label: "Website" },
+    
     
   ];
 
