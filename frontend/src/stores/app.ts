@@ -1,5 +1,5 @@
 import { storeToRefs, defineStore } from 'pinia';
-import * as jsonexport from "jsonexport/dist"
+const jsonexport = require('jsonexport')
 // import type definitions
 import type {ListDistrict, ListAuthority, ListSchool, CategoryCode, FacilityCode, AddressTypeCode, ContactTypeCode, GradeCode, Grade} from '@/types/types'
 
