@@ -123,7 +123,7 @@ const searchContact = async () => {
         </v-card-actions>
       </v-card-text>
       <v-row>
-        <v-col class="ma-2">TOTAL: {{ results }}</v-col>
+        <v-col class="ma-2">Total: {{ results }}</v-col>
         <v-col></v-col>
         <v-col>
           <v-btn
