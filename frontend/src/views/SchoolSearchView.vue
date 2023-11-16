@@ -151,7 +151,8 @@ const searchSchools = async () => {
       return {
         ...rest,
         schoolCategoryCodeLabel: appStore.getCategoryCodeLabel(item.schoolCategoryCode),
-        facilityTypeCodeLabel: appStore.getFacilityCodeLabel(item.facilityTypeCode)
+        facilityTypeCodeLabel: appStore.getFacilityCodeLabel(item.facilityTypeCode),
+        grades: appStore.compareSchoolGrades(appStore.getGradeByGradeCodes, item.grades)
       }
     })
     results.value = searchresults.data.totalElements
@@ -171,6 +172,9 @@ const resetFilters = () => {
   selectedGrade.value = null
   search.value = ''
   transformedSchools.value = schools
+  results.value = 0
+  currentPage.value = 0
+  totalPages.value = 0
 }
 
 onBeforeMount(async () => {
@@ -233,8 +237,9 @@ onBeforeMount(async () => {
 
     <v-card class="pa-6" width="100%">
       <!-- Search Results Table -->
-      Total: {{ results }} Current Page {{ currentPage + 1 }}
+      Total: {{ results }} <span v-if="results != 0">Current Page {{ currentPage + 1 }}</span>
       <v-data-table-server
+        v-if="results != 0"
         v-model:items-per-page="itemsPerPage"
         :items-per-page-options="[
           { value: 10, title: '10' },
@@ -269,7 +274,7 @@ onBeforeMount(async () => {
                     color="primary"
                     label
                   >
-                    {{ grade.schoolGradeCode }}</v-chip
+                    {{ grade.label }}</v-chip
                   >
                 </v-row>
                 <v-row>
