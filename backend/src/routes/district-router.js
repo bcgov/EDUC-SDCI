@@ -8,7 +8,7 @@ const fs = require("fs");
 const path = require("path");
 const { checkToken } = require("../components/auth");
 const { listCache } = require("../components/cache");
-const {appendMailingAddressDetailsAndRemoveAddresses, rearrangeAndRelabelObjectProperties, addDistrictLabels, normalizeJsonObject, sortJSONByDistrictNumber} = require("../components/utils.js")
+const {getArrayofNonPubliclyAvailableCodes, filterByField,appendMailingAddressDetailsAndRemoveAddresses, rearrangeAndRelabelObjectProperties, addDistrictLabels, normalizeJsonObject, sortJSONByDistrictNumber} = require("../components/utils.js")
 
 //Batch Routes
 router.get("/all-contacts", checkToken, getAllDistrictContacts);
@@ -133,13 +133,20 @@ async function getAllDistrictContacts(req, res) {
 
     const includedFields = ['createUser', 'updateUser', 'districtContactTypeCode', 'label', 'description'];
     let content = normalizeJsonObject(districtContactResponse.data.content, contactTypeCodes.codesList.districtContactTypeCodes, 'districtContactTypeCode', (info) => info.publiclyAvailable === true, includedFields);
-    content = normalizeJsonObject(content, districtList, 'districtId', null, ['displayName', 'districtNumber']);    
-    content = sortJSONByDistrictNumber(content)
-    content.forEach((currentElement, index, array) => {
+    content = normalizeJsonObject(content, districtList, 'districtId', null, ['displayName', 'districtNumber']);   
+    //console.log(contactTypeCodes.codesList.districtContactTypeCodes)
+    //console.log(getArrayofNonPubliclyAvailableCodes(contactTypeCodes.codesList.districtContactTypeCodes, "districtContactTypeCode"))
+    //let filteredData = filterByField(content, 'districtContactTypeCode', getArrayofNonPubliclyAvailableCodes(contactTypeCodes.codesList.districtContactTypeCodes, "districtContactTypeCode"));
+    let filteredData =  filterByField(content, 'districtNumber', ['']);
+    filteredData.forEach((currentElement, index, array) => {
       const rearrangedElement = rearrangeAndRelabelObjectProperties(currentElement, propertyOrder);
       array[index] = rearrangedElement;
     });
-    res.json(content);
+    let sortedData = sortJSONByDistrictNumber(filteredData)
+
+    
+    
+    res.json(sortedData);
     //res.json(districtContactsReorderedAndRelabeled );
   } catch (e) {
     log.error("getData Error", e.response ? e.response.status : e.message);
@@ -230,6 +237,13 @@ async function getDistrict(req, res) {
           valueType: "UUID",
           condition: "AND",
         },
+        {
+          key: "closedDate",
+          operation: "eq",
+          value: null,
+          valueType: "STRING",
+          condition: "AND",
+        },    
       ],
     },
   ];
