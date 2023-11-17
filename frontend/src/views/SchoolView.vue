@@ -50,6 +50,7 @@ const transformContactForDownload = (inputData: any): {} => {
     city: item.city,
     provinceCode: item.provinceCode,
     Postal: item.postal,
+    schoolEmail: item.schoolEmail,
     jobTitle: item.jobTitle,
     firstName: item.firstName,
     lastName: item.lastName,
@@ -122,10 +123,10 @@ onBeforeMount(async () => {
           filteredContacts.value[i].schoolCategoryCode = response.data.schoolCategoryCode
           filteredContacts.value[i].facilityTypeCode = response.data.facilityTypeCode
           filteredContacts.value[i].mincode = response.data.mincode
-          filteredContacts.value[i].phoneNumber = response.data.phoneNumber
-          filteredContacts.value[i].phoneExtension = response.data.phoneExtension
-          filteredContacts.value[i].email = response.data.email
-          filteredContacts.value[i].faxNumber = response.data.faxNumber
+          filteredContacts.value[i].schoolEmail = response.data.email
+          // filteredContacts.value[i].phoneNumber = response.data.phoneNumber
+          // filteredContacts.value[i].phoneExtension = response.data.phoneExtension
+          // filteredContacts.value[i].faxNumber = response.data.faxNumber
           filteredContacts.value[i].addressLine1 = response.data.addresses[0].addressLine1
           filteredContacts.value[i].addressLine2 = response.data.addresses[0].addressLine2
           filteredContacts.value[i].city = response.data.addresses[0].city
@@ -150,6 +151,7 @@ onBeforeMount(async () => {
           filteredContacts.value[i].GRADE11 = response.data.GRADE11
           filteredContacts.value[i].GRADE12 = response.data.GRADE12
         }
+        // console.log(filteredContacts.value)
         downloadContacts.value = transformContactForDownload(filteredContacts.value)
       }
     }

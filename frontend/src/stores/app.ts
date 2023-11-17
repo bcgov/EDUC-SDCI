@@ -1,3 +1,4 @@
+import { configDefaults } from 'vitest/config';
 import { storeToRefs, defineStore } from 'pinia';
 import * as jsonexport from "jsonexport/dist"
 // import type definitions
@@ -115,7 +116,6 @@ export const useAppStore = defineStore('app', {
         this.categoryCodes?.sort((a: any, b: any) => {
           return a.displayOrder - b.displayOrder
         })
-        console.log(this.categoryCodes)
       }).catch((error) => {
         console.error(error)
       })
@@ -129,6 +129,43 @@ export const useAppStore = defineStore('app', {
 
       // set contact type codes for Districts, Authorities, and Schools
       InstituteService.getContactTypeCodes().then((response) => {
+        const currentDate: Date = new Date()
+
+
+        if (response.data && response.data.codesList && response.data.codesList.authorityContactTypeCodes) {
+          response.data.codesList.authorityContactTypeCodes = response.data.codesList.authorityContactTypeCodes.filter((item: any) => {
+            const currentDate: Date = new Date(); // Assuming currentDate is defined somewhere
+            const effectiveDate: Date = new Date(item.effectiveDate);
+            const expiryDate: Date = new Date(item.expiryDate);
+            return expiryDate >= currentDate && effectiveDate <= currentDate;
+          });
+          response.data.codesList.authorityContactTypeCodes.sort((a: any, b: any) => {
+            return a.displayOrder - b.displayOrder
+          })
+        }
+
+        if (response.data && response.data.codesList && response.data.codesList.districtContactTypeCodes) {
+          response.data.codesList.districtContactTypeCodes = response.data.codesList.districtContactTypeCodes.filter((item: any) => {
+            const currentDate: Date = new Date(); // Assuming currentDate is defined somewhere
+            const effectiveDate: Date = new Date(item.effectiveDate);
+            const expiryDate: Date = new Date(item.expiryDate);
+            return expiryDate >= currentDate && effectiveDate <= currentDate;
+          });
+          response.data.codesList.districtContactTypeCodes.sort((a: any, b: any) => {
+            return a.displayOrder - b.displayOrder
+          })
+        }
+        if (response.data && response.data.codesList && response.data.codesList.schoolContactTypeCodes) {
+          response.data.codesList.schoolContactTypeCodes = response.data.codesList.schoolContactTypeCodes.filter((item: any) => {
+            const currentDate: Date = new Date(); // Assuming currentDate is defined somewhere
+            const effectiveDate: Date = new Date(item.effectiveDate);
+            const expiryDate: Date = new Date(item.expiryDate);
+            return expiryDate >= currentDate && effectiveDate <= currentDate;
+          });
+          response.data.codesList.schoolContactTypeCodes.sort((a: any, b: any) => {
+            return a.displayOrder - b.displayOrder
+          })
+        }
         this.contactTypeCodes = response.data
       }).catch((error) => {
         console.error(error)
