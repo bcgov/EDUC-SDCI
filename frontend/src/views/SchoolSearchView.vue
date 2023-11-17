@@ -3,7 +3,7 @@ import { ref, onMounted, onBeforeMount, isProxy, toRaw } from 'vue'
 import { useAppStore } from '@/stores/app'
 import InstituteService from '@/services/InstituteService'
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
-
+const currentDate: Date = new Date()
 const appStore = useAppStore()
 const jurisdictions = ref([])
 const cities = ref([])
@@ -48,7 +48,16 @@ const fetchTypes = async () => {
   }
   try {
     const response = await InstituteService.getCategoryCodes()
-    jurisdictions.value = response.data
+    //filter out the schools that have expired
+    jurisdictions.value = response.data?.filter((item: any) => {
+      const effectiveDate: Date = new Date(item.effectiveDate)
+      const expiryDate: Date = new Date(item.expiryDate)
+      return expiryDate >= currentDate && effectiveDate <= currentDate
+    })
+    //sort by display order
+    jurisdictions.value?.sort((a: any, b: any) => {
+      return a.displayOrder - b.displayOrder
+    })
   } catch (error) {
     console.error('Error fetching types:', error)
   }
