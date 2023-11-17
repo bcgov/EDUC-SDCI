@@ -194,6 +194,9 @@ export const useAppStore = defineStore('app', {
     getCategoryCodes: (state) => {
       return state.categoryCodes
     },
+    getSchoolCategoryCodeLabel: (state) => {
+      return (searchCode: string ) => state.contactTypeCodes.codesList.schoolContactTypeCodes.find((categoryCode) => searchCode === categoryCode.schoolContactTypeCode)?.label
+    },
     getCategoryCodeLabel: (state) => {
       return (searchCode: string ) => state.categoryCodes.find((categoryCode) => searchCode === categoryCode.schoolCategoryCode)?.label
     },

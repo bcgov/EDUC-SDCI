@@ -5,7 +5,7 @@ import router from '@/router'
 import InstituteService from '@/services/InstituteService'
 import { useAppStore } from '@/stores/app'
 import type { School, Grade } from '@/types/types.d.ts'
-import jsonexport from 'jsonexport/dist'
+import * as jsonexport from 'jsonexport/dist'
 import { distNumberFromMincode, formatPhoneNumber } from '@/utils/common'
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
 import { useSanitizeURL } from '@/composables/string'
@@ -85,6 +85,7 @@ onBeforeMount(async () => {
   try {
     const response = await InstituteService.getSchool(selectedSchoolId as string)
     schoolData.value = response.data
+
     //add the missing labels
     const filteredGrades = appStore.compareSchoolGrades(
       appStore.getGradeByGradeCodes,
@@ -191,7 +192,6 @@ function goToDistrict() {
             </v-row>
             <v-row no-gutters class="mt-0 mb-1">
               <a
-                v-if="!appStore.isIndependentSchool(schoolData.value?.schoolCategoryCode)"
                 id="district-link"
                 :href="`/district/${useSanitizeURL(
                   String(districtInfo.value?.districtNumber)
@@ -265,7 +265,7 @@ function goToDistrict() {
               item-value="name"
             >
               <template v-slot:item.jobTitle="{ item }">
-                {{ item.jobTitle ? item.jobTitle : item.schoolContactTypeCode }}
+                {{ item.label }}
               </template>
               <template v-slot:item.phoneNumber="{ item }">
                 {{ formatPhoneNumber(item.phoneNumber) }}

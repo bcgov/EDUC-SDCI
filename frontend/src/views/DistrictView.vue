@@ -30,8 +30,7 @@ const contactHeaders = [
   { title: 'Last Name', key: 'lastName' },
   { title: 'Phone', key: 'phoneNumber' },
   { title: 'Extension', key: 'phoneExtension' },
-  { title: 'Email', key: 'email' },
-  { title: 'expiryDate', key: 'Expired' }
+  { title: 'Email', key: 'email' }
 ]
 const schoolHeaders = [
   { title: 'School Name', key: 'displayName' },
@@ -156,8 +155,7 @@ onMounted(async () => {
           mailingPostalCode: response.data.districtData?.addresses[0].postal,
           districtPhone: response.data.districtData?.phoneNumber,
           districtFax: response.data.districtData?.faxNumber,
-          website: response.data.districtData?.website,
-          expiryDate: item.expiryDate
+          website: response.data.districtData?.website
         }
       })
     }
@@ -281,7 +279,9 @@ onMounted(async () => {
               </template>
 
               <template v-slot:item.phoneNumber="{ item }">
-                {{ formatPhoneNumber(item.phoneNumber) }}
+                <div style="min-width: 125px">
+                  {{ formatPhoneNumber(item.phoneNumber) }}
+                </div>
               </template>
             </v-data-table>
           </v-window-item>

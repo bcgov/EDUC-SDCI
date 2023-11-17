@@ -257,6 +257,8 @@ async function getDistrictContactsAPI(req, res) {
     .then((response) => {
       if (req.url.includes("/district/contact/paginated")) {
         const jsonData = addDistrictLabels(response.data, districtList);
+      
+        jsonData.content = jsonData.content.filter(contact => !["8e34ab4d-f387-220b-b54e-2c9a7f380f85","1f93fe68-2d80-fea5-88ba-a684dfa4cc27", "99c19236-5d01-2dff-db90-e2da4511c00c"].includes(contact.districtId));
         res.json(jsonData);
       } else {
         res.json(response.data);

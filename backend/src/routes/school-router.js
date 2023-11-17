@@ -4,17 +4,18 @@ const log = require("../components/logger");
 const config = require("../config/index");
 const axios = require("axios");
 
-const { createSchoolCache, addDistrictLabels, formatGrades, sortJSONBySchoolCode, rearrangeAndRelabelObjectProperties} = require("../components/utils");
+const { filterByField, getArrayofNonPubliclyAvailableCodes, normalizeJsonObject, createSchoolCache, addDistrictLabels, formatGrades, sortJSONBySchoolCode, rearrangeAndRelabelObjectProperties} = require("../components/utils");
 const { checkToken } = require("../components/auth");
 const { schoolCache, listCache, codeCache } = require("../components/cache");
 
 //Batch Routes
-router.get("/all/mailing", checkToken, getAllSchoolMailing);
-router.get("/all/:schoolCategory", checkToken, getAllSchools);
+
+router.get("/all/:schoolCategory/", checkToken, getAllSchools);
 router.get("/:schoolId", checkToken, getSchool);
 
 async function getSchool(req, res) {
     const {schoolId} = req.params;
+    const contactTypeCodes= await listCache.get("codesList")
     const url = `${config.get(
       "server:instituteAPIURL"
     )}/institute/school/` + schoolId;
@@ -24,6 +25,9 @@ async function getSchool(req, res) {
         //const openSchoolList = createList(response.data, openSchoolListOptions);
         const schoolGrades = [{"schoolGradeCode":"KINDHALF","label":"Kindergarten Half","description":"Kindergarten half","displayOrder":1,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"KINDFULL","label":"Kindergarten Full","description":"Kindergarten full","displayOrder":2,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"GRADE01","label":"Grade 1","description":"First grade","displayOrder":3,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"GRADE02","label":"Grade 2","description":"Second grade","displayOrder":4,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"GRADE03","label":"Grade 3","description":"Third grade","displayOrder":5,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"GRADE04","label":"Grade 4","description":"Fourth grade","displayOrder":6,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"GRADE05","label":"Grade 5","description":"Fifth grade","displayOrder":7,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"GRADE06","label":"Grade 6","description":"Sixth grade","displayOrder":8,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"GRADE07","label":"Grade 7","description":"Seventh grade","displayOrder":9,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"ELEMUNGR","label":"Elementary Ungraded","description":"Elementary ungraded","displayOrder":10,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"GRADE08","label":"Grade 8","description":"Eighth grade","displayOrder":11,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"GRADE09","label":"Grade 9","description":"Ninth grade","displayOrder":12,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"GRADE10","label":"Grade 10","description":"Tenth grade","displayOrder":13,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"GRADE11","label":"Grade 11","description":"Eleventh grade","displayOrder":14,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"GRADE12","label":"Grade 12","description":"Twelfth grade","displayOrder":15,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"SECUNGR","label":"Secondary Ungraded","description":"Secondary ungraded","displayOrder":16,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"}]
         const schoolData = response.data;
+        const includedFields = ['schoolContactTypeCode', 'label', 'description'];
+        schoolData.contacts = normalizeJsonObject(schoolData.contacts, contactTypeCodes.codesList.schoolContactTypeCodes, 'schoolContactTypeCode', (info) => info.publiclyAvailable === true, includedFields);
+        schoolData.contacts = filterByField(schoolData.contacts, "schoolContactTypeCode", ["STUDREGIS"])
         const formattedGrades = formatGrades(schoolData.grades, schoolGrades);
         const schoolWithFormattedGrades = { ...schoolData, ...formattedGrades };
         res.json(schoolWithFormattedGrades);
@@ -135,7 +139,6 @@ async function getAllSchools(req, res) {
           { property: "GRADE10", label: "Grade 10 Enrollment" },
           { property: "GRADE11", label: "Grade 11 Enrollment" },
           { property: "GRADE12", label: "Grade 12 Enrollment" }
-          
           
       ];
 

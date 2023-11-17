@@ -14,6 +14,7 @@ const downloadRouter = require("./routes/download-router");
 const authorityRouter = require("./routes/authority-router");
 const offshoreRouter = require("./routes/offshore-router");
 const schoolRouter = require("./routes/school-router");
+const searchRouter = require("./routes/search-router");
 const app = express();
 const publicPath = path.join(__dirname, "public");
 
@@ -77,6 +78,7 @@ apiRouter.use("/v1/district", districtRouter);
 apiRouter.use("/v1/authority", authorityRouter);
 apiRouter.use("/v1/offshore", offshoreRouter);
 apiRouter.use("/v1/school", schoolRouter);
+apiRouter.use("/v1/search", searchRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {

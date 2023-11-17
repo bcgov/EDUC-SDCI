@@ -238,6 +238,8 @@ function addDistrictLabels(jsonData, districtList) {
   function filterRemoveByField(data, field, valuesToExclude) {
     return data.filter(item => !valuesToExclude.includes(item[field]));
   }
+
+
   function filterByField(jsonArray, fieldName, stringsToRemove) {
     // Filter the array based on the condition
     const filteredArray = jsonArray.filter(item => {

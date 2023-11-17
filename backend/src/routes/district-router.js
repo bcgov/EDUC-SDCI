@@ -143,8 +143,7 @@ async function getAllDistrictContacts(req, res) {
     const propertyOrder = [
       { property: "districtNumber", label: "District Number" },
       { property: "displayName", label: "District Name" },
-      { property: "districtContactTypeCode", label: "District Contact" },
-      { property: "description", label: "Contact Description" },
+      { property: "description", label: "District Contact" },
       { property: "firstName", label: "Contact First Name" },
       { property: "lastName", label: "Contact Last name" },
       { property: "jobTitle", label: "Position Title" },
