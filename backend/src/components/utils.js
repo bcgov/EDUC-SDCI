@@ -250,6 +250,14 @@ function addDistrictLabels(jsonData, districtList) {
   
     return filteredArray;
   }
+  function filterByExpiryDate(data) {
+    const currentDate = new Date();
+  
+    return data.filter(item => {
+      const expiryDate = item.expiryDate ? new Date(item.expiryDate) : null;
+      return expiryDate === null || currentDate < expiryDate;
+    });
+  }
   function getArrayofNonPubliclyAvailableCodes(codes, field) {
     if (!Array.isArray(codes)) {
       throw new Error('Invalid input. Expecting an array of objects.');
@@ -353,4 +361,4 @@ function addDistrictLabels(jsonData, districtList) {
         return school;
     });
 }
-  module.exports = {filterRemoveByField, sortByProperty,getArrayofNonPubliclyAvailableCodes,filterByField,appendMailingAddressDetailsAndRemoveAddresses,sortJSONBySchoolCode,sortJSONByDistrictNumber,normalizeJsonObject, removeFieldsByCriteria, createList, isSafeFilePath,isAllowedSchoolCategory, addDistrictLabels, districtNumberSort, createSchoolCache, formatGrades, rearrangeAndRelabelObjectProperties};
+  module.exports = {filterByExpiryDate, filterRemoveByField, sortByProperty,getArrayofNonPubliclyAvailableCodes,filterByField,appendMailingAddressDetailsAndRemoveAddresses,sortJSONBySchoolCode,sortJSONByDistrictNumber,normalizeJsonObject, removeFieldsByCriteria, createList, isSafeFilePath,isAllowedSchoolCategory, addDistrictLabels, districtNumberSort, createSchoolCache, formatGrades, rearrangeAndRelabelObjectProperties};

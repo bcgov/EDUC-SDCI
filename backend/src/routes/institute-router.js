@@ -8,7 +8,7 @@ const { checkToken } = require("../components/auth");
 const {removeFieldsByCriteria, createList, addDistrictLabels, districtNumberSort, isAllowedSchoolCategory } = require("../components/utils");
 const { listCache, codeCache } = require("../components/cache");
 
-const schoolListOptions = { fields: ["mincode", "displayName", "schoolId, closedDate"], fieldToInclude: "closedDate", valueToInclude: null, sortField: "mincode" };
+const schoolListOptions = { fields: ["mincode", "displayName", "schoolId", "closedDate"], fieldToInclude: "closedDate", valueToInclude: null, sortField: "mincode" };
 const districtListOptions = { fields: ["displayName", "districtId","districtNumber", "closedDate"] ,fieldToInclude: "districtStatusCode", valueToInclude: "ACTIVE", sortField: "districtNumber"};
 const authorityListOptions = { fields: ["displayName", "authorityNumber","independentAuthorityId", "closedDate"], sortField: "authorityNumber" };
 const openSchoolListOptions = { fields: [
@@ -129,7 +129,7 @@ async function getAuthorityList(req, res) {
           },
           {
             key: 'closedDate',
-            operation: 'lte',
+            operation: 'gte',
             value: currentDate,
             valueType: 'DATE_TIME',
             condition: 'OR'

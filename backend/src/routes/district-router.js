@@ -8,7 +8,7 @@ const fs = require("fs");
 const path = require("path");
 const { checkToken } = require("../components/auth");
 const { listCache } = require("../components/cache");
-const {filterRemoveByField, getArrayofNonPubliclyAvailableCodes, filterByField,appendMailingAddressDetailsAndRemoveAddresses, rearrangeAndRelabelObjectProperties, addDistrictLabels, normalizeJsonObject, sortJSONByDistrictNumber, removeFieldsByCriteria} = require("../components/utils.js")
+const {filterRemoveByField, filterByExpiryDate, getArrayofNonPubliclyAvailableCodes, filterByField,appendMailingAddressDetailsAndRemoveAddresses, rearrangeAndRelabelObjectProperties, addDistrictLabels, normalizeJsonObject, sortJSONByDistrictNumber, removeFieldsByCriteria} = require("../components/utils.js")
 
 //Batch Routes
 router.get("/all-contacts", checkToken, getAllDistrictContacts);
@@ -109,9 +109,33 @@ function removeContacts(districtDataResponse, nonPublicContactTypeCodes) {
 async function getAllDistrictContacts(req, res) {
   const districtList = await listCache.get("districtlist")
   const contactTypeCodes= await listCache.get("codesList")
-  const url = await `${config.get(
-    "server:instituteAPIURL"
-  )}/institute/district/contact/paginated?pageSize=4000`
+  let currentDate = new Date().toISOString().substring(0, 19)
+    const params = [
+      {
+        condition: null,
+        searchCriteriaList: [
+          {
+            key: 'expiryDate',
+            operation: 'eq',
+            value: null,
+            valueType: 'STRING',
+            condition: 'OR'
+          },
+          {
+            key: 'expiryDate',
+            operation: 'gte',
+            value: currentDate,
+            valueType: 'DATE_TIME',
+            condition: 'OR'
+          }          
+        ]
+      }
+    ];
+    const jsonString = JSON.stringify(params);
+    const encodedParams = encodeURIComponent(jsonString);
+    const url = await `${config.get(
+      "server:instituteAPIURL"
+    )}/institute/district/contact/paginated?pageSize=4000&searchCriteriaList=${encodedParams}`
   try {
     const districtContactResponse = await axios.get(url, {
       headers: { Authorization: `Bearer ${req.accessToken}` },
@@ -127,6 +151,8 @@ async function getAllDistrictContacts(req, res) {
       { property: "phoneNumber", label: "Contact Phone" },
       { property: "phoneExtension", label: "Contact Phone Extension" },
       { property: "email", label: "Contact Email" },
+      { property: "effective", label: "Effective Date" },
+      { property: "expiryDate", label: "Expiry Date" },
     ];
 
     //let content = addDistrictLabels(districtContactResponse.data,districtList);
@@ -244,7 +270,8 @@ async function getDistrict(req, res) {
           value: null,
           valueType: "STRING",
           condition: "AND",
-        },    
+        },   
+         
         {
           key: "facilityTypeCode",
           operation: "neq",
@@ -273,7 +300,9 @@ async function getDistrict(req, res) {
     const districtSchoolsResponse = await axios.get(districtSchoolsUrl, {
       headers: { Authorization: `Bearer ${req.accessToken}` },
     });
+    
     const contactTypeCodes = await getDistrictCodes(req);
+
     const nonPublicContactTypeCodes = getNonPublicContactTypeCodes(contactTypeCodes);
     const districtDataPublic = removeContacts(
       districtDataResponse.data,
@@ -283,6 +312,8 @@ async function getDistrict(req, res) {
       districtDataPublic,
       contactTypeCodes
     );
+    districtDataPublicWithLabels.contacts = filterByExpiryDate(districtDataPublicWithLabels.contacts)
+    
   
     const districtJSON = {
       districtData: districtDataPublicWithLabels,

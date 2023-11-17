@@ -30,7 +30,8 @@ const contactHeaders = [
   { title: 'Last Name', key: 'lastName' },
   { title: 'Phone', key: 'phoneNumber' },
   { title: 'Extension', key: 'phoneExtension' },
-  { title: 'Email', key: 'email' }
+  { title: 'Email', key: 'email' },
+  { title: 'expiryDate', key: 'Expired' }
 ]
 const schoolHeaders = [
   { title: 'School Name', key: 'displayName' },
@@ -155,7 +156,8 @@ onMounted(async () => {
           mailingPostalCode: response.data.districtData?.addresses[0].postal,
           districtPhone: response.data.districtData?.phoneNumber,
           districtFax: response.data.districtData?.faxNumber,
-          website: response.data.districtData?.website
+          website: response.data.districtData?.website,
+          expiryDate: item.expiryDate
         }
       })
     }
