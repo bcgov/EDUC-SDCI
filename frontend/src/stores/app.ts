@@ -187,10 +187,14 @@ export const useAppStore = defineStore('app', {
     getDistrictContactTypeCodeLabel: (state) => {
       return (searchCode: string ) => state.contactTypeCodes.codesList.districtContactTypeCodes.find((contactCode: any) => searchCode === contactCode.districtContactTypeCode)?.label
     },
+    getAuthorityContactTypeCodeLabel: (state) => {
+      return (searchCode: string ) => state.contactTypeCodes.codesList.authorityContactTypeCodes.find((contactCode: any) => searchCode === contactCode.authorityContactTypeCode)?.label
+    },
     getAllDistrictContactTypeCodesLabel: (state) => {
       const sortedTypeCode = state.contactTypeCodes.codesList.districtContactTypeCodes.map((item: any) => item.label).sort();
       return sortedTypeCode;
     },
+    
     getCategoryCodes: (state) => {
       return state.categoryCodes
     },

@@ -30,8 +30,8 @@ const tab = ref(tabOptions.contacts) // Default to contacts tab
 
 const contactHeaders = [
   { title: 'Contact Type', key: 'authorityContactTypeCode' },
-  { title: 'Name', key: 'firstName' },
-  { title: 'Title/Roll', key: 'jobTitle' },
+  { title: 'First Name', key: 'firstName' },
+  { title: 'Last Name', key: 'lastName' },
   { title: 'Phone', key: 'phoneNumber' },
   { title: 'Email', key: 'email' }
 ]
@@ -295,8 +295,8 @@ onMounted(async () => {
               :items="authority.value.authorityData?.contacts"
               :search="contactSearch"
             >
-              <template v-slot:item.firstName="{ item }">
-                {{ item.firstName }} {{ item.lastName }}
+              <template v-slot:item.authorityContactTypeCode="{ item }">
+                {{ appStore.getAuthorityContactTypeCodeLabel(item.authorityContactTypeCode) }}
               </template>
 
               <template v-slot:item.email="{ item }">
