@@ -192,6 +192,7 @@ function goToDistrict() {
             </v-row>
             <v-row no-gutters class="mt-0 mb-1">
               <a
+                v-if="schoolData.value.schoolCategoryCode == 'PUBLIC'"
                 id="district-link"
                 :href="`/district/${useSanitizeURL(
                   String(districtInfo.value?.districtNumber)
