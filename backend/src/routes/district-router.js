@@ -8,7 +8,7 @@ const fs = require("fs");
 const path = require("path");
 const { checkToken } = require("../components/auth");
 const { listCache } = require("../components/cache");
-const {getArrayofNonPubliclyAvailableCodes, filterByField,appendMailingAddressDetailsAndRemoveAddresses, rearrangeAndRelabelObjectProperties, addDistrictLabels, normalizeJsonObject, sortJSONByDistrictNumber} = require("../components/utils.js")
+const {filterRemoveByField, getArrayofNonPubliclyAvailableCodes, filterByField,appendMailingAddressDetailsAndRemoveAddresses, rearrangeAndRelabelObjectProperties, addDistrictLabels, normalizeJsonObject, sortJSONByDistrictNumber, removeFieldsByCriteria} = require("../components/utils.js")
 
 //Batch Routes
 router.get("/all-contacts", checkToken, getAllDistrictContacts);
@@ -143,10 +143,11 @@ async function getAllDistrictContacts(req, res) {
       array[index] = rearrangedElement;
     });
     let sortedData = sortJSONByDistrictNumber(filteredData)
+    const validDistricts = filterRemoveByField(sortedData,"District Number", ["098","102","103"])
 
     
     
-    res.json(sortedData);
+    res.json(validDistricts);
     //res.json(districtContactsReorderedAndRelabeled );
   } catch (e) {
     log.error("getData Error", e.response ? e.response.status : e.message);
@@ -214,8 +215,8 @@ async function getAllDistrictMailing(req, res) {
       array[index] = rearrangedElement;
     });
     const contentByDistrict = sortJSONByDistrictNumber(content)
-
-    res.json(contentByDistrict);
+    const validDistricts = filterRemoveByField(contentByDistrict,"District Number", ["098","102","103"])
+    res.json(validDistricts);
     //res.json(districtContactsReorderedAndRelabeled );
   } catch (e) {
     log.error("getData Error", e.response ? e.response.status : e.message);

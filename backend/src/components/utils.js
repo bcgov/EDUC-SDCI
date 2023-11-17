@@ -235,6 +235,9 @@ function addDistrictLabels(jsonData, districtList) {
       return item;
     });
   }
+  function filterRemoveByField(data, field, valuesToExclude) {
+    return data.filter(item => !valuesToExclude.includes(item[field]));
+  }
   function filterByField(jsonArray, fieldName, stringsToRemove) {
     // Filter the array based on the condition
     const filteredArray = jsonArray.filter(item => {
@@ -350,4 +353,4 @@ function addDistrictLabels(jsonData, districtList) {
         return school;
     });
 }
-  module.exports = {sortByProperty,getArrayofNonPubliclyAvailableCodes,filterByField,appendMailingAddressDetailsAndRemoveAddresses,sortJSONBySchoolCode,sortJSONByDistrictNumber,normalizeJsonObject, removeFieldsByCriteria, createList, isSafeFilePath,isAllowedSchoolCategory, addDistrictLabels, districtNumberSort, createSchoolCache, formatGrades, rearrangeAndRelabelObjectProperties};
+  module.exports = {filterRemoveByField, sortByProperty,getArrayofNonPubliclyAvailableCodes,filterByField,appendMailingAddressDetailsAndRemoveAddresses,sortJSONBySchoolCode,sortJSONByDistrictNumber,normalizeJsonObject, removeFieldsByCriteria, createList, isSafeFilePath,isAllowedSchoolCategory, addDistrictLabels, districtNumberSort, createSchoolCache, formatGrades, rearrangeAndRelabelObjectProperties};
