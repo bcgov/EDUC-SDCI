@@ -105,7 +105,17 @@ export const useAppStore = defineStore('app', {
     setCodes(): void {
       // set category codes
       InstituteService.getCategoryCodes().then((response) => {
-        this.categoryCodes = response.data
+        const currentDate: Date = new Date()
+        this.categoryCodes = response.data?.filter((item: any) => {
+          const effectiveDate: Date = new Date(item.effectiveDate);
+          const expiryDate: Date = new Date(item.expiryDate);
+          return expiryDate >= currentDate && effectiveDate <= currentDate;
+        })
+         //sort by display order
+        this.categoryCodes?.sort((a: any, b: any) => {
+          return a.displayOrder - b.displayOrder
+        })
+        console.log(this.categoryCodes)
       }).catch((error) => {
         console.error(error)
       })
@@ -194,7 +204,7 @@ export const useAppStore = defineStore('app', {
       const sortedTypeCode = state.contactTypeCodes.codesList.districtContactTypeCodes.map((item: any) => item.label).sort();
       return sortedTypeCode;
     },
-    
+
     getCategoryCodes: (state) => {
       return state.categoryCodes
     },
