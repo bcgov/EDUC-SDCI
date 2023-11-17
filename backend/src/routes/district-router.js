@@ -137,6 +137,7 @@ async function getAllDistrictContacts(req, res) {
       "server:instituteAPIURL"
     )}/institute/district/contact/paginated?pageSize=4000&searchCriteriaList=${encodedParams}`
   try {
+    
     const districtContactResponse = await axios.get(url, {
       headers: { Authorization: `Bearer ${req.accessToken}` },
     });
@@ -169,16 +170,12 @@ async function getAllDistrictContacts(req, res) {
     });
     let sortedData = sortJSONByDistrictNumber(filteredData)
     const validDistricts = filterRemoveByField(sortedData,"District Number", ["098","102","103"])
-
-    
-    
     res.json(validDistricts);
     //res.json(districtContactsReorderedAndRelabeled );
   } catch (e) {
     log.error("getData Error", e.response ? e.response.status : e.message);
   }
 }
-
 
 async function getAllDistrictMailing(req, res) {
   const districtList = await listCache.get("districtlist")
@@ -201,9 +198,7 @@ async function getAllDistrictMailing(req, res) {
     { property: "physicalCountryCode", label: "Courier Country" },    
     { property: "website", label: "Web Address" },
     { property: "phoneNumber", label: "Phone" },
-    { property: "faxNumber", label: "Fax" },
-    
-    
+    { property: "faxNumber", label: "Fax" },   
   ];
 
  const params = [
@@ -291,7 +286,7 @@ async function getDistrict(req, res) {
   const districtSchoolsUrl = `${config.get(
     "server:instituteAPIURL"
   )}/institute/school/paginated?pageNumber=0&pageSize=500&searchCriteriaList=${encodedParams}`;
-
+  
   try {
     const districtDataResponse = await axios.get(url, {
       headers: { Authorization: `Bearer ${req.accessToken}` },

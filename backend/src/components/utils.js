@@ -239,7 +239,18 @@ function addDistrictLabels(jsonData, districtList) {
     return data.filter(item => !valuesToExclude.includes(item[field]));
   }
 
-
+  function filterByPubliclyAvailableCodes(jsonArray, fieldName, publicCodes) {
+    // Filter the array based on the condition
+    const filteredArray = jsonArray.filter(item => {
+      // Extract the field value (or use an empty string if the field is not present)
+      const fieldValue = item[fieldName] || '';
+  
+      // Check if the fieldValue exactly matches any string from the stringsToRemove array
+      return publicCodes.includes(fieldValue);
+    });
+  
+    return filteredArray;
+  }
   function filterByField(jsonArray, fieldName, stringsToRemove) {
     // Filter the array based on the condition
     const filteredArray = jsonArray.filter(item => {
@@ -257,7 +268,9 @@ function addDistrictLabels(jsonData, districtList) {
   
     return data.filter(item => {
       const expiryDate = item.expiryDate ? new Date(item.expiryDate) : null;
-      return expiryDate === null || currentDate < expiryDate;
+      const effectiveDate = item.effectiveDate ? new Date(item.effectiveDate) : null;
+   
+      return expiryDate === null && currentDate > effectiveDate || currentDate < expiryDate && currentDate > effectiveDate ;
     });
   }
   function getArrayofNonPubliclyAvailableCodes(codes, field) {
@@ -271,6 +284,18 @@ function addDistrictLabels(jsonData, districtList) {
       .map(item => item[field]);
   
     return nonPubliclyAvailableCodes;
+  }
+  function getArrayofPubliclyAvailableCodes(codes, field) {
+    if (!Array.isArray(codes)) {
+      throw new Error('Invalid input. Expecting an array of objects.');
+    }
+  
+    // Filter out objects where "publiclyAvailable" is true
+    const publiclyAvailableCodes = codes
+      .filter(item => item && item.publiclyAvailable === true)
+      .map(item => item[field]);
+  
+    return publiclyAvailableCodes;
   }
   function createSchoolCache(schoolData, schoolGrades) {
     // Preload convertedGrades with schoolGrades.schoolGradeCode and set the value to "N"
@@ -363,4 +388,4 @@ function addDistrictLabels(jsonData, districtList) {
         return school;
     });
 }
-  module.exports = {filterByExpiryDate, filterRemoveByField, sortByProperty,getArrayofNonPubliclyAvailableCodes,filterByField,appendMailingAddressDetailsAndRemoveAddresses,sortJSONBySchoolCode,sortJSONByDistrictNumber,normalizeJsonObject, removeFieldsByCriteria, createList, isSafeFilePath,isAllowedSchoolCategory, addDistrictLabels, districtNumberSort, createSchoolCache, formatGrades, rearrangeAndRelabelObjectProperties};
+  module.exports = {filterByPubliclyAvailableCodes, getArrayofPubliclyAvailableCodes, filterByExpiryDate, filterRemoveByField, sortByProperty,getArrayofNonPubliclyAvailableCodes,filterByField,appendMailingAddressDetailsAndRemoveAddresses,sortJSONBySchoolCode,sortJSONByDistrictNumber,normalizeJsonObject, removeFieldsByCriteria, createList, isSafeFilePath,isAllowedSchoolCategory, addDistrictLabels, districtNumberSort, createSchoolCache, formatGrades, rearrangeAndRelabelObjectProperties};

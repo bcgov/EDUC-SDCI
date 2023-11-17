@@ -4,7 +4,7 @@ const log = require("../components/logger");
 const config = require("../config/index");
 const axios = require("axios");
 
-const { filterByField, getArrayofNonPubliclyAvailableCodes, normalizeJsonObject, createSchoolCache, addDistrictLabels, formatGrades, sortJSONBySchoolCode, rearrangeAndRelabelObjectProperties} = require("../components/utils");
+const { filterByField, filterByExpiryDate, getArrayofPubliclyAvailableCodes, normalizeJsonObject, createSchoolCache, addDistrictLabels, formatGrades, sortJSONBySchoolCode, rearrangeAndRelabelObjectProperties, filterByPubliclyAvailableCodes} = require("../components/utils");
 const { checkToken } = require("../components/auth");
 const { schoolCache, listCache, codeCache } = require("../components/cache");
 
@@ -27,7 +27,9 @@ async function getSchool(req, res) {
         const schoolData = response.data;
         const includedFields = ['schoolContactTypeCode', 'label', 'description'];
         schoolData.contacts = normalizeJsonObject(schoolData.contacts, contactTypeCodes.codesList.schoolContactTypeCodes, 'schoolContactTypeCode', (info) => info.publiclyAvailable === true, includedFields);
-        schoolData.contacts = filterByField(schoolData.contacts, "schoolContactTypeCode", ["STUDREGIS"])
+        
+        schoolData.contacts = filterByPubliclyAvailableCodes(schoolData.contacts, "schoolContactTypeCode", getArrayofPubliclyAvailableCodes(contactTypeCodes.codesList.schoolContactTypeCodes, "schoolContactTypeCode"))
+        schoolData.contacts = filterByExpiryDate(schoolData.contacts)
         const formattedGrades = formatGrades(schoolData.grades, schoolGrades);
         const schoolWithFormattedGrades = { ...schoolData, ...formattedGrades };
         res.json(schoolWithFormattedGrades);
