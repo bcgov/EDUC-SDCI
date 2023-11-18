@@ -19,12 +19,13 @@ const filteredContacts = ref<any>([])
 const filteredAddresses = reactive<any>({ value: {} })
 const filteredGradesLabels = reactive<any>([])
 const headers = [
+  { title: 'Contact Type', key: 'label' },
   { title: 'Role', key: 'jobTitle' },
   { title: 'First Name', key: 'firstName' },
   { title: 'Last Name', key: 'lastName' },
   { title: 'Phone', key: 'phoneNumber' },
   { title: 'Extension', key: 'phoneExtension' },
-  { title: 'Fax', key: 'faxNumber' },
+  { title: 'Alternate Phone', key: 'alternatePhoneNumber' },
   { title: 'Email', key: 'email' }
 ]
 const schoolData = reactive({ value: {} as School })
@@ -43,27 +44,28 @@ const downloadCSV = () => {
 }
 const transformContactForDownload = (inputData: any): {} => {
   return inputData.map((item: any) => ({
-    districtNumber: item.districtNumber,
-    mincode: item.mincode,
-    displayName: item.displayName,
-    addressLine1: item.addressLine1,
-    city: item.city,
-    provinceCode: item.provinceCode,
+    'District Number': item.districtNumber,
+    Mincode: item.mincode,
+    'Display Name': item.displayName,
+    'Address Line 1': item.addressLine1,
+    City: item.city,
+    'Province Code': item.provinceCode,
     Postal: item.postal,
-    schoolEmail: item.schoolEmail,
-    jobTitle: item.jobTitle,
-    firstName: item.firstName,
-    lastName: item.lastName,
-    facilityTypeCode: item.facilityTypeCode,
-    schoolCategoryCode: item.schoolCategoryCode,
-    phoneNumber: item.phoneNumber,
-    phoneExtension: item.phoneExtension,
-    alternatePhoneNumber: item.alternatePhoneNumber,
-    alternatePhoneExtension: item.alternatePhoneExtension,
-    email: item.email,
-    ElementaryUngraded: item.ELEMUNGR,
-    SecondaryUngraded: item.SECUNGR,
-    KindergartenHalf: item.KINDHALF,
+    'School Email': item.schoolEmail,
+    'Job Title': item.jobTitle,
+    Role: item.jobTitle,
+    'First Name': item.firstName,
+    'Last Name': item.lastName,
+    'Facility Type Code': item.facilityTypeCode,
+    'School Category Code': item.schoolCategoryCode,
+    'Phone Number': item.phoneNumber,
+    'Phone Extension': item.phoneExtension,
+    'Alternate Phone Number': item.alternatePhoneNumber,
+    'Alternate Phone Extension': item.alternatePhoneExtension,
+    Email: item.email,
+    'Elementary Ungraded': item.ELEMUNGR,
+    'Secondary Ungraded': item.SECUNGR,
+    'Kindergarten Half': item.KINDHALF,
     KindergartenFull: item.KINDFULL,
     GRADE01: item.GRADE01,
     GRADE02: item.GRADE02,
@@ -115,6 +117,7 @@ onBeforeMount(async () => {
     }
     //setting school contacts
     if (response.data) {
+      console.log(response.data)
       if (response.data.contacts.length > 0) {
         for (let i = 0; i < response.data.contacts.length; i++) {
           filteredContacts.value = response.data.contacts
