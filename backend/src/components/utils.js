@@ -26,6 +26,7 @@ const ALLOWED_FILENAMES = new Set([
   'offshoreschoolcontacts',
   'independentschoolcontacts',
   'allschoolcontacts',
+  'allschoolmailing',
   'authoritycontacts',
   'authoritymailing',
   'offshoreschoolrepresentatives'
@@ -143,7 +144,6 @@ function addDistrictLabels(jsonData, districtList) {
         if (district) {
           dataItem.districtNumber = district.districtNumber;
           dataItem.districtName = district.displayName;
-         
         }
       });
     }
@@ -238,6 +238,9 @@ function addDistrictLabels(jsonData, districtList) {
   function filterRemoveByField(data, field, valuesToExclude) {
     return data.filter(item => !valuesToExclude.includes(item[field]));
   }
+  function filterIncludeByField(data, field, valuesToInclude) {
+    return data.filter(item => valuesToInclude.includes(item[field]));
+  }  
 
   function filterByPubliclyAvailableCodes(jsonArray, fieldName, publicCodes) {
     // Filter the array based on the condition
@@ -263,6 +266,7 @@ function addDistrictLabels(jsonData, districtList) {
   
     return filteredArray;
   }
+  
   function filterByExpiryDate(data) {
     const currentDate = new Date();
   
@@ -388,4 +392,4 @@ function addDistrictLabels(jsonData, districtList) {
         return school;
     });
 }
-  module.exports = {filterByPubliclyAvailableCodes, getArrayofPubliclyAvailableCodes, filterByExpiryDate, filterRemoveByField, sortByProperty,getArrayofNonPubliclyAvailableCodes,filterByField,appendMailingAddressDetailsAndRemoveAddresses,sortJSONBySchoolCode,sortJSONByDistrictNumber,normalizeJsonObject, removeFieldsByCriteria, createList, isSafeFilePath,isAllowedSchoolCategory, addDistrictLabels, districtNumberSort, createSchoolCache, formatGrades, rearrangeAndRelabelObjectProperties};
+  module.exports = {filterByPubliclyAvailableCodes, getArrayofPubliclyAvailableCodes, filterByExpiryDate, filterRemoveByField,filterIncludeByField, sortByProperty,getArrayofNonPubliclyAvailableCodes,filterByField,appendMailingAddressDetailsAndRemoveAddresses,sortJSONBySchoolCode,sortJSONByDistrictNumber,normalizeJsonObject, removeFieldsByCriteria, createList, isSafeFilePath,isAllowedSchoolCategory, addDistrictLabels, districtNumberSort, createSchoolCache, formatGrades, rearrangeAndRelabelObjectProperties};

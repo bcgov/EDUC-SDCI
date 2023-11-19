@@ -8,7 +8,7 @@ const fs = require("fs");
 const path = require("path");
 const { checkToken } = require("../components/auth");
 const { listCache } = require("../components/cache");
-const {filterRemoveByField, filterByExpiryDate, getArrayofNonPubliclyAvailableCodes, filterByField,appendMailingAddressDetailsAndRemoveAddresses, rearrangeAndRelabelObjectProperties, addDistrictLabels, normalizeJsonObject, sortJSONByDistrictNumber, removeFieldsByCriteria} = require("../components/utils.js")
+const {getArrayofPubliclyAvailableCodes,filterRemoveByField, filterByExpiryDate, getArrayofNonPubliclyAvailableCodes, filterByField,appendMailingAddressDetailsAndRemoveAddresses, rearrangeAndRelabelObjectProperties, addDistrictLabels, normalizeJsonObject, sortJSONByDistrictNumber, removeFieldsByCriteria, filterByPubliclyAvailableCodes} = require("../components/utils.js")
 
 //Batch Routes
 router.get("/all-contacts", checkToken, getAllDistrictContacts);
@@ -112,7 +112,7 @@ async function getAllDistrictContacts(req, res) {
   let currentDate = new Date().toISOString().substring(0, 19)
     const params = [
       {
-        condition: null,
+        condition: 'AND',
         searchCriteriaList: [
           {
             key: 'expiryDate',
@@ -128,6 +128,18 @@ async function getAllDistrictContacts(req, res) {
             valueType: 'DATE_TIME',
             condition: 'OR'
           }          
+        ]
+      },
+      {
+        condition: 'AND',
+        searchCriteriaList: [
+          {
+            key: 'effectiveDate',
+            operation: 'lte',
+            value: currentDate,
+            valueType: 'DATE_TIME',
+            condition: 'AND'
+          }
         ]
       }
     ];
@@ -148,11 +160,13 @@ async function getAllDistrictContacts(req, res) {
       { property: "firstName", label: "Contact First Name" },
       { property: "lastName", label: "Contact Last name" },
       { property: "jobTitle", label: "Position Title" },
+      { property: "label", label: "Contact Type" },
       { property: "phoneNumber", label: "Contact Phone" },
       { property: "phoneExtension", label: "Contact Phone Extension" },
       { property: "email", label: "Contact Email" },
       { property: "effective", label: "Effective Date" },
       { property: "expiryDate", label: "Expiry Date" },
+      { property: "districtContactTypeCode", label: "CONTACT TYPE CODE" },
     ];
 
     //let content = addDistrictLabels(districtContactResponse.data,districtList);
@@ -160,9 +174,9 @@ async function getAllDistrictContacts(req, res) {
     const includedFields = ['createUser', 'updateUser', 'districtContactTypeCode', 'label', 'description'];
     let content = normalizeJsonObject(districtContactResponse.data.content, contactTypeCodes.codesList.districtContactTypeCodes, 'districtContactTypeCode', (info) => info.publiclyAvailable === true, includedFields);
     content = normalizeJsonObject(content, districtList, 'districtId', null, ['displayName', 'districtNumber']);   
-    //console.log(contactTypeCodes.codesList.districtContactTypeCodes)
-    //console.log(getArrayofNonPubliclyAvailableCodes(contactTypeCodes.codesList.districtContactTypeCodes, "districtContactTypeCode"))
-    //let filteredData = filterByField(content, 'districtContactTypeCode', getArrayofNonPubliclyAvailableCodes(contactTypeCodes.codesList.districtContactTypeCodes, "districtContactTypeCode"));
+    content = filterByPubliclyAvailableCodes(content,"districtContactTypeCode",getArrayofPubliclyAvailableCodes(contactTypeCodes.codesList.districtContactTypeCodes, "districtContactTypeCode"))
+    content = filterByExpiryDate(content)
+    
     let filteredData =  filterByField(content, 'districtNumber', ['']);
     filteredData.forEach((currentElement, index, array) => {
       const rearrangedElement = rearrangeAndRelabelObjectProperties(currentElement, propertyOrder);
@@ -265,7 +279,13 @@ async function getDistrict(req, res) {
           valueType: "STRING",
           condition: "AND",
         },   
-         
+        {
+          key: "schoolCategoryCode",
+          operation: "neq",
+          value: "FED_BAND",
+          valueType: "STRING",
+          condition: "AND",
+        },            
         {
           key: "facilityTypeCode",
           operation: "neq",
@@ -296,7 +316,7 @@ async function getDistrict(req, res) {
     });
     
     const contactTypeCodes = await getDistrictCodes(req);
-
+    const districtContactCodeTypes = await listCache.get("codesList")
     const nonPublicContactTypeCodes = getNonPublicContactTypeCodes(contactTypeCodes);
     const districtDataPublic = removeContacts(
       districtDataResponse.data,
@@ -306,8 +326,10 @@ async function getDistrict(req, res) {
       districtDataPublic,
       contactTypeCodes
     );
+    districtDataPublicWithLabels.contacts = filterByPubliclyAvailableCodes(districtDataPublicWithLabels.contacts,"districtContactTypeCode",getArrayofPubliclyAvailableCodes(districtContactCodeTypes.codesList.districtContactTypeCodes, "districtContactTypeCode"))
     districtDataPublicWithLabels.contacts = filterByExpiryDate(districtDataPublicWithLabels.contacts)
     
+  
   
     const districtJSON = {
       districtData: districtDataPublicWithLabels,
