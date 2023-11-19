@@ -10,9 +10,36 @@ const path = require('path');
 const {isSafeFilePath} = require("../components/utils")
 const { listCache } = require("../components/cache");
 
+
 const FILE_STORAGE_DIR = path.join(__dirname, '../..', 'public');
 
 router.get('/csv/*', checkToken, getDownload, addDistrictLabels, createCSVFile, getCSVDownload);
+router.get('/clear-files/:token', clearCSVFiles);
+
+async function clearCSVFiles(req, res) {
+  try {
+    const providedToken = req.params.token;
+    const configuredToken = config.get('server:clearFilesToken');
+
+    if (providedToken !== configuredToken) {
+      return res.status(403).send('Invalid token');
+    }
+    const directoryPath = FILE_STORAGE_DIR ;
+    // Read all files in the directory
+    fs.readdirSync(directoryPath).forEach((file) => {
+      const filePath = path.join(directoryPath, file);
+  
+      // Delete each file
+      fs.unlinkSync(filePath);
+    });
+  
+    res.status(200).send('All files in the directory deleted successfully.');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+}
+
 
 async function createCSVFile(req,res, next){
     try {

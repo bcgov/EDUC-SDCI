@@ -31,7 +31,7 @@ function downloadAllSchoolsMailing() {
             <v-row class="pt-2">
               <v-col class="py-1 my-0"
                 ><v-btn
-                  href="/api/v1/download/csv/school/all/PUBLIC?filepath=publicschoolcontacts"
+                  href="/api/v1/download/csv/school/all-contacts/PUBLIC?filepath=publicschoolcontacts"
                   block
                   class="v-btn-align-left text-none text-subtitle-1 my-1"
                   @click="dialog = false"
@@ -43,7 +43,7 @@ function downloadAllSchoolsMailing() {
             <v-row>
               <v-col class="py-1 my-0">
                 <v-btn
-                  href="/api/v1/download/csv/school/all/INDEPEND?filepath=independentschoolcontacts"
+                  href="/api/v1/download/csv/school/all-contacts/INDEPEND?filepath=independentschoolcontacts"
                   block
                   style="text-align: left"
                   class="v-btn-align-left text-left text-none text-subtitle-1 my-1"
@@ -57,7 +57,7 @@ function downloadAllSchoolsMailing() {
             <v-row>
               <v-col class="py-1 my-0">
                 <v-btn
-                  href="/api/v1/download/csv/school/all/ALL?filepath=allschoolcontacts"
+                  href="/api/v1/download/csv/school/all-contacts/ALL?filepath=allschoolcontacts"
                   block
                   class="v-btn-align-left text-left text-none text-subtitle-1 my-1"
                   @click="dialog = false"
@@ -69,10 +69,11 @@ function downloadAllSchoolsMailing() {
             <v-row>
               <v-col class="py-1 my-0">
                 <v-btn
+                  href="/api/v1/download/csv/school/all-contacts/ALLMAILING?filepath=allschoolmailing"
                   block
-                  class="v-btn-align-left text-none text-subtitle-1 my-1"
-                  @click="downloadAllSchoolsMailing"
-                  ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Mailing for
+                  class="v-btn-align-left text-left text-none text-subtitle-1 my-1"
+                  @click="dialog = false"
+                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template> Mailing for
                   All Schools (CSV)</v-btn
                 >
               </v-col>
