@@ -165,8 +165,7 @@ async function getAllDistrictContacts(req, res) {
       { property: "phoneExtension", label: "Contact Phone Extension" },
       { property: "email", label: "Contact Email" },
       { property: "effective", label: "Effective Date" },
-      { property: "expiryDate", label: "Expiry Date" },
-      { property: "districtContactTypeCode", label: "CONTACT TYPE CODE" },
+      { property: "expiryDate", label: "Expiry Date" }
     ];
 
     //let content = addDistrictLabels(districtContactResponse.data,districtList);
