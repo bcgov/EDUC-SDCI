@@ -36,7 +36,153 @@ router.get("/school/list", checkToken, getSchoolList);
 router.get("/authority/list", checkToken, getAuthorityList);
 router.get("/district/list", checkToken, getDistrictList);
 router.get("/district/contact/*", checkToken, getDistrictContactsAPI);
+router.get("/create-cache", checkToken, createCache);
 router.get("/*", checkToken, getInstituteAPI);
+async function createCache(req, res) {
+
+  if (!listCache.has("categoryCodes")) {
+    //const codes = [];
+
+    try {
+      const categoryCodesResponse = await axios.get(
+        `${config.get(
+          "server:instituteAPIURL"
+        )}/institute/category-codes`,
+        {
+          headers: { Authorization: `Bearer ${req.accessToken}` },
+        }
+      );
+      listCache.set("categoryCodes", categoryCodesResponse.data);
+    } catch (error) {
+      const statusCode = error.response ? error.response.status : 500;
+      log.error("Category Code Caching Error", statusCode, error.message);
+      res.status(statusCode).send(error.message);
+    }
+  } 
+  
+  if (!listCache.has("facilityCodes")) {
+    //const codes = [];
+
+    try {
+      const facilityCodesResponse = await axios.get(
+        `${config.get(
+          "server:instituteAPIURL"
+        )}/institute/facility-codes`,
+        {
+          headers: { Authorization: `Bearer ${req.accessToken}` },
+        }
+      );
+      listCache.set("facilityCodes", facilityCodesResponse.data);
+    } catch (error) {
+      const statusCode = error.response ? error.response.status : 500;
+      log.error("Faility Code Caching Error", statusCode, error.message);
+      res.status(statusCode).send(error.message);
+    }
+  } 
+  if (!listCache.has("districtAddresses")) {
+    //const codes = [];
+
+    try {
+      const districtsResponse = await axios.get(
+        `${config.get("server:instituteAPIURL")}/institute/district/paginated?pageSize=200`,
+        {
+          headers: { Authorization: `Bearer ${req.accessToken}` },
+        }
+      );
+      
+      districtsResponse.data.content.forEach((district) => {
+        district.addresses.forEach((address) => {
+          
+          if (address.addressTypeCode === "MAILING") {
+            Object.keys(address).forEach((field) => {
+              // Exclude the specified fields
+              if (![
+                "createUser",
+                "updateUser",
+                "createDate",
+                "updateDate",
+                "schoolAddressId",
+                "schoolId",
+                "addressTypeCode"
+              ].includes(field)) {
+                district[`mailing_${field}`] = address[field];
+              }
+            });
+          } else if (address.addressTypeCode === "PHYSICAL") {
+            Object.keys(address).forEach((field) => {
+              if (![
+                "createUser",
+                "updateUser",
+                "createDate",
+                "updateDate",
+                "schoolAddressId",
+                "schoolId",
+                "addressTypeCode"
+              ].includes(field)) {
+                district[`physical_${field}`] = address[field];
+              }
+            });
+          }
+        });
+      });
+      listCache.set("districtAddresses", districtsResponse.data.content);
+    } catch (error) {
+      const statusCode = error.response ? error.response.status : 500;
+      log.error("District Code Caching Error", statusCode, error.message);
+      res.status(statusCode).send(error.message);
+    }
+  } 
+
+
+  if (await !listCache.has("codesList")) {
+    //const codes = [];
+
+    try {
+      const authorityContactTypeCodesResponse = await axios.get(
+        `${config.get(
+          "server:instituteAPIURL"
+        )}/institute/authority-contact-type-codes`,
+        {
+          headers: { Authorization: `Bearer ${req.accessToken}` },
+        }
+      );
+
+      const districtContactTypeCodesResponse = await axios.get(
+        `${config.get(
+          "server:instituteAPIURL"
+        )}/institute/district-contact-type-codes`,
+        {
+          headers: { Authorization: `Bearer ${req.accessToken}` },
+        }
+      );
+
+      const schoolContactTypeCodesResponse = await axios.get(
+        `${config.get(
+          "server:instituteAPIURL"
+        )}/institute/school-contact-type-codes`,
+        {
+          headers: { Authorization: `Bearer ${req.accessToken}` },
+        }
+      );
+
+      const codes = {
+        authorityContactTypeCodes: removeFieldsByCriteria(authorityContactTypeCodesResponse.data, [{ fieldToRemove: "publiclyAvailable", value: false }]),
+        districtContactTypeCodes: removeFieldsByCriteria(districtContactTypeCodesResponse.data,[{ fieldToRemove: "publiclyAvailable", value: false }]),
+        schoolContactTypeCodes: removeFieldsByCriteria(schoolContactTypeCodesResponse.data,[{ fieldToRemove: "publiclyAvailable", value: false }]),
+      };
+      res.json(codes);
+      listCache.set("codesList", { codesList: codes });
+    } catch (error) {
+      const statusCode = error.response ? error.response.status : 500;
+      log.error("getSchoolsList Error", statusCode, error.message);
+      res.status(statusCode).send(error.message);
+    }
+    listCache.set("codesList", codes);
+  }
+  res.status(200).json({ success: true });
+
+}
+
 
 async function getContactTypeCodes(req, res) {
   if (await !listCache.has("codesList")) {

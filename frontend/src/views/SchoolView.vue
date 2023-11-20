@@ -19,7 +19,7 @@ const filteredContacts = ref<any>([])
 const filteredAddresses = reactive<any>({ value: {} })
 const filteredGradesLabels = reactive<any>([])
 const headers = [
-  { title: 'Contact Type', key: 'label' },
+  { title: 'Contact Type', key: 'schoolContactTypeCode_label' },
   { title: 'Role', key: 'jobTitle' },
   { title: 'First Name', key: 'firstName' },
   { title: 'Last Name', key: 'lastName' },
@@ -57,7 +57,7 @@ const transformContactForDownload = (inputData: any): {} => {
     'First Name': item.firstName,
     'Last Name': item.lastName,
     'Facility Type Code': item.facilityTypeCode,
-    'School Category Code': item.schoolCategoryCode,
+    'School Category Code': item.schoolContactTypeCode_label,
     'Phone Number': item.phoneNumber,
     'Phone Extension': item.phoneExtension,
     'Alternate Phone Number': item.alternatePhoneNumber,
@@ -117,7 +117,6 @@ onBeforeMount(async () => {
     }
     //setting school contacts
     if (response.data) {
-      console.log(response.data)
       if (response.data.contacts.length > 0) {
         for (let i = 0; i < response.data.contacts.length; i++) {
           filteredContacts.value = response.data.contacts

@@ -104,6 +104,11 @@ export const useAppStore = defineStore('app', {
 
     },
     setCodes(): void {
+      InstituteService.loadCache().then((response) => {
+          console.log(response)
+      }).catch((error) => {
+        console.error("ERRPR LOADING CACHE" + error)
+      })
       // set category codes
       InstituteService.getCategoryCodes().then((response) => {
         const currentDate: Date = new Date()

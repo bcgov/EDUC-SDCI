@@ -25,7 +25,8 @@ async function getSchool(req, res) {
         //const openSchoolList = createList(response.data, openSchoolListOptions);
         const schoolGrades = [{"schoolGradeCode":"KINDHALF","label":"Kindergarten Half","description":"Kindergarten half","displayOrder":1,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"KINDFULL","label":"Kindergarten Full","description":"Kindergarten full","displayOrder":2,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"GRADE01","label":"Grade 1","description":"First grade","displayOrder":3,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"GRADE02","label":"Grade 2","description":"Second grade","displayOrder":4,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"GRADE03","label":"Grade 3","description":"Third grade","displayOrder":5,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"GRADE04","label":"Grade 4","description":"Fourth grade","displayOrder":6,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"GRADE05","label":"Grade 5","description":"Fifth grade","displayOrder":7,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"GRADE06","label":"Grade 6","description":"Sixth grade","displayOrder":8,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"GRADE07","label":"Grade 7","description":"Seventh grade","displayOrder":9,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"ELEMUNGR","label":"Elementary Ungraded","description":"Elementary ungraded","displayOrder":10,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"GRADE08","label":"Grade 8","description":"Eighth grade","displayOrder":11,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"GRADE09","label":"Grade 9","description":"Ninth grade","displayOrder":12,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"GRADE10","label":"Grade 10","description":"Tenth grade","displayOrder":13,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"GRADE11","label":"Grade 11","description":"Eleventh grade","displayOrder":14,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"GRADE12","label":"Grade 12","description":"Twelfth grade","displayOrder":15,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"},{"schoolGradeCode":"SECUNGR","label":"Secondary Ungraded","description":"Secondary ungraded","displayOrder":16,"effectiveDate":"2020-01-01T00:00:00","expiryDate":"2099-12-31T00:00:00"}]
         const schoolData = response.data;
-        const includedFields = ['schoolContactTypeCode', 'label', 'description'];
+
+        const includedFields = ['label', 'description'];
         schoolData.contacts = normalizeJsonObject(schoolData.contacts, contactTypeCodes.codesList.schoolContactTypeCodes, 'schoolContactTypeCode', (info) => info.publiclyAvailable === true, includedFields);
         
         schoolData.contacts = filterByPubliclyAvailableCodes(schoolData.contacts, "schoolContactTypeCode", getArrayofPubliclyAvailableCodes(contactTypeCodes.codesList.schoolContactTypeCodes, "schoolContactTypeCode"))
@@ -49,6 +50,7 @@ async function getAllSchoolMailing(req, res) {
 }
 async function getAllSchools(req, res) {
   const {schoolCategory} = req.params
+  const contactTypeCodes= await listCache.get("codesList")
   let params = [];
   
   if (await !schoolCache.has("openschoollist" + schoolCategory)) {
@@ -106,28 +108,24 @@ async function getAllSchools(req, res) {
           ],
         }
       ];
-  
-    
-     
       const jsonString = JSON.stringify(params);
       const encodedParams = encodeURIComponent(jsonString);
       const districtList = await listCache.get("districtlist")
       const schoolGrades =  await codeCache.get("gradelist");
-      
+      const schoolCategoryCodes =  await listCache.get("categoryCodes");
+      const facilityCodes =  await listCache.get("facilityCodes");
       const url = `${config.get(
         "server:instituteAPIURL"
-      )}/institute/school/paginated?pageSize=3000&searchCriteriaList=${encodedParams}`;
+      )}/institute/school/paginated?pageSize=4000&searchCriteriaList=${encodedParams}`;
       axios
         .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
         .then((response) => {
       
           const propertyOrder = [
             
-            { property: "displayName", label: "School Name" },
-            { property: "mincode", label: "School Code" },
-            { property: "districtName", label: "District Name" },
             { property: "districtNumber", label: "District Number" },
-            
+            { property: "mincode", label: "School Code" },
+            { property: "displayName", label: "School Name" },
             { property: "mailing_addressLine1", label: "Address" },
             { property: "mailing_city", label: "City" },
             { property: "mailing_provinceCode", label: "Province" },
@@ -135,7 +133,9 @@ async function getAllSchools(req, res) {
             // { property: "principalTitle", label: "Principal Title" },
             { property: "firstName", label: "Principal First Name" },
             { property: "lastName", label: "Principal Last Name" },
-            { property: "schoolCategoryCode", label: "School Category" },
+            { property: "facilityTypeCode", label: "Type" },
+            { property: "facilityTypeCode_description", label: "Type" },
+            { property: "schoolCategoryCode_description", label: "School Category" },            
             // { property: "gradeRange", label: "Grade Range" },
             // { property: "fundingGroups", label: "Funding Group(s)" },
             { property: "phoneNumber", label: "Phone" },
@@ -178,12 +178,15 @@ async function getAllSchools(req, res) {
         let openSchoolList = sortJSONBySchoolCode(createSchoolCache(openSchoolListWithDistrictLabels.content, schoolGrades));
         let openSchoolMailingList = [...openSchoolList];
         
+        openSchoolList = normalizeJsonObject(openSchoolList, schoolCategoryCodes, 'schoolCategoryCode', null, ['label','description']);
+        openSchoolList = normalizeJsonObject(openSchoolList, facilityCodes, 'facilityTypeCode', null, ['label','description']);
+        
         openSchoolList.forEach((currentElement, index, array) => {
           const rearrangedElement = rearrangeAndRelabelObjectProperties(currentElement, propertyOrder);
           array[index] = rearrangedElement;
         });
         openSchoolList = filterRemoveByField(openSchoolList,"District Number", ["098","102","103", ""])
-
+        
         openSchoolMailingList.forEach((currentElement, index, array) => {
           const rearrangedElement = rearrangeAndRelabelObjectProperties(currentElement, mailingListpropertyOrder);
           array[index] = rearrangedElement;
@@ -192,10 +195,10 @@ async function getAllSchools(req, res) {
           
           
 
-          const openINDEPENDSchoolList = filterIncludeByField(openSchoolList, "School Category", ["INDEPEND"] );
+          const openINDEPENDSchoolList = filterIncludeByField(openSchoolList, "School Category", ["Independent School"] );
           schoolCache.set("openschoollistINDEPEND", openINDEPENDSchoolList);
           
-          const openPUBLICSchoolList = filterIncludeByField(openSchoolList, "School Category", ["PUBLIC"] );
+          const openPUBLICSchoolList = filterIncludeByField(openSchoolList, "School Category", ["Public School"] );
           schoolCache.set("openschoollistPUBLIC", openPUBLICSchoolList);          
           
           schoolCache.set("openschoollistALL", openSchoolList);
@@ -228,3 +231,4 @@ async function getAllSchools(req, res) {
 }
 
 module.exports = router;
+

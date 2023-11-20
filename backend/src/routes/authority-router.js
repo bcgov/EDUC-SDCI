@@ -14,23 +14,6 @@ router.get("/all-mailing/:type", checkToken, getAllAuthorityMailing);
 router.get("/:id", checkToken, getAuthority);
 //router.get("/all-contacts", checkToken, getAllAuthorityContacts);
 
-
-// async function removeItemsFromDistrictDataResponse(response, itemsToRemove) {
-//   if (response && response.data) {
-//     const newData = { ...response.data };
-
-//     if (itemsToRemove && Array.isArray(itemsToRemove)) {
-//       itemsToRemove.forEach(item => {
-//         if (newData[item]) {
-//           delete newData[item];
-//         }
-//       });
-//     }
-
-//     response.data = newData;
-//   }
-// }
-
 async function getAllAuthorityMailing(req, res) {
   //type = OFFSHORE or INDEPENDNT
   const {type} = req.params
@@ -150,9 +133,6 @@ async function getAuthority(req, res) {
     const authoritySchoolsResponse = await axios.get(authoritySchoolsUrl, {
       headers: { Authorization: `Bearer ${req.accessToken}` },
     });
-    // const contactTypeCodes = await getDistrictCodes(req)
-    // const nonPublicContactTypeCodes = getNonPublicContactTypeCodes(contactTypeCodes)
-    // const districtDataPublic =  removeContacts(districtDataResponse.data,nonPublicContactTypeCodes)
     const authorityJSON = {
       authorityData: authorityDataResponse.data,
       authoritySchools: authoritySchoolsResponse.data.content,

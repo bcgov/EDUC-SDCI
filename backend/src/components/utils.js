@@ -217,16 +217,18 @@ function addDistrictLabels(jsonData, districtList) {
       return reorderedObject;
   }
   function normalizeJsonObject(sourceArray, referenceArray, matchKey, condition, includeFields) {
+
     return sourceArray.map((item) => {
       const matchingItem = referenceArray.find(
         (info) => info[matchKey] === item[matchKey] && (!condition || condition(info))
       );
-  
       if (matchingItem) {
         return {
           ...item,
           ...includeFields.reduce((result, field) => {
-            result[field] = matchingItem[field];
+            result[matchKey + "_" + field] = matchingItem[field];
+            
+            
             return result;
           }, {}),
         };

@@ -74,5 +74,8 @@ export default {
   getDistrictContactTypeCodes(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/district-contact-type-codes');
   },
+  loadCache(): Promise<AxiosResponse> {
+    return ApiService.apiAxios.get('/api/v1/institute/create-cache');
+  },
 
 }

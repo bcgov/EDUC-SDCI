@@ -139,23 +139,23 @@ onMounted(async () => {
       })
       filteredContacts.value = contacts.value.map((item: any) => {
         return {
-          districtNumber: response.data.districtData?.districtNumber,
-          displayName: response.data.districtData?.displayName,
-          jobTitle: item.jobTitle,
-          firstName: item.firstName,
-          lastName: item.lastName,
-          phoneNumber: item.phoneNumber,
-          phoneExtension: item.phoneExtension,
-          alternatePhoneNumber: item.alternatePhoneNumber,
-          alternatePhoneExtension: item.alternatePhoneExtension,
-          email: item.email,
-          mailingAddress: response.data.districtData?.addresses[0].addressLine1,
-          mailingCity: response.data.districtData?.addresses[0].city,
-          mailingProvince: response.data.districtData?.addresses[0].provinceCode,
-          mailingPostalCode: response.data.districtData?.addresses[0].postal,
-          districtPhone: response.data.districtData?.phoneNumber,
-          districtFax: response.data.districtData?.faxNumber,
-          website: response.data.districtData?.website
+          'District Number': response.data.districtData?.districtNumber,
+          'District Name': response.data.districtData?.displayName,
+          'Job Title': item.jobTitle,
+          'First Name': item.firstName,
+          'Last Name': item.lastName,
+          'Phone Number': item.phoneNumber,
+          'Phone Extension': item.phoneExtension,
+          'Alternate Phone Number': item.alternatePhoneNumber,
+          'Alternate Phone Extension': item.alternatePhoneExtension,
+          Email: item.email,
+          'Mailing Address': response.data.districtData?.addresses[0].addressLine1,
+          'Mailing City': response.data.districtData?.addresses[0].city,
+          'Mailing Province': response.data.districtData?.addresses[0].provinceCode,
+          'Mailing Postal Code': response.data.districtData?.addresses[0].postal,
+          'District Phone': response.data.districtData?.phoneNumber,
+          'District Fax': response.data.districtData?.faxNumber,
+          Website: response.data.districtData?.website
         }
       })
     }

@@ -109,6 +109,7 @@ function removeContacts(districtDataResponse, nonPublicContactTypeCodes) {
 async function getAllDistrictContacts(req, res) {
   const districtList = await listCache.get("districtlist")
   const contactTypeCodes= await listCache.get("codesList")
+  const districtAddresses = await listCache.get("districtAddresses")
   let currentDate = new Date().toISOString().substring(0, 19)
     const params = [
       {
@@ -154,35 +155,49 @@ async function getAllDistrictContacts(req, res) {
       headers: { Authorization: `Bearer ${req.accessToken}` },
     });
     const propertyOrder = [
-      { property: "districtNumber", label: "District Number" },
-      { property: "displayName", label: "District Name" },
+      { property: "districtId_districtNumber", label: "District Number" },
+      { property: "districtId_displayName", label: "District Name" },
       { property: "description", label: "District Contact" },
       { property: "firstName", label: "Contact First Name" },
       { property: "lastName", label: "Contact Last name" },
       { property: "jobTitle", label: "Position Title" },
       { property: "label", label: "Contact Type" },
+      { property: "districtId_mailing_addressLine1", label: "Address Line 1" },
+      { property: "districtId_mailing_addressLine2", label: "Address Line 2" },
+      { property: "districtId_mailing_city", label: "City" },
+      { property: "districtId_mailing_provinceCode", label: "Province" },
+      { property: "districtId_mailing_postal", label: "Postal Code" },
+      { property: "districtId_mailing_countryCode", label: "Country" },
+      { property: "districtId_physical_addressLine1", label: "Courier Address Line 1" },
+      { property: "districtId_physical_addressLine2", label: "Courier Address Line 2" },
+      { property: "districtId_physical_city", label: "Courier City" },
+      { property: "districtId_physical_provinceCode", label: "Courier Province" },
+      { property: "districtId_physical_postal", label: "Courier Postal Code" },
+      { property: "districtId_physical_countryCode", label: "Courier Country" },
       { property: "phoneNumber", label: "Contact Phone" },
       { property: "phoneExtension", label: "Contact Phone Extension" },
       { property: "email", label: "Contact Email" },
+      
     ];
 
-    //let content = addDistrictLabels(districtContactResponse.data,districtList);
-
-    const includedFields = ['createUser', 'updateUser', 'districtContactTypeCode', 'label', 'description'];
+    const includedFields = ['districtContactTypeCode', 'label', 'description'];
     let content = normalizeJsonObject(districtContactResponse.data.content, contactTypeCodes.codesList.districtContactTypeCodes, 'districtContactTypeCode', (info) => info.publiclyAvailable === true, includedFields);
-    content = normalizeJsonObject(content, districtList, 'districtId', null, ['displayName', 'districtNumber']);   
+    content = normalizeJsonObject(content, districtAddresses, 'districtId', null, ['mailing_addressLine1','mailing_addressLine2','mailing_city','mailing_postal','mailing_provinceCode','mailing_countryCode','mailing_districtAddressId','mailing_districtId','physical_addressLine1','physical_addressLine2','physical_city','physical_postal','physical_provinceCode','physical_countryCode']);    
+    content = normalizeJsonObject(content, districtList, 'districtId', null, ['displayName', 'districtNumber']);    
     content = filterByPubliclyAvailableCodes(content,"districtContactTypeCode",getArrayofPubliclyAvailableCodes(contactTypeCodes.codesList.districtContactTypeCodes, "districtContactTypeCode"))
     content = filterByExpiryDate(content)
+  
     
-    let filteredData =  filterByField(content, 'districtNumber', ['']);
+    let filteredData =  filterByField(content, 'districtId_districtNumber', ['']);
     filteredData.forEach((currentElement, index, array) => {
       const rearrangedElement = rearrangeAndRelabelObjectProperties(currentElement, propertyOrder);
       array[index] = rearrangedElement;
     });
     let sortedData = sortJSONByDistrictNumber(filteredData)
     const validDistricts = filterRemoveByField(sortedData,"District Number", ["098","102","103"])
+  
     res.json(validDistricts);
-    //res.json(districtContactsReorderedAndRelabeled );
+
   } catch (e) {
     log.error("getData Error", e.response ? e.response.status : e.message);
   }
@@ -193,8 +208,8 @@ async function getAllDistrictMailing(req, res) {
   const contactTypeCodes= await listCache.get("codesList")
 
   const propertyOrder = [
-    { property: "districtNumber", label: "District Number" },
-    { property: "displayName", label: "District Name" },
+    { property: "districtId_districtNumber", label: "District Number" },
+    { property: "districtId_displayName", label: "District Name" },
     { property: "mailingAddressLine1", label: "Address Line 1" },
     { property: "mailingAddressLine2", label: "Address Line 2" },
     { property: "mailingCity", label: "City" },
