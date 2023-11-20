@@ -224,15 +224,15 @@ onMounted(async () => {
                 variant="text"
                 class="text-none text-subtitle-1 ma-1 v-btn-align-left"
                 @click="downloadDistrictContacts"
-                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>District
-                Contacts</v-btn
+                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
+                District Contacts (CSV)</v-btn
               >
               <v-btn
                 variant="text"
                 class="text-none text-subtitle-1 ma-1 v-btn-align-left"
                 @click="downloadDistrictSchools"
-                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>District
-                Schools</v-btn
+                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
+                District Schools (CSV)</v-btn
               >
             </v-col>
           </v-row>

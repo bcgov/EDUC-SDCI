@@ -246,8 +246,8 @@ function goToDistrict() {
                   class="text-none text-subtitle-1 ma-1 v-btn-align-left"
                   @click="downloadCSV"
                   :disabled="!schoolData.value"
-                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>School
-                  Info</v-btn
+                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
+                  School Info (CSV)</v-btn
                 ></v-col
               >
             </v-row>
