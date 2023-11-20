@@ -19,7 +19,7 @@ router.get('/clear-files/:token', clearCSVFiles);
 async function clearCSVFiles(req, res) {
   try {
     const providedToken = req.params.token;
-    const configuredToken = config.get('server:clearFilesToken');
+    const configuredToken = config.get('server:clearFilesKey');
 
     if (providedToken !== configuredToken) {
       return res.status(403).send('Invalid token');

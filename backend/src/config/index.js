@@ -32,7 +32,7 @@ nconf.defaults({
     },
     instituteAPIURL: process.env.INSTITUTE_API_URL,
     instituteAPITokenExpiry: process.env.INSTITUTE_API_EXPIRY,
-    clearFilesToken: process.env.CLEAR_FILES_TOKEN
+    clearFilesKey: process.env.CLEAR_FILES_KEY
   },
   oidc: {
     clientId: process.env.SOAM_CLIENT_ID,
