@@ -268,6 +268,7 @@ function goToDistrict() {
               :items="filteredContacts"
               class="elevation-1"
               item-value="name"
+              :sort-by="[{ key: 'schoolContactTypeCode_label', order: 'asc' }]"
             >
               <template v-slot:item.jobTitle="{ item }">
                 {{ item.label }}

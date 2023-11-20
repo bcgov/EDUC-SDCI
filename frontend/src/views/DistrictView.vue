@@ -46,6 +46,9 @@ const schoolHeaders = [
 
 const schoolSearch = ref('')
 const contactSearch = ref('')
+//sorting
+// const contactSortBy = [{ key: 'label', order: 'asc' }]
+// const schoolSortBy = [{ key: 'mincode', order: 'asc' }]
 // functions
 function goToSchool(displayName: string, mincode: string, id: string) {
   router.push({
@@ -273,6 +276,7 @@ onMounted(async () => {
               :headers="contactHeaders"
               :items="district.value.districtData?.contacts"
               :search="contactSearch"
+              :sort-by="[{ key: 'label', order: 'asc' }]"
             >
               <template v-slot:item.email="{ item }">
                 <a :href="`mailto:${item.email}`">{{ item.email }}</a>
@@ -299,6 +303,7 @@ onMounted(async () => {
               :headers="schoolHeaders"
               :items="district.value.districtSchools"
               :search="schoolSearch"
+              :sort-by="[{ key: 'mincode', order: 'asc' }]"
             >
               <template v-slot:item.displayName="{ item }">
                 <a @click="goToSchool(item.displayName, item.mincode, item.schoolId)">{{

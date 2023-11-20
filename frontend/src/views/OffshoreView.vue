@@ -63,6 +63,7 @@ const headers = ref([
           items-per-page="50"
           :items="offshoreSchools"
           :search="schoolSearch"
+          :sort-by="[{ key: 'mincode', order: 'asc' }]"
         >
           <template v-slot:item.displayName="{ item }">
             <a :href="`/school/${item.schoolId}`"> {{ item.displayName }} </a>

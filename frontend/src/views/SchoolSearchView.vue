@@ -266,6 +266,7 @@ onBeforeMount(async () => {
         :loading="loading"
         @page-change:page="handlePageChange"
         @update:options="handleUpdate"
+        :sort-by="[{ key: 'mincode', order: 'asc' }]"
       >
         <template v-slot:item.displayName="{ item }">
           <a :href="`/school/${item.schoolId}`">{{ item.displayName }}</a>

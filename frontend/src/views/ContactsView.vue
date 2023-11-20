@@ -154,6 +154,7 @@ const searchContact = async () => {
         class="elevation-1"
         height="700"
         item-value="name"
+        :sort-by="[{ key: 'districtNumber', order: 'asc' }]"
       ></v-data-table-virtual>
     </v-container>
   </div>
