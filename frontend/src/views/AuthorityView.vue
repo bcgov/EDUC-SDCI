@@ -294,6 +294,7 @@ onMounted(async () => {
               :headers="contactHeaders"
               :items="authority.value.authorityData?.contacts"
               :search="contactSearch"
+              :sort-by="[{ key: 'authorityContactTypeCode', order: 'asc' }]"
             >
               <template v-slot:item.authorityContactTypeCode="{ item }">
                 {{ appStore.getAuthorityContactTypeCodeLabel(item.authorityContactTypeCode) }}
@@ -322,6 +323,7 @@ onMounted(async () => {
               :headers="schoolHeaders"
               :items="authority.value.authoritySchools"
               :search="schoolSearch"
+              :sort-by="[{ key: 'mincode', order: 'asc' }]"
             >
               <template v-slot:item.displayName="{ item }">
                 <a @click="goToSchool(item.displayName, item.mincode, item.schoolId)">{{
