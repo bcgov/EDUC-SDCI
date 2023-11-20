@@ -36,12 +36,12 @@ const headers = ref([
         <v-spacer />
         <v-col cols="3"
           ><v-btn variant="text" class="text-none text-subtitle-1 ma-1 v-btn-align-left"
-            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Offshore School
-            Representatives</v-btn
+            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download Offshore
+            Representatives (CSV)</v-btn
           >
           <v-btn variant="text" class="text-none text-subtitle-1 ma-1 v-btn-align-left"
-            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Offshore
-            Schools</v-btn
+            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download Offshore
+            Schools(CSV)</v-btn
           >
         </v-col>
       </v-row>
