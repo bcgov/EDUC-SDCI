@@ -45,19 +45,21 @@ const downloadCSV = () => {
 const transformContactForDownload = (inputData: any): {} => {
   return inputData.map((item: any) => ({
     'District Number': item.districtNumber,
-    Mincode: item.mincode,
-    'Display Name': item.displayName,
-    'Address Line 1': item.addressLine1,
+    'School Code': item.mincode,
+    'Facility Type': item.facilityTypeCode,
+    'School Category': item.schoolCategoryCode,
+    'School Name': item.displayName,
+    Address: item.addressLine1,
     City: item.city,
-    'Province Code': item.provinceCode,
-    Postal: item.postal,
+    Province: item.provinceCode,
+    'Postal Code': item.postal,
     'School Email': item.schoolEmail,
+    'School Phone Number': item.schoolPhoneNumber,
+    'School Fax Number': item.schoolFaxNumber,
     'Job Title': item.jobTitle,
     Role: item.jobTitle,
     'First Name': item.firstName,
     'Last Name': item.lastName,
-    'Facility Type Code': item.facilityTypeCode,
-    'School Category Code': item.schoolContactTypeCode_label,
     'Phone Number': item.phoneNumber,
     'Phone Extension': item.phoneExtension,
     'Alternate Phone Number': item.alternatePhoneNumber,
@@ -120,21 +122,32 @@ onBeforeMount(async () => {
       if (response.data.contacts.length > 0) {
         for (let i = 0; i < response.data.contacts.length; i++) {
           filteredContacts.value = response.data.contacts
-          filteredContacts.value[i].districtNumber = distNumberFromMincode(response.data.mincode)
-          filteredContacts.value[i].displayName = response.data.displayName
-          filteredContacts.value[i].schoolCategoryCode = response.data.schoolCategoryCode
-          filteredContacts.value[i].facilityTypeCode = response.data.facilityTypeCode
-          filteredContacts.value[i].mincode = response.data.mincode
-          filteredContacts.value[i].schoolEmail = response.data.email
-          // filteredContacts.value[i].phoneNumber = response.data.phoneNumber
-          // filteredContacts.value[i].phoneExtension = response.data.phoneExtension
-          // filteredContacts.value[i].faxNumber = response.data.faxNumber
-          filteredContacts.value[i].addressLine1 = response.data.addresses[0].addressLine1
-          filteredContacts.value[i].addressLine2 = response.data.addresses[0].addressLine2
-          filteredContacts.value[i].city = response.data.addresses[0].city
-          filteredContacts.value[i].provinceCode = response.data.addresses[0].provinceCode
-          filteredContacts.value[i].countryCode = response.data.addresses[0].countryCode
-          filteredContacts.value[i].postal = response.data.addresses[0].postal
+          filteredContacts.value[i].districtNumber = distNumberFromMincode(response.data?.mincode)
+          filteredContacts.value[i].displayName = response.data?.displayName
+          filteredContacts.value[i].schoolCategoryCode = response.data?.schoolCategoryCode
+          filteredContacts.value[i].facilityTypeCode = response.data?.facilityTypeCode
+          filteredContacts.value[i].mincode = response.data?.mincode
+          filteredContacts.value[i].schoolEmail = response.data?.email
+          filteredContacts.value[i].schoolPhoneNumber = response.data?.phoneNumber
+          filteredContacts.value[i].schoolFaxNumber = response.data?.faxNumber
+          filteredContacts.value[i].jobTitle = response.data?.contacts[i]?.jobTitle
+          filteredContacts.value[i].schoolContactTypeCode_label =
+            response.data?.contacts[i]?.schoolContactTypeCode_label
+          filteredContacts.value[i].schoolContactTypeCode_description =
+            response.data?.contacts[i]?.schoolContactTypeCode_description
+          filteredContacts.value[i].phoneNumber = response.data?.contacts[i]?.phoneNumber
+          filteredContacts.value[i].phoneExtension = response.data?.contacts[i]?.phoneExtension
+          filteredContacts.value[i].alternatePhoneNumber =
+            response.data?.contacts[i]?.alternatePhoneNumber
+          filteredContacts.value[i].alternatePhoneExtension =
+            response.data?.contacts[i]?.alternatePhoneExtension
+          filteredContacts.value[i].faxNumber = response.data?.contacts[i]?.faxNumber
+          filteredContacts.value[i].addressLine1 = response.data?.addresses[0]?.addressLine1
+          filteredContacts.value[i].addressLine2 = response.data?.addresses[0]?.addressLine2
+          filteredContacts.value[i].city = response.data.addresses[0]?.city
+          filteredContacts.value[i].provinceCode = response.data?.addresses[0]?.provinceCode
+          filteredContacts.value[i].countryCode = response.data?.addresses[0]?.countryCode
+          filteredContacts.value[i].postal = response.data.addresses[0]?.postal
           filteredContacts.value[i].ELEMUNGR = response.data.ELEMUNGR
           filteredContacts.value[i].SECUNGR = response.data.SECUNGR
           filteredContacts.value[i].KINDHALF = response.data.KINDHALF
@@ -153,7 +166,6 @@ onBeforeMount(async () => {
           filteredContacts.value[i].GRADE11 = response.data.GRADE11
           filteredContacts.value[i].GRADE12 = response.data.GRADE12
         }
-        // console.log(filteredContacts.value)
         downloadContacts.value = transformContactForDownload(filteredContacts.value)
       }
     }
@@ -270,9 +282,9 @@ function goToDistrict() {
               item-value="name"
               :sort-by="[{ key: 'schoolContactTypeCode_label', order: 'asc' }]"
             >
-              <template v-slot:item.jobTitle="{ item }">
+              <!-- <template v-slot:item.jobTitle="{ item }">
                 {{ item.label }}
-              </template>
+              </template> -->
               <template v-slot:item.phoneNumber="{ item }">
                 {{ formatPhoneNumber(item.phoneNumber) }}
               </template>
