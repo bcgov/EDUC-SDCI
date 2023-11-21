@@ -1,29 +1,8 @@
 const ALLOWED_FILENAMES = new Set([
-  'trans',
-  'independent-authority-rep',
-  'indigenous',
-  'continuing-custody-order',
-  'distributed-learning',
-  'online-learning-contact',
-  'early-learning-child-care',
-  'planning-officer',
-  'early-learning',
-  'facilities',
-  'financial',
-  'french',
-  'international-education',
-  'literacy',
-  'myed-bc',
-  'inclusive-education',
-  'transportation',
-  'superintendent',
-  'chairperson',
-  'secretary-treasurer',
-  'executive-admin-assistant',
+  
   'districtcontacts',
   'districtmailing',
   'publicschoolcontacts',
-  'offshoreschoolcontacts',
   'independentschoolcontacts',
   'allschoolcontacts',
   'allschoolmailing',
@@ -101,7 +80,6 @@ function removeFieldsByCriteria(inputData, criteria) {
 function appendMailingAddressDetailsAndRemoveAddresses(data) {
   if (data && data.addresses && data.addresses.length > 0) {
       const physicalAddress = data.addresses.find(address => address.addressTypeCode === 'PHYSICAL');
-
       if (physicalAddress) {
           // Extract specific name-value pairs from the mailing address
           const { addressLine1, addressLine2, city, postal, provinceCode, countryCode } = physicalAddress;
@@ -131,7 +109,6 @@ function appendMailingAddressDetailsAndRemoveAddresses(data) {
           data.mailingCountryCode = countryCode;
 
           // Remove the "addresses" property
-        
       }  
       delete data.addresses;
       delete data.contacts;
@@ -216,8 +193,8 @@ function addDistrictLabels(jsonData, districtList) {
       });
       return reorderedObject;
   }
-  function normalizeJsonObject(sourceArray, referenceArray, matchKey, condition, includeFields) {
 
+  function normalizeJsonObject(sourceArray, referenceArray, matchKey, condition, includeFields) {
     return sourceArray.map((item) => {
       const matchingItem = referenceArray.find(
         (info) => info[matchKey] === item[matchKey] && (!condition || condition(info))
@@ -227,13 +204,10 @@ function addDistrictLabels(jsonData, districtList) {
           ...item,
           ...includeFields.reduce((result, field) => {
             result[matchKey + "_" + field] = matchingItem[field];
-            
-            
             return result;
           }, {}),
         };
       }
-  
       return item;
     });
   }

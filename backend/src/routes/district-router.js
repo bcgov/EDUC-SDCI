@@ -7,7 +7,7 @@ const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
 const { checkToken } = require("../components/auth");
-const { listCache } = require("../components/cache");
+const { listCache} = require("../components/cache");
 const {getArrayofPubliclyAvailableCodes,filterRemoveByField, filterByExpiryDate, getArrayofNonPubliclyAvailableCodes, filterByField,appendMailingAddressDetailsAndRemoveAddresses, rearrangeAndRelabelObjectProperties, addDistrictLabels, normalizeJsonObject, sortJSONByDistrictNumber, removeFieldsByCriteria, filterByPubliclyAvailableCodes} = require("../components/utils.js")
 
 //Batch Routes
@@ -16,45 +16,7 @@ router.get("/all-mailing", checkToken, getAllDistrictMailing);
 router.get("/:id", checkToken, getDistrict);
 
 
-async function removeItemsFromDistrictDataResponse(response, itemsToRemove) {
-  if (response && response.data) {
-    const newData = { ...response.data };
 
-    if (itemsToRemove && Array.isArray(itemsToRemove)) {
-      itemsToRemove.forEach((item) => {
-        if (newData[item]) {
-          delete newData[item];
-        }
-      });
-    }
-
-    response.data = newData;
-  }
-}
-
-async function getDistrictCodes(req) {
-  if (!listCache.has("districtCodesList")) {
-    const url = `${config.get(
-      "server:instituteAPIURL"
-    )}/institute/district-contact-type-codes`; // Update the URL according to your API endpoint
-    try {
-      const response = await axios.get(url, {
-        headers: { Authorization: `Bearer ${req.accessToken}` },
-      });
-      const districtCodeList = response.data;
-      listCache.set("districtCodesList", districtCodeList);
-      return districtCodeList;
-    } catch (e) {
-      log.error(
-        "getDistrictList Error",
-        e.response ? e.response.status : e.message
-      );
-    }
-  } else {
-    const districtCodeList = await listCache.get("districtCodesList");
-    return districtCodeList;
-  }
-}
 function getNonPublicContactTypeCodes(contactTypes) {
   const nonPublicContactTypeCodes = [];
 
@@ -106,10 +68,35 @@ function removeContacts(districtDataResponse, nonPublicContactTypeCodes) {
 
   return updatedDistrictData;
 }
+async function getDistrictCodes(req) {
+  if (!listCache.has("districtCodesList")) {
+    const url = `${config.get(
+      "server:instituteAPIURL"
+    )}/institute/district-contact-type-codes`; // Update the URL according to your API endpoint
+    try {
+      const response = await axios.get(url, {
+        headers: { Authorization: `Bearer ${req.accessToken}` },
+      });
+      const districtCodeList = response.data;
+      listCache.set("districtCodesList", districtCodeList);
+      return districtCodeList;
+    } catch (e) {
+      log.error(
+        "getDistrictList Error",
+        e.response ? e.response.status : e.message
+      );
+    }
+  } else {
+    const districtCodeList = await listCache.get("districtCodesList");
+    return districtCodeList;
+  }
+}
 async function getAllDistrictContacts(req, res) {
+
   const districtList = await listCache.get("districtlist")
   const contactTypeCodes= await listCache.get("codesList")
   const districtAddresses = await listCache.get("districtAddresses")
+
   let currentDate = new Date().toISOString().substring(0, 19)
     const params = [
       {
@@ -194,9 +181,7 @@ async function getAllDistrictContacts(req, res) {
       array[index] = rearrangedElement;
     });
     let sortedData = sortJSONByDistrictNumber(filteredData)
-    const validDistricts = filterRemoveByField(sortedData,"District Number", ["098","102","103"])
-  
-    res.json(validDistricts);
+    res.json(sortedData);
 
   } catch (e) {
     log.error("getData Error", e.response ? e.response.status : e.message);
@@ -330,6 +315,9 @@ async function getDistrict(req, res) {
     const contactTypeCodes = await getDistrictCodes(req);
     const districtContactCodeTypes = await listCache.get("codesList")
     const nonPublicContactTypeCodes = getNonPublicContactTypeCodes(contactTypeCodes);
+    console.log("REVIEW")
+    console.log(nonPublicContactTypeCodes)
+    
     const districtDataPublic = removeContacts(
       districtDataResponse.data,
       nonPublicContactTypeCodes
