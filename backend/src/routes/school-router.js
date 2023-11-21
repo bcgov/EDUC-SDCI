@@ -53,7 +53,9 @@ async function getAllSchools(req, res) {
   const contactTypeCodes= await listCache.get("codesList")
   let params = [];
   
+
   if (await !schoolCache.has("openschoollist" + schoolCategory)) {
+    console.log("BUILDING CACHE FOR  " + "openschoollist" + schoolCategory)
       let currentDate = new Date().toISOString().substring(0, 19)
       params = [
         
@@ -225,6 +227,7 @@ async function getAllSchools(req, res) {
           );
         });
   } else {
+    console.log("USING CACHE" + " openschoollist" + schoolCategory)
     const openSchoolList = await schoolCache.get("openschoollist" + schoolCategory);
     res.json(openSchoolList);
   }
