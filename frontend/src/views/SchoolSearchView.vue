@@ -71,14 +71,14 @@ const fetchTypes = async () => {
 
 const schools = [
   {
-    jurisdiction: 'Jurisdiction 1',
+    category: 'Category 1',
     city: 'City 1',
     type: 'Type A',
     grade: 'Grade 1'
     // Add more school data objects as needed
   },
   {
-    jurisdiction: 'Jurisdiction 1',
+    category: 'Category 2',
     city: 'City 2',
     type: 'Type B',
     grade: 'Grade 2'
@@ -208,7 +208,7 @@ onBeforeMount(async () => {
             :items="jurisdictions"
             item-title="label"
             item-value="schoolCategoryCode"
-            label="Jurisdiction"
+            label="Category"
             multiple
           ></v-select>
         </v-col>
