@@ -5,6 +5,6 @@ describe('Testing District homepage', () => {
   });
 
   it('visits the app root url', () => {
-    cy.contains('h2', '006 - Rocky Mountain');
+    cy.contains('h1', '006 - Rocky Mountain');
   });
 });

@@ -212,9 +212,6 @@ onBeforeMount(async () => {
             multiple
           ></v-select>
         </v-col>
-        <!-- <v-col cols="12" md="3">
-          <v-select v-model="selectedCity" :items="cities" label="City"></v-select>
-        </v-col> -->
         <v-col cols="12" md="3">
           <v-select
             v-model="selectedType"

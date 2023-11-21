@@ -5,6 +5,6 @@ describe('Testing Authority Page', () => {
   });
 
   it('visits the app root url', () => {
-    cy.contains('h2', '100 - Abbotsford Christian School');
+    cy.contains('h1', '100 - Abbotsford Christian School');
   });
 });
