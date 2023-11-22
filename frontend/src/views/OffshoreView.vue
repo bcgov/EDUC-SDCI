@@ -173,7 +173,7 @@ onBeforeMount(() => {
           <template v-slot:item.contact="{ item }">
             <strong>Phone:</strong> {{ item.phoneNumber }} <br />
             <strong>Fax:</strong> {{ item.faxNumber }} <br />
-            <strong>Email:</strong> {{ item.email }}
+            <strong>Email:</strong> <a :href="'mailto:' + item.email">{{ item.email }}</a>
           </template>
         </v-data-table>
       </v-container>
