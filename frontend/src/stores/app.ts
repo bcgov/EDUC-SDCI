@@ -103,7 +103,7 @@ export const useAppStore = defineStore('app', {
       })
 
     },
-    async setCodes(): void {
+    async setCodes() {
       await InstituteService.loadCache().then((response) => {
           console.log(response)
       }).catch((error) => {
