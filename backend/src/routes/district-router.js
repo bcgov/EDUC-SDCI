@@ -315,8 +315,6 @@ async function getDistrict(req, res) {
     const contactTypeCodes = await getDistrictCodes(req);
     const districtContactCodeTypes = await listCache.get("codesList")
     const nonPublicContactTypeCodes = getNonPublicContactTypeCodes(contactTypeCodes);
-    console.log("REVIEW")
-    console.log(nonPublicContactTypeCodes)
     
     const districtDataPublic = removeContacts(
       districtDataResponse.data,

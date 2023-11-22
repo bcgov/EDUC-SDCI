@@ -5,7 +5,7 @@ const config = require("../config/index");
 
 const axios = require("axios");
 const { checkToken } = require("../components/auth");
-const {removeFieldsByCriteria, createList, addDistrictLabels, districtNumberSort, isAllowedSchoolCategory } = require("../components/utils");
+const {formatGrades, removeFieldsByCriteria, createList, addDistrictLabels, districtNumberSort, isAllowedSchoolCategory, filterRemoveByField } = require("../components/utils");
 const { listCache, codeCache } = require("../components/cache");
 
 const schoolListOptions = { fields: ["mincode", "displayName", "schoolId", "closedDate"], fieldToInclude: "closedDate", valueToInclude: null, sortField: "mincode" };
@@ -37,12 +37,13 @@ router.get("/authority/list", checkToken, getAuthorityList);
 router.get("/district/list", checkToken, getDistrictList);
 router.get("/district/contact/*", checkToken, getDistrictContactsAPI);
 router.get("/create-cache", checkToken, createCache);
+router.get("/category-codes", checkToken, getCategoryCodes);
 router.get("/*", checkToken, getInstituteAPI);
 async function createCache(req, res) {
 
   if (!listCache.has("categoryCodes")) {
     //const codes = [];
-
+    
     try {
       const categoryCodesResponse = await axios.get(
         `${config.get(
@@ -52,7 +53,10 @@ async function createCache(req, res) {
           headers: { Authorization: `Bearer ${req.accessToken}` },
         }
       );
+      
+      categoryCodesResponse.data = filterRemoveByField(categoryCodesResponse.data,"schoolCategoryCode", ["FED_BAND","POST_SEC","YUKON"])
       listCache.set("categoryCodes", categoryCodesResponse.data);
+      
     } catch (error) {
       const statusCode = error.response ? error.response.status : 500;
       log.error("Category Code Caching Error", statusCode, error.message);
@@ -135,8 +139,6 @@ async function createCache(req, res) {
 
 
   if (await !listCache.has("codesList")) {
-    //const codes = [];
-
     try {
       const authorityContactTypeCodesResponse = await axios.get(
         `${config.get(
@@ -289,6 +291,13 @@ async function getOffshoreSchoolList(req, res) {
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
         const offshoreSchoolList = response.data.content;
+        const schoolGrades =  codeCache.get("gradelist");
+        
+        for (let i = 0; i < offshoreSchoolList.length; i++) {
+          const formattedGrades = formatGrades(offshoreSchoolList[i].grades, schoolGrades);
+          offshoreSchoolList[i] = { ...offshoreSchoolList[i], ...formattedGrades };
+          // Now you can use the updated offshoreSchoolList[i] object as needed
+      }
         res.json(offshoreSchoolList);
         listCache.set("offshoreschoollist", offshoreSchoolList);
         log.info(req.url);
@@ -355,28 +364,32 @@ async function getAuthorityList(req, res) {
     res.json(authorityList);
   }
 }
-async function getOpenSchools(req, res) {
+async function getCategoryCodes(req, res) {
    
-
-  if (await !listCache.has("openschoollist")) {
-    const url = `${config.get("server:instituteAPIURL")}/institute/school`; // Update the URL according to your API endpoint
-    axios
-      .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
-      .then((response) => {
-        const openSchoolList = createList(response.data, openSchoolListOptions);
-        res.json(openSchoolList);
-        listCache.set("openschoollist", openSchoolList);
-        log.info(req.url);
-      })
-      .catch((e) => {
-        log.error(
-          "getSchoolsList Error",
-          e.response ? e.response.status : e.message
-        );
-      });
-  } else {
-    const openSchoolList = await listCache.get("openschoollist");
-    res.json(openSchoolList);
+  if (!listCache.has("categoryCodes")) {
+    //const codes = [];
+    
+    try {
+      const categoryCodesResponse = await axios.get(
+        `${config.get(
+          "server:instituteAPIURL"
+        )}/institute/category-codes`,
+        {
+          headers: { Authorization: `Bearer ${req.accessToken}` },
+        }
+      );
+      
+      categoryCodesResponse.data = filterRemoveByField(categoryCodesResponse.data,"schoolCategoryCode", ["FED_BAND","POST_SEC","YUKON"])
+      listCache.set("categoryCodes", categoryCodesResponse.data);
+      
+    } catch (error) {
+      const statusCode = error.response ? error.response.status : 500;
+      log.error("Category Code Caching Error", statusCode, error.message);
+      res.status(statusCode).send(error.message);
+    }
+  } else{
+    const categoryCodes = await listCache.get("categoryCodes");
+    res.json(categoryCodes)
   }
 }
 async function getSchoolList(req, res) {
