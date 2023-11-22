@@ -47,23 +47,23 @@ const transformContactForDownload = (inputData: any): {} => {
     'School Category': item.schoolCategoryCode,
     'Phone Number': item.phoneNumber,
     'Fax Number': item.faxNumber,
-    Email: item.email
-    // 'Elementary Ungraded': item.ELEMUNGR,
-    // 'Secondary Ungraded': item.SECUNGR,
-    // 'Kindergarten Half': item.KINDHALF,
-    // KindergartenFull: item.KINDFULL
-    // GRADE01: item.GRADE01,
-    // GRADE02: item.GRADE02,
-    // GRADE03: item.GRADE03,
-    // GRADE04: item.GRADE04,
-    // GRADE05: item.GRADE05,
-    // GRADE06: item.GRADE06,
-    // GRADE07: item.GRADE07,
-    // GRADE08: item.GRADE08,
-    // GRADE09: item.GRADE09,
-    // GRADE10: item.GRADE10,
-    // GRADE11: item.GRADE11,
-    // GRADE12: item.GRADE12
+    Email: item.email,
+    'Elementary Ungraded': item.ELEMUNGR,
+    'Secondary Ungraded': item.SECUNGR,
+    'Kindergarten Half': item.KINDHALF,
+    KindergartenFull: item.KINDFULL,
+    'Grade 01': item.GRADE01,
+    'Grade 02': item.GRADE02,
+    'Grade 03': item.GRADE03,
+    'Grade 04': item.GRADE04,
+    'Grade 05': item.GRADE05,
+    'Grade 06': item.GRADE06,
+    'Grade 07': item.GRADE07,
+    'Grade 08': item.GRADE08,
+    'Grade 09': item.GRADE09,
+    'Grade 10': item.GRADE10,
+    'Grade 11': item.GRADE11,
+    'Grade 12': item.GRADE12
   }))
 }
 onBeforeMount(() => {
@@ -88,23 +88,23 @@ onBeforeMount(() => {
       filteredSchools.value[i].phoneNumber = offshoreSchools.value[i]?.phoneNumber
       filteredSchools.value[i].faxNumber = offshoreSchools.value[i]?.faxNumber
       filteredSchools.value[i].email = offshoreSchools.value[i]?.email
-      // filteredSchools.value[i].ELEMUNGR = offshoreSchools.value.ELEMUNGR
-      // filteredSchools.value[i].SECUNGR = offshoreSchools.value.SECUNGR
-      // filteredSchools.value[i].KINDHALF = offshoreSchools.value.KINDHALF
-      // filteredSchools.value[i].KINDFULL = offshoreSchools.value.KINDFULL
-      // filteredSchools.value[i].GRADE01 = offshoreSchools.value.GRADE01
-      // filteredSchools.value[i].GRADE02 = offshoreSchools.value.GRADE02
-      // filteredSchools.value[i].GRADE03 = offshoreSchools.value.GRADE03
-      // filteredSchools.value[i].GRADE03 = offshoreSchools.value.GRADE03
-      // filteredSchools.value[i].GRADE04 = offshoreSchools.value.GRADE04
-      // filteredSchools.value[i].GRADE05 = offshoreSchools.value.GRADE05
-      // filteredSchools.value[i].GRADE06 = offshoreSchools.value.GRADE06
-      // filteredSchools.value[i].GRADE07 = offshoreSchools.value.GRADE07
-      // filteredSchools.value[i].GRADE08 = offshoreSchools.value.GRADE08
-      // filteredSchools.value[i].GRADE09 = offshoreSchools.value.GRADE09
-      // filteredSchools.value[i].GRADE10 = offshoreSchools.value.GRADE10
-      // filteredSchools.value[i].GRADE11 = offshoreSchools.value.GRADE11
-      // filteredSchools.value[i].GRADE12 = offshoreSchools.value.GRADE12
+      filteredSchools.value[i].ELEMUNGR = offshoreSchools.value[i]?.ELEMUNGR
+      filteredSchools.value[i].SECUNGR = offshoreSchools.value[i]?.SECUNGR
+      filteredSchools.value[i].KINDHALF = offshoreSchools.value[i]?.KINDHALF
+      filteredSchools.value[i].KINDFULL = offshoreSchools.value[i]?.KINDFULL
+      filteredSchools.value[i].GRADE01 = offshoreSchools.value[i]?.GRADE01
+      filteredSchools.value[i].GRADE02 = offshoreSchools.value[i]?.GRADE02
+      filteredSchools.value[i].GRADE03 = offshoreSchools.value[i]?.GRADE03
+      filteredSchools.value[i].GRADE03 = offshoreSchools.value[i]?.GRADE03
+      filteredSchools.value[i].GRADE04 = offshoreSchools.value[i]?.GRADE04
+      filteredSchools.value[i].GRADE05 = offshoreSchools.value[i]?.GRADE05
+      filteredSchools.value[i].GRADE06 = offshoreSchools.value[i]?.GRADE06
+      filteredSchools.value[i].GRADE07 = offshoreSchools.value[i]?.GRADE07
+      filteredSchools.value[i].GRADE08 = offshoreSchools.value[i]?.GRADE08
+      filteredSchools.value[i].GRADE09 = offshoreSchools.value[i]?.GRADE09
+      filteredSchools.value[i].GRADE10 = offshoreSchools.value[i]?.GRADE10
+      filteredSchools.value[i].GRADE11 = offshoreSchools.value[i]?.GRADE11
+      filteredSchools.value[i].GRADE12 = offshoreSchools.value[i]?.GRADE12
     }
     downloadSchools.value = transformContactForDownload(filteredSchools.value)
   }
@@ -173,7 +173,7 @@ onBeforeMount(() => {
           <template v-slot:item.contact="{ item }">
             <strong>Phone:</strong> {{ item.phoneNumber }} <br />
             <strong>Fax:</strong> {{ item.faxNumber }} <br />
-            <strong>Email:</strong> {{ item.email }}
+            <strong>Email:</strong> <a :href="'mailto:' + item.email">{{ item.email }}</a>
           </template>
         </v-data-table>
       </v-container>

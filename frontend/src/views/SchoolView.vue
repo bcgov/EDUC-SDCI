@@ -69,18 +69,18 @@ const transformContactForDownload = (inputData: any): {} => {
     'Secondary Ungraded': item.SECUNGR,
     'Kindergarten Half': item.KINDHALF,
     KindergartenFull: item.KINDFULL,
-    GRADE01: item.GRADE01,
-    GRADE02: item.GRADE02,
-    GRADE03: item.GRADE03,
-    GRADE04: item.GRADE04,
-    GRADE05: item.GRADE05,
-    GRADE06: item.GRADE06,
-    GRADE07: item.GRADE07,
-    GRADE08: item.GRADE08,
-    GRADE09: item.GRADE09,
-    GRADE10: item.GRADE10,
-    GRADE11: item.GRADE11,
-    GRADE12: item.GRADE12
+    'Grade 01': item.GRADE01,
+    'Grade 02': item.GRADE02,
+    'Grade 03': item.GRADE03,
+    'Grade 04': item.GRADE04,
+    'Grade 05': item.GRADE05,
+    'Grade 06': item.GRADE06,
+    'Grade 07': item.GRADE07,
+    'Grade 08': item.GRADE08,
+    'Grade 09': item.GRADE09,
+    'Grade 10': item.GRADE10,
+    'Grade 11': item.GRADE11,
+    'Grade 12': item.GRADE12
   }))
 }
 // loading component
