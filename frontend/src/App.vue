@@ -9,11 +9,11 @@ const data = ref([]) // Placeholder for the received data
 const appStore = useAppStore()
 
 onBeforeMount(async () => {
+  await appStore.setCodes()
   await appStore.setDistricts()
   await appStore.setAuthorityList()
   await appStore.setSchoolList()
   await appStore.setOffshoreSchoolList()
-  await appStore.setCodes()
 })
 </script>
 
