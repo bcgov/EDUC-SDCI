@@ -67,44 +67,54 @@ const transformContactForDownload = (inputData: any): {} => {
   }))
 }
 onBeforeMount(() => {
-  if (offshoreSchools) {
+  if (offshoreSchools.value) {
     for (let i = 0; i < offshoreSchools.value.length; i++) {
       filteredSchools.value = offshoreSchools.value
       filteredSchools.value[i].districtNumber = distNumberFromMincode(
         offshoreSchools.value[i]?.mincode
       )
-      filteredSchools.value[i].schoolNumber = offshoreSchools.value[i]?.schoolNumber
+      filteredSchools.value[i].schoolNumber = (offshoreSchools.value[i] as any)?.schoolNumber
       filteredSchools.value[i].displayName = offshoreSchools.value[i]?.displayName
-      filteredSchools.value[i].addressLine1 = offshoreSchools.value[i]?.addresses[0]?.addressLine1
-      filteredSchools.value[i].city = offshoreSchools.value[i]?.addresses[0]?.city
-      filteredSchools.value[i].provinceCode = offshoreSchools.value[i]?.addresses[0]?.provinceCode
-      filteredSchools.value[i].countryCode = offshoreSchools.value[i]?.addresses[0]?.countryCode
-      filteredSchools.value[i].postal = offshoreSchools.value[i]?.addresses[0]?.postal
-      filteredSchools.value[i].jobTitle = offshoreSchools.value[i]?.contacts[0]?.jobTitle
-      filteredSchools.value[i].firstName = offshoreSchools.value[i]?.contacts[0]?.firstName
-      filteredSchools.value[i].lastName = offshoreSchools.value[i]?.contacts[0]?.lastName
-      filteredSchools.value[i].facilityTypeCode = offshoreSchools.value[i]?.facilityTypeCode
-      filteredSchools.value[i].schoolCategoryCode = offshoreSchools.value[i]?.schoolCategoryCode
-      filteredSchools.value[i].phoneNumber = offshoreSchools.value[i]?.phoneNumber
-      filteredSchools.value[i].faxNumber = offshoreSchools.value[i]?.faxNumber
-      filteredSchools.value[i].email = offshoreSchools.value[i]?.email
-      filteredSchools.value[i].ELEMUNGR = offshoreSchools.value[i]?.ELEMUNGR
-      filteredSchools.value[i].SECUNGR = offshoreSchools.value[i]?.SECUNGR
-      filteredSchools.value[i].KINDHALF = offshoreSchools.value[i]?.KINDHALF
-      filteredSchools.value[i].KINDFULL = offshoreSchools.value[i]?.KINDFULL
-      filteredSchools.value[i].GRADE01 = offshoreSchools.value[i]?.GRADE01
-      filteredSchools.value[i].GRADE02 = offshoreSchools.value[i]?.GRADE02
-      filteredSchools.value[i].GRADE03 = offshoreSchools.value[i]?.GRADE03
-      filteredSchools.value[i].GRADE03 = offshoreSchools.value[i]?.GRADE03
-      filteredSchools.value[i].GRADE04 = offshoreSchools.value[i]?.GRADE04
-      filteredSchools.value[i].GRADE05 = offshoreSchools.value[i]?.GRADE05
-      filteredSchools.value[i].GRADE06 = offshoreSchools.value[i]?.GRADE06
-      filteredSchools.value[i].GRADE07 = offshoreSchools.value[i]?.GRADE07
-      filteredSchools.value[i].GRADE08 = offshoreSchools.value[i]?.GRADE08
-      filteredSchools.value[i].GRADE09 = offshoreSchools.value[i]?.GRADE09
-      filteredSchools.value[i].GRADE10 = offshoreSchools.value[i]?.GRADE10
-      filteredSchools.value[i].GRADE11 = offshoreSchools.value[i]?.GRADE11
-      filteredSchools.value[i].GRADE12 = offshoreSchools.value[i]?.GRADE12
+      filteredSchools.value[i].addressLine1 = (
+        offshoreSchools.value[i] as any
+      )?.addresses[0]?.addressLine1
+      filteredSchools.value[i].city = (offshoreSchools.value[i] as any)?.addresses[0]?.city
+      filteredSchools.value[i].provinceCode = (
+        offshoreSchools.value[i] as any
+      )?.addresses[0]?.provinceCode
+      filteredSchools.value[i].countryCode = (
+        offshoreSchools.value[i] as any
+      )?.addresses[0]?.countryCode
+      filteredSchools.value[i].postal = (offshoreSchools.value[i] as any)?.addresses[0]?.postal
+      filteredSchools.value[i].jobTitle = (offshoreSchools.value[i] as any)?.contacts[0]?.jobTitle
+      filteredSchools.value[i].firstName = (offshoreSchools.value[i] as any)?.contacts[0]?.firstName
+      filteredSchools.value[i].lastName = (offshoreSchools.value[i] as any)?.contacts[0]?.lastName
+      filteredSchools.value[i].facilityTypeCode = (
+        offshoreSchools.value[i] as any
+      )?.facilityTypeCode
+      filteredSchools.value[i].schoolCategoryCode = (
+        offshoreSchools.value[i] as any
+      )?.schoolCategoryCode
+      filteredSchools.value[i].phoneNumber = (offshoreSchools.value[i] as any)?.phoneNumber
+      filteredSchools.value[i].faxNumber = (offshoreSchools.value[i] as any)?.faxNumber
+      filteredSchools.value[i].email = (offshoreSchools.value[i] as any)?.email
+      filteredSchools.value[i].ELEMUNGR = (offshoreSchools.value[i] as any)?.ELEMUNGR
+      filteredSchools.value[i].SECUNGR = (offshoreSchools.value[i] as any)?.SECUNGR
+      filteredSchools.value[i].KINDHALF = (offshoreSchools.value[i] as any)?.KINDHALF
+      filteredSchools.value[i].KINDFULL = (offshoreSchools.value[i] as any)?.KINDFULL
+      filteredSchools.value[i].GRADE01 = (offshoreSchools.value[i] as any)?.GRADE01
+      filteredSchools.value[i].GRADE02 = (offshoreSchools.value[i] as any)?.GRADE02
+      filteredSchools.value[i].GRADE03 = (offshoreSchools.value[i] as any)?.GRADE03
+      filteredSchools.value[i].GRADE03 = (offshoreSchools.value[i] as any)?.GRADE03
+      filteredSchools.value[i].GRADE04 = (offshoreSchools.value[i] as any)?.GRADE04
+      filteredSchools.value[i].GRADE05 = (offshoreSchools.value[i] as any)?.GRADE05
+      filteredSchools.value[i].GRADE06 = (offshoreSchools.value[i] as any)?.GRADE06
+      filteredSchools.value[i].GRADE07 = (offshoreSchools.value[i] as any)?.GRADE07
+      filteredSchools.value[i].GRADE08 = (offshoreSchools.value[i] as any)?.GRADE08
+      filteredSchools.value[i].GRADE09 = (offshoreSchools.value[i] as any)?.GRADE09
+      filteredSchools.value[i].GRADE10 = (offshoreSchools.value[i] as any)?.GRADE10
+      filteredSchools.value[i].GRADE11 = (offshoreSchools.value[i] as any)?.GRADE11
+      filteredSchools.value[i].GRADE12 = (offshoreSchools.value[i] as any)?.GRADE12
     }
     downloadSchools.value = transformContactForDownload(filteredSchools.value)
   }
