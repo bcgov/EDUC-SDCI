@@ -144,11 +144,11 @@ async function getAllDistrictContacts(req, res) {
     const propertyOrder = [
       { property: "districtId_districtNumber", label: "District Number" },
       { property: "districtId_displayName", label: "District Name" },
-      { property: "description", label: "District Contact" },
+      { property: "districtContactTypeCode_description", label: "District Contact" },
       { property: "firstName", label: "Contact First Name" },
       { property: "lastName", label: "Contact Last name" },
       { property: "jobTitle", label: "Position Title" },
-      { property: "label", label: "Contact Type" },
+      { property: "districtContactTypeCode_label", label: "Contact Type" },
       { property: "districtId_mailing_addressLine1", label: "Address Line 1" },
       { property: "districtId_mailing_addressLine2", label: "Address Line 2" },
       { property: "districtId_mailing_city", label: "City" },
@@ -240,14 +240,15 @@ async function getAllDistrictMailing(req, res) {
     districtContactResponse.data.content.forEach(appendMailingAddressDetailsAndRemoveAddresses);
     
     
-    const content = normalizeJsonObject(districtContactResponse.data.content, districtList, 'districtId', null, ['displayName', 'districtNumber']);  
+    const contentWithDistrictLabels = normalizeJsonObject(districtContactResponse.data.content, districtList, 'districtId', null, ['displayName', 'districtNumber']);  
+    let content=  filterByField(contentWithDistrictLabels, 'districtId_districtNumber', ['']);
     content.forEach((currentElement, index, array) => {
       const rearrangedElement = rearrangeAndRelabelObjectProperties(currentElement, propertyOrder);
       array[index] = rearrangedElement;
     });
     const contentByDistrict = sortJSONByDistrictNumber(content)
-    const validDistricts = filterRemoveByField(contentByDistrict,"District Number", ["098","102","103"])
-    res.json(validDistricts);
+    
+    res.json(contentByDistrict);
     //res.json(districtContactsReorderedAndRelabeled );
   } catch (e) {
     log.error("getData Error", e.response ? e.response.status : e.message);
