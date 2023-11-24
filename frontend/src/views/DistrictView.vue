@@ -125,7 +125,7 @@ onMounted(async () => {
           'Physical Address City': item.physicalAddress?.city,
           'Physical Address Province': item.physicalAddress?.provinceCode,
           'Physical Address Postal Code': item.physicalAddress?.postal,
-          'Contact Job Title': item.contacts?.jobTitle,
+          Role: item.contacts?.jobTitle,
           'Contact First Name': item.contacts?.firstName,
           'Contact Last Name': item.contacts?.lastName,
           'Contact Phone Extension': item.contacts?.phoneExtension,
