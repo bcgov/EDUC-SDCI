@@ -394,7 +394,6 @@ async function getCategoryCodes(req, res) {
 }
 async function getSchoolList(req, res) {
   if (await !listCache.has("schoollist")) {
-    console.log("NEW LIST")
     const url = `${config.get("server:instituteAPIURL")}/institute/school`; // Update the URL according to your API endpoint
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
