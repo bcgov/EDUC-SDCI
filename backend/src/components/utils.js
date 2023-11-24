@@ -242,7 +242,16 @@ function addDistrictLabels(jsonData, districtList) {
   
     return filteredArray;
   }
+  function filterByOpenedAndClosedDate(data){
+    const currentDate = new Date();
   
+    return data.filter(item => {
+      const closedDate = item.closedDate ? new Date(item.closedDate) : null;
+      const openedDate = item.openedDate ? new Date(item.openedDate) : null;
+   
+      return (closedDate === null && currentDate > openedDate) || (currentDate < closedDate && currentDate > openedDate) ;
+    });
+  }
   function filterByExpiryDate(data) {
     const currentDate = new Date();
   
@@ -250,7 +259,7 @@ function addDistrictLabels(jsonData, districtList) {
       const expiryDate = item.expiryDate ? new Date(item.expiryDate) : null;
       const effectiveDate = item.effectiveDate ? new Date(item.effectiveDate) : null;
    
-      return expiryDate === null && currentDate > effectiveDate || currentDate < expiryDate && currentDate > effectiveDate ;
+      return (expiryDate === null && currentDate > effectiveDate) || (currentDate < expiryDate && currentDate > effectiveDate) ;
     });
   }
   function getArrayofNonPubliclyAvailableCodes(codes, field) {
@@ -368,4 +377,4 @@ function addDistrictLabels(jsonData, districtList) {
         return school;
     });
 }
-  module.exports = {filterByPubliclyAvailableCodes, getArrayofPubliclyAvailableCodes, filterByExpiryDate, filterRemoveByField,filterIncludeByField, sortByProperty,getArrayofNonPubliclyAvailableCodes,filterByField,appendMailingAddressDetailsAndRemoveAddresses,sortJSONBySchoolCode,sortJSONByDistrictNumber,normalizeJsonObject, removeFieldsByCriteria, createList, isSafeFilePath,isAllowedSchoolCategory, addDistrictLabels, districtNumberSort, createSchoolCache, formatGrades, rearrangeAndRelabelObjectProperties};
+  module.exports = {filterByOpenedAndClosedDate, filterByPubliclyAvailableCodes, getArrayofPubliclyAvailableCodes, filterByExpiryDate, filterRemoveByField,filterIncludeByField, sortByProperty,getArrayofNonPubliclyAvailableCodes,filterByField,appendMailingAddressDetailsAndRemoveAddresses,sortJSONBySchoolCode,sortJSONByDistrictNumber,normalizeJsonObject, removeFieldsByCriteria, createList, isSafeFilePath,isAllowedSchoolCategory, addDistrictLabels, districtNumberSort, createSchoolCache, formatGrades, rearrangeAndRelabelObjectProperties};
