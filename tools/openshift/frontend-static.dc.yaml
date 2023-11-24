@@ -127,9 +127,9 @@ objects:
         openshift.io/host.generated: "true"
       labels:
         app: "${APP_NAME}-${BRANCH}"
-      name: "www.${APP_NAME}-frontend-${BRANCH}"
+      name: "dev.${APP_NAME}-frontend-${BRANCH}"
     spec:
-      host: "www.${HOST_ROUTE}"
+      host: "${HOST_ROUTE}"
       port:
         targetPort: 2015-tcp
       tls:

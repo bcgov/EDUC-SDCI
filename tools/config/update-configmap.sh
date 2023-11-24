@@ -6,6 +6,7 @@ KC_CLIENT_SECRET=$5
 KC_CLIENT_ID=$6
 KC_TOKEN_URL=$7
 CLEAR_FILES_KEY=$8
+HOST_ROUTE=$9
 
 
 APP_NAME_UPPER=${APP_NAME^^}
@@ -14,8 +15,8 @@ TZVALUE="America/Vancouver"
 SOAM_KC_REALM_ID="master"
 SOAM_KC=soam-$envValue.apps.silver.devops.gov.bc.ca
 siteMinderLogoutUrl=""
-HOST_ROUTE="educ-sdci-${OPENSHIFT_NAMESPACE}-${envValue}.apps.silver.devops.gov.bc.ca"
-SERVER_FRONTEND="https://educ-sdci-${OPENSHIFT_NAMESPACE}-${envValue}.apps.silver.devops.gov.bc.ca"
+HOST_ROUTE="${HOST_ROUTE}"
+SERVER_FRONTEND="https://${HOST_ROUTE}"
 
 if [ "$envValue" = "dev" ]
 then
