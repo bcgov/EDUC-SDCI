@@ -10,7 +10,7 @@ env:
 
   CA_CERT: ${{ secrets.CA_CERT }}
   CERTIFICATE: ${{ secrets.CERT }}
-  PRIVATE_KEY: ${{ secrets.PRIV_KEY }}
+  PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
   CLEAR_FILES_KEY: ${{secrets.CLEAR_FILES_KEY}}
 
   # 🖊️ EDIT to change the image registry settings.
@@ -40,7 +40,7 @@ env:
   MIN_MEM: "200Mi"
   MAX_MEM: "250Mi"
   # SITE_URL should have no scheme or port. It will be prepended with https://
-
+  HOST_ROUTE: ${{ secrets.SITE_URL }}
 on:
   workflow_dispatch:
 
@@ -50,8 +50,6 @@ jobs:
     # ubuntu-latest can also be used.
     runs-on: ubuntu-22.04
     environment: dev
-    env:
-      HOST_ROUTE: ${{ secrets.SITE_URL }}
     outputs:
       ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
       SELECTOR: ${{ steps.deploy-and-expose.outputs.selector }}
@@ -193,7 +191,7 @@ jobs:
           oc process -f tools/openshift/frontend-static.dc.yaml -p APP_NAME=${{ env.APP_NAME }} -p REPO_NAME=${{ env.REPO_NAME }} -p BRANCH=${{ env.BRANCH }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} -p TAG=${{ env.TAG }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} -p HOST_ROUTE=${{ env.HOST_ROUTE }} -p CA_CERT="${{ env.CA_CERT }}" -p CERTIFICATE="${{ env.CERTIFICATE }}" -p PRIVATE_KEY="${{ env.PRIVATE_KEY }}"\
           | oc apply -f -
 
-          curl -s https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/main/tools/config/update-configmap.sh | bash /dev/stdin dev ${{ env.APP_NAME }} ${{ env.NAMESPACE }} ${{env.COMMON_NAMESPACE}} ${{secrets.KC_CLIENT_ID}} ${{secrets.KC_CLIENT_SECRET}} ${{secrets.KC_TOKEN_URL}} ${{secrets.CLEAR_FILES_KEY}}
+          curl -s https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/main/tools/config/update-configmap.sh | bash /dev/stdin dev ${{ env.APP_NAME }} ${{ env.NAMESPACE }} ${{env.COMMON_NAMESPACE}} ${{secrets.KC_CLIENT_ID}} ${{secrets.KC_CLIENT_SECRET}} ${{secrets.KC_TOKEN_URL}} ${{secrets.CLEAR_FILES_KEY}} ${{ env.HOST_ROUTE}}
 
           # Start rollout (if necessary) and follow it
           oc rollout latest dc/${{ env.IMAGE_NAME }} 2> /dev/null \
