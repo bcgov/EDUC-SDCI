@@ -5,6 +5,6 @@ describe('Testing School Page', () => {
   });
 
   it('Confirm school title is displaying', () => {
-    cy.contains('h2', '06161064 - Lambrick Park Secondary');
+    cy.contains('h1', '06161064 - Lambrick Park Secondary');
   });
 });

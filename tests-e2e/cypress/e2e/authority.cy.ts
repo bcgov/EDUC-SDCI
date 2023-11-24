@@ -1,10 +1,10 @@
 describe('Testing Authority Page', () => {
   before(() => {
     // Visit the root URL before running any test case.
-    cy.visit('/authority/100-Abbotsford%20Christian%20School');
+    cy.visit('/authority/100-Abbotsford%20Christian%20School%20Society');
   });
 
   it('visits the app root url', () => {
-    cy.contains('h1', '100 - Abbotsford Christian School');
+    cy.contains('h1', '100 - Abbotsford Christian School Society');
   });
 });
