@@ -113,15 +113,8 @@ onMounted(async () => {
       filteredSchools.value = transformedSchoolData.map((item: any) => {
         return {
           'District Number': response.data.districtData.districtNumber,
-          'Display Name': item.displayName,
           Mincode: item.mincode,
-          'Facility Type Code': item.facilityTypeCode,
-          'Contact Job Title': item.contacts?.jobTitle,
-          'Contact First Name': item.contacts?.firstName,
-          'Contact Last Name': item.contacts?.lastName,
-          'Contact Phone Extension': item.contacts?.phoneExtension,
-          'Contact Phone Number': item.contacts?.phoneNumber,
-          'School Email': item.email,
+          'Display Name': item.displayName,
           'Mailing Address': item.mailingAddress?.addressLine1,
           'Mailing Address Line2': item.mailingAddress?.addressLine2,
           'Mailing Address City': item.mailingAddress?.city,
@@ -131,13 +124,18 @@ onMounted(async () => {
           'Physical Address Line2': item.physicalAddress?.addressLine2,
           'Physical Address City': item.physicalAddress?.city,
           'Physical Address Province': item.physicalAddress?.provinceCode,
-          'Physical Address PostalCode': item.physicalAddress?.postal,
-          'District Phone Number': item.phoneNumber,
-          'District Fax': item.faxNumber,
-          'District Website': item.website,
-          'School Category Code': item.schoolCategoryCode,
-          'School Organization Code': item.schoolOrganizationCode,
-          'School Reporting Requirement Code': item.schoolReportingRequirementCode
+          'Physical Address Postal Code': item.physicalAddress?.postal,
+          'Contact Job Title': item.contacts?.jobTitle,
+          'Contact First Name': item.contacts?.firstName,
+          'Contact Last Name': item.contacts?.lastName,
+          'Contact Phone Extension': item.contacts?.phoneExtension,
+          'Contact Phone Number': item.contacts?.phoneNumber,
+          'Facility Type Code': appStore.getFacilityCodeLabel(item.facilityTypeCode),
+          'School Category Code': appStore.getCategoryCodeLabel(item.schoolCategoryCode),
+          'Phone Number': item.phoneNumber,
+          Fax: item.faxNumber,
+          Email: item.email,
+          Website: item.website
         }
       })
       filteredContacts.value = contacts.value.map((item: any) => {

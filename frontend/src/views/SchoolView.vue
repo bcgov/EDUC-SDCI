@@ -117,6 +117,7 @@ onBeforeMount(async () => {
         filteredAddresses.value = response.data.addresses[0]
       }
     }
+    // console.log(appStore.getFacilityCodeLabel(response.data?.facilityTypeCode))
     //setting school contacts
     if (response.data) {
       if (response.data.contacts.length > 0) {
@@ -124,8 +125,12 @@ onBeforeMount(async () => {
           filteredContacts.value = response.data.contacts
           filteredContacts.value[i].districtNumber = distNumberFromMincode(response.data?.mincode)
           filteredContacts.value[i].displayName = response.data?.displayName
-          filteredContacts.value[i].schoolCategoryCode = response.data?.schoolCategoryCode
-          filteredContacts.value[i].facilityTypeCode = response.data?.facilityTypeCode
+          filteredContacts.value[i].schoolCategoryCode = appStore.getCategoryCodeLabel(
+            response.data?.schoolCategoryCode
+          )
+          filteredContacts.value[i].facilityTypeCode = appStore.getFacilityCodeLabel(
+            response.data?.facilityTypeCode
+          )
           filteredContacts.value[i].mincode = response.data?.mincode
           filteredContacts.value[i].schoolEmail = response.data?.email
           filteredContacts.value[i].schoolPhoneNumber = response.data?.phoneNumber
