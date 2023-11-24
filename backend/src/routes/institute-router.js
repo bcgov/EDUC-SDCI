@@ -5,12 +5,12 @@ const config = require("../config/index");
 
 const axios = require("axios");
 const { checkToken } = require("../components/auth");
-const {formatGrades, removeFieldsByCriteria, createList, addDistrictLabels, districtNumberSort, isAllowedSchoolCategory, filterRemoveByField } = require("../components/utils");
+const {filterByOpenedAndClosedDate, formatGrades, removeFieldsByCriteria, createList, addDistrictLabels, districtNumberSort, isAllowedSchoolCategory, filterRemoveByField, filterByField } = require("../components/utils");
 const { listCache, codeCache } = require("../components/cache");
 
-const schoolListOptions = { fields: ["mincode", "displayName", "schoolId", "closedDate"], fieldToInclude: "closedDate", valueToInclude: null, sortField: "mincode" };
+const schoolListOptions = { fields: ["mincode", "displayName", "schoolId", "closedDate", "openedDate","schoolCategoryCode"], fieldToInclude: null, valueToInclude: null, sortField: "mincode" };
 const districtListOptions = { fields: ["displayName", "districtId","districtNumber", "closedDate"] ,fieldToInclude: "districtStatusCode", valueToInclude: "ACTIVE", sortField: "districtNumber"};
-const authorityListOptions = { fields: ["displayName", "authorityNumber","independentAuthorityId", "closedDate"], sortField: "authorityNumber" };
+const authorityListOptions = { fields: ["displayName", "authorityNumber","independentAuthorityId", "closedDate", "opendDate"], sortField: "authorityNumber" };
 const openSchoolListOptions = { fields: [
   "schoolId",
   "districtId",
@@ -394,11 +394,15 @@ async function getCategoryCodes(req, res) {
 }
 async function getSchoolList(req, res) {
   if (await !listCache.has("schoollist")) {
+    console.log("NEW LIST")
     const url = `${config.get("server:instituteAPIURL")}/institute/school`; // Update the URL according to your API endpoint
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
-        const schoolList = createList(response.data, schoolListOptions);
+        const openSchools = filterByOpenedAndClosedDate(response.data)
+        const validSchools = filterByField(openSchools, "schoolCategoryCode", ["SUMMER", "FED_BAND"])
+
+        const schoolList = createList(validSchools, schoolListOptions);
         res.json(schoolList);
         listCache.set("schoollist", schoolList);
         log.info(req.url);
