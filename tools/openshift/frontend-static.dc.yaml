@@ -107,7 +107,7 @@ objects:
         openshift.io/host.generated: "true"
       labels:
         app: "${APP_NAME}-${BRANCH}"
-      name: "dev.${APP_NAME}-frontend-${BRANCH}"
+      name: "${APP_NAME}-frontend-${BRANCH}"
     spec:
       host: "${HOST_ROUTE}"
       port:
