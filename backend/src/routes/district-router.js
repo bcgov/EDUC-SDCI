@@ -314,8 +314,11 @@ async function getDistrict(req, res) {
     });
     
     const contactTypeCodes = await getDistrictCodes(req);
+    const schoolCategoryCodes = await listCache.get("categoryCodes")
+    const facilityCodes = await listCache.get("facilityCodes")
     const districtContactCodeTypes = await listCache.get("codesList")
     const nonPublicContactTypeCodes = getNonPublicContactTypeCodes(contactTypeCodes);
+    
     
     const districtDataPublic = removeContacts(
       districtDataResponse.data,
@@ -328,8 +331,10 @@ async function getDistrict(req, res) {
     districtDataPublicWithLabels.contacts = filterByPubliclyAvailableCodes(districtDataPublicWithLabels.contacts,"districtContactTypeCode",getArrayofPubliclyAvailableCodes(districtContactCodeTypes.codesList.districtContactTypeCodes, "districtContactTypeCode"))
     districtDataPublicWithLabels.contacts = filterByExpiryDate(districtDataPublicWithLabels.contacts)
     
-  
-  
+
+    districtSchoolsResponse.data.content = normalizeJsonObject(districtSchoolsResponse.data.content, schoolCategoryCodes, "schoolCategoryCode",  null, ["label", "description"]);
+    districtSchoolsResponse.data.content = normalizeJsonObject(districtSchoolsResponse.data.content, facilityCodes, "faciltyTypeCode",  null, ["label", "description"]);
+
     const districtJSON = {
       districtData: districtDataPublicWithLabels,
       districtSchools: districtSchoolsResponse.data.content,
