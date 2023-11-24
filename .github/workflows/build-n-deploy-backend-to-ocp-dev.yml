@@ -10,7 +10,7 @@ env:
 
   CA_CERT: ${{ secrets.CA_CERT }}
   CERTIFICATE: ${{ secrets.CERT }}
-  PRIVATE_KEY: ${{ secrets.PRIV_KEY }}
+  PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
   CLEAR_FILES_KEY: ${{secrets.CLEAR_FILES_KEY}}
 
   # 🖊️ EDIT to change the image registry settings.
