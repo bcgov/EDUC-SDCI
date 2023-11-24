@@ -139,7 +139,7 @@ onMounted(async () => {
         'Authority Number': authority.value?.authorityData?.authorityNumber,
         Mincode: item.mincode,
         'Display Name': item.displayName,
-        'Contact Job Title': item.contacts?.jobTitle,
+        'Contact Role': item.contacts?.jobTitle,
         'Contact First Name': item.contacts?.firstName,
         'Contact Last Name': item.contacts?.lastName,
         'Contact Phone Number': item.contacts?.phoneNumber,

@@ -56,7 +56,7 @@ const transformContactForDownload = (inputData: any): {} => {
     'School Email': item.schoolEmail,
     'School Phone Number': item.schoolPhoneNumber,
     'School Fax Number': item.schoolFaxNumber,
-    'Job Title': item.jobTitle,
+    'Contact Type': item.schoolContactTypeCode_label,
     Role: item.jobTitle,
     'First Name': item.firstName,
     'Last Name': item.lastName,
