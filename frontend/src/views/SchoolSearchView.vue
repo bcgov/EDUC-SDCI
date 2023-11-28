@@ -189,6 +189,7 @@ const resetFilters = () => {
 onBeforeMount(async () => {
   // Fetch types data when the component is mounted
   await fetchTypes()
+  searchSchools()
 })
 </script>
 
