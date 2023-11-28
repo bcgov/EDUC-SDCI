@@ -45,8 +45,8 @@ function downloadOffshoreSchoolReps() {
             href="/api/v1/download/csv/authority/all-mailing/OFFSHORE?filepath=offshoreschoolrepresentatives"
             variant="text"
             class="v-btn-align-left text-none text-subtitle-1 my-1"
-            ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Offshore Schools
-            Representatives (CSV)</v-btn
+            ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Offshore School
+            Owner/Operators (CSV)</v-btn
           >
         </v-row>
       </v-col>

@@ -113,6 +113,7 @@ objects:
     kind: Route
     metadata:
       annotations:
+        haproxy.router.openshift.io/timeout: 120s
         openshift.io/host.generated: "true"
       labels:
         app: "${APP_NAME}-${BRANCH}"
