@@ -8,13 +8,13 @@ const jsonExport = require('jsonexport');
 const fs = require('fs');
 const path = require('path');
 const {isSafeFilePath} = require("../components/utils")
-const { listCache, fileCache } = require("../components/cache");
+const { listCache, fileCache, schoolCache } = require("../components/cache");
 const FILE_STORAGE_DIR = path.join(__dirname, '../..', 'public');
 
 router.get('/csv/*', checkToken, getDownload, createCSVFile, getCSVDownload);
-router.get('/clear-files/:token', clearCSVFiles);
+router.get('/flush-cache/:token', flushFileCache);
 
-async function clearCSVFiles(req, res) {
+async function flushFileCache(req, res) {
   try {
     const providedToken = req.params.token;
     const configuredToken = config.get('server:clearFilesKey');
@@ -22,14 +22,8 @@ async function clearCSVFiles(req, res) {
     if (providedToken !== configuredToken) {
       return res.status(403).send('Invalid token');
     }
-    const directoryPath = FILE_STORAGE_DIR ;
-    // Read all files in the directory
-    fs.readdirSync(directoryPath).forEach((file) => {
-      const filePath = path.join(directoryPath, file);
-  
-      // Delete each file
-      fs.unlinkSync(filePath);
-    });
+    fileCache.flushAll();
+    schoolCache.flushAll();
     res.status(200).send('All files in the directory deleted successfully.');
   } catch (error) {
     console.error(error);
