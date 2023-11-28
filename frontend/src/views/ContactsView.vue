@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAppStore } from '@/stores/app'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import InstituteService from '@/services/InstituteService'
 import jsonexport from 'jsonexport/dist'
 
@@ -95,6 +95,9 @@ const searchContact = async () => {
     console.error('Error fetching schools:', error)
   }
 }
+onMounted(() => {
+  searchContact() // <div>
+})
 </script>
 
 <template>
