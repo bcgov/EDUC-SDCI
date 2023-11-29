@@ -89,10 +89,10 @@ const schools = [
 
 const headers = [
   { title: '', key: 'data-table-expand' },
-  { title: 'School Name', key: 'displayName' },
-  { title: 'Mincode', key: 'mincode' },
-  { title: 'Category', key: 'schoolCategoryCodeLabel' },
-  { title: 'Type', key: 'facilityTypeCodeLabel' }
+  { title: 'School Name', key: 'displayName', sortable: false },
+  { title: 'Mincode', key: 'mincode', sortable: false },
+  { title: 'Category', key: 'schoolCategoryCodeLabel', sortable: false },
+  { title: 'Type', key: 'facilityTypeCodeLabel', sortable: false }
 ]
 
 const filteredSchools = ref(schools)
@@ -264,7 +264,6 @@ onBeforeMount(async () => {
         :loading="loading"
         @page-change:page="handlePageChange"
         @update:options="handleUpdate"
-        :sort-by="[{ key: 'mincode', order: 'asc' }]"
       >
         <template v-slot:item.displayName="{ item }">
           <a :href="`/school/${item.schoolId}`">{{ item.displayName }}</a>
