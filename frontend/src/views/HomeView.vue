@@ -6,29 +6,26 @@ import SchoolSelect from '../components/SchoolSelect.vue'
 </script>
 
 <template>
-  <div>
-    <!-- <v-breadcrumbs
-      bg-color="primary"
-      class="breadcrumbs"
-      :items="[{ title: 'Home', href: '/' }]"
-    ></v-breadcrumbs> -->
+  <v-container fluid class="pa-0">
     <v-col no-gutters>
       <v-row>
-        <SchoolSelect />
+        <v-col class="pa-0">
+          <SchoolSelect />
+        </v-col>
       </v-row>
-      <v-row no-gutters>
-        <v-col class="d-flex align-stretch ma-2">
+      <v-row justify="center">
+        <v-col cols="8" md="4" class="d-flex py-6">
           <DistrictSelect />
         </v-col>
 
-        <v-col class="d-flex align-stretch ma-2">
+        <v-col cols="8" md="4" class="d-flex py-6">
           <AuthoritySelect />
         </v-col>
 
-        <v-col class="d-flex align-stretch ma-2">
+        <v-col cols="8" md="4" class="d-flex py-6">
           <OffshoreSelect />
         </v-col>
       </v-row>
     </v-col>
-  </div>
+  </v-container>
 </template>
