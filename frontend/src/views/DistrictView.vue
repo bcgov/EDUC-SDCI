@@ -175,7 +175,6 @@ onMounted(async () => {
 
 <template>
   <div>
-    <v-spacer />
     <v-breadcrumbs
       class="breadcrumbs"
       bg-color="white"
