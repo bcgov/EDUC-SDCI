@@ -25,8 +25,13 @@ div.v-application__wrap {
 
 @media (max-width: 768px) {
   #app {
-    min-width: 1130px; /* Adjust as needed */
+    /* min-width: 600px; */
     padding: 0; /* Adjust as needed */
+  }
+
+  .full-width {
+    margin-left: calc(-1*(100vw - 400px)/2);
+    margin-right: calc(-1*(100vw - 400px)/2);
   }
 }
 .school-search{

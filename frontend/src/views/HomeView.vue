@@ -13,16 +13,16 @@ import SchoolSelect from '../components/SchoolSelect.vue'
           <SchoolSelect />
         </v-col>
       </v-row>
-      <v-row justify="center">
-        <v-col cols="8" md="4" class="d-flex py-6">
+      <v-row justify="center" class="pa-2 pa-md-0">
+        <v-col cols="12" md="4" class="d-flex py-md-6 pa-2 px-md-3">
           <DistrictSelect />
         </v-col>
 
-        <v-col cols="8" md="4" class="d-flex py-6">
+        <v-col cols="12" md="4" class="d-flex py-md-6 pa-2 px-md-3">
           <AuthoritySelect />
         </v-col>
 
-        <v-col cols="8" md="4" class="d-flex py-6">
+        <v-col cols="12" md="4" class="d-flex py-md-6 pa-2 px-md-3">
           <OffshoreSelect />
         </v-col>
       </v-row>

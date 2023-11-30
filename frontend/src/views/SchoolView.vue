@@ -203,74 +203,78 @@ function goToDistrict() {
     ></v-breadcrumbs>
 
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
-      <v-row no-gutters justify="space-between">
-        <v-row v-if="schoolData.value" no-gutters justify="space-between">
-          <v-col>
-            <v-row no-gutters>
-              <h1 class="mt-3 mb-2">
-                {{ schoolData.value.mincode }} - {{ schoolData.value.displayName }}
-              </h1>
-            </v-row>
-            <v-row no-gutters class="mt-0 mb-1">
-              <a
-                v-if="schoolData.value.schoolCategoryCode == 'PUBLIC'"
-                id="district-link"
-                :href="`/district/${useSanitizeURL(
-                  String(districtInfo.value?.districtNumber)
-                )}-${useSanitizeURL(String(districtInfo.value?.displayName))}`"
-              >
-                District {{ districtInfo.value.districtNumber }} -
-                {{ districtInfo.value.displayName }}
-              </a>
-              <a
-                id="authority-link"
-                :href="`/authority/${authorityInfo.value.authorityNumber}-${authorityInfo.value.displayName}`"
-                v-if="schoolData.value?.independentAuthorityId && authorityInfo.value"
-                class="ml-1"
-              >
-                Independent Authority {{ authorityInfo.value.authorityNumber }} -
-                {{ authorityInfo.value.displayName }}
-              </a>
-            </v-row>
-            <v-row no-gutters class="mt-1 mb-4">
-              <v-chip
-                v-for="grade in filteredGradesLabels"
-                :key="grade"
-                class="mr-1"
-                size="small"
-                color="primary"
-                label
-                >{{ grade }}</v-chip
-              >
-            </v-row>
-            <v-row no-gutters>
-              <v-col class="pl-0">
-                <p><strong>Phone:</strong> {{ formatPhoneNumber(schoolData.value.phoneNumber) }}</p>
-                <p><strong>Fax:</strong> {{ formatPhoneNumber(schoolData.value.faxNumber) }}</p>
-                <p>
-                  <strong>Email: </strong>
-                  <a :href="'mailto:' + schoolData.value?.email">
-                    {{ schoolData.value.email }}
-                  </a>
-                </p>
-              </v-col>
-              <v-col v-for="item in schoolData.value.addresses" :key="item.addressTypeCode">
-                <DisplayAddress v-bind="item" />
-              </v-col>
-              <v-col
-                ><v-btn
-                  variant="text"
-                  class="text-none text-subtitle-1 ma-1 v-btn-align-left"
-                  @click="downloadCSV"
-                  :disabled="!schoolData.value"
-                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
-                  School Info (CSV)</v-btn
-                ></v-col
-              >
-            </v-row>
-          </v-col>
+      <v-container class="main">
+        <v-row no-gutters justify="space-between">
+          <v-row v-if="schoolData.value" no-gutters justify="space-between">
+            <v-col>
+              <v-row no-gutters>
+                <h1 class="mt-3 mb-2">
+                  {{ schoolData.value.mincode }} - {{ schoolData.value.displayName }}
+                </h1>
+              </v-row>
+              <v-row no-gutters class="mt-0 mb-1">
+                <a
+                  v-if="schoolData.value.schoolCategoryCode == 'PUBLIC'"
+                  id="district-link"
+                  :href="`/district/${useSanitizeURL(
+                    String(districtInfo.value?.districtNumber)
+                  )}-${useSanitizeURL(String(districtInfo.value?.displayName))}`"
+                >
+                  District {{ districtInfo.value.districtNumber }} -
+                  {{ districtInfo.value.displayName }}
+                </a>
+                <a
+                  id="authority-link"
+                  :href="`/authority/${authorityInfo.value.authorityNumber}-${authorityInfo.value.displayName}`"
+                  v-if="schoolData.value?.independentAuthorityId && authorityInfo.value"
+                  class="ml-1"
+                >
+                  Independent Authority {{ authorityInfo.value.authorityNumber }} -
+                  {{ authorityInfo.value.displayName }}
+                </a>
+              </v-row>
+              <v-row no-gutters class="mt-1 mb-4">
+                <v-chip
+                  v-for="grade in filteredGradesLabels"
+                  :key="grade"
+                  class="mr-1"
+                  size="small"
+                  color="primary"
+                  label
+                  >{{ grade }}</v-chip
+                >
+              </v-row>
+              <v-row no-gutters>
+                <v-col class="pl-0">
+                  <p>
+                    <strong>Phone:</strong> {{ formatPhoneNumber(schoolData.value.phoneNumber) }}
+                  </p>
+                  <p><strong>Fax:</strong> {{ formatPhoneNumber(schoolData.value.faxNumber) }}</p>
+                  <p>
+                    <strong>Email: </strong>
+                    <a :href="'mailto:' + schoolData.value?.email">
+                      {{ schoolData.value.email }}
+                    </a>
+                  </p>
+                </v-col>
+                <v-col v-for="item in schoolData.value.addresses" :key="item.addressTypeCode">
+                  <DisplayAddress v-bind="item" />
+                </v-col>
+                <v-col
+                  ><v-btn
+                    variant="text"
+                    class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+                    @click="downloadCSV"
+                    :disabled="!schoolData.value"
+                    ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
+                    School Info (CSV)</v-btn
+                  ></v-col
+                >
+              </v-row>
+            </v-col>
+          </v-row>
         </v-row>
-      </v-row>
+      </v-container>
     </v-sheet>
 
     <v-card class="fill-screen-height pa-6" width="100%" v-if="schoolData.value">
