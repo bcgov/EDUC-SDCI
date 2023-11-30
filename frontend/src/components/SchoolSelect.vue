@@ -41,9 +41,10 @@ function goToSchoolSearch() {
             src="@/assets/images/BCMapGraphic.png"
             alt="Map of British Columbia"
             style="height: 268px; position: absolute; top: 50px; left: -80px"
+            class="d-none d-md-block"
           />
         </v-col>
-        <v-col cols="12" md="8" class="ml-0 py-6 school-search">
+        <v-col cols="10" md="8" class="ml-0 py-6 school-search">
           <h2 class="mb-5">Find a School in BC</h2>
           <v-row>
             <v-autocomplete
