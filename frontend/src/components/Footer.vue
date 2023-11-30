@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 
 <template>
-  <v-footer class="full-width">
+  <v-footer class="full-width pa-0">
     <v-col no-gutters justify="space-between"
       ><v-row class="territorial-acknowledgement"
         ><v-spacer /><v-col cols="6"

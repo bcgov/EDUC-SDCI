@@ -19,17 +19,10 @@ function goToAuthority() {
     }
   })
 }
-
-function downloadAuthorityMailing() {
-  alert('TODO - Implement authority mailing download')
-}
-function downloadAuthorityContacts() {
-  alert('TODO - Implement authority contacts download')
-}
 </script>
 
 <template>
-  <v-card class="px-6 py-4 mt-5">
+  <v-card class="px-6 py-4 w-100">
     <h2 class="mb-5">Independent Authorities</h2>
     <v-row no-gutters>
       <v-col class="ma-1">
