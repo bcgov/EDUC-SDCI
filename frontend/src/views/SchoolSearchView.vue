@@ -201,47 +201,45 @@ onBeforeMount(async () => {
       :items="[{ title: 'Home', href: '/' }, 'Search']"
     ></v-breadcrumbs>
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
-      <v-container class="main">
-        <h2>Find Schools</h2>
-        <v-row>
-          <v-col cols="12" md="3">
-            <v-select
-              v-model="selectedJurisdiction"
-              :items="jurisdictions"
-              item-title="label"
-              item-value="schoolCategoryCode"
-              label="Category"
-              multiple
-            ></v-select>
-          </v-col>
-          <v-col cols="12" md="3">
-            <v-select
-              v-model="selectedType"
-              item-title="label"
-              item-value="facilityTypeCode"
-              :items="types"
-              label="Types"
-              multiple
-            ></v-select>
-          </v-col>
-          <v-col cols="12" md="3"
-            ><v-btn
-              icon="mdi-magnify"
-              color="primary"
-              variant="flat"
-              rounded="lg"
-              size="large"
-              @click="searchSchools"
-              class="text-none text-subtle-1 ml-3"
-          /></v-col>
-          <v-col cols="12">
-            <v-btn @click="resetFilters" variant="outlined" color="primary" class="text-none"
-              >Reset</v-btn
-            >
-            <!-- <v-btn @click="searchSchools" color="primary">Search</v-btn> -->
-          </v-col>
-        </v-row>
-      </v-container>
+      <h2>Find Schools</h2>
+      <v-row>
+        <v-col cols="12" md="3">
+          <v-select
+            v-model="selectedJurisdiction"
+            :items="jurisdictions"
+            item-title="label"
+            item-value="schoolCategoryCode"
+            label="Category"
+            multiple
+          ></v-select>
+        </v-col>
+        <v-col cols="12" md="3">
+          <v-select
+            v-model="selectedType"
+            item-title="label"
+            item-value="facilityTypeCode"
+            :items="types"
+            label="Types"
+            multiple
+          ></v-select>
+        </v-col>
+        <v-col cols="12" md="3"
+          ><v-btn
+            icon="mdi-magnify"
+            color="primary"
+            variant="flat"
+            rounded="lg"
+            size="large"
+            @click="searchSchools"
+            class="text-none text-subtle-1 ml-3"
+        /></v-col>
+        <v-col cols="12">
+          <v-btn @click="resetFilters" variant="outlined" color="primary" class="text-none"
+            >Reset</v-btn
+          >
+          <!-- <v-btn @click="searchSchools" color="primary">Search</v-btn> -->
+        </v-col>
+      </v-row>
     </v-sheet>
 
     <v-card class="pa-6" width="100%">
