@@ -50,7 +50,9 @@ const fetchTypes = async () => {
       'JUSTB4PRO',
       'SUMMER'
     ] // Add the values you want to remove
-    types.value = response.data.filter(item: any) => !valuesToRemove.includes(item.facilityTypeCode))
+    types.value = response.data.filter(
+      (item: any) => !valuesToRemove.includes(item.facilityTypeCode)
+    )
   } catch (error) {
     console.error('Error fetching types:', error)
   }
