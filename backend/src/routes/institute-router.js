@@ -399,9 +399,9 @@ async function getSchoolList(req, res) {
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
         const openSchools = filterByOpenedAndClosedDate(response.data)
-        const validSchools = filterByField(openSchools, "schoolCategoryCode", ["SUMMER", "FED_BAND"])
-
-        const schoolList = createList(validSchools, schoolListOptions);
+        const validSchoolCategories = filterByField(openSchools, "schoolCategoryCode", ["POST_SEC", "YUKON", "SUMMER", "FED_BAND"])
+        const validSchoolFacilities = filterByField(validSchoolCategories, "facilityTypeCode", ['PROVINCIAL','DIST_CONT','ELEC_DELIV','POST_SEC','JUSTB4PRO','SUMMER'])
+        const schoolList = createList(validSchoolFacilities, schoolListOptions);
         res.json(schoolList);
         listCache.set("schoollist", schoolList);
         log.info(req.url);
