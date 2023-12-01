@@ -212,56 +212,54 @@ onMounted(async () => {
       ]"
     ></v-breadcrumbs>
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
-      <v-container class="main">
-        <v-row no-gutters justify="space-between">
-          <v-col>
-            <h1 class="mt-3 mb-2">
-              {{ authority.value.authorityData?.authorityNumber }} -
-              {{ authority.value.authorityData?.displayName }}
-            </h1>
-            <v-row v-if="authority.value.authorityData">
-              <v-col>
-                <p>
-                  <strong>Phone:</strong>
-                  {{ formatPhoneNumber(authority.value.authorityData?.phoneNumber) }}
-                </p>
-                <p>
-                  <strong>Fax:</strong>
-                  {{ formatPhoneNumber(authority.value.authorityData?.faxNumber) }}
-                </p>
-                <p>
-                  <strong>Email: </strong>
-                  <a :href="'mailto:' + authority.value.authorityData?.email">{{
-                    authority.value.authorityData?.email
-                  }}</a>
-                </p>
-              </v-col>
-              <v-col
-                v-for="item in authority.value.authorityData.addresses"
-                :key="item.addressTypeCode"
+      <v-row no-gutters justify="space-between">
+        <v-col>
+          <h1 class="mt-3 mb-2">
+            {{ authority.value.authorityData?.authorityNumber }} -
+            {{ authority.value.authorityData?.displayName }}
+          </h1>
+          <v-row v-if="authority.value.authorityData">
+            <v-col>
+              <p>
+                <strong>Phone:</strong>
+                {{ formatPhoneNumber(authority.value.authorityData?.phoneNumber) }}
+              </p>
+              <p>
+                <strong>Fax:</strong>
+                {{ formatPhoneNumber(authority.value.authorityData?.faxNumber) }}
+              </p>
+              <p>
+                <strong>Email: </strong>
+                <a :href="'mailto:' + authority.value.authorityData?.email">{{
+                  authority.value.authorityData?.email
+                }}</a>
+              </p>
+            </v-col>
+            <v-col
+              v-for="item in authority.value.authorityData.addresses"
+              :key="item.addressTypeCode"
+            >
+              <DisplayAddress v-bind="item" />
+            </v-col>
+            <v-col>
+              <v-btn
+                variant="text"
+                class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+                @click="downloadAuthorityContacts()"
+                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
+                Authority Contacts (CSV)</v-btn
               >
-                <DisplayAddress v-bind="item" />
-              </v-col>
-              <v-col>
-                <v-btn
-                  variant="text"
-                  class="text-none text-subtitle-1 ma-1 v-btn-align-left"
-                  @click="downloadAuthorityContacts()"
-                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
-                  Authority Contacts (CSV)</v-btn
-                >
-                <v-btn
-                  variant="text"
-                  class="text-none text-subtitle-1 ma-1 v-btn-align-left"
-                  @click="downloadAuthoritySchools()"
-                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
-                  Authority Schools (CSV)</v-btn
-                >
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
-      </v-container>
+              <v-btn
+                variant="text"
+                class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+                @click="downloadAuthoritySchools()"
+                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
+                Authority Schools (CSV)</v-btn
+              >
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
     </v-sheet>
     <!-- END Authority Info Header Block -->
     <v-sheet class="pa-6">

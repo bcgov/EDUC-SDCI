@@ -30,7 +30,7 @@ function downloadDistrictsMailing() {
 </script>
 
 <template>
-  <v-card class="px-6 py-4 w-100">
+  <v-card class="px-6 py-4 mt-5">
     <h2 class="mb-5">School Districts</h2>
     <v-row no-gutters justify="space-between">
       <v-col class="ma-1">
