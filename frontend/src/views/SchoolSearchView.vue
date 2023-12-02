@@ -151,6 +151,20 @@ const searchSchools = async () => {
     valueType: 'STRING',
     condition: 'AND'
   })
+  params[0].searchCriteriaList.push({
+    key: 'schoolCategoryCode',
+    operation: 'nin',
+    value: 'FED_BAND, POST_SEC,YUKON',
+    valueType: 'STRING',
+    condition: 'AND'
+  })
+  params[0].searchCriteriaList.push({
+    key: 'facilityTypeCode',
+    operation: 'nin',
+    value: 'SUMMER,PROVINCIAL,DIST_CONT, ELEC_DELIV,POST_SEC,JUSTB4PRO,SUMMER',
+    valueType: 'STRING',
+    condition: 'AND'
+  })
 
   const jsonString = JSON.stringify(params)
   const encodedParams = encodeURIComponent(jsonString)
