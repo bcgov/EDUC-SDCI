@@ -221,7 +221,7 @@ async function getAllSchools(req, res) {
         })
         .catch((e) => {
           log.error(
-            "getSchoolsList Error",
+            "getAllSchoolsList Error",
             e.response ? e.response.status : e.message
           );
         });

@@ -40,6 +40,70 @@ router.get("/create-cache", checkToken, createCache);
 router.get("/category-codes", checkToken, getCategoryCodes);
 router.get("/*", checkToken, getInstituteAPI);
 async function createCache(req, res) {
+  if (await !listCache.has("districtlist")) {
+    const url = `${config.get("server:instituteAPIURL")}/institute/district`; // Update the URL according to your API endpoint
+    axios
+      .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
+      .then((response) => {
+        //const districtList = response.data;
+        const filteredDistrictList = response.data.filter(district => !["098","102", "103"].includes(district.districtNumber));
+        const districtList = createList(filteredDistrictList, districtListOptions);
+        
+        listCache.set("districtlist", districtList);
+        log.info(req.url);
+      })
+      .catch((e) => {
+        log.error(
+          "getDistrictList Error",
+          e.response ? e.response.status : e.message
+        );
+      });
+  } 
+  if (!listCache.has("categoryCodes")) {
+    //const codes = [];
+    
+    try {
+      const categoryCodesResponse = await axios.get(
+        `${config.get(
+          "server:instituteAPIURL"
+        )}/institute/category-codes`,
+        {
+          headers: { Authorization: `Bearer ${req.accessToken}` },
+        }
+      );
+      
+      categoryCodesResponse.data = filterRemoveByField(categoryCodesResponse.data,"schoolCategoryCode", ["FED_BAND","POST_SEC","YUKON"])
+      listCache.set("categoryCodes", categoryCodesResponse.data);
+      
+    } catch (error) {
+      const statusCode = error.response ? error.response.status : 500;
+      log.error("Category Code Caching Error", statusCode, error.message);
+      res.status(statusCode).send(error.message);
+    }
+  } else{
+    const categoryCodes = await listCache.get("categoryCodes");
+    res.json(categoryCodes)
+  }
+  if (await !codeCache.has("gradelist")) {
+    const url = `${config.get("server:instituteAPIURL")}/institute/grade-codes`; // Update the URL according to your API endpoint
+    axios
+      .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
+      .then((response) => {
+        const gradeCodes = response.data;
+        
+        codeCache.set("gradelist", gradeCodes);
+        log.info(req.url);
+      })
+      .catch((e) => {
+        log.error(
+          "getDistrictList Error",
+          e.response ? e.response.status : e.message
+        );
+      });
+  } else {
+    const gradeCodes = await codeCache.get("gradelist");
+    res.json(gradeCodes);
+  }
 
   if (!listCache.has("categoryCodes")) {
     //const codes = [];
@@ -176,7 +240,7 @@ async function createCache(req, res) {
       listCache.set("codesList", { codesList: codes });
     } catch (error) {
       const statusCode = error.response ? error.response.status : 500;
-      log.error("getSchoolsList Error", statusCode, error.message);
+      log.error("getCodesList Error", statusCode, error.message);
       res.status(statusCode).send(error.message);
     }
     listCache.set("codesList", codes);
@@ -227,7 +291,7 @@ async function getContactTypeCodes(req, res) {
       listCache.set("codesList", { codesList: codes });
     } catch (error) {
       const statusCode = error.response ? error.response.status : 500;
-      log.error("getSchoolsList Error", statusCode, error.message);
+      log.error("getContactCodeList Error", statusCode, error.message);
       res.status(statusCode).send(error.message);
     }
     listCache.set("codesList", codes);
@@ -304,7 +368,7 @@ async function getOffshoreSchoolList(req, res) {
       })
       .catch((e) => {
         log.error(
-          "getSchoolsList Error",
+          "getOffshoreSchoolsList Error",
           e.response ? e.response.status : e.message
         );
       });
@@ -492,7 +556,7 @@ async function getGradeCodes(req, res) {
       })
       .catch((e) => {
         log.error(
-          "getDistrictList Error",
+          "getGradesList Error",
           e.response ? e.response.status : e.message
         );
       });
