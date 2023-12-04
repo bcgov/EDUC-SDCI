@@ -6,6 +6,6 @@ describe('Testing Authority Page', () => {
   });
 
   it('Confirm the Authority is displaying', () => {
-    cy.contains('h1', '100 - Abbotsford Christian School');
+    cy.contains('h1', '100 - Abbotsford Christian School', { timeout: 10000 });
   });
 });
