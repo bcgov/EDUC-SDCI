@@ -1,6 +1,14 @@
 describe('Testing School Page', () => {
   before(() => {
     // Visit the root URL before running any test case.
+    cy.visit('/');
+  });
+
+  it('visits the app root url', () => {
+    cy.contains('h1', 'BC School & District Contact Information');
+  });
+  before(() => {
+    // Visit the root URL before running any test case.
     cy.visit('/school/6eb5dc63-450d-01e8-5f97-a0e43ecb6419');
   });
 
