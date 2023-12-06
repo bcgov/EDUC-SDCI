@@ -24,6 +24,15 @@ async function flushFileCache(req, res) {
     }
     fileCache.flushAll();
     schoolCache.flushAll();
+    const directoryPath = FILE_STORAGE_DIR ;
+    // Read all files in the directory
+    fs.readdirSync(directoryPath).forEach((file) => {
+      const filePath = path.join(directoryPath, file);
+
+      // Delete each file
+      fs.unlinkSync(filePath);
+    });
+
     res.status(200).send('All files in the directory deleted successfully.');
   } catch (error) {
     console.error(error);
