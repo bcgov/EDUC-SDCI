@@ -67,8 +67,9 @@ function goToSchoolSearch() {
             />
           </v-row>
           <v-row>
-            <v-col class="px-0 my-1">
+            <v-col class="px-0 py-4 py-md-0 my-md-1">
               <v-btn
+                block
                 color="bcGovBlue"
                 class="text-none text-subtitle-1"
                 variant="outlined"
@@ -77,7 +78,8 @@ function goToSchoolSearch() {
                 Schools</v-btn
               >
             </v-col>
-            <v-col>
+            <v-spacer class="d-none d-md-block" />
+            <v-col class="px-0 py-4 py-md-0 my-md-1">
               <DownloadSchoolsModal></DownloadSchoolsModal>
             </v-col>
           </v-row>
