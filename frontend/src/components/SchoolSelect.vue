@@ -44,7 +44,7 @@ function goToSchoolSearch() {
             class="d-none d-md-block"
           />
         </v-col>
-        <v-col cols="10" md="8" class="ml-0 py-6 school-search">
+        <v-col cols="10" md="8" xl="6" class="ml-0 py-6 school-search">
           <h2 class="mb-5">Find a School in BC</h2>
           <v-row>
             <v-autocomplete
