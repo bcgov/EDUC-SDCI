@@ -22,10 +22,6 @@ async function flushFileCache(req, res) {
     if (providedToken !== configuredToken) {
       return res.status(403).send('Invalid token');
     }
-    // Check if fileCache is less than 5 minutes old
-
-
-
     fileCache.flushAll();
     schoolCache.flushAll();
     const directoryPath = FILE_STORAGE_DIR ;
@@ -48,6 +44,7 @@ async function flushFileCache(req, res) {
 
 async function createCSVFile(req,res, next){
   try {
+  
     jsonExport(req.jsonData, async function(err, csv){
       if (err) return console.error(err);
       await writeFileAsync(filePath, csv, 'binary');
@@ -80,14 +77,14 @@ async function getDownload(req, res,next){
       return res.status(400).send("Invalid 'filepath' parameter");
     }
   }
-  
+  filePath = path.join(FILE_STORAGE_DIR, `${filepath}.csv`);
   if(fileCache.has(filepath)){
     const file = path.join(FILE_STORAGE_DIR, `${filepath}.csv`);
     res.setHeader('Content-Disposition', `attachment; filename="${filepath}.csv"`);
     return res.sendFile(file);
   }else{
     try {
-      const path = req.url.replace('/csv', ''); // Modify the URL path as needed
+      const path = req.url.replace('/csv', ''); // Modify the URL path as neededz
       const url =`${config.get("server:backend")}/v1${path}`
       const response = await axios.get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } });
       // Attach the fetched data to the request object
@@ -116,7 +113,6 @@ async function getCSVDownload(req, res) {
       }
     }
     const filePath = path.join(FILE_STORAGE_DIR, `${filepath}.csv`);
-    console.log(filePath)
     res.sendFile(filePath);
   } catch (error) {
     console.error("Error:", error);
