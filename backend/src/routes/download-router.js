@@ -13,7 +13,6 @@ const FILE_STORAGE_DIR = path.join(__dirname, '../..', 'public');
 
 router.get('/csv/*', checkToken, getDownload, createCSVFile, getCSVDownload);
 router.get('/flush-cache/:token', flushFileCache);
-router.get('/cron/:token', runCron);
 
 async function flushFileCache(req, res) {
   try {
@@ -23,6 +22,10 @@ async function flushFileCache(req, res) {
     if (providedToken !== configuredToken) {
       return res.status(403).send('Invalid token');
     }
+    // Check if fileCache is less than 5 minutes old
+
+
+
     fileCache.flushAll();
     schoolCache.flushAll();
     const directoryPath = FILE_STORAGE_DIR ;
@@ -37,75 +40,6 @@ async function flushFileCache(req, res) {
 
     
     res.status(200).send('All files in the directory deleted successfully.');
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Internal Server Error');
-  }
-}
-
-async function runCron(req, res) {
-  try {
-    const providedToken = req.params.token;
-    const configuredToken = config.get('server:clearFilesKey');
-
-    if (providedToken !== configuredToken) {
-      return res.status(403).send('Invalid token');
-    }
-    fileCache.flushAll();
-    schoolCache.flushAll();
-    const directoryPath = FILE_STORAGE_DIR ;
-    // Read all files in the directory
-    fs.readdirSync(directoryPath).forEach((file) => {
-      const filePath = path.join(directoryPath, file);
-
-      // Delete each file
-      fs.unlinkSync(filePath);
-    });
-    
-    const createCache = await axios.get(
-      `${config.get("server:backend")}/v1/institute/create-cache`,
-      {
-        headers: { Authorization: `Bearer ${req.accessToken}` },
-      }
-    );
-    await axios.get(
-      `${config.get("server:backend")}/v1/download/csv/school/all-contacts/ALL?filepath=allschoolcontacts`,
-      {
-        headers: { Authorization: `Bearer ${req.accessToken}` },
-      }
-    );     
-    await axios.get(
-      `${config.get("server:backend")}/v1/download/csv/school/all-contacts/PUBLIC?filepath=publicschoolcontacts`,
-      {
-        headers: { Authorization: `Bearer ${req.accessToken}` },
-      }
-    );
-    await axios.get(
-      `${config.get("server:backend")}/v1/download/csv/school/all-contacts/INDEPEND?filepath=independentschoolcontacts`,
-      {
-        headers: { Authorization: `Bearer ${req.accessToken}` },
-      }
-    );
-    await axios.get(
-      `${config.get("server:backend")}/v1/download/csv/school/all-contacts/ALLMAILING?filepath=allschoolmailing`,
-      {
-        headers: { Authorization: `Bearer ${req.accessToken}` },
-      }
-    );
-    await axios.get(
-      `${config.get("server:backend")}/v1/download/csv/district/all-mailing?filepath=districtmailing`,
-      {
-        headers: { Authorization: `Bearer ${req.accessToken}` },
-      }
-    );
-    await axios.get(
-      `${config.get("server:backend")}/v1/download/csv/district/all-contacts?filepath=districtcontacts`,
-      {
-        headers: { Authorization: `Bearer ${req.accessToken}` },
-      }
-    );
-   
-    res.status(200).send('All files have been rebuilt.');
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
@@ -146,10 +80,11 @@ async function getDownload(req, res,next){
       return res.status(400).send("Invalid 'filepath' parameter");
     }
   }
-  filePath = path.join(FILE_STORAGE_DIR, `${filepath}.csv`);
+  
   if(fileCache.has(filepath)){
+    const file = path.join(FILE_STORAGE_DIR, `${filepath}.csv`);
     res.setHeader('Content-Disposition', `attachment; filename="${filepath}.csv"`);
-    return res.sendFile(filePath);
+    return res.sendFile(file);
   }else{
     try {
       const path = req.url.replace('/csv', ''); // Modify the URL path as needed
@@ -181,6 +116,7 @@ async function getCSVDownload(req, res) {
       }
     }
     const filePath = path.join(FILE_STORAGE_DIR, `${filepath}.csv`);
+    console.log(filePath)
     res.sendFile(filePath);
   } catch (error) {
     console.error("Error:", error);
