@@ -179,12 +179,12 @@ objects:
               dnsPolicy: ClusterFirst
               securityContext: {}
               schedulerName: default-scheduler
-- apiVersion: batch/v1
+  - apiVersion: batch/v1
     kind: CronJob
     metadata:
       name: flush-file-cache
     spec:
-      schedule: '50,51,52,53 1,13 * * *'
+      schedule: "50,51,52,53 1,13 * * *"
       jobTemplate:
         spec:
           template:
@@ -207,13 +207,13 @@ objects:
               terminationGracePeriodSeconds: 30
               dnsPolicy: ClusterFirst
               securityContext: {}
-              schedulerName: default-scheduler           
-- apiVersion: batch/v1
+              schedulerName: default-scheduler
+  - apiVersion: batch/v1
     kind: CronJob
     metadata:
       name: create-cache-schools
     spec:
-      schedule: '55,56,57,58 1,13 * * *'
+      schedule: "55,56,57,58 1,13 * * *"
       jobTemplate:
         spec:
           template:
@@ -236,7 +236,7 @@ objects:
               terminationGracePeriodSeconds: 30
               dnsPolicy: ClusterFirst
               securityContext: {}
-              schedulerName: default-scheduler                            
+              schedulerName: default-scheduler
 parameters:
   - name: REPO_NAME
     description: Application repository name
