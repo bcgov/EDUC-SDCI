@@ -42,17 +42,7 @@ const handleUpdate = async (options: any) => {
 const fetchTypes = async () => {
   try {
     const response = await InstituteService.getFacilityCodes()
-    const valuesToRemove = [
-      'PROVINCIAL',
-      'DIST_CONT',
-      'ELEC_DELIV',
-      'POST_SEC',
-      'JUSTB4PRO',
-      'SUMMER'
-    ] // Add the values you want to remove
-    types.value = response.data.filter(
-      (item: any) => !valuesToRemove.includes(item.facilityTypeCode)
-    )
+    types.value = response.data
   } catch (error) {
     console.error('Error fetching types:', error)
   }
@@ -148,20 +138,6 @@ const searchSchools = async () => {
     key: 'closedDate',
     operation: 'eq',
     value: null,
-    valueType: 'STRING',
-    condition: 'AND'
-  })
-  params[0].searchCriteriaList.push({
-    key: 'schoolCategoryCode',
-    operation: 'nin',
-    value: 'FED_BAND, POST_SEC,YUKON',
-    valueType: 'STRING',
-    condition: 'AND'
-  })
-  params[0].searchCriteriaList.push({
-    key: 'facilityTypeCode',
-    operation: 'nin',
-    value: 'SUMMER,PROVINCIAL,DIST_CONT, ELEC_DELIV,POST_SEC,JUSTB4PRO,SUMMER',
     valueType: 'STRING',
     condition: 'AND'
   })

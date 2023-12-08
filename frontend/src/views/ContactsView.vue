@@ -108,33 +108,35 @@ onMounted(() => {
       :items="[{ title: 'Home', href: '/' }, 'Contacts by Type']"
     ></v-breadcrumbs>
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
-      <v-row no-gutters justify="space-between">
-        <v-spacer />
-        <v-col cols="12">
-          <h2 class="mt-3 mb-2">Find District Contacts by Type</h2>
-          <v-row>
-            <v-autocomplete
-              v-model="selectedContactType"
-              label="Select a Contact by Type"
-              :items="appStore.getDistrictContactTypeCodes"
-              item-title="label"
-              item-value="districtContactTypeCode"
-            ></v-autocomplete>
-            <v-btn
-              @click="searchContact"
-              icon="mdi-magnify"
-              color="primary"
-              variant="flat"
-              rounded="lg"
-              size="large"
-              class="text-none text-subtle-1 ml-3"
-            />
-          </v-row>
-          <v-btn @click="resetContactFilters" variant="outlined" color="primary" class="text-none"
-            >Reset</v-btn
-          >
-        </v-col>
-      </v-row>
+      <v-container class="main">
+        <v-row no-gutters justify="space-between">
+          <v-spacer />
+          <v-col cols="12">
+            <h2 class="mt-3 mb-2">Find District Contacts by Type</h2>
+            <v-row>
+              <v-autocomplete
+                v-model="selectedContactType"
+                label="Select a Contact by Type"
+                :items="appStore.getDistrictContactTypeCodes"
+                item-title="label"
+                item-value="districtContactTypeCode"
+              ></v-autocomplete>
+              <v-btn
+                @click="searchContact"
+                icon="mdi-magnify"
+                color="primary"
+                variant="flat"
+                rounded="lg"
+                size="large"
+                class="text-none text-subtle-1 ml-3"
+              />
+            </v-row>
+            <v-btn @click="resetContactFilters" variant="outlined" color="primary" class="text-none"
+              >Reset</v-btn
+            >
+          </v-col>
+        </v-row>
+      </v-container>
     </v-sheet>
     <!-- END Contacts by Type header-->
     <v-container>
