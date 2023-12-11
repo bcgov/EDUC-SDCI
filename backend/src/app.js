@@ -2,6 +2,7 @@ const config = require("./config/index");
 const log = require("./components/logger");
 const dotenv = require("dotenv");
 const express = require("express");
+const redis = require('redis');
 const fs = require("fs");
 const path = require("path");
 const axios = require("axios");
@@ -16,6 +17,7 @@ const offshoreRouter = require("./routes/offshore-router");
 const schoolRouter = require("./routes/school-router");
 const searchRouter = require("./routes/search-router");
 const app = express();
+const client = redis.createClient();
 const publicPath = path.join(__dirname, "public");
 
 async function writeFileAsync(filePath, data, encoding) {
@@ -94,6 +96,10 @@ app.use((_req, res) => {
   );
 });
 
+
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
+});
 // Prevent unhandled errors from crashing application
 process.on("unhandledRejection", (err) => {});
 module.exports = app;
