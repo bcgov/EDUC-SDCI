@@ -22,8 +22,8 @@ async function flushFileCache(req, res) {
     if (providedToken !== configuredToken) {
       return res.status(403).send('Invalid token');
     }
-    fileCache.flushAll();
-    schoolCache.flushAll();
+    await fileCache.flushAll();
+    await schoolCache.flushAll();
     const directoryPath = FILE_STORAGE_DIR ;
     // Read all files in the directory
     fs.readdirSync(directoryPath).forEach((file) => {
@@ -80,7 +80,7 @@ async function getDownload(req, res,next){
   filePath = path.join(FILE_STORAGE_DIR, `${filepath}.csv`);
   if(fileCache.has(filepath)){
     const file = path.join(FILE_STORAGE_DIR, `${filepath}.csv`);
-    res.setHeader('Content-Disposition', `attachment; filename="${filepath}.csv"`);
+    res.setHeader('Content-Disposition', `attachment; filename="${filepath}.csv"; charset=utf-8`);
     return res.sendFile(file);
   }else{
     try {

@@ -1,14 +1,15 @@
-const NodeCache = require("node-cache");
 const axios = require("axios");
+const Ioredis = require("ioredis");
 const config = require("../config/index");
 
-const tokenCache = new NodeCache({
-  stdTTL: config.get("server:instituteAPITokenExpiry"),
-});
+const redisHost = 'localhost';
+const redisPort = 6379;
 
+const client = new Ioredis(redisPort, redisHost);
 const clientId = config.get("oidc:clientId");
 const clientSecret = config.get("oidc:clientSecret");
 const tokenEndpoint = config.get("oidc:tokenEndpoint");
+const instituteAPITokenExpiry = config.get("server:instituteAPITokenExpiry");
 
 const data = {
   grant_type: "client_credentials",
@@ -17,6 +18,7 @@ const data = {
 };
 
 async function getNewToken() {
+  console.log("GETTING TOKEN FROM ENDPOINT");
   try {
     const response = await axios.post(tokenEndpoint, data, {
       headers: {
@@ -25,22 +27,37 @@ async function getNewToken() {
     });
 
     const accessToken = response.data.access_token;
-    tokenCache.set("token", accessToken);
+    console.log("NEW TOKEN RECEIVED " + accessToken);
+    await client.set("token", accessToken, 'EX', instituteAPITokenExpiry);
   } catch (error) {
-    console.error("Error:", error.response.data);
+    console.error("Error getting a new token:", error.response?.data || error.message);
+    // Rethrow the error to indicate the failure
+    throw error;
   }
 }
 
 async function checkToken(req, res, next) {
   try {
-    if (!tokenCache.has("token")) {
+    const ttl = await client.ttl('token');
+    console.log("TTL: " + ttl);
+
+    if (ttl < 0) {
+      console.log("TOKEN EXPIRED - GETTING A NEW TOKEN");
       await getNewToken();
     }
-    // Set the token as a property on the request object
-    req.accessToken = await tokenCache.get("token");
+
+    const cachedToken = await client.get('token');
+    console.log("CACHED TOKEN: " + cachedToken);
+
+    req.accessToken = cachedToken;
+    console.log("NEXT");
     next();
   } catch (error) {
-    console.log(error);
+    console.log("ERROR");
+    console.error(error);
+    // Handle the error or pass it to the error handler middleware
+    // depending on your application structure
+    res.status(500).send("Internal Server Error");
   }
 }
 

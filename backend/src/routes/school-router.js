@@ -49,6 +49,7 @@ async function getAllSchoolMailing(req, res) {
 
 }
 async function getAllSchools(req, res) {
+  console.log("SCHOOL")
   const {schoolCategory} = req.params
   const contactTypeCodes= await listCache.get("codesList")
   let params = [];
@@ -197,13 +198,13 @@ async function getAllSchools(req, res) {
           
 
           const openINDEPENDSchoolList = filterIncludeByField(openSchoolList, "School Category", ["Independent School"] );
-          schoolCache.set("openschoollistINDEPEND", openINDEPENDSchoolList);
+          schoolCache.set("openschoollistINDEPEND", openINDEPENDSchoolList, 'EX', 21600);
           
           const openPUBLICSchoolList = filterIncludeByField(openSchoolList, "School Category", ["Public School"] );
-          schoolCache.set("openschoollistPUBLIC", openPUBLICSchoolList);          
+          schoolCache.set("openschoollistPUBLIC", openPUBLICSchoolList, 'EX', 21600);          
           
-          schoolCache.set("openschoollistALL", openSchoolList);
-          schoolCache.set("openschoollistALLMAILING", openSchoolMailingList);
+          schoolCache.set("openschoollistALL", openSchoolList, 'EX', 21600);
+          schoolCache.set("openschoollistALLMAILING", openSchoolMailingList, 'EX', 21600);
 
           if(schoolCategory== "INDEPEND"){
             res.json(openINDEPENDSchoolList);
