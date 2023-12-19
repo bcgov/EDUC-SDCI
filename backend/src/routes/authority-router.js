@@ -8,7 +8,11 @@ const fs = require("fs");
 const path = require("path");
 const { checkToken } = require("../components/auth");
 const { listCache } = require("../components/cache");
-const {appendMailingAddressDetailsAndRemoveAddresses, rearrangeAndRelabelObjectProperties, sortByProperty} = require("../components/utils.js")
+const {
+  appendMailingAddressDetailsAndRemoveAddresses,
+  rearrangeAndRelabelObjectProperties,
+  sortByProperty,
+} = require("../components/utils.js");
 //Batch Routes
 router.get("/all-mailing/:type", checkToken, getAllAuthorityMailing);
 router.get("/:id", checkToken, getAuthority);
@@ -16,33 +20,34 @@ router.get("/:id", checkToken, getAuthority);
 
 async function getAllAuthorityMailing(req, res) {
   //type = OFFSHORE or INDEPENDNT
-  const {type} = req.params
+  const { type } = req.params;
 
- const params = [
-  {
-    condition: null,
-    searchCriteriaList: [
-      {
-        key: "closedDate",
-        operation: "eq",
-        value: null,
-        valueType: "STRING",
-        condition: "AND",
-      },
-      {
-        key: "authorityTypeCode",
-        operation: "eq",
-        value: type,
-        valueType: "STRING",
-        condition: "AND",
-      }      
-    ]
-  }]
+  const params = [
+    {
+      condition: null,
+      searchCriteriaList: [
+        {
+          key: "closedDate",
+          operation: "eq",
+          value: null,
+          valueType: "STRING",
+          condition: "AND",
+        },
+        {
+          key: "authorityTypeCode",
+          operation: "eq",
+          value: type,
+          valueType: "STRING",
+          condition: "AND",
+        },
+      ],
+    },
+  ];
   const jsonString = JSON.stringify(params);
   const encodedParams = encodeURIComponent(jsonString);
   const url = await `${config.get(
     "server:instituteAPIURL"
-  )}/institute/authority/paginated?pageSize=1000&sort[authorityNumber]=ASC&searchCriteriaList=${encodedParams}`
+  )}/institute/authority/paginated?pageSize=1000&sort[authorityNumber]=ASC&searchCriteriaList=${encodedParams}`;
   try {
     const authorityResponse = await axios.get(url, {
       headers: { Authorization: `Bearer ${req.accessToken}` },
@@ -58,17 +63,24 @@ async function getAllAuthorityMailing(req, res) {
       { property: "phoneNumber", label: "Phone Number" },
       { property: "faxNumber", label: "Fax" },
       { property: "email", label: "Email" },
-
     ];
 
-    authorityResponse.data.content.forEach(appendMailingAddressDetailsAndRemoveAddresses);
-    
+    authorityResponse.data.content.forEach(
+      appendMailingAddressDetailsAndRemoveAddresses
+    );
+
     authorityResponse.data.content.forEach((currentElement, index, array) => {
-      const rearrangedElement = rearrangeAndRelabelObjectProperties(currentElement, propertyOrder);
+      const rearrangedElement = rearrangeAndRelabelObjectProperties(
+        currentElement,
+        propertyOrder
+      );
       array[index] = rearrangedElement;
     });
-    const authorityResponseSorted = sortByProperty(authorityResponse.data.content, 'Number')
-   
+    const authorityResponseSorted = sortByProperty(
+      authorityResponse.data.content,
+      "Number"
+    );
+
     res.json(authorityResponseSorted);
     //res.json(districtContactsReorderedAndRelabeled );
   } catch (e) {
@@ -123,7 +135,7 @@ async function getAuthority(req, res) {
   )}/institute/authority/${id}`;
   const authoritySchoolsUrl = `${config.get(
     "server:instituteAPIURL"
-  )}/institute/school/paginated?pageNumber=0&pageSize=10&searchCriteriaList=${encodedParams}`;
+  )}/institute/school/paginated?pageNumber=0&pageSize=1000&searchCriteriaList=${encodedParams}`;
 
   try {
     const authorityDataResponse = await axios.get(url, {
@@ -133,9 +145,21 @@ async function getAuthority(req, res) {
     const authoritySchoolsResponse = await axios.get(authoritySchoolsUrl, {
       headers: { Authorization: `Bearer ${req.accessToken}` },
     });
+    const today = new Date();
+    const filteredSchoolsResponse =
+      authoritySchoolsResponse.data.content.filter((obj) => {
+        // If closedDate is null, keep the object
+        if (obj.closedDate === null) {
+          return true;
+        }
+
+        // If closedDate is a valid date greater than today, keep the object
+        const closedDate = new Date(obj.closedDate);
+        return closedDate > today;
+      });
     const authorityJSON = {
       authorityData: authorityDataResponse.data,
-      authoritySchools: authoritySchoolsResponse.data.content,
+      authoritySchools: filteredSchoolsResponse,
     };
 
     res.json(authorityJSON);
