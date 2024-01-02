@@ -151,14 +151,16 @@ onMounted(() => {
           >
         </v-col>
       </v-row>
-      <v-data-table-virtual
+      <v-data-table
         :headers="headers"
         :items="filteredContacts"
+        :items-per-page="-1"
         class="elevation-1"
         height="700"
         item-value="name"
+        dense
         :sort-by="[{ key: 'districtNumber', order: 'asc' }]"
-      ></v-data-table-virtual>
+      ></v-data-table>
     </v-container>
   </div>
 </template>
