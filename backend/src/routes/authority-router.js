@@ -148,14 +148,19 @@ async function getAuthority(req, res) {
     const today = new Date();
     const filteredSchoolsResponse =
       authoritySchoolsResponse.data.content.filter((obj) => {
-        // If closedDate is null, keep the object
-        if (obj.closedDate === null) {
-          return true;
-        }
+        // if openedDate is a valid date is less than today, keep the object
+        const openedDate = new Date(obj.openedDate);
 
         // If closedDate is a valid date greater than today, keep the object
         const closedDate = new Date(obj.closedDate);
-        return closedDate > today;
+
+        // return obj IF closedDate does not exist OR is after than current date
+        // AND openedDate exists AND is before current date
+        return (
+          (!obj.closedDate || closedDate > today) &&
+          obj.openedDate &&
+          openedDate < today
+        );
       });
     const authorityJSON = {
       authorityData: authorityDataResponse.data,
