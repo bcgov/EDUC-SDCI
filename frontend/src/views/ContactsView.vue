@@ -64,17 +64,53 @@ const searchContact = async () => {
   ]
   if (selectedContactType.value) {
     params[0].searchCriteriaList.push({
+      key: 'expiryDate',
+      operation: 'eq',
+      value: null,
+      valueType: 'STRING',
+      condition: 'OR'
+    })
+    params[0].searchCriteriaList.push({
+      key: 'expiryDate',
+      operation: 'gte',
+      value: currentDate,
+      valueType: 'DATE_TIME',
+      condition: 'OR'
+    })
+    params[0].searchCriteriaList.push({
+      key: 'effectiveDate',
+      operation: 'lte',
+      value: currentDate,
+      valueType: 'DATE_TIME',
+      condition: 'AND'
+    })
+    params[0].searchCriteriaList.push({
       key: 'districtContactTypeCode',
       operation: 'eq',
       value: selectedContactType.value,
       valueType: 'STRING',
       condition: 'AND'
     })
+  } else {
     params[0].searchCriteriaList.push({
       key: 'expiryDate',
       operation: 'eq',
       value: null,
       valueType: 'STRING',
+      condition: 'OR'
+    })
+    params[0].searchCriteriaList.push({
+      key: 'expiryDate',
+      operation: 'gte',
+      value: currentDate,
+      valueType: 'DATE_TIME',
+      condition: 'OR'
+    })
+    params[0].searchCriteriaList.push({
+      key: 'effectiveDate',
+      operation: 'lte',
+      value: currentDate,
+      valueType: 'DATE_TIME',
       condition: 'AND'
     })
   }
