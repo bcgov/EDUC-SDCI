@@ -11,7 +11,7 @@ const dialog = ref(false)
 const filteredContacts = ref([])
 const selectedContactType = ref(null)
 const results = ref(0)
-const itemsPerPage = ref(100)
+const itemsPerPage = ref(4000)
 const itemsSort = ref('')
 const totalPages = ref(1)
 const headers = [
@@ -64,17 +64,53 @@ const searchContact = async () => {
   ]
   if (selectedContactType.value) {
     params[0].searchCriteriaList.push({
+      key: 'expiryDate',
+      operation: 'eq',
+      value: null,
+      valueType: 'STRING',
+      condition: 'OR'
+    })
+    params[0].searchCriteriaList.push({
+      key: 'expiryDate',
+      operation: 'gte',
+      value: currentDate,
+      valueType: 'DATE_TIME',
+      condition: 'OR'
+    })
+    params[0].searchCriteriaList.push({
+      key: 'effectiveDate',
+      operation: 'lte',
+      value: currentDate,
+      valueType: 'DATE_TIME',
+      condition: 'AND'
+    })
+    params[0].searchCriteriaList.push({
       key: 'districtContactTypeCode',
       operation: 'eq',
       value: selectedContactType.value,
       valueType: 'STRING',
       condition: 'AND'
     })
+  } else {
     params[0].searchCriteriaList.push({
       key: 'expiryDate',
       operation: 'eq',
       value: null,
       valueType: 'STRING',
+      condition: 'OR'
+    })
+    params[0].searchCriteriaList.push({
+      key: 'expiryDate',
+      operation: 'gte',
+      value: currentDate,
+      valueType: 'DATE_TIME',
+      condition: 'OR'
+    })
+    params[0].searchCriteriaList.push({
+      key: 'effectiveDate',
+      operation: 'lte',
+      value: currentDate,
+      valueType: 'DATE_TIME',
       condition: 'AND'
     })
   }
@@ -151,14 +187,16 @@ onMounted(() => {
           >
         </v-col>
       </v-row>
-      <v-data-table-virtual
+      <v-data-table
         :headers="headers"
         :items="filteredContacts"
+        :items-per-page="-1"
         class="elevation-1"
         height="700"
         item-value="name"
+        dense
         :sort-by="[{ key: 'districtNumber', order: 'asc' }]"
-      ></v-data-table-virtual>
+      ></v-data-table>
     </v-container>
   </div>
 </template>
