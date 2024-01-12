@@ -331,18 +331,7 @@ async function getAllDistrictMailing(req, res) {
 //api/v1/institute/district/12342525
 async function getDistrict(req, res) {
   const { id } = req.params;
-
-
-
-
-  
-
-
-
-
-
-
-
+  let currentDate = new Date().toISOString().substring(0, 19);
   const params = [
     {
       condition: "AND",
@@ -380,39 +369,38 @@ async function getDistrict(req, res) {
     {
       condition: "AND",
       searchCriteriaList: [
-        {
-          condition: "AND",
-          searchCriteriaList: [
+        
             {
-              key: "expiryDate",
+              key: "closedDate",
               operation: "eq",
               value: null,
               valueType: "STRING",
               condition: "OR",
             },
             {
-              key: "expiryDate",
+              key: "closedDate",
               operation: "gte",
               value: currentDate,
               valueType: "DATE_TIME",
               condition: "OR",
             },
-          ],
-        },
-        {
-          condition: "AND",
-          searchCriteriaList: [
+          
+      ],
+    },
+    {
+      condition: "AND",
+      searchCriteriaList: [
+      
             {
-              key: "effectiveDate",
+              key: "openedDate",
               operation: "lte",
               value: currentDate,
               valueType: "DATE_TIME",
-              condition: "AND",
+              condition: "OR",
             },
-          ],
-        },
+          
       ],
-    },
+    },    
   ];
 
   const jsonString = JSON.stringify(params);
