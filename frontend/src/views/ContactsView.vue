@@ -4,6 +4,8 @@ import { ref, onMounted } from 'vue'
 import InstituteService from '@/services/InstituteService'
 import jsonexport from 'jsonexport/dist'
 
+import DisplayAlert from '@/components/common/DisplayAlert.vue'
+
 const appStore = useAppStore()
 // used for open and close modal
 const dialog = ref(false)
@@ -111,6 +113,7 @@ onMounted(() => {
       <v-row no-gutters justify="space-between">
         <v-spacer />
         <v-col cols="12">
+          <DisplayAlert />
           <h2 class="mt-3 mb-2">Find District Contacts by Type</h2>
           <v-row>
             <v-autocomplete

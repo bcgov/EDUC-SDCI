@@ -10,6 +10,8 @@ import jsonexport from 'jsonexport/dist'
 import { useSanitizeURL } from '@/composables/string'
 // import common components
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
+import DisplayAlert from '@/components/common/DisplayAlert.vue'
+
 const appStore = useAppStore()
 const districtId = ref<string | null>(null) // Initialize with null initially
 const district = reactive({ value: {} as District })
@@ -187,6 +189,7 @@ onMounted(async () => {
     ></v-breadcrumbs>
 
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
+      <DisplayAlert />
       <v-row no-gutters justify="space-between">
         <v-col v-if="district.value.districtData">
           <v-row no-gutters>
