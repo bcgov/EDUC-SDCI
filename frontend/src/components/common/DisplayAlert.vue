@@ -1,4 +1,4 @@
-<script></script>
+<script setup lang="ts"></script>
 
 <template>
   <v-alert type="info" color="primary" variant="outlined" style="background-color: #f6f9fc"
