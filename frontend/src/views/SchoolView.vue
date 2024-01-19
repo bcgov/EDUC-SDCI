@@ -8,6 +8,7 @@ import type { School, Grade } from '@/types/types.d.ts'
 import jsonexport from 'jsonexport/dist'
 import { distNumberFromMincode, formatPhoneNumber } from '@/utils/common'
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
+import DisplayAlert from '@/components/common/DisplayAlert.vue'
 import { useSanitizeURL } from '@/composables/string'
 const appStore = useAppStore()
 
@@ -203,6 +204,7 @@ function goToDistrict() {
     ></v-breadcrumbs>
 
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
+      <DisplayAlert />
       <v-row no-gutters justify="space-between">
         <v-row v-if="schoolData.value" no-gutters justify="space-between">
           <v-col>

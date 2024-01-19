@@ -4,6 +4,7 @@ import { useAppStore } from '@/stores/app'
 import router from '@/router'
 import { useSanitizeURL } from '@/composables/string'
 import DownloadSchoolsModal from '@/components/DownloadSchoolsModal.vue'
+import DisplayAlert from '@/components/common/DisplayAlert.vue'
 
 // Type Imports
 import type { ListSchool } from '@/types/types'
@@ -35,11 +36,12 @@ function goToSchoolSearch() {
 <template>
   <v-container fluid class="pt-0">
     <v-sheet elevation="2" class="py-6 full-width">
+      <DisplayAlert />
       <v-row no-gutters justify="space-between">
         <img
           src="@/assets/images/BCMapGraphic.png"
           alt="Map of British Columbia"
-          style="height: 268px; position: absolute; top: 50px; left: -80px"
+          style="height: 268px; position: absolute; top: 120px; left: -80px"
         />
         <v-spacer />
         <v-col lg="6" md="8" class="ml-0 py-6 school-search">
