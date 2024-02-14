@@ -55,7 +55,8 @@ const transformContactForDownload = (inputData: any) => {
 }
 const filterOutYukon = (inputData: any) => {
   return inputData.filter(
-    (contact) => contact.districtId !== '54396317-b444-063d-779e-e4d42ff7634f'
+    (contact: { districtId: string }) =>
+      contact.districtId !== '54396317-b444-063d-779e-e4d42ff7634f'
   )
 }
 const searchContact = async () => {
