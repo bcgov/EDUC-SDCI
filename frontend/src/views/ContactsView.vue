@@ -53,6 +53,11 @@ const transformContactForDownload = (inputData: any) => {
     email: item.email
   }))
 }
+const filterOutYukon = (inputData: any) => {
+  return inputData.filter(
+    (contact) => contact.districtId !== '54396317-b444-063d-779e-e4d42ff7634f'
+  )
+}
 const searchContact = async () => {
   // Filter contacts based on selected filters
   let currentDate = new Date().toISOString().substring(0, 19)
@@ -123,7 +128,8 @@ const searchContact = async () => {
   }
   try {
     const searchResults = await InstituteService.searchContactByType(req)
-    filteredContacts.value = transformContactForDownload(searchResults.data.content)
+    const yukonFilteredContacts = filterOutYukon(searchResults.data.content)
+    filteredContacts.value = transformContactForDownload(yukonFilteredContacts)
     results.value = searchResults.data.totalElements
     // Update current page and total pages
     totalPages.value = searchResults.data.totalPages
