@@ -8,7 +8,7 @@ const jsonExport = require('jsonexport');
 const fs = require('fs');
 const path = require('path');
 const {isSafeFilePath} = require("../components/utils")
-const { listCache, fileCache, schoolCache } = require("../components/cache");
+const { listCache, fileCache, schoolCache, createCache } = require("../components/cache");
 const FILE_STORAGE_DIR = path.join(__dirname, '../..', 'public');
 
 router.get('/csv/*', checkToken, getDownload, createCSVFile, getCSVDownload);
@@ -69,8 +69,10 @@ async function writeFileAsync(filePath, data, encoding) {
 }
 
 async function getDownload(req, res,next){
+  
+  console.log("download")
   const filepath = req.query.filepath;
-  if (!filepath) {s
+  if (!filepath) {
     return res.status(400).send("Missing 'filepath' parameter");
   }else{
     if (!isSafeFilePath(filepath)) {
@@ -85,6 +87,7 @@ async function getDownload(req, res,next){
   }else{
     try {
       const path = req.url.replace('/csv', ''); // Modify the URL path as neededz
+      
       const url =`${config.get("server:backend")}/v1${path}`
       const response = await axios.get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } });
       // Attach the fetched data to the request object

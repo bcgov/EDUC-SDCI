@@ -19,7 +19,7 @@ const {
   filterByPubliclyAvailableCodes,
 } = require("../components/utils");
 const { checkToken } = require("../components/auth");
-const { schoolCache, listCache, codeCache } = require("../components/cache");
+const { schoolCache, listCache, codeCache, createCache } = require("../components/cache");
 
 //Batch Routes
 
@@ -198,8 +198,8 @@ async function getAllSchoolMailing(req, res) {
   res.json(allSchools);
 }
 async function getAllSchools(req, res) {
+  await createCache(req);
   const { schoolCategory } = req.params;
-  const contactTypeCodes = await listCache.get("codesList");
   let params = [];
 
   if (await !schoolCache.has("openschoollist" + schoolCategory)) {
@@ -258,10 +258,11 @@ async function getAllSchools(req, res) {
     ];
     const jsonString = JSON.stringify(params);
     const encodedParams = encodeURIComponent(jsonString);
-    const districtList = await listCache.get("districtlist");
-    const schoolGrades = await codeCache.get("gradelist");
-    const schoolCategoryCodes = await listCache.get("categoryCodes");
-    const facilityCodes = await listCache.get("facilityCodes");
+    const districtList = listCache.get("districtlist");
+    const schoolGrades = codeCache.get("gradelist");
+    const authorityList = listCache.get("authoritylist");
+    const schoolCategoryCodes = listCache.get("categoryCodes");
+    const facilityCodes = listCache.get("facilityCodes");
     const url = `${config.get(
       "server:instituteAPIURL"
     )}/institute/school/paginated?pageSize=4000&searchCriteriaList=${encodedParams}`;
@@ -289,6 +290,11 @@ async function getAllSchools(req, res) {
             property: "schoolCategoryCode_description",
             label: "School Category",
           },
+          {
+            property: "independentAuthorityId",
+            label: "independentAuthorityId",
+          },
+          
           // { property: "gradeRange", label: "Grade Range" },
           // { property: "fundingGroups", label: "Funding Group(s)" },
           { property: "phoneNumber", label: "Phone" },
@@ -308,6 +314,7 @@ async function getAllSchools(req, res) {
           { property: "GRADE10", label: "Grade 10 Enrollment" },
           { property: "GRADE11", label: "Grade 11 Enrollment" },
           { property: "GRADE12", label: "Grade 12 Enrollment" },
+          
         ];
         const mailingListpropertyOrder = [
           { property: "districtNumber", label: "District Number" },
@@ -323,11 +330,11 @@ async function getAllSchools(req, res) {
           { property: "physical_postal", label: "Courier Postal Code" },
           { property: "phoneNumber", label: "Phone" },
         ];
-
         const openSchoolListWithDistrictLabels = addDistrictLabels(
           response.data,
           districtList
         );
+        
         let openSchoolList = sortJSONBySchoolCode(
           createSchoolCache(
             openSchoolListWithDistrictLabels.content,
@@ -350,7 +357,6 @@ async function getAllSchools(req, res) {
           null,
           ["label", "description"]
         );
-
         openSchoolList.forEach((currentElement, index, array) => {
           const rearrangedElement = rearrangeAndRelabelObjectProperties(
             currentElement,
@@ -363,7 +369,6 @@ async function getAllSchools(req, res) {
           "District Number",
           ["098", "102", "103", ""]
         );
-
         openSchoolMailingList.forEach((currentElement, index, array) => {
           const rearrangedElement = rearrangeAndRelabelObjectProperties(
             currentElement,
@@ -382,8 +387,10 @@ async function getAllSchools(req, res) {
           "School Category",
           ["Independent School", "Independent First Nations School"]
         );
-        schoolCache.set("openschoollistINDEPEND", openINDEPENDSchoolList);
 
+
+        const openINDEPENDSchoolListWithAuthorities = normalizeJsonObject(openINDEPENDSchoolList, authorityList, "independentAuthorityId", null, ["authorityNumber","displayName"] )
+        schoolCache.set("openschoollistINDEPEND", openINDEPENDSchoolListWithAuthorities);
         const openPUBLICSchoolList = filterIncludeByField(
           openSchoolList,
           "School Category",
@@ -393,9 +400,8 @@ async function getAllSchools(req, res) {
 
         schoolCache.set("openschoollistALL", openSchoolList);
         schoolCache.set("openschoollistALLMAILING", openSchoolMailingList);
-
         if (schoolCategory == "INDEPEND") {
-          res.json(openINDEPENDSchoolList);
+          res.json(openINDEPENDSchoolListWithAuthorities);
         } else if (schoolCategory == "PUBLIC") {
           res.json(openPUBLICSchoolList);
         } else if (schoolCategory == "ALL") {
