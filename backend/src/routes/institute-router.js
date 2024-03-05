@@ -38,7 +38,37 @@ router.get("/district/list", checkToken, getDistrictList);
 router.get("/district/contact/*", checkToken, getDistrictContactsAPI);
 router.get("/create-cache", checkToken, createCache);
 router.get("/category-codes", checkToken, getCategoryCodes);
+router.get("/schools/getFundingGroups", checkToken, getFundingGroups);
+
 router.get("/*", checkToken, getInstituteAPI);
+
+async function getFundingGroups(req, res) {
+  if (await !listCache.has("fundingGroups")) {
+    //const codes = [];
+
+    try {
+      const fundingGroupsResponse = await axios.get(
+        `${config.get(
+          "server:schoolsAPIURL"
+        )}/schools/fundingGroups`,
+        {
+          headers: { Authorization: `Bearer ${req.accessToken}` },
+        }
+      );
+
+      res.json(fundingGroupsResponse);
+      listCache.set("fundingGroups", fundingGroupsResponse);
+    } catch (error) {
+      const statusCode = error.response ? error.response.status : 500;
+      log.error("getContactCodeList Error", statusCode, error.message);
+      res.status(statusCode).send(error.message);
+    }
+    listCache.set("codesList", codes);
+  } else {
+    const cachedCodeList = await listCache.get("codesList");
+    res.json(cachedCodeList);
+  }
+}
 async function createCache(req, res) {
   if (await !listCache.has("districtlist")) {
     const url = `${config.get("server:instituteAPIURL")}/institute/district`; // Update the URL according to your API endpoint
