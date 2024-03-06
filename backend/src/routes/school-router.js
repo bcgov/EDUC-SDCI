@@ -17,6 +17,7 @@ const {
   sortJSONBySchoolCode,
   rearrangeAndRelabelObjectProperties,
   filterByPubliclyAvailableCodes,
+  addFundingGroups
 } = require("../components/utils");
 const { checkToken } = require("../components/auth");
 const { schoolCache, listCache, codeCache } = require("../components/cache");
@@ -28,13 +29,14 @@ router.get("/:schoolId", checkToken, getSchool);
 
 async function getSchool(req, res) {
   const { schoolId } = req.params;
+  console.log(await listCache.get("fundingGroups"))
   const contactTypeCodes = await listCache.get("codesList");
+  const fundingGroups = await listCache.get("fundingGroups");
   const url =
     `${config.get("server:instituteAPIURL")}/institute/school/` + schoolId;
   axios
     .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
     .then((response) => {
-      //const openSchoolList = createList(response.data, openSchoolListOptions);
       const schoolGrades = [
         {
           schoolGradeCode: "KINDHALF",
@@ -175,6 +177,7 @@ async function getSchool(req, res) {
         (info) => info.publiclyAvailable === true,
         includedFields
       );
+      
 
       schoolData.contacts = filterByPubliclyAvailableCodes(
         schoolData.contacts,
@@ -187,7 +190,9 @@ async function getSchool(req, res) {
       schoolData.contacts = filterByExpiryDate(schoolData.contacts);
       const formattedGrades = formatGrades(schoolData.grades, schoolGrades);
       const schoolWithFormattedGrades = { ...schoolData, ...formattedGrades };
-      res.json(schoolWithFormattedGrades);
+      const schoolsWithFundingGroups = addFundingGroups(schoolWithFormattedGrades, fundingGroups)
+      res.json(schoolsWithFundingGroups);
+      
     })
     .catch((e) => {
       log.error("getSchools Error", e.response ? e.response.status : e.message);
