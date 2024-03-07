@@ -29,9 +29,9 @@ router.get("/:schoolId", checkToken, getSchool);
 
 async function getSchool(req, res) {
   const { schoolId } = req.params;
-  console.log(await listCache.get("fundingGroups"))
   const contactTypeCodes = await listCache.get("codesList");
   const fundingGroups = await listCache.get("fundingGroups");
+
   const url =
     `${config.get("server:instituteAPIURL")}/institute/school/` + schoolId;
   axios
@@ -189,9 +189,10 @@ async function getSchool(req, res) {
       );
       schoolData.contacts = filterByExpiryDate(schoolData.contacts);
       const formattedGrades = formatGrades(schoolData.grades, schoolGrades);
-      const schoolWithFormattedGrades = { ...schoolData, ...formattedGrades };
+      const schoolWithFormattedGrades = [{ ...schoolData, ...formattedGrades }];
+      
       const schoolsWithFundingGroups = addFundingGroups(schoolWithFormattedGrades, fundingGroups)
-      res.json(schoolsWithFundingGroups);
+      res.json(schoolsWithFundingGroups[0]);
       
     })
     .catch((e) => {
@@ -266,6 +267,7 @@ async function getAllSchools(req, res) {
     const districtList = await listCache.get("districtlist");
     const schoolGrades = await codeCache.get("gradelist");
     const schoolCategoryCodes = await listCache.get("categoryCodes");
+    const fundingGroups = await listCache.get("fundingGroups");
     const facilityCodes = await listCache.get("facilityCodes");
     const url = `${config.get(
       "server:instituteAPIURL"
@@ -309,6 +311,8 @@ async function getAllSchools(req, res) {
           { property: "GRADE10", label: "Grade 10 Enrollment" },
           { property: "GRADE11", label: "Grade 11 Enrollment" },
           { property: "GRADE12", label: "Grade 12 Enrollment" },
+          { property: "fundingGroupCode", label: "Funding Group" },
+          { property: "fundingGroupSubCode", label: "Funding Group Sub Code" },
         ];
         const mailingListpropertyOrder = [
           { property: "districtNumber", label: "District Number" },
@@ -329,12 +333,14 @@ async function getAllSchools(req, res) {
           response.data,
           districtList
         );
-        let openSchoolList = sortJSONBySchoolCode(
+        let openSchoolListSorted = sortJSONBySchoolCode(
           createSchoolCache(
             openSchoolListWithDistrictLabels.content,
             schoolGrades
           )
         );
+        
+        openSchoolList = addFundingGroups(openSchoolListSorted, fundingGroups)
         let openSchoolMailingList = [...openSchoolList];
 
         openSchoolList = normalizeJsonObject(
@@ -351,7 +357,7 @@ async function getAllSchools(req, res) {
           null,
           ["label", "description"]
         );
-
+        console.log(openSchoolList)
         openSchoolList.forEach((currentElement, index, array) => {
           const rearrangedElement = rearrangeAndRelabelObjectProperties(
             currentElement,

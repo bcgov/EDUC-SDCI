@@ -171,6 +171,7 @@ onBeforeMount(async () => {
           filteredContacts.value[i].GRADE11 = response.data.GRADE11
           filteredContacts.value[i].GRADE12 = response.data.GRADE12
         }
+
         downloadContacts.value = transformContactForDownload(filteredContacts.value)
       }
     }
@@ -256,6 +257,13 @@ function goToDistrict() {
               </v-col>
               <v-col v-for="item in schoolData.value.addresses" :key="item.addressTypeCode">
                 <DisplayAddress v-bind="item" />
+              </v-col>
+              <v-col
+                v-if="schoolData.value.fundingGroupCode || schoolData.value.fundingGroupSubCode"
+              >
+                <strong> Funding:</strong><br />
+                Group: {{ schoolData.value.fundingGroupCode }}<br />
+                Sub Group: {{ schoolData.value.fundingGroupSubCode }}
               </v-col>
               <v-col
                 ><v-btn

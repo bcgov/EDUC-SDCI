@@ -135,7 +135,9 @@ onMounted(async () => {
           'Phone Number': item.phoneNumber,
           Fax: item.faxNumber,
           Email: item.email,
-          Website: item.website
+          Website: item.website,
+          'Funding Group': item.fundingGroupCode,
+          'Funding Group SubCode': item.fundingGroupSubCode
         }
       })
       filteredContacts.value = contacts.value.map((item: any) => {

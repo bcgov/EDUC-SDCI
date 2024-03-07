@@ -54,6 +54,7 @@ async function createCache(req, res) {
           headers: { Authorization: `Bearer ${req.accessToken}` },
         }
       );
+      console.log("SET")
       listCache.set("fundingGroups", fundingGroupsResponse.data);
       res.json(fundingGroupsResponse.data);
     } catch (error) {
@@ -312,7 +313,6 @@ async function getContactTypeCodes(req, res) {
         schoolContactTypeCodes: removeFieldsByCriteria(schoolContactTypeCodesResponse.data,[{ fieldToRemove: "publiclyAvailable", value: false }]),
       };
       listCache.set("codesList", { codesList: codes });
-      console.log(codes)
       res.json(codes);
     } catch (error) {
       const statusCode = error.response ? error.response.status : 500;

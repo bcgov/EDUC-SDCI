@@ -274,12 +274,15 @@ function addDistrictLabels(jsonData, districtList) {
   
     return nonPubliclyAvailableCodes;
   }
-  function addFundingGroups(jsonData, fundingGroups) {
-
-    // Iterate over each school in jsonData
-    jsonData.forEach(school => {
+  function addFundingGroups(schools, fundingGroups) {
+    // Process each school in the array
+    
+    const schoolsWithFunding = schools.map(school => {
         // Find the corresponding funding group by mincode
-        const matchingFundingGroup = fundingGroups.find(fundingGroup => fundingGroup.mincode === school.mincode);
+        const matchingFundingGroup = fundingGroups.find(fundingGroup => 
+          fundingGroup.mincode === school.mincode
+      );
+
 
         // Add fundingGroupCode and fundingGroupSubCode to the school
         if (matchingFundingGroup) {
@@ -294,9 +297,10 @@ function addDistrictLabels(jsonData, districtList) {
                 fundingGroupSubCode: null,
             });
         }
-    });
 
-    return jsonData;
+        return school;
+    });
+    return schoolsWithFunding;
 }
   function getArrayofPubliclyAvailableCodes(codes, field) {
     if (!Array.isArray(codes)) {

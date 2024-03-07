@@ -8,7 +8,7 @@ const fs = require("fs");
 const path = require("path");
 const { checkToken } = require("../components/auth");
 const { listCache} = require("../components/cache");
-const {getArrayofPubliclyAvailableCodes,filterRemoveByField, filterByExpiryDate, getArrayofNonPubliclyAvailableCodes, filterByField,appendMailingAddressDetailsAndRemoveAddresses, rearrangeAndRelabelObjectProperties, addDistrictLabels, normalizeJsonObject, sortJSONByDistrictNumber, removeFieldsByCriteria, filterByPubliclyAvailableCodes} = require("../components/utils.js")
+const {addFundingGroups, getArrayofPubliclyAvailableCodes,filterRemoveByField, filterByExpiryDate, getArrayofNonPubliclyAvailableCodes, filterByField,appendMailingAddressDetailsAndRemoveAddresses, rearrangeAndRelabelObjectProperties, addDistrictLabels, normalizeJsonObject, sortJSONByDistrictNumber, removeFieldsByCriteria, filterByPubliclyAvailableCodes} = require("../components/utils.js")
 
 //Batch Routes
 router.get("/all-contacts", checkToken, getAllDistrictContacts);
@@ -323,6 +323,7 @@ async function getDistrict(req, res) {
     const contactTypeCodes = await getDistrictCodes(req);
     const schoolCategoryCodes = await listCache.get("categoryCodes")
     const facilityCodes = await listCache.get("facilityCodes")
+    const fundingGroups = await listCache.get("fundingGroups")
     const districtContactCodeTypes = await listCache.get("codesList")
     const nonPublicContactTypeCodes = getNonPublicContactTypeCodes(contactTypeCodes);
     
@@ -341,7 +342,7 @@ async function getDistrict(req, res) {
 
     districtSchoolsResponse.data.content = normalizeJsonObject(districtSchoolsResponse.data.content, schoolCategoryCodes, "schoolCategoryCode",  null, ["label", "description"]);
     districtSchoolsResponse.data.content = normalizeJsonObject(districtSchoolsResponse.data.content, facilityCodes, "faciltyTypeCode",  null, ["label", "description"]);
-
+   districtSchoolsResponse.data.content = addFundingGroups(districtSchoolsResponse.data.content, fundingGroups)
     const districtJSON = {
       districtData: districtDataPublicWithLabels,
       districtSchools: districtSchoolsResponse.data.content,
