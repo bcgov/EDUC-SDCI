@@ -54,7 +54,6 @@ async function createCache(req, res) {
           headers: { Authorization: `Bearer ${req.accessToken}` },
         }
       );
-      console.log("SET")
       listCache.set("fundingGroups", fundingGroupsResponse.data);
       res.json(fundingGroupsResponse.data);
     } catch (error) {
@@ -320,7 +319,6 @@ async function getContactTypeCodes(req, res) {
       res.status(statusCode).send(error.message);
     }
   } else {
-    console.log("set CODELIST")
     const cachedCodeList = await listCache.get("codesList");
     res.json(cachedCodeList);
   }

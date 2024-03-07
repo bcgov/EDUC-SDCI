@@ -360,7 +360,6 @@ async function getAllSchools(req, res) {
           null,
           ["label", "description"]
         );
-        console.log(openSchoolList)
         openSchoolList.forEach((currentElement, index, array) => {
           const rearrangedElement = rearrangeAndRelabelObjectProperties(
             currentElement,
