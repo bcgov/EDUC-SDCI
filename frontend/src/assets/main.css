@@ -12,6 +12,12 @@ a {
   color: #2a6496;
 }
 
+/** Need to look at how CSS is loaded in since Vuetify defaults are overriding our custom CSS.
+Fixing this now could risk delaying other releases, so we will have to wait on this one - SF **/
+.v-alert, .v-alert--variant-outlined {
+  border-radius: 8px !important;
+}
+
 @media (max-width: 768px) {
   #app {
     min-width: 1130px; /* Adjust as needed */

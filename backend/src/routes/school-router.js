@@ -271,7 +271,7 @@ async function getAllSchools(req, res) {
     const facilityCodes = await listCache.get("facilityCodes");
     const url = `${config.get(
       "server:instituteAPIURL"
-    )}/institute/school/paginated?pageSize=4000&searchCriteriaList=${encodedParams}`;
+    )}/institute/school/` + schoolId;
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
@@ -318,6 +318,7 @@ async function getAllSchools(req, res) {
           { property: "fundingGroupSubCode", label: "Funding Group Sub Code" },
         ];
         const mailingListpropertyOrder = [
+            
           { property: "districtNumber", label: "District Number" },
           { property: "mincode", label: "School Code" },
           { property: "displayName", label: "School Name" },
@@ -328,9 +329,10 @@ async function getAllSchools(req, res) {
           { property: "physical_addressLine1", label: "Courier Address" },
           { property: "physical_city", label: "Courier City" },
           { property: "physical_provinceCode", label: "Courier Province" },
-          { property: "physical_postal", label: "Courier Postal Code" },
+          { property: "physical_postal", label: "Courier Postal Code" },          
           { property: "phoneNumber", label: "Phone" },
-        ];
+          
+      ];
 
         const openSchoolListWithDistrictLabels = addDistrictLabels(
           response.data,
@@ -361,72 +363,53 @@ async function getAllSchools(req, res) {
           ["label", "description"]
         );
         openSchoolList.forEach((currentElement, index, array) => {
-          const rearrangedElement = rearrangeAndRelabelObjectProperties(
-            currentElement,
-            propertyOrder
-          );
+          const rearrangedElement = rearrangeAndRelabelObjectProperties(currentElement, propertyOrder);
           array[index] = rearrangedElement;
         });
-        openSchoolList = filterRemoveByField(
-          openSchoolList,
-          "District Number",
-          ["098", "102", "103", ""]
-        );
-
+        openSchoolList = filterRemoveByField(openSchoolList,"District Number", ["098","102","103", ""])
+        
         openSchoolMailingList.forEach((currentElement, index, array) => {
-          const rearrangedElement = rearrangeAndRelabelObjectProperties(
-            currentElement,
-            mailingListpropertyOrder
-          );
+          const rearrangedElement = rearrangeAndRelabelObjectProperties(currentElement, mailingListpropertyOrder);
           array[index] = rearrangedElement;
+        });        
+        openSchoolMailingList = filterRemoveByField(openSchoolMailingList,"District Number", ["098","102","103", ""])
+          
+          
+
+          const openINDEPENDSchoolList = filterIncludeByField(openSchoolList, "School Category", ["Independent School"] );
+          schoolCache.set("openschoollistINDEPEND", openINDEPENDSchoolList);
+          
+          const openPUBLICSchoolList = filterIncludeByField(openSchoolList, "School Category", ["Public School"] );
+          schoolCache.set("openschoollistPUBLIC", openPUBLICSchoolList);          
+          
+          schoolCache.set("openschoollistALL", openSchoolList);
+          schoolCache.set("openschoollistALLMAILING", openSchoolMailingList);
+
+          if(schoolCategory== "INDEPEND"){
+            res.json(openINDEPENDSchoolList);
+          }else if(schoolCategory== "PUBLIC"){
+            res.json(openPUBLICSchoolList);
+          }else if(schoolCategory== "ALL"){
+            res.json(openSchoolList);
+          }
+          else if(schoolCategory== "ALLMAILING"){
+            res.json(openSchoolMailingList);
+          }
+          
+          
+          log.info(req.url);
+        })
+        .catch((e) => {
+          log.error(
+            "getAllSchoolsList Error",
+            e.response ? e.response.status : e.message
+          );
         });
-        openSchoolMailingList = filterRemoveByField(
-          openSchoolMailingList,
-          "District Number",
-          ["098", "102", "103", ""]
-        );
-
-        const openINDEPENDSchoolList = filterIncludeByField(
-          openSchoolList,
-          "School Category",
-          ["Independent School", "Independent First Nations School"]
-        );
-        schoolCache.set("openschoollistINDEPEND", openINDEPENDSchoolList);
-
-        const openPUBLICSchoolList = filterIncludeByField(
-          openSchoolList,
-          "School Category",
-          ["Public School"]
-        );
-        schoolCache.set("openschoollistPUBLIC", openPUBLICSchoolList);
-
-        schoolCache.set("openschoollistALL", openSchoolList);
-        schoolCache.set("openschoollistALLMAILING", openSchoolMailingList);
-
-        if (schoolCategory == "INDEPEND") {
-          res.json(openINDEPENDSchoolList);
-        } else if (schoolCategory == "PUBLIC") {
-          res.json(openPUBLICSchoolList);
-        } else if (schoolCategory == "ALL") {
-          res.json(openSchoolList);
-        } else if (schoolCategory == "ALLMAILING") {
-          res.json(openSchoolMailingList);
-        }
-
-        log.info(req.url);
-      })
-      .catch((e) => {
-        log.error(
-          "getAllSchoolsList Error",
-          e.response ? e.response.status : e.message
-        );
-      });
   } else {
-    const openSchoolList = await schoolCache.get(
-      "openschoollist" + schoolCategory
-    );
+    const openSchoolList = await schoolCache.get("openschoollist" + schoolCategory);
     res.json(openSchoolList);
   }
 }
 
 module.exports = router;
+

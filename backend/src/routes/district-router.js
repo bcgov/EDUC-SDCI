@@ -15,8 +15,6 @@ router.get("/all-contacts", checkToken, getAllDistrictContacts);
 router.get("/all-mailing", checkToken, getAllDistrictMailing);
 router.get("/:id", checkToken, getDistrict);
 
-
-
 function getNonPublicContactTypeCodes(contactTypes) {
   const nonPublicContactTypeCodes = [];
 
@@ -29,21 +27,20 @@ function getNonPublicContactTypeCodes(contactTypes) {
   return nonPublicContactTypeCodes;
 }
 function addContactTypeLabels(districtDataResponse, nonPublicContactTypeCodes) {
-
   const updatedDistrictData = { ...districtDataResponse };
   if (
     updatedDistrictData.contacts &&
     Array.isArray(updatedDistrictData.contacts)
   ) {
-    updatedDistrictData.contacts.forEach(contact => {
+    updatedDistrictData.contacts.forEach((contact) => {
       const matchingType = nonPublicContactTypeCodes.find(
-        codeObj => codeObj.districtContactTypeCode === contact.districtContactTypeCode
+        (codeObj) =>
+          codeObj.districtContactTypeCode === contact.districtContactTypeCode
       );
 
       if (matchingType) {
         contact.label = matchingType.label;
       } else {
-        
       }
     });
   }
@@ -92,59 +89,60 @@ async function getDistrictCodes(req) {
   }
 }
 async function getAllDistrictContacts(req, res) {
+  const districtList = await listCache.get("districtlist");
+  const contactTypeCodes = await listCache.get("codesList");
+  const districtAddresses = await listCache.get("districtAddresses");
 
-  const districtList = await listCache.get("districtlist")
-  const contactTypeCodes= await listCache.get("codesList")
-  const districtAddresses = await listCache.get("districtAddresses")
-
-  let currentDate = new Date().toISOString().substring(0, 19)
-    const params = [
-      {
-        condition: 'AND',
-        searchCriteriaList: [
-          {
-            key: 'expiryDate',
-            operation: 'eq',
-            value: null,
-            valueType: 'STRING',
-            condition: 'OR'
-          },
-          {
-            key: 'expiryDate',
-            operation: 'gte',
-            value: currentDate,
-            valueType: 'DATE_TIME',
-            condition: 'OR'
-          }          
-        ]
-      },
-      {
-        condition: 'AND',
-        searchCriteriaList: [
-          {
-            key: 'effectiveDate',
-            operation: 'lte',
-            value: currentDate,
-            valueType: 'DATE_TIME',
-            condition: 'AND'
-          }
-        ]
-      }
-    ];
-    const jsonString = JSON.stringify(params);
-    const encodedParams = encodeURIComponent(jsonString);
-    const url = await `${config.get(
-      "server:instituteAPIURL"
-    )}/institute/district/contact/paginated?pageSize=4000&searchCriteriaList=${encodedParams}`
+  let currentDate = new Date().toISOString().substring(0, 19);
+  const params = [
+    {
+      condition: "AND",
+      searchCriteriaList: [
+        {
+          key: "expiryDate",
+          operation: "eq",
+          value: null,
+          valueType: "STRING",
+          condition: "OR",
+        },
+        {
+          key: "expiryDate",
+          operation: "gte",
+          value: currentDate,
+          valueType: "DATE_TIME",
+          condition: "OR",
+        },
+      ],
+    },
+    {
+      condition: "AND",
+      searchCriteriaList: [
+        {
+          key: "effectiveDate",
+          operation: "lte",
+          value: currentDate,
+          valueType: "DATE_TIME",
+          condition: "AND",
+        },
+      ],
+    },
+  ];
+  const jsonString = JSON.stringify(params);
+  const encodedParams = encodeURIComponent(jsonString);
+  const url = await `${config.get(
+    "server:instituteAPIURL"
+  )}/institute/district/contact/paginated?pageSize=4000&searchCriteriaList=${encodedParams}`;
   try {
-    
     const districtContactResponse = await axios.get(url, {
       headers: { Authorization: `Bearer ${req.accessToken}` },
     });
     const propertyOrder = [
       { property: "districtId_districtNumber", label: "District Number" },
       { property: "districtId_displayName", label: "District Name" },
-      { property: "districtContactTypeCode_description", label: "District Contact" },
+      {
+        property: "districtContactTypeCode_description",
+        label: "District Contact",
+      },
       { property: "firstName", label: "Contact First Name" },
       { property: "lastName", label: "Contact Last name" },
       { property: "jobTitle", label: "Position Title" },
@@ -155,42 +153,90 @@ async function getAllDistrictContacts(req, res) {
       { property: "districtId_mailing_provinceCode", label: "Province" },
       { property: "districtId_mailing_postal", label: "Postal Code" },
       { property: "districtId_mailing_countryCode", label: "Country" },
-      { property: "districtId_physical_addressLine1", label: "Courier Address Line 1" },
-      { property: "districtId_physical_addressLine2", label: "Courier Address Line 2" },
+      {
+        property: "districtId_physical_addressLine1",
+        label: "Courier Address Line 1",
+      },
+      {
+        property: "districtId_physical_addressLine2",
+        label: "Courier Address Line 2",
+      },
       { property: "districtId_physical_city", label: "Courier City" },
-      { property: "districtId_physical_provinceCode", label: "Courier Province" },
+      {
+        property: "districtId_physical_provinceCode",
+        label: "Courier Province",
+      },
       { property: "districtId_physical_postal", label: "Courier Postal Code" },
       { property: "districtId_physical_countryCode", label: "Courier Country" },
       { property: "phoneNumber", label: "Contact Phone" },
       { property: "phoneExtension", label: "Contact Phone Extension" },
       { property: "email", label: "Contact Email" },
-      
     ];
 
-    const includedFields = ['districtContactTypeCode', 'label', 'description'];
-    let content = normalizeJsonObject(districtContactResponse.data.content, contactTypeCodes.codesList.districtContactTypeCodes, 'districtContactTypeCode', (info) => info.publiclyAvailable === true, includedFields);
-    content = normalizeJsonObject(content, districtAddresses, 'districtId', null, ['mailing_addressLine1','mailing_addressLine2','mailing_city','mailing_postal','mailing_provinceCode','mailing_countryCode','mailing_districtAddressId','mailing_districtId','physical_addressLine1','physical_addressLine2','physical_city','physical_postal','physical_provinceCode','physical_countryCode']);    
-    content = normalizeJsonObject(content, districtList, 'districtId', null, ['displayName', 'districtNumber']);    
-    content = filterByPubliclyAvailableCodes(content,"districtContactTypeCode",getArrayofPubliclyAvailableCodes(contactTypeCodes.codesList.districtContactTypeCodes, "districtContactTypeCode"))
-    content = filterByExpiryDate(content)
-  
-    
-    let filteredData =  filterByField(content, 'districtId_districtNumber', ['']);
+    const includedFields = ["districtContactTypeCode", "label", "description"];
+    let content = normalizeJsonObject(
+      districtContactResponse.data.content,
+      contactTypeCodes.codesList.districtContactTypeCodes,
+      "districtContactTypeCode",
+      (info) => info.publiclyAvailable === true,
+      includedFields
+    );
+    content = normalizeJsonObject(
+      content,
+      districtAddresses,
+      "districtId",
+      null,
+      [
+        "mailing_addressLine1",
+        "mailing_addressLine2",
+        "mailing_city",
+        "mailing_postal",
+        "mailing_provinceCode",
+        "mailing_countryCode",
+        "mailing_districtAddressId",
+        "mailing_districtId",
+        "physical_addressLine1",
+        "physical_addressLine2",
+        "physical_city",
+        "physical_postal",
+        "physical_provinceCode",
+        "physical_countryCode",
+      ]
+    );
+    content = normalizeJsonObject(content, districtList, "districtId", null, [
+      "displayName",
+      "districtNumber",
+    ]);
+    content = filterByPubliclyAvailableCodes(
+      content,
+      "districtContactTypeCode",
+      getArrayofPubliclyAvailableCodes(
+        contactTypeCodes.codesList.districtContactTypeCodes,
+        "districtContactTypeCode"
+      )
+    );
+    content = filterByExpiryDate(content);
+
+    let filteredData = filterByField(content, "districtId_districtNumber", [
+      "",
+    ]);
     filteredData.forEach((currentElement, index, array) => {
-      const rearrangedElement = rearrangeAndRelabelObjectProperties(currentElement, propertyOrder);
+      const rearrangedElement = rearrangeAndRelabelObjectProperties(
+        currentElement,
+        propertyOrder
+      );
       array[index] = rearrangedElement;
     });
-    let sortedData = sortJSONByDistrictNumber(filteredData)
+    let sortedData = sortJSONByDistrictNumber(filteredData);
     res.json(sortedData);
-
   } catch (e) {
     log.error("getData Error", e.response ? e.response.status : e.message);
   }
 }
 
 async function getAllDistrictMailing(req, res) {
-  const districtList = await listCache.get("districtlist")
-  const contactTypeCodes= await listCache.get("codesList")
+  const districtList = await listCache.get("districtlist");
+  const contactTypeCodes = await listCache.get("codesList");
 
   const propertyOrder = [
     { property: "districtId_districtNumber", label: "District Number" },
@@ -206,48 +252,62 @@ async function getAllDistrictMailing(req, res) {
     { property: "physicalCity", label: "Courier City" },
     { property: "physicalProvinceCode", label: "Courier Province" },
     { property: "physicalPostal", label: "Courier Postal Code" },
-    { property: "physicalCountryCode", label: "Courier Country" },    
+    { property: "physicalCountryCode", label: "Courier Country" },
     { property: "website", label: "Web Address" },
     { property: "phoneNumber", label: "Phone" },
-    { property: "faxNumber", label: "Fax" },   
+    { property: "faxNumber", label: "Fax" },
   ];
 
- const params = [
-  {
-    condition: null,
-    searchCriteriaList: [
-      {
-        key: "districtStatusCode",
-        operation: "eq",
-        value: "ACTIVE",
-        valueType: "STRING",
-        condition: "AND",
-      },
-    ],
-  }]
+  const params = [
+    {
+      condition: null,
+      searchCriteriaList: [
+        {
+          key: "districtStatusCode",
+          operation: "eq",
+          value: "ACTIVE",
+          valueType: "STRING",
+          condition: "AND",
+        },
+      ],
+    },
+  ];
   const jsonString = JSON.stringify(params);
   const encodedParams = encodeURIComponent(jsonString);
   const url = await `${config.get(
     "server:instituteAPIURL"
-  )}/institute/district/paginated?pageSize=100&sort["districtNumber"]=ASC&searchCriteriaList=${encodedParams}`
-  
+  )}/institute/district/paginated?pageSize=100&sort["districtNumber"]=ASC&searchCriteriaList=${encodedParams}`;
 
   try {
     const districtContactResponse = await axios.get(url, {
       headers: { Authorization: `Bearer ${req.accessToken}` },
     });
-      
-    districtContactResponse.data.content.forEach(appendMailingAddressDetailsAndRemoveAddresses);
-    
-    
-    const contentWithDistrictLabels = normalizeJsonObject(districtContactResponse.data.content, districtList, 'districtId', null, ['displayName', 'districtNumber']);  
-    let content=  filterByField(contentWithDistrictLabels, 'districtId_districtNumber', ['']);
+
+    districtContactResponse.data.content.forEach(
+      appendMailingAddressDetailsAndRemoveAddresses
+    );
+
+    const contentWithDistrictLabels = normalizeJsonObject(
+      districtContactResponse.data.content,
+      districtList,
+      "districtId",
+      null,
+      ["displayName", "districtNumber"]
+    );
+    let content = filterByField(
+      contentWithDistrictLabels,
+      "districtId_districtNumber",
+      [""]
+    );
     content.forEach((currentElement, index, array) => {
-      const rearrangedElement = rearrangeAndRelabelObjectProperties(currentElement, propertyOrder);
+      const rearrangedElement = rearrangeAndRelabelObjectProperties(
+        currentElement,
+        propertyOrder
+      );
       array[index] = rearrangedElement;
     });
-    const contentByDistrict = sortJSONByDistrictNumber(content)
-    
+    const contentByDistrict = sortJSONByDistrictNumber(content);
+
     res.json(contentByDistrict);
     //res.json(districtContactsReorderedAndRelabeled );
   } catch (e) {
@@ -276,28 +336,28 @@ async function getDistrict(req, res) {
           value: null,
           valueType: "STRING",
           condition: "AND",
-        },   
+        },
         {
           key: "schoolCategoryCode",
           operation: "neq",
           value: "FED_BAND",
           valueType: "STRING",
           condition: "AND",
-        },            
+        },
         {
           key: "facilityTypeCode",
           operation: "neq",
           value: "SUMMER",
           valueType: "STRING",
           condition: "AND",
-        }, 
+        },
         {
           key: "facilityTypeCode",
           operation: "neq",
           value: "POST_SEC",
           valueType: "STRING",
           condition: "AND",
-        },                    
+        },
       ],
     },
   ];
@@ -311,7 +371,7 @@ async function getDistrict(req, res) {
   const districtSchoolsUrl = `${config.get(
     "server:instituteAPIURL"
   )}/institute/school/paginated?pageNumber=0&pageSize=500&searchCriteriaList=${encodedParams}`;
-  
+
   try {
     const districtDataResponse = await axios.get(url, {
       headers: { Authorization: `Bearer ${req.accessToken}` },
@@ -319,7 +379,7 @@ async function getDistrict(req, res) {
     const districtSchoolsResponse = await axios.get(districtSchoolsUrl, {
       headers: { Authorization: `Bearer ${req.accessToken}` },
     });
-    
+
     const contactTypeCodes = await getDistrictCodes(req);
     const schoolCategoryCodes = await listCache.get("categoryCodes")
     const facilityCodes = await listCache.get("facilityCodes")
@@ -336,16 +396,55 @@ async function getDistrict(req, res) {
       districtDataPublic,
       contactTypeCodes
     );
-    districtDataPublicWithLabels.contacts = filterByPubliclyAvailableCodes(districtDataPublicWithLabels.contacts,"districtContactTypeCode",getArrayofPubliclyAvailableCodes(districtContactCodeTypes.codesList.districtContactTypeCodes, "districtContactTypeCode"))
-    districtDataPublicWithLabels.contacts = filterByExpiryDate(districtDataPublicWithLabels.contacts)
-    
+    districtDataPublicWithLabels.contacts = filterByPubliclyAvailableCodes(
+      districtDataPublicWithLabels.contacts,
+      "districtContactTypeCode",
+      getArrayofPubliclyAvailableCodes(
+        districtContactCodeTypes.codesList.districtContactTypeCodes,
+        "districtContactTypeCode"
+      )
+    );
+    districtDataPublicWithLabels.contacts = filterByExpiryDate(
+      districtDataPublicWithLabels.contacts
+    );
 
-    districtSchoolsResponse.data.content = normalizeJsonObject(districtSchoolsResponse.data.content, schoolCategoryCodes, "schoolCategoryCode",  null, ["label", "description"]);
-    districtSchoolsResponse.data.content = normalizeJsonObject(districtSchoolsResponse.data.content, facilityCodes, "faciltyTypeCode",  null, ["label", "description"]);
-   districtSchoolsResponse.data.content = addFundingGroups(districtSchoolsResponse.data.content, fundingGroups)
+    districtSchoolsResponse.data.content = normalizeJsonObject(
+      districtSchoolsResponse.data.content,
+      schoolCategoryCodes,
+      "schoolCategoryCode",
+      null,
+      ["label", "description"]
+    );
+    districtSchoolsResponse.data.content = normalizeJsonObject(
+      districtSchoolsResponse.data.content,
+      facilityCodes,
+      "faciltyTypeCode",
+      null,
+      ["label", "description"]
+    );
+    districtSchoolsResponse.data.content = addFundingGroups(districtSchoolsResponse.data.content, fundingGroups)
+    const today = new Date();
+    const filteredSchoolsResponse = districtSchoolsResponse.data.content.filter(
+      (obj) => {
+        // if openedDate is a valid date is less than today, keep the object
+        const openedDate = new Date(obj.openedDate);
+
+        // If closedDate is a valid date greater than today, keep the object
+        const closedDate = new Date(obj.closedDate);
+
+        // return obj IF closedDate does not exist OR is after than current date
+        // AND openedDate exists AND is before current date
+        return (
+          (!obj.closedDate || closedDate > today) &&
+          obj.openedDate &&
+          openedDate < today
+        );
+      }
+    );
+
     const districtJSON = {
       districtData: districtDataPublicWithLabels,
-      districtSchools: districtSchoolsResponse.data.content,
+      districtSchools: filteredSchoolsResponse,
     };
 
     res.json(districtJSON);
