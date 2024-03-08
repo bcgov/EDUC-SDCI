@@ -47,7 +47,7 @@ async function createCSVFile(req,res, next){
   
     jsonExport(req.jsonData, async function(err, csv){
       if (err) return console.error(err);
-      await writeFileAsync(filePath, csv, 'binary');
+      await writeFileAsync(filePath, '\ufeff' + csv);
       next();
     });
   } catch (error) {

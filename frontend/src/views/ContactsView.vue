@@ -4,6 +4,8 @@ import { ref, onMounted } from 'vue'
 import InstituteService from '@/services/InstituteService'
 import jsonexport from 'jsonexport/dist'
 
+import DisplayAlert from '@/components/common/DisplayAlert.vue'
+
 const appStore = useAppStore()
 // used for open and close modal
 const dialog = ref(false)
@@ -11,7 +13,7 @@ const dialog = ref(false)
 const filteredContacts = ref([])
 const selectedContactType = ref(null)
 const results = ref(0)
-const itemsPerPage = ref(4000)
+const itemsPerPage = ref(100)
 const itemsSort = ref('')
 const totalPages = ref(1)
 const headers = [
@@ -154,6 +156,7 @@ onMounted(() => {
       <v-row no-gutters justify="space-between">
         <v-spacer />
         <v-col cols="12">
+          <DisplayAlert />
           <h2 class="mt-3 mb-2">Find District Contacts by Type</h2>
           <v-row>
             <v-autocomplete
@@ -194,16 +197,14 @@ onMounted(() => {
           >
         </v-col>
       </v-row>
-      <v-data-table
+      <v-data-table-virtual
         :headers="headers"
         :items="filteredContacts"
-        :items-per-page="-1"
         class="elevation-1"
         height="700"
         item-value="name"
-        dense
         :sort-by="[{ key: 'districtNumber', order: 'asc' }]"
-      ></v-data-table>
+      ></v-data-table-virtual>
     </v-container>
   </div>
 </template>

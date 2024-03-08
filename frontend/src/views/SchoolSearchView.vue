@@ -3,6 +3,8 @@ import { ref, onMounted, onBeforeMount, isProxy, toRaw } from 'vue'
 import { useAppStore } from '@/stores/app'
 import InstituteService from '@/services/InstituteService'
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
+import DisplayAlert from '@/components/common/DisplayAlert.vue'
+
 const currentDate: Date = new Date()
 const appStore = useAppStore()
 const jurisdictions = ref([])
@@ -225,8 +227,9 @@ onBeforeMount(async () => {
       :items="[{ title: 'Home', href: '/' }, 'Search']"
     ></v-breadcrumbs>
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
+      <DisplayAlert />
       <v-container class="main">
-        <h2>Find Schools</h2>
+        <h1>Find Schools</h1>
         <v-row>
           <v-col cols="12" md="3">
             <v-select
