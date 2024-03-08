@@ -314,7 +314,10 @@ async function getAllSchools(req, res) {
           { property: "GRADE10", label: "Grade 10 Enrollment" },
           { property: "GRADE11", label: "Grade 11 Enrollment" },
           { property: "GRADE12", label: "Grade 12 Enrollment" },
-          { property: "fundingGroupCode", label: "Funding Group" },
+          { property: "primaryK3", label: "Funding Group Primary K-3" },
+          { property: "elementary47", label: "Funding Group Elementary 4-7 EU" },
+          { property: "juniorSecondary810", label: "Funding Group Junior Secondary 8-10 SU" },
+          { property: "seniorSecondary1112", label: "Funding Group Senior Secondary 11-12" },        
         ];
         const mailingListpropertyOrder = [
           { property: "districtNumber", label: "District Number" },

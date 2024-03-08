@@ -260,9 +260,32 @@ function goToDistrict() {
               <v-col v-for="item in schoolData.value.addresses" :key="item.addressTypeCode">
                 <DisplayAddress v-bind="item" />
               </v-col>
-              <v-col v-if="schoolData.value.fundingGroupCode">
-                <strong> Funding:</strong><br />
-                Group: {{ schoolData.value.fundingGroupCode }}<br />
+              <v-col
+                v-if="
+                  schoolData.value.primaryK3 ||
+                  schoolData.value.elementary47 ||
+                  schoolData.value.juniorSecondary810 ||
+                  schoolData.value.seniorSecondary1112
+                "
+              >
+                <strong> Funding Group:</strong><br />
+                <ul>
+                  <li v-if="schoolData.value.primaryK3">
+                    {{ schoolData.value.primaryK3 }} - Primary K-3
+                  </li>
+
+                  <li v-if="schoolData.value.elementary47">
+                    {{ schoolData.value.elementary47 }} - Elementary 4-7, EU
+                  </li>
+
+                  <li v-if="schoolData.value.juniorSecondary810">
+                    {{ schoolData.value.juniorSecondary810 }} - Junior Secondary 8-10, SU
+                  </li>
+
+                  <li v-if="schoolData.value.seniorSecondary1112">
+                    {{ schoolData.value.seniorSecondary1112 }} - Senior Secondary 11-12
+                  </li>
+                </ul>
               </v-col>
               <v-col
                 ><v-btn

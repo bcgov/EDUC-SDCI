@@ -278,24 +278,45 @@ function addDistrictLabels(jsonData, districtList) {
     try {
         // Process each school in the array
         const schoolsWithFunding = schools.map(school => {
-            // Find the corresponding funding group by mincode
-            const matchingFundingGroup = fundingGroups.find(fundingGroup => 
+            // Find all matching funding groups by mincode
+            const matchingFundingGroups = fundingGroups.filter(fundingGroup => 
                 fundingGroup.mincode === school.mincode
             );
 
-            // Add fundingGroupCode to the school
-            if (matchingFundingGroup) {
-                Object.assign(school, {
-                    fundingGroupCode: matchingFundingGroup.fundingGroupCode,
-                });
-            } else {
-                // If mincode is not found in fundingGroups, add null values
-                Object.assign(school, {
-                    fundingGroupCode: null,
-                });
-            }
+            const schoolWithFunding = {
+              ...school,
+              primaryK3: "", // Replace with an appropriate default value
+              elementary47: "", // Replace with an appropriate default value
+              juniorSecondary810: "", // Replace with an appropriate default value
+              seniorSecondary1112: "" // Replace with an appropriate default value
+            };
 
-            return school;
+            // Iterate through the matching funding groups
+            matchingFundingGroups.forEach(matchingFundingGroup => {
+                // Access the fundingGroupCode and fundingSubCode properties
+                const fundingGroupCode = matchingFundingGroup.fundingGroupCode;
+                const fundingSubCode = matchingFundingGroup.fundingGroupSubCode;
+
+                // Check the fundingSubCode and update the school information
+                switch (fundingSubCode) {
+                    case "01":
+                        schoolWithFunding.primaryK3 = fundingGroupCode;
+                        break;
+                    case "04":
+                        schoolWithFunding.elementary47 = fundingGroupCode;
+                        break;
+                    case "08":
+                        schoolWithFunding.juniorSecondary810 = fundingGroupCode;
+                        break;
+                    case "11":
+                        schoolWithFunding.seniorSecondary1112 = fundingGroupCode;
+                        break;
+                    default:
+                        break;
+                }
+            });
+
+            return schoolWithFunding;
         });
 
         return schoolsWithFunding;
@@ -305,7 +326,7 @@ function addDistrictLabels(jsonData, districtList) {
         // Optionally, you can rethrow the error if needed
         throw error;
     }
-  }
+}
   function getArrayofPubliclyAvailableCodes(codes, field) {
     if (!Array.isArray(codes)) {
       throw new Error('Invalid input. Expecting an array of objects.');
