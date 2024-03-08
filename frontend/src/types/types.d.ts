@@ -131,7 +131,10 @@ export interface School {
   grades: Grade[];
   contacts: SchoolContact[];
   addresses: Address[];
-  fundingGroupCode: string;
+  primaryK3: String,
+  elementary47: String,
+  juniorSecondary810: String, 
+  seniorSecondary1112: String,
   notes?: [];
 }
 
