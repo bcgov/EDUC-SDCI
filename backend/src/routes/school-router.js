@@ -315,7 +315,6 @@ async function getAllSchools(req, res) {
           { property: "GRADE11", label: "Grade 11 Enrollment" },
           { property: "GRADE12", label: "Grade 12 Enrollment" },
           { property: "fundingGroupCode", label: "Funding Group" },
-          { property: "fundingGroupSubCode", label: "Funding Group Sub Code" },
         ];
         const mailingListpropertyOrder = [
           { property: "districtNumber", label: "District Number" },
@@ -331,7 +330,6 @@ async function getAllSchools(req, res) {
           { property: "physical_postal", label: "Courier Postal Code" },
           { property: "phoneNumber", label: "Phone" },
         ];
-
         const openSchoolListWithDistrictLabels = addDistrictLabels(
           response.data,
           districtList
@@ -353,6 +351,7 @@ async function getAllSchools(req, res) {
           null,
           ["label", "description"]
         );
+      
         openSchoolList = normalizeJsonObject(
           openSchoolList,
           facilityCodes,
@@ -402,7 +401,6 @@ async function getAllSchools(req, res) {
 
         schoolCache.set("openschoollistALL", openSchoolList);
         schoolCache.set("openschoollistALLMAILING", openSchoolMailingList);
-
         if (schoolCategory == "INDEPEND") {
           res.json(openINDEPENDSchoolList);
         } else if (schoolCategory == "PUBLIC") {

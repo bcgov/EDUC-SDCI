@@ -131,7 +131,6 @@ export interface School {
   grades: Grade[];
   contacts: SchoolContact[];
   addresses: Address[];
-  fundingGroupSubCode: string;
   fundingGroupCode: string;
   notes?: [];
 }

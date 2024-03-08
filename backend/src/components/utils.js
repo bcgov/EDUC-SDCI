@@ -275,33 +275,37 @@ function addDistrictLabels(jsonData, districtList) {
     return nonPubliclyAvailableCodes;
   }
   function addFundingGroups(schools, fundingGroups) {
-    // Process each school in the array
-    
-    const schoolsWithFunding = schools.map(school => {
-        // Find the corresponding funding group by mincode
-        const matchingFundingGroup = fundingGroups.find(fundingGroup => 
-          fundingGroup.mincode === school.mincode
-      );
+    try {
+        // Process each school in the array
+        const schoolsWithFunding = schools.map(school => {
+            // Find the corresponding funding group by mincode
+            const matchingFundingGroup = fundingGroups.find(fundingGroup => 
+                fundingGroup.mincode === school.mincode
+            );
 
+            // Add fundingGroupCode to the school
+            if (matchingFundingGroup) {
+                Object.assign(school, {
+                    fundingGroupCode: matchingFundingGroup.fundingGroupCode,
+                });
+            } else {
+                // If mincode is not found in fundingGroups, add null values
+                Object.assign(school, {
+                    fundingGroupCode: null,
+                });
+            }
 
-        // Add fundingGroupCode and fundingGroupSubCode to the school
-        if (matchingFundingGroup) {
-            Object.assign(school, {
-                fundingGroupCode: matchingFundingGroup.fundingGroupCode,
-                fundingGroupSubCode: matchingFundingGroup.fundingGroupSubCode,
-            });
-        } else {
-            // If mincode is not found in fundingGroups, add null values
-            Object.assign(school, {
-                fundingGroupCode: null,
-                fundingGroupSubCode: null,
-            });
-        }
+            return school;
+        });
 
-        return school;
-    });
-    return schoolsWithFunding;
-}
+        return schoolsWithFunding;
+    } catch (error) {
+        // Handle the error here, you can log it or perform other actions
+        console.error("An error occurred in addFundingGroups:", error);
+        // Optionally, you can rethrow the error if needed
+        throw error;
+    }
+  }
   function getArrayofPubliclyAvailableCodes(codes, field) {
     if (!Array.isArray(codes)) {
       throw new Error('Invalid input. Expecting an array of objects.');
