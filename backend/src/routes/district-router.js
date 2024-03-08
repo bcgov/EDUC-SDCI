@@ -411,6 +411,25 @@ async function getDistrict(req, res) {
     districtSchoolsResponse.data.content = normalizeJsonObject(districtSchoolsResponse.data.content, schoolCategoryCodes, "schoolCategoryCode",  null, ["label", "description"]);
     districtSchoolsResponse.data.content = normalizeJsonObject(districtSchoolsResponse.data.content, facilityCodes, "faciltyTypeCode",  null, ["label", "description"]);
    districtSchoolsResponse.data.content = addFundingGroups(districtSchoolsResponse.data.content, fundingGroups)
+
+   const today = new Date();
+   const filteredSchoolsResponse = districtSchoolsResponse.data.content.filter(
+     (obj) => {
+       // if openedDate is a valid date is less than today, keep the object
+       const openedDate = new Date(obj.openedDate);
+
+       // If closedDate is a valid date greater than today, keep the object
+       const closedDate = new Date(obj.closedDate);
+
+       // return obj IF closedDate does not exist OR is after than current date
+       // AND openedDate exists AND is before current date
+       return (
+         (!obj.closedDate || closedDate > today) &&
+         obj.openedDate &&
+         openedDate < today
+       );
+     }
+   );
     const districtJSON = {
       districtData: districtDataPublicWithLabels,
       districtSchools: filteredSchoolsResponse,
