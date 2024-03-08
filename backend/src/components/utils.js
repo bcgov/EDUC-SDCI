@@ -274,6 +274,38 @@ function addDistrictLabels(jsonData, districtList) {
   
     return nonPubliclyAvailableCodes;
   }
+  function addFundingGroups(schools, fundingGroups) {
+    try {
+        // Process each school in the array
+        const schoolsWithFunding = schools.map(school => {
+            // Find the corresponding funding group by mincode
+            const matchingFundingGroup = fundingGroups.find(fundingGroup => 
+                fundingGroup.mincode === school.mincode
+            );
+
+            // Add fundingGroupCode to the school
+            if (matchingFundingGroup) {
+                Object.assign(school, {
+                    fundingGroupCode: matchingFundingGroup.fundingGroupCode,
+                });
+            } else {
+                // If mincode is not found in fundingGroups, add null values
+                Object.assign(school, {
+                    fundingGroupCode: null,
+                });
+            }
+
+            return school;
+        });
+
+        return schoolsWithFunding;
+    } catch (error) {
+        // Handle the error here, you can log it or perform other actions
+        console.error("An error occurred in addFundingGroups:", error);
+        // Optionally, you can rethrow the error if needed
+        throw error;
+    }
+  }
   function getArrayofPubliclyAvailableCodes(codes, field) {
     if (!Array.isArray(codes)) {
       throw new Error('Invalid input. Expecting an array of objects.');
@@ -377,4 +409,4 @@ function addDistrictLabels(jsonData, districtList) {
         return school;
     });
 }
-  module.exports = {filterByOpenedAndClosedDate, filterByPubliclyAvailableCodes, getArrayofPubliclyAvailableCodes, filterByExpiryDate, filterRemoveByField,filterIncludeByField, sortByProperty,getArrayofNonPubliclyAvailableCodes,filterByField,appendMailingAddressDetailsAndRemoveAddresses,sortJSONBySchoolCode,sortJSONByDistrictNumber,normalizeJsonObject, removeFieldsByCriteria, createList, isSafeFilePath,isAllowedSchoolCategory, addDistrictLabels, districtNumberSort, createSchoolCache, formatGrades, rearrangeAndRelabelObjectProperties};
+  module.exports = {addFundingGroups, filterByOpenedAndClosedDate, filterByPubliclyAvailableCodes, getArrayofPubliclyAvailableCodes, filterByExpiryDate, filterRemoveByField,filterIncludeByField, sortByProperty,getArrayofNonPubliclyAvailableCodes,filterByField,appendMailingAddressDetailsAndRemoveAddresses,sortJSONBySchoolCode,sortJSONByDistrictNumber,normalizeJsonObject, removeFieldsByCriteria, createList, isSafeFilePath,isAllowedSchoolCategory, addDistrictLabels, districtNumberSort, createSchoolCache, formatGrades, rearrangeAndRelabelObjectProperties};

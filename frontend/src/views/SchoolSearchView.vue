@@ -331,6 +331,10 @@ onBeforeMount(async () => {
                   <v-col v-for="(address, index) in item?.addresses" :key="index" cols="12" md="4">
                     <DisplayAddress v-bind="address" />
                   </v-col>
+                  <v-col v-if="item.fundingGroupCode">
+                    <strong> Funding</strong><br />
+                    Group: {{ item.fundingGroupCode }}<br />
+                  </v-col>
                 </v-row>
               </v-col>
             </td>

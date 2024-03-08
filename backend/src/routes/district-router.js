@@ -7,21 +7,8 @@ const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
 const { checkToken } = require("../components/auth");
-const { listCache } = require("../components/cache");
-const {
-  getArrayofPubliclyAvailableCodes,
-  filterRemoveByField,
-  filterByExpiryDate,
-  getArrayofNonPubliclyAvailableCodes,
-  filterByField,
-  appendMailingAddressDetailsAndRemoveAddresses,
-  rearrangeAndRelabelObjectProperties,
-  addDistrictLabels,
-  normalizeJsonObject,
-  sortJSONByDistrictNumber,
-  removeFieldsByCriteria,
-  filterByPubliclyAvailableCodes,
-} = require("../components/utils.js");
+const { listCache} = require("../components/cache");
+const {addFundingGroups, getArrayofPubliclyAvailableCodes,filterRemoveByField, filterByExpiryDate, getArrayofNonPubliclyAvailableCodes, filterByField,appendMailingAddressDetailsAndRemoveAddresses, rearrangeAndRelabelObjectProperties, addDistrictLabels, normalizeJsonObject, sortJSONByDistrictNumber, removeFieldsByCriteria, filterByPubliclyAvailableCodes} = require("../components/utils.js")
 
 //Batch Routes
 router.get("/all-contacts", checkToken, getAllDistrictContacts);
@@ -394,12 +381,13 @@ async function getDistrict(req, res) {
     });
 
     const contactTypeCodes = await getDistrictCodes(req);
-    const schoolCategoryCodes = await listCache.get("categoryCodes");
-    const facilityCodes = await listCache.get("facilityCodes");
-    const districtContactCodeTypes = await listCache.get("codesList");
-    const nonPublicContactTypeCodes =
-      getNonPublicContactTypeCodes(contactTypeCodes);
-
+    const schoolCategoryCodes = await listCache.get("categoryCodes")
+    const facilityCodes = await listCache.get("facilityCodes")
+    const fundingGroups = await listCache.get("fundingGroups")
+    const districtContactCodeTypes = await listCache.get("codesList")
+    const nonPublicContactTypeCodes = getNonPublicContactTypeCodes(contactTypeCodes);
+    
+    
     const districtDataPublic = removeContacts(
       districtDataResponse.data,
       nonPublicContactTypeCodes
@@ -420,40 +408,9 @@ async function getDistrict(req, res) {
       districtDataPublicWithLabels.contacts
     );
 
-    districtSchoolsResponse.data.content = normalizeJsonObject(
-      districtSchoolsResponse.data.content,
-      schoolCategoryCodes,
-      "schoolCategoryCode",
-      null,
-      ["label", "description"]
-    );
-    districtSchoolsResponse.data.content = normalizeJsonObject(
-      districtSchoolsResponse.data.content,
-      facilityCodes,
-      "faciltyTypeCode",
-      null,
-      ["label", "description"]
-    );
-
-    const today = new Date();
-    const filteredSchoolsResponse = districtSchoolsResponse.data.content.filter(
-      (obj) => {
-        // if openedDate is a valid date is less than today, keep the object
-        const openedDate = new Date(obj.openedDate);
-
-        // If closedDate is a valid date greater than today, keep the object
-        const closedDate = new Date(obj.closedDate);
-
-        // return obj IF closedDate does not exist OR is after than current date
-        // AND openedDate exists AND is before current date
-        return (
-          (!obj.closedDate || closedDate > today) &&
-          obj.openedDate &&
-          openedDate < today
-        );
-      }
-    );
-
+    districtSchoolsResponse.data.content = normalizeJsonObject(districtSchoolsResponse.data.content, schoolCategoryCodes, "schoolCategoryCode",  null, ["label", "description"]);
+    districtSchoolsResponse.data.content = normalizeJsonObject(districtSchoolsResponse.data.content, facilityCodes, "faciltyTypeCode",  null, ["label", "description"]);
+   districtSchoolsResponse.data.content = addFundingGroups(districtSchoolsResponse.data.content, fundingGroups)
     const districtJSON = {
       districtData: districtDataPublicWithLabels,
       districtSchools: filteredSchoolsResponse,
