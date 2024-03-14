@@ -44,45 +44,63 @@ const downloadCSV = () => {
   })
 }
 const transformContactForDownload = (inputData: any): {} => {
-  return inputData.map((item: any) => ({
-    'District Number': item.districtNumber,
-    'School Code': item.mincode,
-    'Facility Type': item.facilityTypeCode,
-    'School Category': item.schoolCategoryCode,
-    'School Name': item.displayName,
-    Address: item.addressLine1,
-    City: item.city,
-    Province: item.provinceCode,
-    'Postal Code': item.postal,
-    'School Email': item.schoolEmail,
-    'School Phone Number': item.schoolPhoneNumber,
-    'School Fax Number': item.schoolFaxNumber,
-    'Contact Type': item.schoolContactTypeCode_label,
-    Role: item.jobTitle,
-    'First Name': item.firstName,
-    'Last Name': item.lastName,
-    'Phone Number': item.phoneNumber,
-    'Phone Extension': item.phoneExtension,
-    'Alternate Phone Number': item.alternatePhoneNumber,
-    'Alternate Phone Extension': item.alternatePhoneExtension,
-    Email: item.email,
-    'Elementary Ungraded': item.ELEMUNGR,
-    'Secondary Ungraded': item.SECUNGR,
-    'Kindergarten Half': item.KINDHALF,
-    KindergartenFull: item.KINDFULL,
-    'Grade 01': item.GRADE01,
-    'Grade 02': item.GRADE02,
-    'Grade 03': item.GRADE03,
-    'Grade 04': item.GRADE04,
-    'Grade 05': item.GRADE05,
-    'Grade 06': item.GRADE06,
-    'Grade 07': item.GRADE07,
-    'Grade 08': item.GRADE08,
-    'Grade 09': item.GRADE09,
-    'Grade 10': item.GRADE10,
-    'Grade 11': item.GRADE11,
-    'Grade 12': item.GRADE12
-  }))
+  return inputData.map((item: any) => {
+    const transformedItem: any = {
+      'District Number': item.districtNumber,
+      'School Code': item.mincode,
+      'Facility Type': item.facilityTypeCode,
+      'School Category': item.schoolCategoryCode,
+      'School Name': item.displayName,
+      Address: item.addressLine1,
+      City: item.city,
+      Province: item.provinceCode,
+      'Postal Code': item.postal,
+      'School Email': item.schoolEmail,
+      'School Phone Number': item.schoolPhoneNumber,
+      'School Fax Number': item.schoolFaxNumber,
+      'Contact Type': item.schoolContactTypeCode_label,
+      Role: item.jobTitle,
+      'First Name': item.firstName,
+      'Last Name': item.lastName,
+      'Phone Number': item.phoneNumber,
+      'Phone Extension': item.phoneExtension,
+      'Alternate Phone Number': item.alternatePhoneNumber,
+      'Alternate Phone Extension': item.alternatePhoneExtension,
+      Email: item.email,
+      'Elementary Ungraded': item.ELEMUNGR,
+      'Secondary Ungraded': item.SECUNGR,
+      'Kindergarten Half': item.KINDHALF,
+      KindergartenFull: item.KINDFULL,
+      'Grade 01': item.GRADE01,
+      'Grade 02': item.GRADE02,
+      'Grade 03': item.GRADE03,
+      'Grade 04': item.GRADE04,
+      'Grade 05': item.GRADE05,
+      'Grade 06': item.GRADE06,
+      'Grade 07': item.GRADE07,
+      'Grade 08': item.GRADE08,
+      'Grade 09': item.GRADE09,
+      'Grade 10': item.GRADE10,
+      'Grade 11': item.GRADE11,
+      'Grade 12': item.GRADE12
+    }
+
+    // Add Funding Group fields only if they are not empty
+    if (item.primaryK3) {
+      transformedItem['Funding Group Primary K-3'] = item.primaryK3
+    }
+    if (item.elementary47) {
+      transformedItem['Funding Group Elementary 4-7 EU'] = item.elementary47
+    }
+    if (item.juniorSecondary810) {
+      transformedItem['Funding Group Junior Secondary 8-10 SU'] = item.juniorSecondary810
+    }
+    if (item.seniorSecondary1112) {
+      transformedItem['Funding Group Senior Secondary 11-12'] = item.seniorSecondary1112
+    }
+
+    return transformedItem
+  })
 }
 // loading component
 onBeforeMount(async () => {
@@ -171,6 +189,17 @@ onBeforeMount(async () => {
           filteredContacts.value[i].GRADE10 = response.data.GRADE10
           filteredContacts.value[i].GRADE11 = response.data.GRADE11
           filteredContacts.value[i].GRADE12 = response.data.GRADE12
+          if (
+            response.data.primaryK3 ||
+            response.data.elementary47 ||
+            response.data.juniorSecondary810 ||
+            response.data.seniorSecondary1112
+          ) {
+            filteredContacts.value[i].primaryK3 = response.data.primaryK3
+            filteredContacts.value[i].elementary47 = response.data.elementary47
+            filteredContacts.value[i].juniorSecondary810 = response.data.juniorSecondary810
+            filteredContacts.value[i].seniorSecondary1112 = response.data.seniorSecondary1112
+          }
         }
 
         downloadContacts.value = transformContactForDownload(filteredContacts.value)
@@ -268,7 +297,7 @@ function goToDistrict() {
                   schoolData.value.seniorSecondary1112
                 "
               >
-                <strong> Funding Group:</strong><br />
+                <strong> Group Classification:</strong><br />
                 <ul>
                   <li v-if="schoolData.value.primaryK3">
                     {{ schoolData.value.primaryK3 }} - Primary K-3
