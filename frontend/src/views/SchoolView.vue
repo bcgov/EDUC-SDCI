@@ -87,16 +87,16 @@ const transformContactForDownload = (inputData: any): {} => {
 
     // Add Funding Group fields only if they are not empty
     if (item.primaryK3) {
-      transformedItem['Funding Group Primary K-3'] = item.primaryK3
+      transformedItem['Group Classification Primary K-3'] = item.primaryK3
     }
     if (item.elementary47) {
-      transformedItem['Funding Group Elementary 4-7 EU'] = item.elementary47
+      transformedItem['Group Classification Elementary 4-7 EU'] = item.elementary47
     }
     if (item.juniorSecondary810) {
-      transformedItem['Funding Group Junior Secondary 8-10 SU'] = item.juniorSecondary810
+      transformedItem['Group Classification Junior Secondary 8-10 SU'] = item.juniorSecondary810
     }
     if (item.seniorSecondary1112) {
-      transformedItem['Funding Group Senior Secondary 11-12'] = item.seniorSecondary1112
+      transformedItem['Group Classification Senior Secondary 11-12'] = item.seniorSecondary1112
     }
 
     return transformedItem

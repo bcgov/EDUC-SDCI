@@ -138,10 +138,10 @@ onMounted(async () => {
           Fax: item.faxNumber,
           Email: item.email,
           Website: item.website,
-          'Funding Group Primary K-3': item.primaryK3,
-          'Funding Group Elementary 4-7 EU': item.elementary47,
-          'Funding Group Junior Secondary 8-10 SU': item.juniorSecondary810,
-          'Funding Group Senior Secondary 11-12': item.seniorSecondary1112
+          'Group Classification Primary K-3': item.primaryK3,
+          'Group Classification Elementary 4-7 EU': item.elementary47,
+          'Group Classification Junior Secondary 8-10 SU': item.juniorSecondary810,
+          'Group Classification Senior Secondary 11-12': item.seniorSecondary1112
         }
       })
       filteredContacts.value = contacts.value.map((item: any) => {
