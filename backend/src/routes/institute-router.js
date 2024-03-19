@@ -554,7 +554,17 @@ async function getDistrictContactsAPI(req, res) {
       if (req.url.includes("/district/contact/paginated")) {
         const jsonData = addDistrictLabels(response.data, districtList);
       
-        jsonData.content = jsonData.content.filter(contact => !["8e34ab4d-f387-220b-b54e-2c9a7f380f85","1f93fe68-2d80-fea5-88ba-a684dfa4cc27", "99c19236-5d01-2dff-db90-e2da4511c00c"].includes(contact.districtId));
+        jsonData.content = jsonData.content.filter(contact => {
+          // Check if districtId is not empty
+          const districtIdNotEmpty = contact.districtId !== "";
+      
+          // Check if districtName and districtNumber are not empty
+          const districtNameNotEmpty = contact.districtName !== undefined && contact.districtName.trim() !== "";
+          const districtNumberNotEmpty = contact.districtNumber !== undefined && contact.districtNumber.trim() !== "";
+      
+          // Return true if districtId, districtName, and districtNumber are not empty
+          return districtIdNotEmpty && districtNameNotEmpty && districtNumberNotEmpty;
+      });
         res.json(jsonData);
       } else {
         res.json(response.data);
