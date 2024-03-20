@@ -24,6 +24,17 @@ async function flushFileCache(req, res) {
     }
     fileCache.flushAll();
     schoolCache.flushAll();
+    const directoryPath = FILE_STORAGE_DIR ;
+    // Read all files in the directory
+    fs.readdirSync(directoryPath).forEach((file) => {
+      const filePath = path.join(directoryPath, file);
+
+      // Delete each file
+      fs.unlinkSync(filePath);
+    });
+    
+
+    
     res.status(200).send('All files in the directory deleted successfully.');
   } catch (error) {
     console.error(error);
@@ -33,9 +44,10 @@ async function flushFileCache(req, res) {
 
 async function createCSVFile(req,res, next){
   try {
+  
     jsonExport(req.jsonData, async function(err, csv){
       if (err) return console.error(err);
-      await writeFileAsync(filePath, csv, 'binary');
+      await writeFileAsync(filePath, '\ufeff' + csv);
       next();
     });
   } catch (error) {
@@ -67,11 +79,12 @@ async function getDownload(req, res,next){
   }
   filePath = path.join(FILE_STORAGE_DIR, `${filepath}.csv`);
   if(fileCache.has(filepath)){
+    const file = path.join(FILE_STORAGE_DIR, `${filepath}.csv`);
     res.setHeader('Content-Disposition', `attachment; filename="${filepath}.csv"`);
-    return res.sendFile(filePath);
+    return res.sendFile(file);
   }else{
     try {
-      const path = req.url.replace('/csv', ''); // Modify the URL path as needed
+      const path = req.url.replace('/csv', ''); // Modify the URL path as neededz
       const url =`${config.get("server:backend")}/v1${path}`
       const response = await axios.get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } });
       // Attach the fetched data to the request object

@@ -8,15 +8,18 @@ const fs = require("fs");
 const path = require("path");
 const { checkToken } = require("../components/auth");
 const { listCache } = require("../components/cache");
-const {appendMailingAddressDetailsAndRemoveAddresses, rearrangeAndRelabelObjectProperties, sortByProperty} = require("../components/utils.js")
+const {addFundingGroups, appendMailingAddressDetailsAndRemoveAddresses, rearrangeAndRelabelObjectProperties, sortByProperty} = require("../components/utils.js")
 //Batch Routes
 router.get("/*", checkToken, getSearchResults)
 async function getSearchResults(req, res) {
-
+  const fundingGroups = await listCache.get("fundingGroups")
   const url = `${config.get("server:instituteAPIURL")}`+ req.url;
   axios
     .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
     .then((response) => {
+      const results = response.data.content;
+      const resultsWithFundingGroups = addFundingGroups(results, fundingGroups);
+      response.data.content = resultsWithFundingGroups; 
       res.json(response.data);
     })
     .catch((e) => {

@@ -4,6 +4,7 @@ import { useAppStore } from '@/stores/app'
 import router from '@/router'
 import { useSanitizeURL } from '@/composables/string'
 import DownloadSchoolsModal from '@/components/DownloadSchoolsModal.vue'
+import DisplayAlert from '@/components/common/DisplayAlert.vue'
 
 // Type Imports
 import type { ListSchool } from '@/types/types'
@@ -33,8 +34,9 @@ function goToSchoolSearch() {
 </script>
 
 <template>
-  <v-sheet elevation="2" class="py-6 full-width">
-    <v-container class="main">
+  <v-container fluid class="pt-0">
+    <v-sheet elevation="2" class="py-6 full-width">
+      <DisplayAlert />
       <v-row no-gutters justify="space-between">
         <v-col>
           <img
@@ -66,6 +68,7 @@ function goToSchoolSearch() {
               class="mx-3"
             />
           </v-row>
+
           <v-row>
             <v-col class="px-0 py-4 py-md-0 my-md-1">
               <v-btn
@@ -86,6 +89,6 @@ function goToSchoolSearch() {
         </v-col>
         <v-spacer />
       </v-row>
-    </v-container>
-  </v-sheet>
+    </v-sheet>
+  </v-container>
 </template>

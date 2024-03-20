@@ -274,6 +274,59 @@ function addDistrictLabels(jsonData, districtList) {
   
     return nonPubliclyAvailableCodes;
   }
+  function addFundingGroups(schools, fundingGroups) {
+    try {
+        // Process each school in the array
+        const schoolsWithFunding = schools.map(school => {
+            // Find all matching funding groups by mincode
+            const matchingFundingGroups = fundingGroups.filter(fundingGroup => 
+                fundingGroup.mincode === school.mincode
+            );
+
+            const schoolWithFunding = {
+              ...school,
+              primaryK3: "", // Replace with an appropriate default value
+              elementary47: "", // Replace with an appropriate default value
+              juniorSecondary810: "", // Replace with an appropriate default value
+              seniorSecondary1112: "" // Replace with an appropriate default value
+            };
+
+            // Iterate through the matching funding groups
+            matchingFundingGroups.forEach(matchingFundingGroup => {
+                // Access the fundingGroupCode and fundingSubCode properties
+                const fundingGroupCode = matchingFundingGroup.fundingGroupCode;
+                const fundingSubCode = matchingFundingGroup.fundingGroupSubCode;
+
+                // Check the fundingSubCode and update the school information
+                switch (fundingSubCode) {
+                    case "01":
+                        schoolWithFunding.primaryK3 = fundingGroupCode;
+                        break;
+                    case "04":
+                        schoolWithFunding.elementary47 = fundingGroupCode;
+                        break;
+                    case "08":
+                        schoolWithFunding.juniorSecondary810 = fundingGroupCode;
+                        break;
+                    case "11":
+                        schoolWithFunding.seniorSecondary1112 = fundingGroupCode;
+                        break;
+                    default:
+                        break;
+                }
+            });
+
+            return schoolWithFunding;
+        });
+
+        return schoolsWithFunding;
+    } catch (error) {
+        // Handle the error here, you can log it or perform other actions
+        console.error("An error occurred in addFundingGroups:", error);
+        // Optionally, you can rethrow the error if needed
+        throw error;
+    }
+}
   function getArrayofPubliclyAvailableCodes(codes, field) {
     if (!Array.isArray(codes)) {
       throw new Error('Invalid input. Expecting an array of objects.');
@@ -377,4 +430,4 @@ function addDistrictLabels(jsonData, districtList) {
         return school;
     });
 }
-  module.exports = {filterByOpenedAndClosedDate, filterByPubliclyAvailableCodes, getArrayofPubliclyAvailableCodes, filterByExpiryDate, filterRemoveByField,filterIncludeByField, sortByProperty,getArrayofNonPubliclyAvailableCodes,filterByField,appendMailingAddressDetailsAndRemoveAddresses,sortJSONBySchoolCode,sortJSONByDistrictNumber,normalizeJsonObject, removeFieldsByCriteria, createList, isSafeFilePath,isAllowedSchoolCategory, addDistrictLabels, districtNumberSort, createSchoolCache, formatGrades, rearrangeAndRelabelObjectProperties};
+  module.exports = {addFundingGroups, filterByOpenedAndClosedDate, filterByPubliclyAvailableCodes, getArrayofPubliclyAvailableCodes, filterByExpiryDate, filterRemoveByField,filterIncludeByField, sortByProperty,getArrayofNonPubliclyAvailableCodes,filterByField,appendMailingAddressDetailsAndRemoveAddresses,sortJSONBySchoolCode,sortJSONByDistrictNumber,normalizeJsonObject, removeFieldsByCriteria, createList, isSafeFilePath,isAllowedSchoolCategory, addDistrictLabels, districtNumberSort, createSchoolCache, formatGrades, rearrangeAndRelabelObjectProperties};

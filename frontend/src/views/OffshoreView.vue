@@ -5,6 +5,8 @@ import { reactive, onBeforeMount, ref } from 'vue'
 import { distNumberFromMincode } from '@/utils/common'
 import jsonexport from 'jsonexport/dist'
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
+import DisplayAlert from '@/components/common/DisplayAlert.vue'
+
 const appStore = useAppStore()
 const { offshoreSchools } = storeToRefs(appStore)
 const schoolSearch = ref('')
@@ -129,9 +131,10 @@ onBeforeMount(() => {
       :items="[{ title: 'Home', href: '/' }, 'Offshore Schools']"
     ></v-breadcrumbs>
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
+      <DisplayAlert />
       <v-row no-gutters justify="space-between">
         <v-col>
-          <h2 class="mt-3 mb-2">Offshore Schools</h2>
+          <h1 class="mt-3 mb-2">Offshore Schools</h1>
         </v-col>
         <v-spacer />
         <v-col cols="3"
