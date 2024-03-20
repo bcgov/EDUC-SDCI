@@ -70,11 +70,14 @@ async function createCache(req, res) {
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
-        //const districtList = response.data;
+        const filteredNonbBCDistrictList = response.data.filter(district => ["098","102", "103"].includes(district.districtNumber));
         const filteredDistrictList = response.data.filter(district => !["098","102", "103"].includes(district.districtNumber));
         const districtList = createList(filteredDistrictList, districtListOptions);
-        
+        const nonBCdistrictList = createList(filteredNonbBCDistrictList, districtListOptions);
+
+        listCache.set("nonbcdistrictlist", nonBCdistrictList);
         listCache.set("districtlist", districtList);
+        res.json(districtList);
         log.info(req.url);
       })
       .catch((e) => {
@@ -511,9 +514,11 @@ async function getDistrictList(req, res) {
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
         //const districtList = response.data;
+        const filteredNonbBCDistrictList = response.data.filter(district => ["098","102", "103"].includes(district.districtNumber));
         const filteredDistrictList = response.data.filter(district => !["098","102", "103"].includes(district.districtNumber));
         const districtList = createList(filteredDistrictList, districtListOptions);
-        
+        const nonBCdistrictList = createList(filteredNonbBCDistrictList, districtListOptions);
+        listCache.set("nonbcdistrictlist", nonBCdistrictList);
         listCache.set("districtlist", districtList);
         res.json(districtList);
         log.info(req.url);
@@ -547,14 +552,16 @@ async function getDistrictContactsAPI(req, res) {
   const url = `${config.get("server:instituteAPIURL")}/institute` + req.url;
 
   const districtList = await listCache.get("districtlist");
-
+  const nonBCDistrictList =  await listCache.get("nonbcdistrictlist");
   axios
     .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
     .then((response) => {
       if (req.url.includes("/district/contact/paginated")) {
         const jsonData = addDistrictLabels(response.data, districtList);
-      
-        jsonData.content = jsonData.content.filter(contact => !["8e34ab4d-f387-220b-b54e-2c9a7f380f85","1f93fe68-2d80-fea5-88ba-a684dfa4cc27", "99c19236-5d01-2dff-db90-e2da4511c00c"].includes(contact.districtId));
+        let nonBCDistrictIds = nonBCDistrictList.map(district => district.districtId);
+        nonBCDistrictIds.push("8e34ab4d-f387-220b-b54e-2c9a7f380f85");
+        jsonData.content = jsonData.content.filter(contact => !nonBCDistrictIds.includes(contact.districtId));
+
         res.json(jsonData);
       } else {
         res.json(response.data);
