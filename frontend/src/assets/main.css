@@ -20,13 +20,15 @@ Fixing this now could risk delaying other releases, so we will have to wait on t
 
 @media (max-width: 768px) {
   #app {
-    min-width: 1130px; /* Adjust as needed */
-    padding: 0; /* Adjust as needed */
+    min-width: unset;
+    padding: 0;
   }
 
   .full-width {
-    margin: 0 calc(-1*(100vw - 768px)/2);
-    padding: 0 calc((100vw - 768px)/2);
+    /* margin: 0 calc(-1*(100vw - 768px)/2); */
+    margin: 0;
+    padding: 0;
+    /* padding: 0 calc((100vw - 768px)/2); */
     background-color: red;
   }
 }

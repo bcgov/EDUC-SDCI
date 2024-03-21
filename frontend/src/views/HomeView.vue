@@ -12,7 +12,7 @@ import SchoolSelect from '../components/SchoolSelect.vue'
       class="breadcrumbs"
       :items="[{ title: 'Home', href: '/' }]"
     ></v-breadcrumbs> -->
-    <v-col no-gutters>
+    <v-col no-gutters class="pa-0 pa-lg-2">
       <v-row>
         <SchoolSelect />
       </v-row>

@@ -34,15 +34,15 @@ function goToSchoolSearch() {
 </script>
 
 <template>
-  <v-container fluid class="pt-0">
-    <v-sheet elevation="2" class="py-6 full-width">
-      <DisplayAlert />
-      <v-row no-gutters justify="space-between">
-        <v-col>
+  <v-container fluid class="pt-0 px-0">
+    <v-sheet elevation="2" class="py-0 pt-6 py-md-6 full-width">
+      <DisplayAlert class="ma-0" />
+      <v-row no-gutters>
+        <v-col class="">
           <img
             src="@/assets/images/BCMapGraphic.png"
             alt="Map of British Columbia"
-            style="height: 268px; position: absolute; top: 50px; left: -80px"
+            style="height: 268px; position: absolute; top: 170px; left: -80px"
             class="d-none d-md-block"
           />
         </v-col>
@@ -87,7 +87,7 @@ function goToSchoolSearch() {
             </v-col>
           </v-row>
         </v-col>
-        <v-spacer />
+        <v-spacer class="" />
       </v-row>
     </v-sheet>
   </v-container>

@@ -19,13 +19,6 @@ function goToAuthority() {
     }
   })
 }
-
-function downloadAuthorityMailing() {
-  alert('TODO - Implement authority mailing download')
-}
-function downloadAuthorityContacts() {
-  alert('TODO - Implement authority contacts download')
-}
 </script>
 
 <template>
