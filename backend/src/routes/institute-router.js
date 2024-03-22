@@ -558,10 +558,13 @@ async function getDistrictContactsAPI(req, res) {
     .then((response) => {
       if (req.url.includes("/district/contact/paginated")) {
         const jsonData = addDistrictLabels(response.data, districtList);
-        let nonBCDistrictIds = nonBCDistrictList.map(district => district.districtId);
-        nonBCDistrictIds.push("8e34ab4d-f387-220b-b54e-2c9a7f380f85");
-        jsonData.content = jsonData.content.filter(contact => !nonBCDistrictIds.includes(contact.districtId));
-
+      
+        jsonData.content = jsonData.content.filter(contact => {
+          // Check if districtId is not undefined, empty, or null
+          return contact.districtNumber !== undefined
+              && contact.districtNumber !== ""
+              && contact.districtNumber !== null;
+          });
         res.json(jsonData);
       } else {
         res.json(response.data);
