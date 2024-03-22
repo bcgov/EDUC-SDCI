@@ -43,7 +43,7 @@ function goToSchoolSearch() {
             src="@/assets/images/BCMapGraphic.png"
             alt="Map of British Columbia"
             style="height: 268px; position: absolute; top: 170px; left: -80px"
-            class="d-none d-md-block"
+            class="d-none d-lg-block"
           />
         </v-col>
         <v-col cols="10" md="8" xl="6" class="ml-0 py-6 school-search">
@@ -70,7 +70,7 @@ function goToSchoolSearch() {
           </v-row>
 
           <v-row>
-            <v-col class="px-0 py-4 py-md-0 my-md-1">
+            <v-col cols="12" lg="4" class="px-0 py-4 py-lg-0 my-lg-1">
               <v-btn
                 block
                 color="bcGovBlue"
@@ -81,8 +81,8 @@ function goToSchoolSearch() {
                 Schools</v-btn
               >
             </v-col>
-            <v-spacer class="d-none d-md-block" />
-            <v-col class="px-0 py-4 py-md-0 my-md-1">
+            <v-spacer class="d-none d-lg-block" />
+            <v-col class="px-0 py-4 py-lg-0 my-lg-1">
               <DownloadSchoolsModal></DownloadSchoolsModal>
             </v-col>
           </v-row>
