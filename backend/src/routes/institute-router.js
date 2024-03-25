@@ -38,18 +38,46 @@ router.get("/district/list", checkToken, getDistrictList);
 router.get("/district/contact/*", checkToken, getDistrictContactsAPI);
 router.get("/create-cache", checkToken, createCache);
 router.get("/category-codes", checkToken, getCategoryCodes);
+
 router.get("/*", checkToken, getInstituteAPI);
+
 async function createCache(req, res) {
+  if (await !listCache.has("fundingGroups")) {
+    //const codes = [];
+
+    try {
+      const fundingGroupsResponse = await axios.get(
+        `${config.get(
+          "server:schoolsAPIURL"
+        )}/schools/fundingGroups`,
+        {
+          headers: { Authorization: `Bearer ${req.accessToken}` },
+        }
+      );
+      listCache.set("fundingGroups", fundingGroupsResponse.data);
+      res.json(fundingGroupsResponse.data);
+    } catch (error) {
+      const statusCode = error.response ? error.response.status : 500;
+      log.error("getFunding Groups Error", statusCode, error.message);
+      res.status(statusCode).send(error.message);
+    }
+  } else {
+    const cachedFundingGroupList = await listCache.get("fundingGroups");
+    res.json(cachedFundingGroupList);
+  }
   if (await !listCache.has("districtlist")) {
     const url = `${config.get("server:instituteAPIURL")}/institute/district`; // Update the URL according to your API endpoint
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
-        //const districtList = response.data;
+        const filteredNonbBCDistrictList = response.data.filter(district => ["098","102", "103"].includes(district.districtNumber));
         const filteredDistrictList = response.data.filter(district => !["098","102", "103"].includes(district.districtNumber));
         const districtList = createList(filteredDistrictList, districtListOptions);
-        
+        const nonBCdistrictList = createList(filteredNonbBCDistrictList, districtListOptions);
+
+        listCache.set("nonbcdistrictlist", nonBCdistrictList);
         listCache.set("districtlist", districtList);
+        res.json(districtList);
         log.info(req.url);
       })
       .catch((e) => {
@@ -243,7 +271,6 @@ async function createCache(req, res) {
       log.error("getCodesList Error", statusCode, error.message);
       res.status(statusCode).send(error.message);
     }
-    listCache.set("codesList", codes);
   }
   res.status(200).json({ success: true });
 
@@ -287,14 +314,13 @@ async function getContactTypeCodes(req, res) {
         districtContactTypeCodes: removeFieldsByCriteria(districtContactTypeCodesResponse.data,[{ fieldToRemove: "publiclyAvailable", value: false }]),
         schoolContactTypeCodes: removeFieldsByCriteria(schoolContactTypeCodesResponse.data,[{ fieldToRemove: "publiclyAvailable", value: false }]),
       };
-      res.json(codes);
       listCache.set("codesList", { codesList: codes });
+      res.json(codes);
     } catch (error) {
       const statusCode = error.response ? error.response.status : 500;
       log.error("getContactCodeList Error", statusCode, error.message);
       res.status(statusCode).send(error.message);
     }
-    listCache.set("codesList", codes);
   } else {
     const cachedCodeList = await listCache.get("codesList");
     res.json(cachedCodeList);
@@ -488,9 +514,11 @@ async function getDistrictList(req, res) {
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
         //const districtList = response.data;
+        const filteredNonbBCDistrictList = response.data.filter(district => ["098","102", "103"].includes(district.districtNumber));
         const filteredDistrictList = response.data.filter(district => !["098","102", "103"].includes(district.districtNumber));
         const districtList = createList(filteredDistrictList, districtListOptions);
-        
+        const nonBCdistrictList = createList(filteredNonbBCDistrictList, districtListOptions);
+        listCache.set("nonbcdistrictlist", nonBCdistrictList);
         listCache.set("districtlist", districtList);
         res.json(districtList);
         log.info(req.url);
@@ -524,14 +552,19 @@ async function getDistrictContactsAPI(req, res) {
   const url = `${config.get("server:instituteAPIURL")}/institute` + req.url;
 
   const districtList = await listCache.get("districtlist");
-
+  const nonBCDistrictList =  await listCache.get("nonbcdistrictlist");
   axios
     .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
     .then((response) => {
       if (req.url.includes("/district/contact/paginated")) {
         const jsonData = addDistrictLabels(response.data, districtList);
       
-        jsonData.content = jsonData.content.filter(contact => !["8e34ab4d-f387-220b-b54e-2c9a7f380f85","1f93fe68-2d80-fea5-88ba-a684dfa4cc27", "99c19236-5d01-2dff-db90-e2da4511c00c"].includes(contact.districtId));
+        jsonData.content = jsonData.content.filter(contact => {
+          // Check if districtId is not undefined, empty, or null
+          return contact.districtNumber !== undefined
+              && contact.districtNumber !== ""
+              && contact.districtNumber !== null;
+          });
         res.json(jsonData);
       } else {
         res.json(response.data);

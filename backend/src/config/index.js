@@ -31,6 +31,7 @@ nconf.defaults({
       maxAge: +process.env.SESSION_MAX_AGE
     },
     instituteAPIURL: process.env.INSTITUTE_API_URL,
+    schoolsAPIURL: process.env.SCHOOLS_API_URL,
     instituteAPITokenExpiry: process.env.INSTITUTE_API_EXPIRY,
     clearFilesKey: process.env.CLEAR_FILES_KEY
   },

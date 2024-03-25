@@ -4,6 +4,7 @@ import { useAppStore } from '@/stores/app'
 import router from '@/router'
 import { useSanitizeURL } from '@/composables/string'
 import DownloadSchoolsModal from '@/components/DownloadSchoolsModal.vue'
+import DisplayAlert from '@/components/common/DisplayAlert.vue'
 
 // Type Imports
 import type { ListSchool } from '@/types/types'

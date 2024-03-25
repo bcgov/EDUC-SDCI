@@ -11,6 +11,7 @@ import { useSanitizeURL } from '@/composables/string'
 
 // import common components
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
+import DisplayAlert from '@/components/common/DisplayAlert.vue'
 
 const appStore = useAppStore()
 const authorityId = ref<any>(null) // Initialize with null initially

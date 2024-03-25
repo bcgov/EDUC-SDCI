@@ -39,7 +39,8 @@ export const useAppStore = defineStore('app', {
     },
     exportCSV(csvData: any) {
         // Create a blob with the CSV data
-        const blob = new Blob([csvData], { type: 'text/csv' });
+        const utf8EncodedData = new TextEncoder().encode('\uFEFF' +csvData);
+        const blob = new Blob([utf8EncodedData], { type: 'text/csv;charset=utf-8' });
         // Create a temporary anchor element to trigger the file download
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);

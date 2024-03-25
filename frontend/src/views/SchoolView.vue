@@ -8,6 +8,7 @@ import type { School, Grade } from '@/types/types.d.ts'
 import jsonexport from 'jsonexport/dist'
 import { distNumberFromMincode, formatPhoneNumber } from '@/utils/common'
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
+import DisplayAlert from '@/components/common/DisplayAlert.vue'
 import { useSanitizeURL } from '@/composables/string'
 const appStore = useAppStore()
 
@@ -43,45 +44,63 @@ const downloadCSV = () => {
   })
 }
 const transformContactForDownload = (inputData: any): {} => {
-  return inputData.map((item: any) => ({
-    'District Number': item.districtNumber,
-    'School Code': item.mincode,
-    'Facility Type': item.facilityTypeCode,
-    'School Category': item.schoolCategoryCode,
-    'School Name': item.displayName,
-    Address: item.addressLine1,
-    City: item.city,
-    Province: item.provinceCode,
-    'Postal Code': item.postal,
-    'School Email': item.schoolEmail,
-    'School Phone Number': item.schoolPhoneNumber,
-    'School Fax Number': item.schoolFaxNumber,
-    'Contact Type': item.schoolContactTypeCode_label,
-    Role: item.jobTitle,
-    'First Name': item.firstName,
-    'Last Name': item.lastName,
-    'Phone Number': item.phoneNumber,
-    'Phone Extension': item.phoneExtension,
-    'Alternate Phone Number': item.alternatePhoneNumber,
-    'Alternate Phone Extension': item.alternatePhoneExtension,
-    Email: item.email,
-    'Elementary Ungraded': item.ELEMUNGR,
-    'Secondary Ungraded': item.SECUNGR,
-    'Kindergarten Half': item.KINDHALF,
-    KindergartenFull: item.KINDFULL,
-    'Grade 01': item.GRADE01,
-    'Grade 02': item.GRADE02,
-    'Grade 03': item.GRADE03,
-    'Grade 04': item.GRADE04,
-    'Grade 05': item.GRADE05,
-    'Grade 06': item.GRADE06,
-    'Grade 07': item.GRADE07,
-    'Grade 08': item.GRADE08,
-    'Grade 09': item.GRADE09,
-    'Grade 10': item.GRADE10,
-    'Grade 11': item.GRADE11,
-    'Grade 12': item.GRADE12
-  }))
+  return inputData.map((item: any) => {
+    const transformedItem: any = {
+      'District Number': item.districtNumber,
+      'School Code': item.mincode,
+      'Facility Type': item.facilityTypeCode,
+      'School Category': item.schoolCategoryCode,
+      'School Name': item.displayName,
+      Address: item.addressLine1,
+      City: item.city,
+      Province: item.provinceCode,
+      'Postal Code': item.postal,
+      'School Email': item.schoolEmail,
+      'School Phone Number': item.schoolPhoneNumber,
+      'School Fax Number': item.schoolFaxNumber,
+      'Contact Type': item.schoolContactTypeCode_label,
+      Role: item.jobTitle,
+      'First Name': item.firstName,
+      'Last Name': item.lastName,
+      'Phone Number': item.phoneNumber,
+      'Phone Extension': item.phoneExtension,
+      'Alternate Phone Number': item.alternatePhoneNumber,
+      'Alternate Phone Extension': item.alternatePhoneExtension,
+      Email: item.email,
+      'Elementary Ungraded': item.ELEMUNGR,
+      'Secondary Ungraded': item.SECUNGR,
+      'Kindergarten Half': item.KINDHALF,
+      KindergartenFull: item.KINDFULL,
+      'Grade 01': item.GRADE01,
+      'Grade 02': item.GRADE02,
+      'Grade 03': item.GRADE03,
+      'Grade 04': item.GRADE04,
+      'Grade 05': item.GRADE05,
+      'Grade 06': item.GRADE06,
+      'Grade 07': item.GRADE07,
+      'Grade 08': item.GRADE08,
+      'Grade 09': item.GRADE09,
+      'Grade 10': item.GRADE10,
+      'Grade 11': item.GRADE11,
+      'Grade 12': item.GRADE12
+    }
+
+    // Add Funding Group fields only if they are not empty
+    if (item.primaryK3) {
+      transformedItem['Group Classification Primary K-3'] = item.primaryK3
+    }
+    if (item.elementary47) {
+      transformedItem['Group Classification Elementary 4-7 EU'] = item.elementary47
+    }
+    if (item.juniorSecondary810) {
+      transformedItem['Group Classification Junior Secondary 8-10 SU'] = item.juniorSecondary810
+    }
+    if (item.seniorSecondary1112) {
+      transformedItem['Group Classification Senior Secondary 11-12'] = item.seniorSecondary1112
+    }
+
+    return transformedItem
+  })
 }
 // loading component
 onBeforeMount(async () => {
@@ -170,7 +189,19 @@ onBeforeMount(async () => {
           filteredContacts.value[i].GRADE10 = response.data.GRADE10
           filteredContacts.value[i].GRADE11 = response.data.GRADE11
           filteredContacts.value[i].GRADE12 = response.data.GRADE12
+          if (
+            response.data.primaryK3 ||
+            response.data.elementary47 ||
+            response.data.juniorSecondary810 ||
+            response.data.seniorSecondary1112
+          ) {
+            filteredContacts.value[i].primaryK3 = response.data.primaryK3
+            filteredContacts.value[i].elementary47 = response.data.elementary47
+            filteredContacts.value[i].juniorSecondary810 = response.data.juniorSecondary810
+            filteredContacts.value[i].seniorSecondary1112 = response.data.seniorSecondary1112
+          }
         }
+
         downloadContacts.value = transformContactForDownload(filteredContacts.value)
       }
     }
@@ -204,75 +235,99 @@ function goToDistrict() {
 
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-container id="main">
-        <v-row no-gutters justify="space-between">
-          <v-row v-if="schoolData.value" no-gutters justify="space-between">
-            <v-col>
-              <v-row no-gutters>
-                <h1 class="mt-3 mb-2">
-                  {{ schoolData.value.mincode }} - {{ schoolData.value.displayName }}
-                </h1>
-              </v-row>
-              <v-row no-gutters class="mt-0 mb-1">
-                <a
-                  v-if="schoolData.value.schoolCategoryCode == 'PUBLIC'"
-                  id="district-link"
-                  :href="`/district/${useSanitizeURL(
-                    String(districtInfo.value?.districtNumber)
-                  )}-${useSanitizeURL(String(districtInfo.value?.displayName))}`"
-                >
-                  District {{ districtInfo.value.districtNumber }} -
-                  {{ districtInfo.value.displayName }}
-                </a>
-                <a
-                  id="authority-link"
-                  :href="`/authority/${authorityInfo.value.authorityNumber}-${authorityInfo.value.displayName}`"
-                  v-if="schoolData.value?.independentAuthorityId && authorityInfo.value"
-                  class="ml-1"
-                >
-                  Independent Authority {{ authorityInfo.value.authorityNumber }} -
-                  {{ authorityInfo.value.displayName }}
-                </a>
-              </v-row>
-              <v-row no-gutters class="mt-1 mb-4">
-                <v-chip
-                  v-for="grade in filteredGradesLabels"
-                  :key="grade"
-                  class="mr-1"
-                  size="small"
-                  color="primary"
-                  label
-                  >{{ grade }}</v-chip
-                >
-              </v-row>
-              <v-row no-gutters>
-                <v-col class="pl-0">
-                  <p>
-                    <strong>Phone:</strong> {{ formatPhoneNumber(schoolData.value.phoneNumber) }}
-                  </p>
-                  <p><strong>Fax:</strong> {{ formatPhoneNumber(schoolData.value.faxNumber) }}</p>
-                  <p>
-                    <strong>Email: </strong>
-                    <a :href="'mailto:' + schoolData.value?.email">
-                      {{ schoolData.value.email }}
-                    </a>
-                  </p>
-                </v-col>
-                <v-col v-for="item in schoolData.value.addresses" :key="item.addressTypeCode">
-                  <DisplayAddress v-bind="item" />
-                </v-col>
-                <v-col
-                  ><v-btn
-                    variant="text"
-                    class="text-none text-subtitle-1 ma-1 v-btn-align-left"
-                    @click="downloadCSV"
-                    :disabled="!schoolData.value"
-                    ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
-                    School Info (CSV)</v-btn
-                  ></v-col
-                >
-              </v-row>
-            </v-col>
-          </v-row>
+        <DisplayAlert />
+        <v-row v-if="schoolData.value" no-gutters justify="space-between">
+          <v-col>
+            <v-row no-gutters>
+              <h1 class="mt-3 mb-2">
+                {{ schoolData.value.mincode }} - {{ schoolData.value.displayName }}
+              </h1>
+            </v-row>
+            <v-row no-gutters class="mt-0 mb-1">
+              <a
+                v-if="schoolData.value.schoolCategoryCode == 'PUBLIC'"
+                id="district-link"
+                :href="`/district/${useSanitizeURL(
+                  String(districtInfo.value?.districtNumber)
+                )}-${useSanitizeURL(String(districtInfo.value?.displayName))}`"
+              >
+                District {{ districtInfo.value.districtNumber }} -
+                {{ districtInfo.value.displayName }}
+              </a>
+              <a
+                id="authority-link"
+                :href="`/authority/${authorityInfo.value.authorityNumber}-${authorityInfo.value.displayName}`"
+                v-if="schoolData.value?.independentAuthorityId && authorityInfo.value"
+                class="ml-1"
+              >
+                Independent Authority {{ authorityInfo.value.authorityNumber }} -
+                {{ authorityInfo.value.displayName }}
+              </a>
+            </v-row>
+            <v-row no-gutters class="mt-1 mb-4">
+              <v-chip
+                v-for="grade in filteredGradesLabels"
+                :key="grade"
+                class="mr-1"
+                size="small"
+                color="primary"
+                label
+                >{{ grade }}</v-chip
+              >
+            </v-row>
+            <v-row no-gutters>
+              <v-col class="pl-0">
+                <p><strong>Phone:</strong> {{ formatPhoneNumber(schoolData.value.phoneNumber) }}</p>
+                <p><strong>Fax:</strong> {{ formatPhoneNumber(schoolData.value.faxNumber) }}</p>
+                <p>
+                  <strong>Email: </strong>
+                  <a :href="'mailto:' + schoolData.value?.email">
+                    {{ schoolData.value.email }}
+                  </a>
+                </p>
+              </v-col>
+              <v-col v-for="item in schoolData.value.addresses" :key="item.addressTypeCode">
+                <DisplayAddress v-bind="item" />
+              </v-col>
+              <v-col
+                v-if="
+                  schoolData.value.primaryK3 ||
+                  schoolData.value.elementary47 ||
+                  schoolData.value.juniorSecondary810 ||
+                  schoolData.value.seniorSecondary1112
+                "
+              >
+                <strong> Group Classification:</strong><br />
+                <ul>
+                  <li v-if="schoolData.value.primaryK3">
+                    {{ schoolData.value.primaryK3 }} - Primary K-3
+                  </li>
+
+                  <li v-if="schoolData.value.elementary47">
+                    {{ schoolData.value.elementary47 }} - Elementary 4-7, EU
+                  </li>
+
+                  <li v-if="schoolData.value.juniorSecondary810">
+                    {{ schoolData.value.juniorSecondary810 }} - Junior Secondary 8-10, SU
+                  </li>
+
+                  <li v-if="schoolData.value.seniorSecondary1112">
+                    {{ schoolData.value.seniorSecondary1112 }} - Senior Secondary 11-12
+                  </li>
+                </ul>
+              </v-col>
+              <v-col
+                ><v-btn
+                  variant="text"
+                  class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+                  @click="downloadCSV"
+                  :disabled="!schoolData.value"
+                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
+                  School Info (CSV)</v-btn
+                ></v-col
+              >
+            </v-row>
+          </v-col>
         </v-row>
       </v-container>
     </v-sheet>

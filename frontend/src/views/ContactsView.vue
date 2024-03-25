@@ -4,6 +4,8 @@ import { ref, onMounted } from 'vue'
 import InstituteService from '@/services/InstituteService'
 import jsonexport from 'jsonexport/dist'
 
+import DisplayAlert from '@/components/common/DisplayAlert.vue'
+
 const appStore = useAppStore()
 // used for open and close modal
 const dialog = ref(false)
@@ -53,6 +55,12 @@ const transformContactForDownload = (inputData: any) => {
     email: item.email
   }))
 }
+const filterOutYukon = (inputData: any) => {
+  return inputData.filter(
+    (contact: { districtId: string }) =>
+      contact.districtId !== '54396317-b444-063d-779e-e4d42ff7634f'
+  )
+}
 const searchContact = async () => {
   // Filter contacts based on selected filters
   let currentDate = new Date().toISOString().substring(0, 19)
@@ -64,17 +72,53 @@ const searchContact = async () => {
   ]
   if (selectedContactType.value) {
     params[0].searchCriteriaList.push({
+      key: 'expiryDate',
+      operation: 'eq',
+      value: null,
+      valueType: 'STRING',
+      condition: 'OR'
+    })
+    params[0].searchCriteriaList.push({
+      key: 'expiryDate',
+      operation: 'gte',
+      value: currentDate,
+      valueType: 'DATE_TIME',
+      condition: 'OR'
+    })
+    params[0].searchCriteriaList.push({
+      key: 'effectiveDate',
+      operation: 'lte',
+      value: currentDate,
+      valueType: 'DATE_TIME',
+      condition: 'AND'
+    })
+    params[0].searchCriteriaList.push({
       key: 'districtContactTypeCode',
       operation: 'eq',
       value: selectedContactType.value,
       valueType: 'STRING',
       condition: 'AND'
     })
+  } else {
     params[0].searchCriteriaList.push({
       key: 'expiryDate',
       operation: 'eq',
       value: null,
       valueType: 'STRING',
+      condition: 'OR'
+    })
+    params[0].searchCriteriaList.push({
+      key: 'expiryDate',
+      operation: 'gte',
+      value: currentDate,
+      valueType: 'DATE_TIME',
+      condition: 'OR'
+    })
+    params[0].searchCriteriaList.push({
+      key: 'effectiveDate',
+      operation: 'lte',
+      value: currentDate,
+      valueType: 'DATE_TIME',
       condition: 'AND'
     })
   }
@@ -87,7 +131,8 @@ const searchContact = async () => {
   }
   try {
     const searchResults = await InstituteService.searchContactByType(req)
-    filteredContacts.value = transformContactForDownload(searchResults.data.content)
+    const yukonFilteredContacts = filterOutYukon(searchResults.data.content)
+    filteredContacts.value = transformContactForDownload(yukonFilteredContacts)
     results.value = searchResults.data.totalElements
     // Update current page and total pages
     totalPages.value = searchResults.data.totalPages

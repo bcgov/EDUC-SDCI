@@ -3,6 +3,8 @@ import { ref, onMounted, onBeforeMount, isProxy, toRaw } from 'vue'
 import { useAppStore } from '@/stores/app'
 import InstituteService from '@/services/InstituteService'
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
+import DisplayAlert from '@/components/common/DisplayAlert.vue'
+
 const currentDate: Date = new Date()
 const appStore = useAppStore()
 const jurisdictions = ref([])
@@ -201,8 +203,9 @@ onBeforeMount(async () => {
       :items="[{ title: 'Home', href: '/' }, 'Search']"
     ></v-breadcrumbs>
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
+      <DisplayAlert />
       <v-container class="main">
-        <h2>Find Schools</h2>
+        <h1>Find Schools</h1>
         <v-row>
           <v-col cols="12" md="3">
             <v-select
@@ -303,6 +306,10 @@ onBeforeMount(async () => {
                 <v-row>
                   <v-col v-for="(address, index) in item?.addresses" :key="index" cols="12" md="4">
                     <DisplayAddress v-bind="address" />
+                  </v-col>
+                  <v-col v-if="item.fundingGroupCode">
+                    <strong> Funding</strong><br />
+                    Group: {{ item.fundingGroupCode }}<br />
                   </v-col>
                 </v-row>
               </v-col>
