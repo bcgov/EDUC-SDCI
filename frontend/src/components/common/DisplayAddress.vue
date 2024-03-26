@@ -18,9 +18,11 @@ const props = defineProps<{
 <template>
   <div class="pa-0">
     <p class="font-weight-bold">{{ appStore.getAddressTypeCodeLabel(addressTypeCode) }} Address</p>
-    <p>{{ addressLine1 }}</p>
-    <p>{{ addressLine2 }}</p>
-    <p>{{ city }}, {{ provinceCode }}</p>
-    <p>{{ formatPostalCode(postal) }}</p>
+    <div class="pl-2 pl-md-0">
+      <p>{{ addressLine1 }}</p>
+      <p>{{ addressLine2 }}</p>
+      <p>{{ city }}, {{ provinceCode }}</p>
+      <p>{{ formatPostalCode(postal) }}</p>
+    </div>
   </div>
 </template>

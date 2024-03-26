@@ -233,14 +233,22 @@ function goToDistrict() {
       ]"
     ></v-breadcrumbs>
 
-    <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
+    <v-sheet
+      style="z-index: 100; position: relative"
+      elevation="2"
+      class="pt-6 pb-0 pb-md-6 full-width"
+    >
       <v-container id="main">
         <DisplayAlert class="mx-4 mx-md-0" />
         <v-row v-if="schoolData.value" no-gutters justify="space-between" class="pa-4 pa-md-0">
           <v-col cols="11" md="auto">
             <v-row no-gutters>
               <h1 class="mt-3 mb-2">
-                {{ schoolData.value.mincode }} - {{ schoolData.value.displayName }}
+                <span class="">{{ schoolData.value.mincode }}</span>
+                <span class="d-none d-md-inline"> - </span>
+                <span class="d-block d-md-inline institute-name">{{
+                  schoolData.value.displayName
+                }}</span>
               </h1>
             </v-row>
             <v-row no-gutters class="mt-0 mb-1">
@@ -268,7 +276,7 @@ function goToDistrict() {
               <v-chip
                 v-for="grade in filteredGradesLabels"
                 :key="grade"
-                class="mr-1"
+                class="mr-1 mb-1"
                 size="small"
                 color="primary"
                 label
@@ -276,12 +284,12 @@ function goToDistrict() {
               >
             </v-row>
             <v-row no-gutters justify="space-between">
-              <v-col cols="11" md="auto" class="pl-0">
+              <v-col cols="11" md="auto" class="pl-0 mb-2">
                 <p><strong>Phone:</strong> {{ formatPhoneNumber(schoolData.value.phoneNumber) }}</p>
                 <p><strong>Fax:</strong> {{ formatPhoneNumber(schoolData.value.faxNumber) }}</p>
                 <p>
                   <strong>Email: </strong>
-                  <a :href="'mailto:' + schoolData.value?.email">
+                  <a v-if="schoolData.value?.email" :href="'mailto:' + schoolData.value?.email">
                     {{ schoolData.value.email }}
                   </a>
                 </p>
@@ -326,7 +334,7 @@ function goToDistrict() {
               <v-col cols="11" md="4"
                 ><v-btn
                   variant="text"
-                  class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+                  class="text-none text-subtitle-1 ma-1 v-btn-align-left px-0 px-md-4"
                   @click="downloadCSV"
                   :disabled="!schoolData.value"
                   ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download

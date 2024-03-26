@@ -36,7 +36,7 @@ function viewOffshoreSchools() {
           <v-btn
             href="/api/v1/download/csv/authority/all-mailing/OFFSHORE?filepath=offshoreschoolrepresentatives"
             variant="text"
-            class="v-btn-align-left text-none text-subtitle-1 my-1"
+            class="wrap v-btn-align-left text-none text-subtitle-1 my-1"
             ><template v-slot:prepend> <v-icon icon="mdi-download" /></template>Offshore School
             Owner/Operators (CSV)</v-btn
           >

@@ -160,26 +160,37 @@ onMounted(() => {
           <v-col cols="12">
             <h2 class="mt-3 mb-2">Find District Contacts by Type</h2>
             <v-row no-gutters>
-              <v-autocomplete
-                v-model="selectedContactType"
-                label="Select a Contact by Type"
-                :items="appStore.getDistrictContactTypeCodes"
-                item-title="label"
-                item-value="districtContactTypeCode"
-              ></v-autocomplete>
-              <v-btn
-                @click="searchContact"
-                icon="mdi-magnify"
-                color="primary"
-                variant="flat"
-                rounded="lg"
-                size="large"
-                class="text-none text-subtle-1 ml-3"
-              />
+              <v-col cols="11" md="4">
+                <v-autocomplete
+                  v-model="selectedContactType"
+                  label="Select a Contact by Type"
+                  :items="appStore.getDistrictContactTypeCodes"
+                  item-title="label"
+                  item-value="districtContactTypeCode"
+                ></v-autocomplete>
+              </v-col>
+              <v-col cols="3">
+                <v-btn
+                  @click="searchContact"
+                  icon="mdi-magnify"
+                  color="primary"
+                  variant="flat"
+                  rounded="lg"
+                  size="large"
+                  class="text-none text-subtle-1 ml-md-4"
+                />
+              </v-col>
+              <v-spacer class="d-block d-md-none" />
+              <v-col cols="3" md="12">
+                <v-btn
+                  @click="resetContactFilters"
+                  variant="outlined"
+                  color="primary"
+                  class="text-none"
+                  >Reset</v-btn
+                >
+              </v-col>
             </v-row>
-            <v-btn @click="resetContactFilters" variant="outlined" color="primary" class="text-none"
-              >Reset</v-btn
-            >
           </v-col>
         </v-row>
       </v-container>

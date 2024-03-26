@@ -29,6 +29,11 @@ Fixing this now could risk delaying other releases, so we will have to wait on t
   border-radius: 8px !important;
 }
 
+.v-breadcrumbs-item--disabled {
+  opacity: 1;
+  font-weight: bold;
+}
+
 .school-search{
   margin-left:175px
 }
@@ -80,6 +85,19 @@ button.link-btn, .link-btn .v-btn__content {
     margin: 0;
     padding-left: 12px;
   }
+
+  h1 span.institute-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  /* 
+  * wraps button text as long as the class 'wrap' is added to v-btn component
+  * This is a workaround since a text wrap option is not available for buttons in Vuetify
+  */
+  .wrap .v-btn__content {
+    white-space: pre-wrap;
+}
 
 }
 

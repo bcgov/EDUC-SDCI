@@ -135,14 +135,14 @@ onBeforeMount(() => {
         <DisplayAlert class="mx-4 mx-md-0" />
         <v-row no-gutters justify="space-between">
           <v-col cols="11" md="auto">
-            <h1 class="mt-3 mb-2">Offshore Schools</h1>
+            <h1 class="mt-3 mb-2 mx-4 mx-md-0">Offshore Schools</h1>
           </v-col>
         </v-row>
         <v-row no-gutters justify="space-between">
-          <v-col cols="11" md="3"
+          <v-col cols="11" md="4"
             ><v-btn
               variant="text"
-              class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+              class="text-none text-subtitle-1 ma-1 mx-4 mx-md-0 v-btn-align-left"
               href="/api/v1/download/csv/authority/all-mailing/OFFSHORE?filepath=offshoreschoolrepresentatives"
               ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download Offshore
               Representatives (CSV)</v-btn
@@ -150,7 +150,7 @@ onBeforeMount(() => {
             <v-btn
               @click="downloadCSV"
               variant="text"
-              class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+              class="text-none text-subtitle-1 ma-1 mx-4 mx-md-0 v-btn-align-left"
               ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download Offshore
               Schools(CSV)</v-btn
             >

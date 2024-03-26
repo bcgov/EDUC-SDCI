@@ -205,11 +205,11 @@ onBeforeMount(async () => {
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-container id="main">
         <DisplayAlert class="mx-4 mx-md-0" />
-        <v-row no-gutters>
+        <v-row no-gutters class="mx-4 mx-md-0">
           <v-col cols="11">
             <h1>Find Schools</h1>
           </v-col>
-          <v-col cols="11" md="3">
+          <v-col cols="11" md="3" class="pr-md-2">
             <v-select
               v-model="selectedJurisdiction"
               :items="jurisdictions"
@@ -219,7 +219,7 @@ onBeforeMount(async () => {
               multiple
             ></v-select>
           </v-col>
-          <v-col cols="11" md="3">
+          <v-col cols="11" md="3" class="pl-md-2">
             <v-select
               v-model="selectedType"
               item-title="label"
@@ -229,7 +229,7 @@ onBeforeMount(async () => {
               multiple
             ></v-select>
           </v-col>
-          <v-col cols="11" md="3"
+          <v-col cols="3"
             ><v-btn
               icon="mdi-magnify"
               color="primary"
@@ -237,9 +237,10 @@ onBeforeMount(async () => {
               rounded="lg"
               size="large"
               @click="searchSchools"
-              class="text-none text-subtle-1 ml-3"
+              class="text-none text-subtle-1 ml-md-4"
           /></v-col>
-          <v-col cols="11">
+          <v-spacer class="d-block d-md-none" />
+          <v-col cols="3" md="11">
             <v-btn @click="resetFilters" variant="outlined" color="primary" class="text-none"
               >Reset</v-btn
             >

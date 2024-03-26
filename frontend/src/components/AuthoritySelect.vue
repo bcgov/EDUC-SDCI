@@ -49,9 +49,9 @@ function goToAuthority() {
           <v-btn
             href="/api/v1/download/csv/authority/all-mailing/INDEPENDNT?filepath=authoritymailing"
             variant="text"
-            class="v-btn-align-left text-none text-subtitle-1 my-1"
-            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template> Contact
-            information for all Authorities (CSV)</v-btn
+            class="v-btn-align-left text-none wrap text-subtitle-1 my-1 text-wrap"
+            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Contact information
+            for all Authorities (CSV)</v-btn
           >
         </v-row>
       </v-col>
