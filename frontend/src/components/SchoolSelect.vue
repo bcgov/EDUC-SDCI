@@ -34,17 +34,19 @@ function goToSchoolSearch() {
 </script>
 
 <template>
-  <v-container fluid class="pt-0">
-    <v-sheet elevation="2" class="py-6 full-width">
-      <DisplayAlert />
+  <v-sheet elevation="2" class="py-6 full-width">
+    <v-container id="main">
+      <DisplayAlert class="mx-4" />
       <v-row no-gutters justify="space-between">
-        <img
-          src="@/assets/images/BCMapGraphic.png"
-          alt="Map of British Columbia"
-          style="height: 268px; position: absolute; top: 120px; left: -80px"
-        />
-        <v-spacer />
-        <v-col lg="6" md="8" class="ml-0 py-6 school-search">
+        <v-col>
+          <img
+            src="@/assets/images/BCMapGraphic.png"
+            alt="Map of British Columbia"
+            style="height: 268px; position: absolute; top: 170px; left: -80px"
+            class="d-none d-md-block"
+          />
+        </v-col>
+        <v-col cols="10" md="8" xl="6" class="ml-0 py-6 school-search">
           <h2 class="mb-5">Find a School in BC</h2>
           <v-row>
             <v-autocomplete
@@ -66,10 +68,10 @@ function goToSchoolSearch() {
               class="mx-3"
             />
           </v-row>
-
           <v-row>
-            <v-col class="px-0 my-1">
+            <v-col class="px-0 py-4 py-md-0 my-md-1">
               <v-btn
+                block
                 color="bcGovBlue"
                 class="text-none text-subtitle-1"
                 variant="outlined"
@@ -78,14 +80,14 @@ function goToSchoolSearch() {
                 Schools</v-btn
               >
             </v-col>
-            <v-spacer />
-            <v-col>
+            <v-spacer class="d-none d-md-block" />
+            <v-col class="px-0 py-4 py-md-0 my-md-1">
               <DownloadSchoolsModal></DownloadSchoolsModal>
             </v-col>
           </v-row>
         </v-col>
         <v-spacer />
       </v-row>
-    </v-sheet>
-  </v-container>
+    </v-container>
+  </v-sheet>
 </template>
