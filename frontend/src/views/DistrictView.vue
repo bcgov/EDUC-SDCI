@@ -193,8 +193,9 @@ onMounted(async () => {
 
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-container id="main">
-        <v-row no-gutters justify="space-between">
-          <v-col v-if="district.value.districtData">
+        <DisplayAlert class="mx-4" />
+        <v-row no-gutters justify="space-between" class="pa-4 pa-md-0">
+          <v-col cols="11" md="auto" v-if="district.value.districtData">
             <v-row no-gutters>
               <h1 class="mt-3 mb-2">
                 {{ district.value.districtData?.districtNumber }} -
@@ -202,7 +203,7 @@ onMounted(async () => {
               </h1>
             </v-row>
             <v-row no-gutters justify="space-between">
-              <v-col>
+              <v-col cols="11" md="auto">
                 <p>
                   <strong>Phone:</strong>
                   {{ formatPhoneNumber(district.value.districtData?.phoneNumber) }}
@@ -220,13 +221,15 @@ onMounted(async () => {
               </v-col>
 
               <v-col
+                cols="11"
+                md="auto"
                 v-for="item in district.value.districtData.addresses"
                 :key="item.addressTypeCode"
               >
                 <DisplayAddress v-bind="item" />
               </v-col>
 
-              <v-col>
+              <v-col cols="11" md="auto">
                 <v-btn
                   variant="text"
                   class="text-none text-subtitle-1 ma-1 v-btn-align-left"
