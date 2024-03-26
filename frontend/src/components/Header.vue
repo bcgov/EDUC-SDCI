@@ -22,5 +22,6 @@
 .v-toolbar__extension {
   justify-content: start;
   max-width: 1280px;
+  /* padding: 0 2rem; */
 }
 </style>

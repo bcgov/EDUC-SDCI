@@ -203,11 +203,13 @@ onBeforeMount(async () => {
       :items="[{ title: 'Home', href: '/' }, 'Search']"
     ></v-breadcrumbs>
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
-      <DisplayAlert />
-      <v-container class="main">
-        <h1>Find Schools</h1>
-        <v-row>
-          <v-col cols="12" md="3">
+      <v-container id="main">
+        <DisplayAlert class="mx-4 mx-md-0" />
+        <v-row no-gutters>
+          <v-col cols="11">
+            <h1>Find Schools</h1>
+          </v-col>
+          <v-col cols="11" md="3">
             <v-select
               v-model="selectedJurisdiction"
               :items="jurisdictions"
@@ -217,7 +219,7 @@ onBeforeMount(async () => {
               multiple
             ></v-select>
           </v-col>
-          <v-col cols="12" md="3">
+          <v-col cols="11" md="3">
             <v-select
               v-model="selectedType"
               item-title="label"
@@ -227,7 +229,7 @@ onBeforeMount(async () => {
               multiple
             ></v-select>
           </v-col>
-          <v-col cols="12" md="3"
+          <v-col cols="11" md="3"
             ><v-btn
               icon="mdi-magnify"
               color="primary"
@@ -237,7 +239,7 @@ onBeforeMount(async () => {
               @click="searchSchools"
               class="text-none text-subtle-1 ml-3"
           /></v-col>
-          <v-col cols="12">
+          <v-col cols="11">
             <v-btn @click="resetFilters" variant="outlined" color="primary" class="text-none"
               >Reset</v-btn
             >
@@ -247,7 +249,8 @@ onBeforeMount(async () => {
       </v-container>
     </v-sheet>
 
-    <v-card class="pa-6" width="100%">
+    <!-- <v-card class="pa-6" width="100%"> -->
+    <v-sheet class="pa-6">
       <!-- Search Results Table -->
       Total: {{ results }} <span v-if="results != 0">Current Page {{ currentPage + 1 }}</span>
       <v-data-table-server
@@ -317,7 +320,8 @@ onBeforeMount(async () => {
           </tr>
         </template>
       </v-data-table-server>
-    </v-card>
+      <!-- </v-card> -->
+    </v-sheet>
   </div>
 </template>
 

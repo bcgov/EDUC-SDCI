@@ -131,29 +131,32 @@ onBeforeMount(() => {
       :items="[{ title: 'Home', href: '/' }, 'Offshore Schools']"
     ></v-breadcrumbs>
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
-      <DisplayAlert />
-      <v-row no-gutters justify="space-between">
-        <v-col>
-          <h1 class="mt-3 mb-2">Offshore Schools</h1>
-        </v-col>
-        <v-spacer />
-        <v-col cols="3"
-          ><v-btn
-            variant="text"
-            class="text-none text-subtitle-1 ma-1 v-btn-align-left"
-            href="/api/v1/download/csv/authority/all-mailing/OFFSHORE?filepath=offshoreschoolrepresentatives"
-            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download Offshore
-            Representatives (CSV)</v-btn
-          >
-          <v-btn
-            @click="downloadCSV"
-            variant="text"
-            class="text-none text-subtitle-1 ma-1 v-btn-align-left"
-            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download Offshore
-            Schools(CSV)</v-btn
-          >
-        </v-col>
-      </v-row>
+      <v-container id="main">
+        <DisplayAlert class="mx-4 mx-md-0" />
+        <v-row no-gutters justify="space-between">
+          <v-col cols="11" md="auto">
+            <h1 class="mt-3 mb-2">Offshore Schools</h1>
+          </v-col>
+        </v-row>
+        <v-row no-gutters justify="space-between">
+          <v-col cols="11" md="3"
+            ><v-btn
+              variant="text"
+              class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+              href="/api/v1/download/csv/authority/all-mailing/OFFSHORE?filepath=offshoreschoolrepresentatives"
+              ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download Offshore
+              Representatives (CSV)</v-btn
+            >
+            <v-btn
+              @click="downloadCSV"
+              variant="text"
+              class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+              ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download Offshore
+              Schools(CSV)</v-btn
+            >
+          </v-col>
+        </v-row>
+      </v-container>
     </v-sheet>
     <!-- END Offshore Schools Header Block -->
 
@@ -196,11 +199,4 @@ onBeforeMount(() => {
 
 <style></style>
 
-<style>
-/* sizes header to align with content on desktop */
-.v-toolbar__content,
-.v-toolbar__extension {
-  max-width: 1280px;
-  padding: 0 2rem;
-}
-</style>
+<style></style>

@@ -153,12 +153,13 @@ onMounted(() => {
       :items="[{ title: 'Home', href: '/' }, 'Contacts by Type']"
     ></v-breadcrumbs>
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
-      <v-container class="main">
-        <v-row no-gutters justify="space-between">
+      <v-container id="main">
+        <DisplayAlert class="mx-4 mx-md-0" />
+        <v-row no-gutters justify="space-between" class="pa-4 pa-md-0">
           <v-spacer />
           <v-col cols="12">
             <h2 class="mt-3 mb-2">Find District Contacts by Type</h2>
-            <v-row>
+            <v-row no-gutters>
               <v-autocomplete
                 v-model="selectedContactType"
                 label="Select a Contact by Type"
@@ -210,11 +211,4 @@ onMounted(() => {
   </div>
 </template>
 
-<style>
-/* sizes header to align with content on desktop */
-.v-toolbar__content,
-.v-toolbar__extension {
-  max-width: 1280px;
-  padding: 0 2rem;
-}
-</style>
+<style></style>
