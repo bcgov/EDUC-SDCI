@@ -235,9 +235,9 @@ function goToDistrict() {
 
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-container id="main">
-        <DisplayAlert />
-        <v-row v-if="schoolData.value" no-gutters justify="space-between">
-          <v-col>
+        <DisplayAlert class="mx-4 mx-md-0" />
+        <v-row v-if="schoolData.value" no-gutters justify="space-between" class="pa-4 pa-md-0">
+          <v-col cols="11" md="auto">
             <v-row no-gutters>
               <h1 class="mt-3 mb-2">
                 {{ schoolData.value.mincode }} - {{ schoolData.value.displayName }}
@@ -275,8 +275,8 @@ function goToDistrict() {
                 >{{ grade }}</v-chip
               >
             </v-row>
-            <v-row no-gutters>
-              <v-col class="pl-0">
+            <v-row no-gutters justify="space-between">
+              <v-col cols="11" md="auto" class="pl-0">
                 <p><strong>Phone:</strong> {{ formatPhoneNumber(schoolData.value.phoneNumber) }}</p>
                 <p><strong>Fax:</strong> {{ formatPhoneNumber(schoolData.value.faxNumber) }}</p>
                 <p>
@@ -286,10 +286,17 @@ function goToDistrict() {
                   </a>
                 </p>
               </v-col>
-              <v-col v-for="item in schoolData.value.addresses" :key="item.addressTypeCode">
+              <v-col
+                cols="11"
+                md="auto"
+                v-for="item in schoolData.value.addresses"
+                :key="item.addressTypeCode"
+              >
                 <DisplayAddress v-bind="item" />
               </v-col>
               <v-col
+                cols="11"
+                md="auto"
                 v-if="
                   schoolData.value.primaryK3 ||
                   schoolData.value.elementary47 ||
@@ -316,7 +323,7 @@ function goToDistrict() {
                   </li>
                 </ul>
               </v-col>
-              <v-col
+              <v-col cols="11" md="4"
                 ><v-btn
                   variant="text"
                   class="text-none text-subtitle-1 ma-1 v-btn-align-left"

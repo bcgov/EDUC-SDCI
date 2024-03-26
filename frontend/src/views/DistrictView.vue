@@ -193,7 +193,7 @@ onMounted(async () => {
 
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-container id="main">
-        <DisplayAlert class="mx-4" />
+        <DisplayAlert class="mx-4 mx-md-0" />
         <v-row no-gutters justify="space-between" class="pa-4 pa-md-0">
           <v-col cols="11" md="auto" v-if="district.value.districtData">
             <v-row no-gutters>
@@ -229,7 +229,7 @@ onMounted(async () => {
                 <DisplayAddress v-bind="item" />
               </v-col>
 
-              <v-col cols="11" md="auto">
+              <v-col cols="11" md="4">
                 <v-btn
                   variant="text"
                   class="text-none text-subtitle-1 ma-1 v-btn-align-left"
