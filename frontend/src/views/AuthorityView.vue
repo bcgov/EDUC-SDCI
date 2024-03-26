@@ -214,8 +214,8 @@ onMounted(async () => {
     ></v-breadcrumbs>
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-container id="main">
-        <DisplayAlert />
-        <v-row no-gutters justify="space-between">
+        <DisplayAlert class="mx-4" />
+        <v-row no-gutters justify="space-between" class="pa-4 pa-md-0">
           <v-col cols="11" md="auto">
             <h1 class="mt-3 mb-2">
               {{ authority.value.authorityData?.authorityNumber }} -
