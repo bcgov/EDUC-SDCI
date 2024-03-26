@@ -216,13 +216,13 @@ onMounted(async () => {
       <v-container id="main">
         <DisplayAlert />
         <v-row no-gutters justify="space-between">
-          <v-col>
+          <v-col cols="11" md="auto">
             <h1 class="mt-3 mb-2">
               {{ authority.value.authorityData?.authorityNumber }} -
               {{ authority.value.authorityData?.displayName }}
             </h1>
             <v-row v-if="authority.value.authorityData">
-              <v-col>
+              <v-col cols="11" md="auto">
                 <p>
                   <strong>Phone:</strong>
                   {{ formatPhoneNumber(authority.value.authorityData?.phoneNumber) }}
@@ -239,12 +239,14 @@ onMounted(async () => {
                 </p>
               </v-col>
               <v-col
+                cols="11"
+                md="auto"
                 v-for="item in authority.value.authorityData.addresses"
                 :key="item.addressTypeCode"
               >
                 <DisplayAddress v-bind="item" />
               </v-col>
-              <v-col>
+              <v-col cols="11" md="auto">
                 <v-btn
                   variant="text"
                   class="text-none text-subtitle-1 ma-1 v-btn-align-left"
