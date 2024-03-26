@@ -21,23 +21,14 @@ div.v-application__wrap {
 .full-width {
   margin-left: calc(-1*(100vw - 1024px)/2);
   margin-right: calc(-1*(100vw - 1024px)/2);
+}
+
 /** Need to look at how CSS is loaded in since Vuetify defaults are overriding our custom CSS.
 Fixing this now could risk delaying other releases, so we will have to wait on this one - SF **/
 .v-alert, .v-alert--variant-outlined {
   border-radius: 8px !important;
 }
 
-@media (max-width: 768px) {
-  #app {
-    /* min-width: 600px; */
-    padding: 0; /* Adjust as needed */
-  }
-
-  .full-width {
-    margin-left: calc(-1*(100vw - 400px)/2);
-    margin-right: calc(-1*(100vw - 400px)/2);
-  }
-}
 .school-search{
   margin-left:175px
 }
@@ -73,6 +64,25 @@ button.link-btn, .link-btn .v-btn__content {
 .v-btn-align-left {
   justify-content: normal !important;
 }
+
+@media (max-width: 768px) {
+  #app {
+    /* min-width: 600px; */
+    padding: 0; /* Adjust as needed */
+  }
+
+  .full-width {
+    margin-left: calc(-1*(100vw - 400px)/2);
+    margin-right: calc(-1*(100vw - 400px)/2);
+  }
+
+  .breadcrumbs {
+    margin: 0;
+    padding-left: inherit;
+  }
+
+}
+
 @media (hover: hover) {
   a:hover {
     background-color: #0000;

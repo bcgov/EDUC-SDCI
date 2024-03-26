@@ -35,13 +35,14 @@ function goToSchoolSearch() {
 
 <template>
   <v-sheet elevation="2" class="py-6 full-width">
-    <v-container class="main">
+    <v-container id="main">
+      <DisplayAlert class="mx-4" />
       <v-row no-gutters justify="space-between">
         <v-col>
           <img
             src="@/assets/images/BCMapGraphic.png"
             alt="Map of British Columbia"
-            style="height: 268px; position: absolute; top: 50px; left: -80px"
+            style="height: 268px; position: absolute; top: 170px; left: -80px"
             class="d-none d-md-block"
           />
         </v-col>
