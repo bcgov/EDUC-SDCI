@@ -24,34 +24,38 @@ function goToAuthority() {
 <template>
   <v-card class="px-6 py-4 w-100">
     <h2 class="mb-5">Independent Authorities</h2>
-    <v-row no-gutters>
-      <v-col class="ma-1">
-        <v-row>
-          <v-autocomplete
-            v-model="selectedAuthority"
-            label="Select an Authority"
-            :items="appStore.getAuthoritiesList"
-            :item-title="(item) => (item ? item.authorityNumber + ' - ' + item.displayName : '')"
-            :item-value="(item) => item"
-            class="w-75"
-          ></v-autocomplete>
-          <v-btn
-            icon="mdi-magnify"
-            color="primary"
-            variant="flat"
-            rounded="lg"
-            size="large"
-            @click="goToAuthority"
-            class="text-none text-subtitle-1 ml-3"
-          />
+    <v-row no-gutters justify="space-between">
+      <v-col class="ma-2">
+        <v-row justify="space-between">
+          <v-col cols="10" class="pa-0">
+            <v-autocomplete
+              class="mr-2"
+              v-model="selectedAuthority"
+              label="Select an Authority"
+              :items="appStore.getAuthoritiesList"
+              :item-title="(item) => (item ? item.authorityNumber + ' - ' + item.displayName : '')"
+              :item-value="(item) => item"
+            ></v-autocomplete>
+          </v-col>
+          <v-col cols="2" class="pa-0">
+            <v-btn
+              icon="mdi-magnify"
+              color="primary"
+              variant="flat"
+              rounded="lg"
+              size="large"
+              @click="goToAuthority"
+              class="v-btn-align-left text-none text-subtitle-1 ml-1"
+            />
+          </v-col>
         </v-row>
         <v-row>
           <v-btn
             href="/api/v1/download/csv/authority/all-mailing/INDEPENDNT?filepath=authoritymailing"
             variant="text"
             class="v-btn-align-left text-none wrap text-subtitle-1 my-1 text-wrap"
-            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Contact information
-            for all Authorities (CSV)</v-btn
+            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Mailing for All
+            Authorities (CSV)</v-btn
           >
         </v-row>
       </v-col>

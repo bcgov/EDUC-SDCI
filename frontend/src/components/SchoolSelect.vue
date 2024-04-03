@@ -48,25 +48,30 @@ function goToSchoolSearch() {
         </v-col>
         <v-col cols="10" md="8" xl="6" class="ml-0 py-6 school-search">
           <h2 class="mb-5">Find a School in BC</h2>
-          <v-row>
-            <v-autocomplete
-              v-model="selectedSchool"
-              label="Select a School"
-              :items="appStore.getSchools"
-              :item-title="
-                (item) => (item?.mincode ? item.mincode + ' - ' + item.displayName : null)
-              "
-              :item-value="(item) => (item?.mincode ? item : null)"
-            ></v-autocomplete>
-            <v-btn
-              icon="mdi-magnify"
-              color="primary"
-              variant="flat"
-              rounded="lg"
-              size="large"
-              @click="goToSchool"
-              class="mx-3"
-            />
+          <v-row justify="space-between">
+            <v-col cols="10" md="false" class="pa-0">
+              <v-autocomplete
+                class="mr-1 mr-md-n10"
+                v-model="selectedSchool"
+                label="Select a School"
+                :items="appStore.getSchools"
+                :item-title="
+                  (item) => (item?.mincode ? item.mincode + ' - ' + item.displayName : null)
+                "
+                :item-value="(item) => (item?.mincode ? item : null)"
+              ></v-autocomplete>
+            </v-col>
+            <v-col cols="2" md="auto" class="pa-0">
+              <v-btn
+                icon="mdi-magnify"
+                color="primary"
+                variant="flat"
+                rounded="lg"
+                size="large"
+                @click="goToSchool"
+                class="mx-2 mx-md-0"
+              />
+            </v-col>
           </v-row>
           <v-row>
             <v-col class="px-0 py-4 py-md-0 my-md-1">

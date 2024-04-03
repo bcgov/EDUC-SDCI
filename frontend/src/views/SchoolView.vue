@@ -241,7 +241,7 @@ function goToDistrict() {
       <v-container id="main">
         <DisplayAlert class="mx-4 mx-md-0" />
         <v-row v-if="schoolData.value" no-gutters justify="space-between" class="pa-4 pa-md-0">
-          <v-col cols="11" md="auto">
+          <v-col cols="11" md="12">
             <v-row no-gutters>
               <h1 class="mt-3 mb-2">
                 <span class="">{{ schoolData.value.mincode }}</span>
@@ -313,7 +313,7 @@ function goToDistrict() {
                 "
               >
                 <strong> Group Classification:</strong><br />
-                <ul>
+                <ul class="pl-2 pl-md-5">
                   <li v-if="schoolData.value.primaryK3">
                     {{ schoolData.value.primaryK3 }} - Primary K-3
                   </li>
@@ -347,7 +347,7 @@ function goToDistrict() {
       </v-container>
     </v-sheet>
 
-    <v-card class="fill-screen-height pa-6" width="100%" v-if="schoolData.value">
+    <v-card class="pa-6" width="100%" v-if="schoolData.value">
       <v-tabs v-model="tab">
         <v-tab :value="tabOptions.contacts">School Contacts</v-tab>
       </v-tabs>
@@ -377,3 +377,11 @@ function goToDistrict() {
     </v-card>
   </div>
 </template>
+
+<style scoped>
+@media (max-width: 768px) {
+  ul {
+    list-style-type: none;
+  }
+}
+</style>
