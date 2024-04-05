@@ -218,8 +218,13 @@ onMounted(async () => {
         <v-row no-gutters justify="space-between" class="pa-4 pa-md-0">
           <v-col cols="11" md="auto">
             <h1 class="mt-3 mb-2">
-              {{ authority.value.authorityData?.authorityNumber }} -
-              {{ authority.value.authorityData?.displayName }}
+              <span>
+                {{ authority.value.authorityData?.authorityNumber }}
+              </span>
+              <span class="d-none d-md-inline"> - </span>
+              <span class="d-block d-md-inline institute-name">
+                {{ authority.value.authorityData?.displayName }}
+              </span>
             </h1>
             <v-row v-if="authority.value.authorityData">
               <v-col cols="11" md="auto">

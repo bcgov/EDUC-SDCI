@@ -198,8 +198,13 @@ onMounted(async () => {
           <v-col cols="11" md="auto" v-if="district.value.districtData">
             <v-row no-gutters>
               <h1 class="mt-3 mb-2">
-                {{ district.value.districtData?.districtNumber }} -
-                {{ district.value.districtData?.displayName }}
+                <span>
+                  {{ district.value.districtData?.districtNumber }}
+                </span>
+                <span class="d-none d-md-inline">-</span>
+                <span class="d-block d-md-inline institute-name">
+                  {{ district.value.districtData?.displayName }}
+                </span>
               </h1>
             </v-row>
             <v-row no-gutters justify="space-between">
