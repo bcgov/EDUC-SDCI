@@ -216,8 +216,9 @@ onMounted(async () => {
       <v-container id="main">
         <DisplayAlert class="mx-4 mx-md-0" />
         <v-row no-gutters justify="space-between" class="pa-4 pa-md-0">
-          <v-col cols="11" md="auto">
-            <h1 class="mt-3 mb-2">
+          <v-col cols="12">
+            <h1 class="mt-1 mt-md-3 mb-6 mb-md-2">
+              <span class="d-inline d-md-none">Authority </span>
               <span>
                 {{ authority.value.authorityData?.authorityNumber }}
               </span>
@@ -226,17 +227,17 @@ onMounted(async () => {
                 {{ authority.value.authorityData?.displayName }}
               </span>
             </h1>
-            <v-row v-if="authority.value.authorityData">
+            <v-row v-if="authority.value.authorityData" justify="space-between">
               <v-col cols="11" md="auto">
-                <p>
+                <p v-if="authority.value.authorityData?.phoneNumber">
                   <strong>Phone:</strong>
                   {{ formatPhoneNumber(authority.value.authorityData?.phoneNumber) }}
                 </p>
-                <p>
+                <p v-if="authority.value.authorityData?.faxNumber">
                   <strong>Fax:</strong>
                   {{ formatPhoneNumber(authority.value.authorityData?.faxNumber) }}
                 </p>
-                <p>
+                <p v-if="authority.value.authorityData?.email">
                   <strong>Email: </strong>
                   <a :href="'mailto:' + authority.value.authorityData?.email">{{
                     authority.value.authorityData?.email
@@ -251,7 +252,7 @@ onMounted(async () => {
               >
                 <DisplayAddress v-bind="item" />
               </v-col>
-              <v-col cols="11" md="4">
+              <v-col cols="11" md="4" class="pa-0 pa-md-3">
                 <v-btn
                   variant="text"
                   class="text-none text-subtitle-1 ma-1 v-btn-align-left"

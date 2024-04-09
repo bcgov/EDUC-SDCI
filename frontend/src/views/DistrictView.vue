@@ -195,29 +195,37 @@ onMounted(async () => {
       <v-container id="main">
         <DisplayAlert class="mx-4 mx-md-0" />
         <v-row no-gutters justify="space-between" class="pa-4 pa-md-0">
-          <v-col cols="11" md="auto" v-if="district.value.districtData">
-            <v-row no-gutters>
-              <h1 class="mt-3 mb-2">
-                <span>
-                  {{ district.value.districtData?.districtNumber }}
-                </span>
-                <span class="d-none d-md-inline"> - </span>
-                <span class="d-block d-md-inline institute-name">
-                  {{ district.value.districtData?.displayName }}
-                </span>
-              </h1>
+          <v-col cols="12" v-if="district.value.districtData">
+            <v-row no-gutters justify="space-between">
+              <v-col>
+                <h1 class="mt-1 mt-md-3 mb-6 mb-md-2">
+                  <span class="d-inline d-md-none">District </span>
+                  <span>
+                    {{ district.value.districtData?.districtNumber }}
+                  </span>
+                  <span class="d-none d-md-inline"> - </span>
+                  <span class="d-block d-md-inline institute-name">
+                    {{ district.value.districtData?.displayName }}
+                  </span>
+                </h1>
+              </v-col>
             </v-row>
             <v-row no-gutters justify="space-between">
-              <v-col cols="11" md="auto">
-                <p>
+              <v-col cols="11" md="auto" class="mb-4">
+                <p v-if="district.value.districtData?.phoneNumber">
                   <strong>Phone:</strong>
                   {{ formatPhoneNumber(district.value.districtData?.phoneNumber) }}
                 </p>
-                <p>
+                <p v-if="district.value.districtData?.faxNumber">
                   <strong>Fax:</strong>
                   {{ formatPhoneNumber(district.value.districtData?.faxNumber) }}
                 </p>
-                <p><strong>Email:</strong> {{ district.value.districtData?.email }}</p>
+                <p v-if="district.value.districtData?.email">
+                  <strong>Email: </strong
+                  ><a :href="'mailto:' + district.value.districtData?.email">{{
+                    district.value.districtData?.email
+                  }}</a>
+                </p>
                 <p>
                   <a :href="district.value.districtData?.website">{{
                     district.value.districtData?.website
@@ -231,10 +239,10 @@ onMounted(async () => {
                 v-for="item in district.value.districtData.addresses"
                 :key="item.addressTypeCode"
               >
-                <DisplayAddress v-bind="item" />
+                <DisplayAddress v-bind="item" class="mb-3" />
               </v-col>
 
-              <v-col cols="11" md="4">
+              <v-col cols="11" md="4" class="pa-0 pa-md-3">
                 <v-btn
                   variant="text"
                   class="text-none text-subtitle-1 ma-1 v-btn-align-left"
