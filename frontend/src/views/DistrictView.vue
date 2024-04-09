@@ -201,7 +201,7 @@ onMounted(async () => {
                 <span>
                   {{ district.value.districtData?.districtNumber }}
                 </span>
-                <span class="d-none d-md-inline">-</span>
+                <span class="d-none d-md-inline"> - </span>
                 <span class="d-block d-md-inline institute-name">
                   {{ district.value.districtData?.displayName }}
                 </span>
