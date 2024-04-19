@@ -148,6 +148,7 @@ onMounted(async () => {
         return {
           'District Number': response.data.districtData?.districtNumber,
           'District Name': response.data.districtData?.displayName,
+          'Contact Type': item.label,
           'Job Title': item.jobTitle,
           'First Name': item.firstName,
           'Last Name': item.lastName,
