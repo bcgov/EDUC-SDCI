@@ -1,15 +1,26 @@
 @import './base.css';
 
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0rem;
   font-family: 'BCSans', 'Noto Sans', Verdana, Arial, sans-serif;
   font-weight: normal;
 }
 
+#main {
+  max-width: 1280px;
+  padding: 0rem;
+}
+
 a {
   color: #2a6496;
+}
+
+div.v-application__wrap {
+  min-height: 100vh; /* override dvh property */
+}
+
+.full-width {
+  margin-left: calc(-1*(100vw - 1024px)/2);
+  margin-right: calc(-1*(100vw - 1024px)/2);
 }
 
 /** Need to look at how CSS is loaded in since Vuetify defaults are overriding our custom CSS.
@@ -18,18 +29,11 @@ Fixing this now could risk delaying other releases, so we will have to wait on t
   border-radius: 8px !important;
 }
 
-@media (max-width: 768px) {
-  #app {
-    min-width: 1130px; /* Adjust as needed */
-    padding: 0; /* Adjust as needed */
-  }
-
-  .full-width {
-    margin: 0 calc(-1*(100vw - 768px)/2);
-    padding: 0 calc((100vw - 768px)/2);
-    background-color: red;
-  }
+.v-breadcrumbs-item--disabled {
+  opacity: 1;
+  font-weight: bold;
 }
+
 .school-search{
   margin-left:175px
 }
@@ -38,7 +42,7 @@ Fixing this now could risk delaying other releases, so we will have to wait on t
 }
 .breadcrumbs {
   margin: 0 -40em;
-  padding-left: 40em !important;
+  padding-left: 40em;
 }
 
 /* styles button to look like links */
@@ -49,10 +53,12 @@ button.link-btn, .link-btn .v-btn__content {
 }
 
 .territorial-acknowledgement {
-  background-color: #494949;
-  color: #fff;
-  border-bottom: 3px solid #FCBA19;
-  border-top: 3px solid #FCBA19;
+  background-color: #292929;
+  color: #faf9f8;
+  font-size: 14px;
+  line-height: 21px;
+  border-bottom: 4px solid #FCBA19;
+  border-top: 4px solid #FCBA19;
 }
 
 .v-toolbar__extension {
@@ -63,6 +69,40 @@ button.link-btn, .link-btn .v-btn__content {
 .v-btn-align-left {
   justify-content: normal !important;
 }
+
+@media (max-width: 1024px) {
+  .full-width {
+    margin-left: unset;
+    margin-right: unset;
+  }
+}
+
+@media (max-width: 960px) {
+  #app {
+    /* min-width: 600px; */
+    padding: 0; /* Adjust as needed */
+  }
+
+  .breadcrumbs {
+    margin: 0;
+    padding-left: 12px;
+  }
+
+  h1 span.institute-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  /* 
+  * wraps button text as long as the class 'wrap' is added to v-btn component
+  * This is a workaround since a text wrap option is not available for buttons in Vuetify
+  */
+  .wrap .v-btn__content {
+    white-space: pre-wrap;
+}
+
+}
+
 @media (hover: hover) {
   a:hover {
     background-color: #0000;
@@ -82,11 +122,14 @@ button.link-btn, .link-btn .v-btn__content {
 
   #app {
     display: grid;
-    padding: 0;
+    padding: 0!important;
+    margin: 0 auto;
   }
 
-  .full-width {
-    margin: 0 calc(-1*(100vw - 1024px)/2);
-    padding: 0 calc((100vw - 1024px)/2);
-  }
+  /* .full-width {
+    position: relative;
+    width: 100vw;
+    left: calc(-1*(100vw - 1280px)/2);
+    padding: 0!important;
+  } */
 }

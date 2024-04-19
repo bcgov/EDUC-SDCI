@@ -106,7 +106,7 @@ export const useAppStore = defineStore('app', {
     },
     async setCodes() {
       await InstituteService.loadCache().then((response) => {
-          console.log(response)
+        //console.log(response)
       }).catch((error) => {
         console.error("ERRPR LOADING CACHE" + error)
       })
