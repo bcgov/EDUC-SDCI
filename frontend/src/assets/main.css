@@ -70,15 +70,17 @@ button.link-btn, .link-btn .v-btn__content {
   justify-content: normal !important;
 }
 
-@media (max-width: 768px) {
-  #app {
-    /* min-width: 600px; */
-    padding: 0; /* Adjust as needed */
-  }
-
+@media (max-width: 1024px) {
   .full-width {
     margin-left: unset;
     margin-right: unset;
+  }
+}
+
+@media (max-width: 960px) {
+  #app {
+    /* min-width: 600px; */
+    padding: 0; /* Adjust as needed */
   }
 
   .breadcrumbs {

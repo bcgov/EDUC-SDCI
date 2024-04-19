@@ -214,8 +214,8 @@ onMounted(async () => {
     ></v-breadcrumbs>
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-container id="main">
-        <DisplayAlert class="mx-4 mx-md-0" />
-        <v-row no-gutters justify="space-between" class="pa-4 pa-md-0">
+        <DisplayAlert class="mx-4 mx-lg-0" />
+        <v-row no-gutters justify="space-between" class="pa-4 pa-md-5 pa-lg-0">
           <v-col cols="12">
             <h1 class="mt-1 mt-md-3 mb-6 mb-md-2">
               <span class="d-inline d-md-none">Authority </span>
