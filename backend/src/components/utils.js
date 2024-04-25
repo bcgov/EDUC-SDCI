@@ -77,7 +77,7 @@ function removeFieldsByCriteria(inputData, criteria) {
 }
 function appendMailingAddressDetailsAndRemoveAddresses(data) {
   if (data && data.addresses && data.addresses.length > 0) {
-    const physicalAddress = data.addresses.find(
+    const physicalAddress = data.addresses?.find(
       (address) => address.addressTypeCode === "PHYSICAL"
     );
     if (physicalAddress) {
@@ -101,7 +101,7 @@ function appendMailingAddressDetailsAndRemoveAddresses(data) {
 
       // Remove the "addresses" property
     }
-    const courierAddress = data.addresses.find(
+    const courierAddress = data.addresses?.find(
       (address) => address.addressTypeCode === "MAILING"
     );
     if (courierAddress) {
@@ -132,7 +132,7 @@ function appendMailingAddressDetailsAndRemoveAddresses(data) {
 function addDistrictLabels(jsonData, districtList) {
   if (jsonData.content && Array.isArray(jsonData.content)) {
     jsonData.content.forEach((dataItem) => {
-      const district = districtList.find(
+      const district = districtList?.find(
         (item) => item.districtId === dataItem.districtId
       );
       if (district) {
@@ -229,7 +229,7 @@ function normalizeJsonObject(
   includeFields
 ) {
   return sourceArray.map((item) => {
-    const matchingItem = referenceArray.find(
+    const matchingItem = referenceArray?.find(
       (info) =>
         info[matchKey] === item[matchKey] && (!condition || condition(info))
     );
@@ -402,7 +402,7 @@ function createSchoolCache(schoolData, schoolGrades) {
     });
 
     // Extract and format principal contact information if it exists
-    const principalContact = school.contacts.find(
+    const principalContact = school.contacts?.find(
       (contact) => contact.schoolContactTypeCode === "PRINCIPAL"
     );
     if (principalContact) {
