@@ -214,7 +214,6 @@ onMounted(() => {
         :headers="headers"
         :items="filteredContacts"
         class="elevation-1"
-        height="700"
         item-value="name"
         :sort-by="[{ key: 'districtNumber', order: 'asc' }]"
       ></v-data-table-virtual>
