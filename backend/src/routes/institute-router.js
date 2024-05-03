@@ -5,28 +5,69 @@ const config = require("../config/index");
 
 const axios = require("axios");
 const { checkToken } = require("../components/auth");
-const {filterByOpenedAndClosedDate, formatGrades, removeFieldsByCriteria, createList, addDistrictLabels, districtNumberSort, isAllowedSchoolCategory, filterRemoveByField, filterByField } = require("../components/utils");
+const {
+  filterByOpenedAndClosedDate,
+  formatGrades,
+  removeFieldsByCriteria,
+  createList,
+  addDistrictLabels,
+  districtNumberSort,
+  isAllowedSchoolCategory,
+  filterRemoveByField,
+  filterByField,
+} = require("../components/utils");
 const { listCache, codeCache } = require("../components/cache");
 
-const schoolListOptions = { fields: ["mincode", "displayName", "schoolId", "closedDate", "openedDate","schoolCategoryCode"], fieldToInclude: null, valueToInclude: null, sortField: "mincode" };
-const districtListOptions = { fields: ["displayName", "districtId","districtNumber", "closedDate"] ,fieldToInclude: "districtStatusCode", valueToInclude: "ACTIVE", sortField: "districtNumber"};
-const authorityListOptions = { fields: ["displayName", "authorityNumber","independentAuthorityId", "closedDate", "opendDate"], sortField: "authorityNumber" };
-const openSchoolListOptions = { fields: [
-  "schoolId",
-  "districtId",
-  "mincode",
-  "schoolNumber",
-  "faxNumber",
-  "phoneNumber",
-  "email",
-  "website",
-  "displayName",
-  "schoolCategoryCode",
-  "facilityTypeCode",
-  "openedDate",
-  "closedDate",
-  "districtNumber"
-],fieldToInclude: "closedDate", valueToInclude: null, sortField: "mincode" };
+const schoolListOptions = {
+  fields: [
+    "mincode",
+    "displayName",
+    "schoolId",
+    "closedDate",
+    "openedDate",
+    "schoolCategoryCode",
+  ],
+  fieldToInclude: null,
+  valueToInclude: null,
+  sortField: "mincode",
+};
+const districtListOptions = {
+  fields: ["displayName", "districtId", "districtNumber", "closedDate"],
+  fieldToInclude: "districtStatusCode",
+  valueToInclude: "ACTIVE",
+  sortField: "districtNumber",
+};
+const authorityListOptions = {
+  fields: [
+    "displayName",
+    "authorityNumber",
+    "independentAuthorityId",
+    "closedDate",
+    "opendDate",
+  ],
+  sortField: "authorityNumber",
+};
+const openSchoolListOptions = {
+  fields: [
+    "schoolId",
+    "districtId",
+    "mincode",
+    "schoolNumber",
+    "faxNumber",
+    "phoneNumber",
+    "email",
+    "website",
+    "displayName",
+    "schoolCategoryCode",
+    "facilityTypeCode",
+    "openedDate",
+    "closedDate",
+    "districtNumber",
+  ],
+  fieldToInclude: "closedDate",
+  valueToInclude: null,
+  sortField: "mincode",
+};
 
 //Batch Routes
 router.get("/contact-type-codes", checkToken, getContactTypeCodes);
@@ -37,7 +78,7 @@ router.get("/authority/list", checkToken, getAuthorityList);
 router.get("/district/list", checkToken, getDistrictList);
 router.get("/district/contact/*", checkToken, getDistrictContactsAPI);
 router.get("/create-cache", checkToken, createCache);
-router.get("/category-codes", checkToken, getCategoryCodes);
+router.get("/category-codes", checkToken);
 
 router.get("/*", checkToken, getInstituteAPI);
 
@@ -47,9 +88,7 @@ async function createCache(req, res) {
 
     try {
       const fundingGroupsResponse = await axios.get(
-        `${config.get(
-          "server:schoolsAPIURL"
-        )}/schools/fundingGroups`,
+        `${config.get("server:schoolsAPIURL")}/schools/fundingGroups`,
         {
           headers: { Authorization: `Bearer ${req.accessToken}` },
         }
@@ -70,10 +109,20 @@ async function createCache(req, res) {
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
-        const filteredNonbBCDistrictList = response.data.filter(district => ["098","102", "103"].includes(district.districtNumber));
-        const filteredDistrictList = response.data.filter(district => !["098","102", "103"].includes(district.districtNumber));
-        const districtList = createList(filteredDistrictList, districtListOptions);
-        const nonBCdistrictList = createList(filteredNonbBCDistrictList, districtListOptions);
+        const filteredNonbBCDistrictList = response.data.filter((district) =>
+          ["098", "102", "103"].includes(district.districtNumber)
+        );
+        const filteredDistrictList = response.data.filter(
+          (district) => !["098", "102", "103"].includes(district.districtNumber)
+        );
+        const districtList = createList(
+          filteredDistrictList,
+          districtListOptions
+        );
+        const nonBCdistrictList = createList(
+          filteredNonbBCDistrictList,
+          districtListOptions
+        );
 
         listCache.set("nonbcdistrictlist", nonBCdistrictList);
         listCache.set("districtlist", districtList);
@@ -86,31 +135,32 @@ async function createCache(req, res) {
           e.response ? e.response.status : e.message
         );
       });
-  } 
+  }
   if (!listCache.has("categoryCodes")) {
     //const codes = [];
-    
+
     try {
       const categoryCodesResponse = await axios.get(
-        `${config.get(
-          "server:instituteAPIURL"
-        )}/institute/category-codes`,
+        `${config.get("server:instituteAPIURL")}/institute/category-codes`,
         {
           headers: { Authorization: `Bearer ${req.accessToken}` },
         }
       );
-      
-      categoryCodesResponse.data = filterRemoveByField(categoryCodesResponse.data,"schoolCategoryCode", ["FED_BAND","POST_SEC","YUKON"])
+
+      categoryCodesResponse.data = filterRemoveByField(
+        categoryCodesResponse.data,
+        "schoolCategoryCode",
+        ["FED_BAND", "POST_SEC", "YUKON"]
+      );
       listCache.set("categoryCodes", categoryCodesResponse.data);
-      
     } catch (error) {
       const statusCode = error.response ? error.response.status : 500;
       log.error("Category Code Caching Error", statusCode, error.message);
       res.status(statusCode).send(error.message);
     }
-  } else{
+  } else {
     const categoryCodes = await listCache.get("categoryCodes");
-    res.json(categoryCodes)
+    res.json(categoryCodes);
   }
   if (await !codeCache.has("gradelist")) {
     const url = `${config.get("server:instituteAPIURL")}/institute/grade-codes`; // Update the URL according to your API endpoint
@@ -118,7 +168,7 @@ async function createCache(req, res) {
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
         const gradeCodes = response.data;
-        
+
         codeCache.set("gradelist", gradeCodes);
         log.info(req.url);
       })
@@ -133,37 +183,34 @@ async function createCache(req, res) {
     res.json(gradeCodes);
   }
 
-  if (!listCache.has("categoryCodes")) {
-    //const codes = [];
-    
-    try {
-      const categoryCodesResponse = await axios.get(
-        `${config.get(
-          "server:instituteAPIURL"
-        )}/institute/category-codes`,
-        {
-          headers: { Authorization: `Bearer ${req.accessToken}` },
-        }
-      );
-      
-      categoryCodesResponse.data = filterRemoveByField(categoryCodesResponse.data,"schoolCategoryCode", ["FED_BAND","POST_SEC","YUKON"])
-      listCache.set("categoryCodes", categoryCodesResponse.data);
-      
-    } catch (error) {
-      const statusCode = error.response ? error.response.status : 500;
-      log.error("Category Code Caching Error", statusCode, error.message);
-      res.status(statusCode).send(error.message);
-    }
-  } 
-  
+  // if (!listCache.has("categoryCodes")) {
+
+  //   try {
+  //     const categoryCodesResponse = await axios.get(
+  //       `${config.get(
+  //         "server:instituteAPIURL"
+  //       )}/institute/category-codes`,
+  //       {
+  //         headers: { Authorization: `Bearer ${req.accessToken}` },
+  //       }
+  //     );
+
+  //     categoryCodesResponse.data = filterRemoveByField(categoryCodesResponse.data,"schoolCategoryCode", ["FED_BAND","POST_SEC","YUKON"])
+  //     listCache.set("categoryCodes", categoryCodesResponse.data);
+
+  //   } catch (error) {
+  //     const statusCode = error.response ? error.response.status : 500;
+  //     log.error("Category Code Caching Error", statusCode, error.message);
+  //     res.status(statusCode).send(error.message);
+  //   }
+  // }
+
   if (!listCache.has("facilityCodes")) {
     //const codes = [];
 
     try {
       const facilityCodesResponse = await axios.get(
-        `${config.get(
-          "server:instituteAPIURL"
-        )}/institute/facility-codes`,
+        `${config.get("server:instituteAPIURL")}/institute/facility-codes`,
         {
           headers: { Authorization: `Bearer ${req.accessToken}` },
         }
@@ -174,47 +221,52 @@ async function createCache(req, res) {
       log.error("Faility Code Caching Error", statusCode, error.message);
       res.status(statusCode).send(error.message);
     }
-  } 
+  }
   if (!listCache.has("districtAddresses")) {
     //const codes = [];
 
     try {
       const districtsResponse = await axios.get(
-        `${config.get("server:instituteAPIURL")}/institute/district/paginated?pageSize=200`,
+        `${config.get(
+          "server:instituteAPIURL"
+        )}/institute/district/paginated?pageSize=200`,
         {
           headers: { Authorization: `Bearer ${req.accessToken}` },
         }
       );
-      
+
       districtsResponse.data.content.forEach((district) => {
         district.addresses.forEach((address) => {
-          
           if (address.addressTypeCode === "MAILING") {
             Object.keys(address).forEach((field) => {
               // Exclude the specified fields
-              if (![
-                "createUser",
-                "updateUser",
-                "createDate",
-                "updateDate",
-                "schoolAddressId",
-                "schoolId",
-                "addressTypeCode"
-              ].includes(field)) {
+              if (
+                ![
+                  "createUser",
+                  "updateUser",
+                  "createDate",
+                  "updateDate",
+                  "schoolAddressId",
+                  "schoolId",
+                  "addressTypeCode",
+                ].includes(field)
+              ) {
                 district[`mailing_${field}`] = address[field];
               }
             });
           } else if (address.addressTypeCode === "PHYSICAL") {
             Object.keys(address).forEach((field) => {
-              if (![
-                "createUser",
-                "updateUser",
-                "createDate",
-                "updateDate",
-                "schoolAddressId",
-                "schoolId",
-                "addressTypeCode"
-              ].includes(field)) {
+              if (
+                ![
+                  "createUser",
+                  "updateUser",
+                  "createDate",
+                  "updateDate",
+                  "schoolAddressId",
+                  "schoolId",
+                  "addressTypeCode",
+                ].includes(field)
+              ) {
                 district[`physical_${field}`] = address[field];
               }
             });
@@ -227,8 +279,7 @@ async function createCache(req, res) {
       log.error("District Code Caching Error", statusCode, error.message);
       res.status(statusCode).send(error.message);
     }
-  } 
-
+  }
 
   if (await !listCache.has("codesList")) {
     try {
@@ -260,9 +311,18 @@ async function createCache(req, res) {
       );
 
       const codes = {
-        authorityContactTypeCodes: removeFieldsByCriteria(authorityContactTypeCodesResponse.data, [{ fieldToRemove: "publiclyAvailable", value: false }]),
-        districtContactTypeCodes: removeFieldsByCriteria(districtContactTypeCodesResponse.data,[{ fieldToRemove: "publiclyAvailable", value: false }]),
-        schoolContactTypeCodes: removeFieldsByCriteria(schoolContactTypeCodesResponse.data,[{ fieldToRemove: "publiclyAvailable", value: false }]),
+        authorityContactTypeCodes: removeFieldsByCriteria(
+          authorityContactTypeCodesResponse.data,
+          [{ fieldToRemove: "publiclyAvailable", value: false }]
+        ),
+        districtContactTypeCodes: removeFieldsByCriteria(
+          districtContactTypeCodesResponse.data,
+          [{ fieldToRemove: "publiclyAvailable", value: false }]
+        ),
+        schoolContactTypeCodes: removeFieldsByCriteria(
+          schoolContactTypeCodesResponse.data,
+          [{ fieldToRemove: "publiclyAvailable", value: false }]
+        ),
       };
       res.json(codes);
       listCache.set("codesList", { codesList: codes });
@@ -273,9 +333,7 @@ async function createCache(req, res) {
     }
   }
   res.status(200).json({ success: true });
-
 }
-
 
 async function getContactTypeCodes(req, res) {
   if (await !listCache.has("codesList")) {
@@ -310,9 +368,18 @@ async function getContactTypeCodes(req, res) {
       );
 
       const codes = {
-        authorityContactTypeCodes: removeFieldsByCriteria(authorityContactTypeCodesResponse.data, [{ fieldToRemove: "publiclyAvailable", value: false }]),
-        districtContactTypeCodes: removeFieldsByCriteria(districtContactTypeCodesResponse.data,[{ fieldToRemove: "publiclyAvailable", value: false }]),
-        schoolContactTypeCodes: removeFieldsByCriteria(schoolContactTypeCodesResponse.data,[{ fieldToRemove: "publiclyAvailable", value: false }]),
+        authorityContactTypeCodes: removeFieldsByCriteria(
+          authorityContactTypeCodesResponse.data,
+          [{ fieldToRemove: "publiclyAvailable", value: false }]
+        ),
+        districtContactTypeCodes: removeFieldsByCriteria(
+          districtContactTypeCodesResponse.data,
+          [{ fieldToRemove: "publiclyAvailable", value: false }]
+        ),
+        schoolContactTypeCodes: removeFieldsByCriteria(
+          schoolContactTypeCodesResponse.data,
+          [{ fieldToRemove: "publiclyAvailable", value: false }]
+        ),
       };
       listCache.set("codesList", { codesList: codes });
       res.json(codes);
@@ -327,67 +394,72 @@ async function getContactTypeCodes(req, res) {
   }
 }
 async function getOffshoreSchoolList(req, res) {
-  
-  let currentDate = new Date().toISOString().substring(0, 19)
+  let currentDate = new Date().toISOString().substring(0, 19);
   const params = [
     {
-      condition: 'AND',
+      condition: "AND",
       searchCriteriaList: [
         {
-          key: 'schoolCategoryCode',
-          operation: 'eq',
+          key: "schoolCategoryCode",
+          operation: "eq",
           value: "OFFSHORE",
-          valueType: 'STRING',
-          condition: 'AND'
+          valueType: "STRING",
+          condition: "AND",
         },
         {
-          key: 'openedDate',
-          operation: 'lte',
+          key: "openedDate",
+          operation: "lte",
           value: currentDate,
-          valueType: 'DATE_TIME',
-          condition: 'AND'
-        }      
-      ]
+          valueType: "DATE_TIME",
+          condition: "AND",
+        },
+      ],
     },
     {
-      condition: 'AND',
+      condition: "AND",
       searchCriteriaList: [
         {
-          key: 'closedDate',
-          operation: 'eq',
+          key: "closedDate",
+          operation: "eq",
           value: null,
-          valueType: 'STRING',
-          condition: 'OR'
+          valueType: "STRING",
+          condition: "OR",
         },
         {
-          key: 'closedDate',
-          operation: 'gte',
+          key: "closedDate",
+          operation: "gte",
           value: currentDate,
-          valueType: 'DATE_TIME',
-          condition: 'OR'
-        }          
-      ]
-    }
+          valueType: "DATE_TIME",
+          condition: "OR",
+        },
+      ],
+    },
   ];
 
-  const jsonString = JSON.stringify(params)
-  const encodedParams = encodeURIComponent(jsonString)
-  
-  
+  const jsonString = JSON.stringify(params);
+  const encodedParams = encodeURIComponent(jsonString);
 
   if (await !listCache.has("offshoreschoollist")) {
-    const url = `${config.get('server:instituteAPIURL')}/institute/school/paginated?pageSize=1000&pageNumber=0&searchCriteriaList=${encodedParams}`;
+    const url = `${config.get(
+      "server:instituteAPIURL"
+    )}/institute/school/paginated?pageSize=1000&pageNumber=0&searchCriteriaList=${encodedParams}`;
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
         const offshoreSchoolList = response.data.content;
-        const schoolGrades =  codeCache.get("gradelist");
-        
+        const schoolGrades = codeCache.get("gradelist");
+
         for (let i = 0; i < offshoreSchoolList.length; i++) {
-          const formattedGrades = formatGrades(offshoreSchoolList[i].grades, schoolGrades);
-          offshoreSchoolList[i] = { ...offshoreSchoolList[i], ...formattedGrades };
+          const formattedGrades = formatGrades(
+            offshoreSchoolList[i].grades,
+            schoolGrades
+          );
+          offshoreSchoolList[i] = {
+            ...offshoreSchoolList[i],
+            ...formattedGrades,
+          };
           // Now you can use the updated offshoreSchoolList[i] object as needed
-      }
+        }
         res.json(offshoreSchoolList);
         listCache.set("offshoreschoollist", offshoreSchoolList);
         log.info(req.url);
@@ -404,41 +476,44 @@ async function getOffshoreSchoolList(req, res) {
   }
 }
 async function getAuthorityList(req, res) {
-
   if (await !listCache.has("authoritylist")) {
-
-    let currentDate = new Date().toISOString().substring(0, 19)
+    let currentDate = new Date().toISOString().substring(0, 19);
     const params = [
       {
         condition: null,
         searchCriteriaList: [
           {
-            key: 'closedDate',
-            operation: 'eq',
+            key: "closedDate",
+            operation: "eq",
             value: null,
-            valueType: 'STRING',
-            condition: 'OR'
+            valueType: "STRING",
+            condition: "OR",
           },
           {
-            key: 'closedDate',
-            operation: 'gte',
+            key: "closedDate",
+            operation: "gte",
             value: currentDate,
-            valueType: 'DATE_TIME',
-            condition: 'OR'
-          }          
-        ]
-      }
+            valueType: "DATE_TIME",
+            condition: "OR",
+          },
+        ],
+      },
     ];
-  
-    const jsonString = JSON.stringify(params)
-    const encodedParams = encodeURIComponent(jsonString)
-    
-    const url = `${config.get('server:instituteAPIURL')}/institute/authority/paginated?pageSize=1000&searchCriteriaList=${encodedParams}`;
+
+    const jsonString = JSON.stringify(params);
+    const encodedParams = encodeURIComponent(jsonString);
+
+    const url = `${config.get(
+      "server:instituteAPIURL"
+    )}/institute/authority/paginated?pageSize=1000&searchCriteriaList=${encodedParams}`;
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
-        const authorityList = createList(response.data.content, authorityListOptions);
-        
+        const authorityList = createList(
+          response.data.content,
+          authorityListOptions
+        );
+
         res.json(authorityList);
         listCache.set("authoritylist", authorityList);
         log.info(req.url);
@@ -454,43 +529,58 @@ async function getAuthorityList(req, res) {
     res.json(authorityList);
   }
 }
-async function getCategoryCodes(req, res) {
-   
-  if (!listCache.has("categoryCodes")) {
-    //const codes = [];
-    
-    try {
-      const categoryCodesResponse = await axios.get(
-        `${config.get(
-          "server:instituteAPIURL"
-        )}/institute/category-codes`,
-        {
-          headers: { Authorization: `Bearer ${req.accessToken}` },
-        }
-      );
-      
-      categoryCodesResponse.data = filterRemoveByField(categoryCodesResponse.data,"schoolCategoryCode", ["FED_BAND","POST_SEC","YUKON"])
-      listCache.set("categoryCodes", categoryCodesResponse.data);
-      
-    } catch (error) {
-      const statusCode = error.response ? error.response.status : 500;
-      log.error("Category Code Caching Error", statusCode, error.message);
-      res.status(statusCode).send(error.message);
-    }
-  } else{
-    const categoryCodes = await listCache.get("categoryCodes");
-    res.json(categoryCodes)
-  }
-}
+// async function getCategoryCodes(req, res) {
+//   if (!listCache.has("categoryCodes")) {
+//     //const codes = [];
+
+//     try {
+//       const categoryCodesResponse = await axios.get(
+//         `${config.get("server:instituteAPIURL")}/institute/category-codes`,
+//         {
+//           headers: { Authorization: `Bearer ${req.accessToken}` },
+//         }
+//       );
+
+//       categoryCodesResponse.data = filterRemoveByField(
+//         categoryCodesResponse.data,
+//         "schoolCategoryCode",
+//         ["FED_BAND", "POST_SEC", "YUKON"]
+//       );
+//       listCache.set("categoryCodes", categoryCodesResponse.data);
+//     } catch (error) {
+//       const statusCode = error.response ? error.response.status : 500;
+//       log.error("Category Code Caching Error", statusCode, error.message);
+//       res.status(statusCode).send(error.message);
+//     }
+//   } else {
+//     const categoryCodes = await listCache.get("categoryCodes");
+//     res.json(categoryCodes);
+//   }
+// }
 async function getSchoolList(req, res) {
   if (await !listCache.has("schoollist")) {
     const url = `${config.get("server:instituteAPIURL")}/institute/school`; // Update the URL according to your API endpoint
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
-        const openSchools = filterByOpenedAndClosedDate(response.data)
-        const validSchoolCategories = filterByField(openSchools, "schoolCategoryCode", ["POST_SEC", "YUKON", "SUMMER", "FED_BAND"])
-        const validSchoolFacilities = filterByField(validSchoolCategories, "facilityTypeCode", ['PROVINCIAL','DIST_CONT','ELEC_DELIV','POST_SEC','JUSTB4PRO','SUMMER'])
+        const openSchools = filterByOpenedAndClosedDate(response.data);
+        const validSchoolCategories = filterByField(
+          openSchools,
+          "schoolCategoryCode",
+          ["POST_SEC", "YUKON", "SUMMER", "FED_BAND"]
+        );
+        const validSchoolFacilities = filterByField(
+          validSchoolCategories,
+          "facilityTypeCode",
+          [
+            "PROVINCIAL",
+            "DIST_CONT",
+            "ELEC_DELIV",
+            "POST_SEC",
+            "JUSTB4PRO",
+            "SUMMER",
+          ]
+        );
         const schoolList = createList(validSchoolFacilities, schoolListOptions);
         res.json(schoolList);
         listCache.set("schoollist", schoolList);
@@ -514,10 +604,20 @@ async function getDistrictList(req, res) {
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
         //const districtList = response.data;
-        const filteredNonbBCDistrictList = response.data.filter(district => ["098","102", "103"].includes(district.districtNumber));
-        const filteredDistrictList = response.data.filter(district => !["098","102", "103"].includes(district.districtNumber));
-        const districtList = createList(filteredDistrictList, districtListOptions);
-        const nonBCdistrictList = createList(filteredNonbBCDistrictList, districtListOptions);
+        const filteredNonbBCDistrictList = response.data.filter((district) =>
+          ["098", "102", "103"].includes(district.districtNumber)
+        );
+        const filteredDistrictList = response.data.filter(
+          (district) => !["098", "102", "103"].includes(district.districtNumber)
+        );
+        const districtList = createList(
+          filteredDistrictList,
+          districtListOptions
+        );
+        const nonBCdistrictList = createList(
+          filteredNonbBCDistrictList,
+          districtListOptions
+        );
         listCache.set("nonbcdistrictlist", nonBCdistrictList);
         listCache.set("districtlist", districtList);
         res.json(districtList);
@@ -552,19 +652,21 @@ async function getDistrictContactsAPI(req, res) {
   const url = `${config.get("server:instituteAPIURL")}/institute` + req.url;
 
   const districtList = await listCache.get("districtlist");
-  const nonBCDistrictList =  await listCache.get("nonbcdistrictlist");
+  const nonBCDistrictList = await listCache.get("nonbcdistrictlist");
   axios
     .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
     .then((response) => {
       if (req.url.includes("/district/contact/paginated")) {
         const jsonData = addDistrictLabels(response.data, districtList);
-      
-        jsonData.content = jsonData.content.filter(contact => {
+
+        jsonData.content = jsonData.content.filter((contact) => {
           // Check if districtId is not undefined, empty, or null
-          return contact.districtNumber !== undefined
-              && contact.districtNumber !== ""
-              && contact.districtNumber !== null;
-          });
+          return (
+            contact.districtNumber !== undefined &&
+            contact.districtNumber !== "" &&
+            contact.districtNumber !== null
+          );
+        });
         res.json(jsonData);
       } else {
         res.json(response.data);
@@ -582,7 +684,7 @@ async function getGradeCodes(req, res) {
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
         const gradeCodes = response.data;
-        
+
         codeCache.set("gradelist", gradeCodes);
         res.json(gradeCodes);
         log.info(req.url);

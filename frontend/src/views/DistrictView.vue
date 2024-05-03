@@ -78,10 +78,11 @@ function downloadDistrictSchools() {
 onMounted(async () => {
   const route = useRoute()
   // Set the districtId inside the onMounted hook; null if districtId not found
-  if (isValidDistrictNumber(String(route.params.districtNumber))) {
-    districtId.value =
-      appStore.getDistrictByDistrictNumber(String(route.params.districtNumber))?.districtId ?? null
-  }
+  // if (isValidDistrictNumber(String(route.params.districtNumber))) {
+  //   districtId.value =
+  //     appStore.getDistrictByDistrictNumber(String(route.params.districtNumber))?.districtId ?? null
+  // }
+  districtId.value = '349664f8-47e3-a226-075c-081d56d93d39'
   // get district data
   if (!!districtId.value) {
     try {
