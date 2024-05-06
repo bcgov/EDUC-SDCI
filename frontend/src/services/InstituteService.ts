@@ -68,7 +68,7 @@ export default {
     }
     return ApiService.apiAxios.get(url);
   },
-  getDistrictView(id: string): Promise<AxiosResponse> {
+  getDistrictView(id: string | undefined): Promise<AxiosResponse> {
     return ApiService.apiAxios.get(`/api/v1/district/${id}`)
   },
   getDistrictContactTypeCodes(): Promise<AxiosResponse> {

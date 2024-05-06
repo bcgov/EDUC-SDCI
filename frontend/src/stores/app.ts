@@ -57,8 +57,8 @@ export const useAppStore = defineStore('app', {
     isIndependentSchool(schoolCategoryCode: String){
       return schoolCategoryCode == 'INDEPEND'
     },
-    setDistricts(): void {
-        InstituteService.getDistricts()
+    async setDistricts(): Promise<void> {
+        await InstituteService.getDistricts()
           .then((response) => {
             // Handle the response data
             this.districts = response.data
@@ -68,8 +68,8 @@ export const useAppStore = defineStore('app', {
             console.error(error)
           })
     },
-    setAuthorityList(): void {
-      InstituteService.getAuthorityList().then((response) => {
+    async setAuthorityList(): Promise<void> {
+      await InstituteService.getAuthorityList().then((response) => {
         //handle the response
         this.authorities = response.data
       })
@@ -78,7 +78,7 @@ export const useAppStore = defineStore('app', {
         console.error(error)
       })
     },
-    setSchoolList(): void {
+    async setSchoolList(): Promise<void> {
 
       InstituteService.getSchoolList()
       .then((response) => {
@@ -91,7 +91,7 @@ export const useAppStore = defineStore('app', {
       })
 
     },
-    setOffshoreSchoolList(): void {
+    async setOffshoreSchoolList(): Promise<void> {
 
       InstituteService.getOffshoreSchoolList()
       .then((response) => {
@@ -104,7 +104,7 @@ export const useAppStore = defineStore('app', {
       })
 
     },
-    async setCodes() {
+    async setCodes(): Promise<void> {
       await InstituteService.loadCache().then((response) => {
         //console.log(response)
       }).catch((error) => {

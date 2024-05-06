@@ -13,7 +13,7 @@ import DisplayAddress from '@/components/common/DisplayAddress.vue'
 import DisplayAlert from '@/components/common/DisplayAlert.vue'
 
 const appStore = useAppStore()
-const districtId = ref<string | null>(null) // Initialize with null initially
+const districtId = ref<string | undefined>(undefined) // Initialize with null initially
 const district = reactive({ value: {} as District })
 const schools = ref<any>([])
 const contacts = ref<any>([])
@@ -74,19 +74,18 @@ function downloadDistrictSchools() {
     appStore.exportCSV(csv)
   })
 }
-
-onMounted(async () => {
+async function getDistrictId(): Promise<string> {
   const route = useRoute()
+  return appStore.getDistrictByDistrictNumber(String(route.params.districtNumber))?.districtId ?? ''
+}
+async function getDistrictData(): Promise<void> {
   // Set the districtId inside the onMounted hook; null if districtId not found
-  // if (isValidDistrictNumber(String(route.params.districtNumber))) {
-  //   districtId.value =
-  //     appStore.getDistrictByDistrictNumber(String(route.params.districtNumber))?.districtId ?? null
-  // }
-  districtId.value = '349664f8-47e3-a226-075c-081d56d93d39'
+  districtId.value = await getDistrictId() //move this getter to the backend? QUESTION
+  //districtId.value = '349664f8-47e3-a226-075c-081d56d93d39'
   // get district data
   if (!!districtId.value) {
     try {
-      const response = await InstituteService.getDistrictView(districtId.value as string)
+      const response = await InstituteService.getDistrictView(districtId.value)
       if (response.data?.districtData?.contacts) {
         district.value = response.data
         contacts.value = response.data?.districtData?.contacts
@@ -175,13 +174,10 @@ onMounted(async () => {
       console.error(error)
     }
   }
-  // get district contact type codes
-  // try {
-  //   const response = await InstituteService.getDistrictContactTypeCodes()
-  //   districtContactTypeCodes.value = response.data
-  // } catch (error) {
-  //   console.error(error)
-  // }
+}
+
+onMounted(async () => {
+  await getDistrictData()
 })
 </script>
 
