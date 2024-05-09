@@ -229,7 +229,7 @@ function goToDistrict() {
       :items="[
         { title: 'Home', href: '/' },
         'School',
-        { title: schoolData?.value?.displayName, href: '' }
+        !!schoolData.value ? { title: schoolData.value.displayName, href: '' } : ''
       ]"
     ></v-breadcrumbs>
 

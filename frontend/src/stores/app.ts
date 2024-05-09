@@ -111,30 +111,30 @@ export const useAppStore = defineStore('app', {
         console.error("ERRPR LOADING CACHE" + error)
       })
       // set category codes
-      // InstituteService.getCategoryCodes().then((response) => {
-      //   const currentDate: Date = new Date()
-      //   this.categoryCodes = response.data?.filter((item: any) => {
-      //     const effectiveDate: Date = new Date(item.effectiveDate);
-      //     const expiryDate: Date = new Date(item.expiryDate);
-      //     return expiryDate >= currentDate && effectiveDate <= currentDate;
-      //   })
-      //    //sort by display order
-      //   this.categoryCodes?.sort((a: any, b: any) => {
-      //     return a.displayOrder - b.displayOrder
-      //   })
-      // }).catch((error) => {
-      //   console.error(error)
-      // })
+      await InstituteService.getCategoryCodes().then((response) => {
+        const currentDate: Date = new Date()
+        this.categoryCodes = response.data?.filter((item: any) => {
+          const effectiveDate: Date = new Date(item.effectiveDate);
+          const expiryDate: Date = new Date(item.expiryDate);
+          return expiryDate >= currentDate && effectiveDate <= currentDate;
+        })
+         //sort by display order
+        this.categoryCodes?.sort((a: any, b: any) => {
+          return a.displayOrder - b.displayOrder
+        })
+      }).catch((error) => {
+        console.error(error)
+      })
 
       // set facility type codes
-      InstituteService.getFacilityCodes().then((response) => {
+      await InstituteService.getFacilityCodes().then((response) => {
         this.facilityCodes = response.data
       }).catch((error) => {
         console.error(error)
       })
 
       // set contact type codes for Districts, Authorities, and Schools
-      InstituteService.getContactTypeCodes().then((response) => {
+      await InstituteService.getContactTypeCodes().then((response) => {
         const currentDate: Date = new Date()
 
 
@@ -178,13 +178,13 @@ export const useAppStore = defineStore('app', {
       })
 
       // set address type codes for institute addresses
-      InstituteService.getAddressTypeCodes().then((response) => {
+      await InstituteService.getAddressTypeCodes().then((response) => {
         this.addressTypeCodes = response.data
       }).catch((error) => {
         console.error(error)
       })
 
-      InstituteService.getGradeCodes().then((response) => {
+      await InstituteService.getGradeCodes().then((response) => {
         this.gradeCodes = response.data
       }).catch((error) => {
         console.error(error)

@@ -78,14 +78,12 @@ router.get("/authority/list", checkToken, getAuthorityList);
 router.get("/district/list", checkToken, getDistrictList);
 router.get("/district/contact/*", checkToken, getDistrictContactsAPI);
 router.get("/create-cache", checkToken, createCache);
-router.get("/category-codes", checkToken);
+router.get("/category-codes", checkToken, getCategoryCodes);
 
 router.get("/*", checkToken, getInstituteAPI);
 
 async function createCache(req, res) {
   if (await !listCache.has("fundingGroups")) {
-    //const codes = [];
-
     try {
       const fundingGroupsResponse = await axios.get(
         `${config.get("server:schoolsAPIURL")}/schools/fundingGroups`,
@@ -95,6 +93,7 @@ async function createCache(req, res) {
       );
       listCache.set("fundingGroups", fundingGroupsResponse.data);
       res.json(fundingGroupsResponse.data);
+      log.info("cached funding groups - ", req.url);
     } catch (error) {
       const statusCode = error.response ? error.response.status : 500;
       log.error("getFunding Groups Error", statusCode, error.message);
@@ -104,41 +103,40 @@ async function createCache(req, res) {
     const cachedFundingGroupList = await listCache.get("fundingGroups");
     res.json(cachedFundingGroupList);
   }
-  if (await !listCache.has("districtlist")) {
-    const url = `${config.get("server:instituteAPIURL")}/institute/district`; // Update the URL according to your API endpoint
-    axios
-      .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
-      .then((response) => {
-        const filteredNonbBCDistrictList = response.data.filter((district) =>
-          ["098", "102", "103"].includes(district.districtNumber)
-        );
-        const filteredDistrictList = response.data.filter(
-          (district) => !["098", "102", "103"].includes(district.districtNumber)
-        );
-        const districtList = createList(
-          filteredDistrictList,
-          districtListOptions
-        );
-        const nonBCdistrictList = createList(
-          filteredNonbBCDistrictList,
-          districtListOptions
-        );
+  // if (await !listCache.has("districtlist")) {
+  //   const url = `${config.get("server:instituteAPIURL")}/institute/district`; // Update the URL according to your API endpoint
+  //   axios
+  //     .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
+  //     .then((response) => {
+  //       const filteredNonbBCDistrictList = response.data.filter((district) =>
+  //         ["098", "102", "103"].includes(district.districtNumber)
+  //       );
+  //       const filteredDistrictList = response.data.filter(
+  //         (district) => !["098", "102", "103"].includes(district.districtNumber)
+  //       );
+  //       const districtList = createList(
+  //         filteredDistrictList,
+  //         districtListOptions
+  //       );
+  //       const nonBCdistrictList = createList(
+  //         filteredNonbBCDistrictList,
+  //         districtListOptions
+  //       );
 
-        listCache.set("nonbcdistrictlist", nonBCdistrictList);
-        listCache.set("districtlist", districtList);
-        res.json(districtList);
-        log.info(req.url);
-      })
-      .catch((e) => {
-        log.error(
-          "getDistrictList Error",
-          e.response ? e.response.status : e.message
-        );
-      });
-  }
-  if (!listCache.has("categoryCodes")) {
-    //const codes = [];
-
+  //       listCache.set("nonbcdistrictlist", nonBCdistrictList);
+  //       listCache.set("districtlist", districtList);
+  //       res.json(districtList);
+  //       log.info("cached district list - ", req.url);
+  //     })
+  //     .catch((e) => {
+  //       log.error(
+  //         "getDistrictList Error (createCache)",
+  //         e.response ? e.response.status : e.message
+  //       );
+  //     });
+  // }
+  //TODO: Move to common function since this is same as getCategoryCodes()
+  if (await !listCache.has("categoryCodes")) {
     try {
       const categoryCodesResponse = await axios.get(
         `${config.get("server:instituteAPIURL")}/institute/category-codes`,
@@ -153,6 +151,7 @@ async function createCache(req, res) {
         ["FED_BAND", "POST_SEC", "YUKON"]
       );
       listCache.set("categoryCodes", categoryCodesResponse.data);
+      log.info("cached category codes - ", req.url);
     } catch (error) {
       const statusCode = error.response ? error.response.status : 500;
       log.error("Category Code Caching Error", statusCode, error.message);
@@ -161,6 +160,7 @@ async function createCache(req, res) {
   } else {
     const categoryCodes = await listCache.get("categoryCodes");
     res.json(categoryCodes);
+    log.info("fetched category codes - ", req.url);
   }
   if (await !codeCache.has("gradelist")) {
     const url = `${config.get("server:instituteAPIURL")}/institute/grade-codes`; // Update the URL according to your API endpoint
@@ -170,44 +170,21 @@ async function createCache(req, res) {
         const gradeCodes = response.data;
 
         codeCache.set("gradelist", gradeCodes);
-        log.info(req.url);
+        log.info("cached grade list - ", req.url);
       })
       .catch((e) => {
         log.error(
-          "getDistrictList Error",
+          "getGradeList Error",
           e.response ? e.response.status : e.message
         );
       });
   } else {
     const gradeCodes = await codeCache.get("gradelist");
     res.json(gradeCodes);
+    log.info("fetched grade list - ", req.url);
   }
 
-  // if (!listCache.has("categoryCodes")) {
-
-  //   try {
-  //     const categoryCodesResponse = await axios.get(
-  //       `${config.get(
-  //         "server:instituteAPIURL"
-  //       )}/institute/category-codes`,
-  //       {
-  //         headers: { Authorization: `Bearer ${req.accessToken}` },
-  //       }
-  //     );
-
-  //     categoryCodesResponse.data = filterRemoveByField(categoryCodesResponse.data,"schoolCategoryCode", ["FED_BAND","POST_SEC","YUKON"])
-  //     listCache.set("categoryCodes", categoryCodesResponse.data);
-
-  //   } catch (error) {
-  //     const statusCode = error.response ? error.response.status : 500;
-  //     log.error("Category Code Caching Error", statusCode, error.message);
-  //     res.status(statusCode).send(error.message);
-  //   }
-  // }
-
   if (!listCache.has("facilityCodes")) {
-    //const codes = [];
-
     try {
       const facilityCodesResponse = await axios.get(
         `${config.get("server:instituteAPIURL")}/institute/facility-codes`,
@@ -216,6 +193,7 @@ async function createCache(req, res) {
         }
       );
       listCache.set("facilityCodes", facilityCodesResponse.data);
+      log.info("cached facility codes - ", req.url);
     } catch (error) {
       const statusCode = error.response ? error.response.status : 500;
       log.error("Faility Code Caching Error", statusCode, error.message);
@@ -223,8 +201,6 @@ async function createCache(req, res) {
     }
   }
   if (!listCache.has("districtAddresses")) {
-    //const codes = [];
-
     try {
       const districtsResponse = await axios.get(
         `${config.get(
@@ -274,6 +250,7 @@ async function createCache(req, res) {
         });
       });
       listCache.set("districtAddresses", districtsResponse.data.content);
+      log.info("cached district addresses - ", req.url);
     } catch (error) {
       const statusCode = error.response ? error.response.status : 500;
       log.error("District Code Caching Error", statusCode, error.message);
@@ -283,6 +260,7 @@ async function createCache(req, res) {
 
   if (await !listCache.has("codesList")) {
     try {
+      log.info("Starting to get codes list"); //MOVE UNTIL I SEE IT
       const authorityContactTypeCodesResponse = await axios.get(
         `${config.get(
           "server:instituteAPIURL"
@@ -324,21 +302,22 @@ async function createCache(req, res) {
           [{ fieldToRemove: "publiclyAvailable", value: false }]
         ),
       };
-      res.json(codes);
+      // res.json(codes);
       listCache.set("codesList", { codesList: codes });
+      log.info("cached codes list - ", req.url);
     } catch (error) {
       const statusCode = error.response ? error.response.status : 500;
+      log.error(e);
       log.error("getCodesList Error", statusCode, error.message);
       res.status(statusCode).send(error.message);
     }
   }
+  // res acts like a return
   res.status(200).json({ success: true });
 }
 
 async function getContactTypeCodes(req, res) {
   if (await !listCache.has("codesList")) {
-    //const codes = [];
-
     try {
       const authorityContactTypeCodesResponse = await axios.get(
         `${config.get(
@@ -529,34 +508,33 @@ async function getAuthorityList(req, res) {
     res.json(authorityList);
   }
 }
-// async function getCategoryCodes(req, res) {
-//   if (!listCache.has("categoryCodes")) {
-//     //const codes = [];
+async function getCategoryCodes(req, res) {
+  if (!listCache.has("categoryCodes")) {
+    try {
+      const categoryCodesResponse = await axios.get(
+        `${config.get("server:instituteAPIURL")}/institute/category-codes`,
+        {
+          headers: { Authorization: `Bearer ${req.accessToken}` },
+        }
+      );
 
-//     try {
-//       const categoryCodesResponse = await axios.get(
-//         `${config.get("server:instituteAPIURL")}/institute/category-codes`,
-//         {
-//           headers: { Authorization: `Bearer ${req.accessToken}` },
-//         }
-//       );
-
-//       categoryCodesResponse.data = filterRemoveByField(
-//         categoryCodesResponse.data,
-//         "schoolCategoryCode",
-//         ["FED_BAND", "POST_SEC", "YUKON"]
-//       );
-//       listCache.set("categoryCodes", categoryCodesResponse.data);
-//     } catch (error) {
-//       const statusCode = error.response ? error.response.status : 500;
-//       log.error("Category Code Caching Error", statusCode, error.message);
-//       res.status(statusCode).send(error.message);
-//     }
-//   } else {
-//     const categoryCodes = await listCache.get("categoryCodes");
-//     res.json(categoryCodes);
-//   }
-// }
+      categoryCodesResponse.data = filterRemoveByField(
+        categoryCodesResponse.data,
+        "schoolCategoryCode",
+        ["FED_BAND", "POST_SEC", "YUKON"]
+      );
+      listCache.set("categoryCodes", categoryCodesResponse.data);
+      res.json(categoryCodesResponse.data);
+    } catch (error) {
+      const statusCode = error.response ? error.response.status : 500;
+      log.error("Category Code Caching Error", statusCode, error.message);
+      res.status(statusCode).send(error.message);
+    }
+  } else {
+    const categoryCodes = await listCache.get("categoryCodes");
+    res.json(categoryCodes);
+  }
+}
 async function getSchoolList(req, res) {
   if (await !listCache.has("schoollist")) {
     const url = `${config.get("server:instituteAPIURL")}/institute/school`; // Update the URL according to your API endpoint
@@ -625,7 +603,7 @@ async function getDistrictList(req, res) {
       })
       .catch((e) => {
         log.error(
-          "getDistrictList Error",
+          "getDistrictList Error (getDistrictList)",
           e.response ? e.response.status : e.message
         );
       });

@@ -93,7 +93,7 @@ async function getDistrictCodes(req) {
       return districtCodeList;
     } catch (e) {
       log.error(
-        "getDistrictList Error",
+        "getDistrictCodesList Error",
         e.response ? e.response.status : e.message
       );
     }
@@ -244,14 +244,12 @@ async function getAllDistrictContacts(req, res) {
     let sortedData = sortJSONByDistrictNumber(filteredData);
     res.json(sortedData);
   } catch (e) {
-    log.error(e);
     log.error("getData Error", e.response ? e.response.status : e.message);
   }
 }
 
 async function getAllDistrictMailing(req, res) {
   const districtList = await listCache.get("districtlist");
-  //const contactTypeCodes = await listCache.get("codesList");
 
   const propertyOrder = [
     { property: "districtId_districtNumber", label: "District Number" },
@@ -324,14 +322,11 @@ async function getAllDistrictMailing(req, res) {
     const contentByDistrict = sortJSONByDistrictNumber(content);
 
     res.json(contentByDistrict);
-    //res.json(districtContactsReorderedAndRelabeled );
   } catch (e) {
-    log.error(e);
     log.error("getData Error", e.response ? e.response.status : e.message);
   }
 }
 
-//api/v1/institute/district/12342525
 async function getDistrict(req, res) {
   const { id } = req.params;
 
@@ -471,7 +466,6 @@ async function getDistrict(req, res) {
     res.json(districtJSON);
     log.info(req.url);
   } catch (e) {
-    log.error(e);
     log.error("getData Error", e.response ? e.response.status : e.message);
   }
 }

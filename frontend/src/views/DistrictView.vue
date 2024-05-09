@@ -189,7 +189,11 @@ onMounted(async () => {
       :items="[
         { title: 'Home', href: '/' },
         'District',
-        district.value.districtData?.districtNumber + ' ' + district.value.districtData?.displayName
+        district.value.districtData
+          ? district.value.districtData.districtNumber +
+            ' ' +
+            district.value.districtData.displayName
+          : ''
       ]"
     ></v-breadcrumbs>
 
@@ -302,7 +306,9 @@ onMounted(async () => {
               :sort-by="[{ key: 'label', order: 'asc' }]"
             >
               <template v-slot:item.email="{ item }">
-                <a :href="`mailto:${item.email}`">{{ item.email }}</a>
+                <div style="max-width: 250px; overflow: hidden">
+                  <a :href="`mailto:${item.email}`">{{ item.email }}</a>
+                </div>
               </template>
 
               <template v-slot:item.phoneNumber="{ item }">
@@ -333,20 +339,13 @@ onMounted(async () => {
                   item.displayName
                 }}</a>
               </template>
+
               <template v-slot:item.schoolCategoryCode="{ item }">
                 {{ appStore.getCategoryCodeLabel(item.schoolCategoryCode) }}
               </template>
 
               <template v-slot:item.facilityTypeCode="{ item }">
                 {{ appStore.getFacilityCodeLabel(item.facilityTypeCode) }}
-              </template>
-
-              <template v-slot:item.email="{ item }">
-                <a :href="`mailto:${item.email}`">{{ item.email }}</a>
-              </template>
-
-              <template v-slot:item.website="{ item }">
-                <a :href="item.website">{{ item.website }}</a>
               </template>
 
               <template v-slot:item.phoneNumber="{ item }">
@@ -359,6 +358,18 @@ onMounted(async () => {
               <template v-slot:item.faxNumber="{ item }">
                 <div style="min-width: 125px">
                   {{ formatPhoneNumber(item.faxNumber) }}
+                </div>
+              </template>
+
+              <template v-slot:item.email="{ item }">
+                <div style="max-width: 250px; overflow: hidden">
+                  <a :href="`mailto:${item.email}`">{{ item.email }}</a>
+                </div>
+              </template>
+
+              <template v-slot:item.website="{ item }">
+                <div style="max-width: 200px">
+                  <a :href="item.website">{{ item.website }}</a>
                 </div>
               </template>
             </v-data-table>

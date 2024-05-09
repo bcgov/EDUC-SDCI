@@ -3,44 +3,44 @@ import { type AxiosResponse } from 'axios';
 
 export default {
   // Districts
-  getDistricts(): Promise<AxiosResponse> {
+  async getDistricts(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/district/list');
   },
   //DO NOT USE; TODO: Factor this out and use getDistrictView instead
   getDistrict(districtId: string): Promise<AxiosResponse> {
-    return ApiService.apiAxios.get('/api/v1/institute/district/'+districtId);
+    return ApiService.apiAxios.get('/api/v1/institute/district/'+ districtId);
   },
   // Independent Authorities
-  getAuthorityList(): Promise<AxiosResponse> {
+  async getAuthorityList(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/authority/list');
   },
-  getAuthority(authorityId: string): Promise<AxiosResponse> {
+  async getAuthority(authorityId: string): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/authority/'+ authorityId)
   },
   // Schools
-  getSchoolList(): Promise<AxiosResponse> {
+  async getSchoolList(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/school/list');
   },
-  getOffshoreSchoolList(): Promise<AxiosResponse> {
+  async getOffshoreSchoolList(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/offshore-school/list');
   },  
-  getSchool(schoolId: string): Promise<AxiosResponse> {
+  async getSchool(schoolId: string): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/school/'+schoolId);
   },
   // Codes
-  getFacilityCodes(): Promise<AxiosResponse> {
+  async getFacilityCodes(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/facility-codes');
   },
-  getCategoryCodes(): Promise<AxiosResponse> {
+  async getCategoryCodes(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/category-codes');
   },
-  getContactTypeCodes(): Promise<AxiosResponse> {
+  async getContactTypeCodes(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/contact-type-codes');
   },
-  getGradeCodes(): Promise<AxiosResponse> {
+  async getGradeCodes(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/grade-codes');
   },
-  getAddressTypeCodes(): Promise<AxiosResponse> {
+  async getAddressTypeCodes(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/address-type-codes');
   },
 
@@ -74,7 +74,7 @@ export default {
   getDistrictContactTypeCodes(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/district-contact-type-codes');
   },
-  loadCache(): Promise<AxiosResponse> {
+  async loadCache(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/create-cache');
   },
 
