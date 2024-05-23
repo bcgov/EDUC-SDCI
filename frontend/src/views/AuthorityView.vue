@@ -207,9 +207,11 @@ onMounted(async () => {
       :items="[
         { title: 'Home', href: '/' },
         'Authority',
-        authority.value.authorityData?.authorityNumber +
-          ' ' +
-          authority.value.authorityData?.displayName
+        authority.value.authorityData
+          ? authority.value.authorityData.authorityNumber +
+            ' ' +
+            authority.value.authorityData.displayName
+          : ''
       ]"
     ></v-breadcrumbs>
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
@@ -313,7 +315,9 @@ onMounted(async () => {
               </template>
 
               <template v-slot:item.email="{ item }">
-                <a :href="`mailto:${item.email}`">{{ item.email }}</a>
+                <div style="max-width: 250px; overflow: hidden">
+                  <a :href="`mailto:${item.email}`">{{ item.email }}</a>
+                </div>
               </template>
 
               <template v-slot:item.phoneNumber="{ item }">
@@ -351,11 +355,15 @@ onMounted(async () => {
               </template>
 
               <template v-slot:item.email="{ item }">
-                <a :href="`mailto:${item.email}`">{{ item.email }}</a>
+                <div style="max-width: 250px; overflow: hidden">
+                  <a :href="`mailto:${item.email}`">{{ item.email }}</a>
+                </div>
               </template>
 
               <template v-slot:item.website="{ item }">
-                <a :href="item.website">{{ item.website }}</a>
+                <div style="max-width: 200px">
+                  <a :href="item.website">{{ item.website }}</a>
+                </div>
               </template>
 
               <template v-slot:item.phoneNumber="{ item }">

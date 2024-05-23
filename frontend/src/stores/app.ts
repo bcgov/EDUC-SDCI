@@ -57,8 +57,8 @@ export const useAppStore = defineStore('app', {
     isIndependentSchool(schoolCategoryCode: String){
       return schoolCategoryCode == 'INDEPEND'
     },
-    setDistricts(): void {
-        InstituteService.getDistricts()
+    async setDistricts(): Promise<void> {
+        await InstituteService.getDistricts()
           .then((response) => {
             // Handle the response data
             this.districts = response.data
@@ -68,8 +68,8 @@ export const useAppStore = defineStore('app', {
             console.error(error)
           })
     },
-    setAuthorityList(): void {
-      InstituteService.getAuthorityList().then((response) => {
+    async setAuthorityList(): Promise<void> {
+      await InstituteService.getAuthorityList().then((response) => {
         //handle the response
         this.authorities = response.data
       })
@@ -78,7 +78,7 @@ export const useAppStore = defineStore('app', {
         console.error(error)
       })
     },
-    setSchoolList(): void {
+    async setSchoolList(): Promise<void> {
 
       InstituteService.getSchoolList()
       .then((response) => {
@@ -91,7 +91,7 @@ export const useAppStore = defineStore('app', {
       })
 
     },
-    setOffshoreSchoolList(): void {
+    async setOffshoreSchoolList(): Promise<void> {
 
       InstituteService.getOffshoreSchoolList()
       .then((response) => {
@@ -104,14 +104,14 @@ export const useAppStore = defineStore('app', {
       })
 
     },
-    async setCodes() {
+    async setCodes(): Promise<void> {
       await InstituteService.loadCache().then((response) => {
         //console.log(response)
       }).catch((error) => {
         console.error("ERRPR LOADING CACHE" + error)
       })
       // set category codes
-      InstituteService.getCategoryCodes().then((response) => {
+      await InstituteService.getCategoryCodes().then((response) => {
         const currentDate: Date = new Date()
         this.categoryCodes = response.data?.filter((item: any) => {
           const effectiveDate: Date = new Date(item.effectiveDate);
@@ -127,14 +127,14 @@ export const useAppStore = defineStore('app', {
       })
 
       // set facility type codes
-      InstituteService.getFacilityCodes().then((response) => {
+      await InstituteService.getFacilityCodes().then((response) => {
         this.facilityCodes = response.data
       }).catch((error) => {
         console.error(error)
       })
 
       // set contact type codes for Districts, Authorities, and Schools
-      InstituteService.getContactTypeCodes().then((response) => {
+      await InstituteService.getContactTypeCodes().then((response) => {
         const currentDate: Date = new Date()
 
 
@@ -178,13 +178,13 @@ export const useAppStore = defineStore('app', {
       })
 
       // set address type codes for institute addresses
-      InstituteService.getAddressTypeCodes().then((response) => {
+      await InstituteService.getAddressTypeCodes().then((response) => {
         this.addressTypeCodes = response.data
       }).catch((error) => {
         console.error(error)
       })
 
-      InstituteService.getGradeCodes().then((response) => {
+      await InstituteService.getGradeCodes().then((response) => {
         this.gradeCodes = response.data
       }).catch((error) => {
         console.error(error)
