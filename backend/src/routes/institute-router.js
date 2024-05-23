@@ -103,39 +103,7 @@ async function createCache(req, res) {
     const cachedFundingGroupList = await listCache.get("fundingGroups");
     res.json(cachedFundingGroupList);
   }
-  // if (await !listCache.has("districtlist")) {
-  //   const url = `${config.get("server:instituteAPIURL")}/institute/district`; // Update the URL according to your API endpoint
-  //   axios
-  //     .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
-  //     .then((response) => {
-  //       const filteredNonbBCDistrictList = response.data.filter((district) =>
-  //         ["098", "102", "103"].includes(district.districtNumber)
-  //       );
-  //       const filteredDistrictList = response.data.filter(
-  //         (district) => !["098", "102", "103"].includes(district.districtNumber)
-  //       );
-  //       const districtList = createList(
-  //         filteredDistrictList,
-  //         districtListOptions
-  //       );
-  //       const nonBCdistrictList = createList(
-  //         filteredNonbBCDistrictList,
-  //         districtListOptions
-  //       );
 
-  //       listCache.set("nonbcdistrictlist", nonBCdistrictList);
-  //       listCache.set("districtlist", districtList);
-  //       res.json(districtList);
-  //       log.info("cached district list - ", req.url);
-  //     })
-  //     .catch((e) => {
-  //       log.error(
-  //         "getDistrictList Error (createCache)",
-  //         e.response ? e.response.status : e.message
-  //       );
-  //     });
-  // }
-  //TODO: Move to common function since this is same as getCategoryCodes()
   if (await !listCache.has("categoryCodes")) {
     try {
       const categoryCodesResponse = await axios.get(
