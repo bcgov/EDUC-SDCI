@@ -1,4 +1,3 @@
-import { configDefaults } from 'vitest/config';
 import { storeToRefs, defineStore } from 'pinia';
 import * as jsonexport from "jsonexport/dist"
 // import type definitions
