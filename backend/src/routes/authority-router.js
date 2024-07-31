@@ -12,6 +12,7 @@ const {
   appendMailingAddressDetailsAndRemoveAddresses,
   rearrangeAndRelabelObjectProperties,
   sortByProperty,
+  isActiveEntity,
 } = require("../components/utils.js");
 //Batch Routes
 router.get("/all-mailing/:type", checkToken, getAllAuthorityMailing);
@@ -87,40 +88,50 @@ async function getAllAuthorityMailing(req, res) {
     log.error("getData Error", e.response ? e.response.status : e.message);
   }
 }
-async function getDistrictCodes(req) {
-  if (!listCache.has("districtCodesList")) {
-    const url = `${config.get(
-      "server:instituteAPIURL"
-    )}/institute/authority-contact-type-codes`; // Update the URL according to your API endpoint
-    try {
-      const response = await axios.get(url, {
-        headers: { Authorization: `Bearer ${req.accessToken}` },
-      });
-      const districtCodeList = response.data;
-      listCache.set("districtCodesList", districtCodeList);
-      return districtCodeList;
-    } catch (e) {
-      log.error(
-        "getDistrictList Error",
-        e.response ? e.response.status : e.message
-      );
-    }
-  } else {
-    const districtCodeList = await listCache.get("districtCodesList");
-    return districtCodeList;
-  }
-}
+
 async function getAuthority(req, res) {
   const { id } = req.params;
+  let currentDate = new Date().toISOString().substring(0, 19);
   const params = [
     {
-      condition: null,
+      condition: "AND",
       searchCriteriaList: [
         {
           key: "independentAuthorityId",
           operation: "eq",
           value: id, // Convert id to a string
           valueType: "UUID",
+          condition: "AND",
+        },
+      ],
+    },
+    {
+      condition: "AND",
+      searchCriteriaList: [
+        {
+          key: "closedDate",
+          operation: "eq",
+          value: null,
+          valueType: "STRING",
+          condition: "OR",
+        },
+        {
+          key: "closedDate",
+          operation: "gte",
+          value: currentDate,
+          valueType: "DATE_TIME",
+          condition: "OR",
+        },
+      ],
+    },
+    {
+      condition: "AND",
+      searchCriteriaList: [
+        {
+          key: "openedDate",
+          operation: "lte",
+          value: currentDate,
+          valueType: "DATE_TIME",
           condition: "AND",
         },
       ],
@@ -142,6 +153,14 @@ async function getAuthority(req, res) {
       headers: { Authorization: `Bearer ${req.accessToken}` },
     });
 
+    // Filter Authority Contacts
+    const filteredAuthorityContacts =
+      authorityDataResponse?.data?.contacts?.filter((contact) =>
+        isActiveEntity(contact.effectiveDate, contact.expiryDate)
+      );
+    // Overwrite Authority Contacts
+    authorityDataResponse.data.contacts = filteredAuthorityContacts;
+
     const authoritySchoolsResponse = await axios.get(authoritySchoolsUrl, {
       headers: { Authorization: `Bearer ${req.accessToken}` },
     });
@@ -162,6 +181,8 @@ async function getAuthority(req, res) {
           openedDate < today
         );
       });
+
+    console.log(authorityDataResponse.data);
     const authorityJSON = {
       authorityData: authorityDataResponse.data,
       authoritySchools: filteredSchoolsResponse,

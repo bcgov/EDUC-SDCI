@@ -7,8 +7,22 @@ const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
 const { checkToken } = require("../components/auth");
-const { listCache} = require("../components/cache");
-const {addFundingGroups, getArrayofPubliclyAvailableCodes,filterRemoveByField, filterByExpiryDate, getArrayofNonPubliclyAvailableCodes, filterByField,appendMailingAddressDetailsAndRemoveAddresses, rearrangeAndRelabelObjectProperties, addDistrictLabels, normalizeJsonObject, sortJSONByDistrictNumber, removeFieldsByCriteria, filterByPubliclyAvailableCodes} = require("../components/utils.js")
+const { listCache } = require("../components/cache");
+const {
+  addFundingGroups,
+  getArrayofPubliclyAvailableCodes,
+  filterRemoveByField,
+  filterByExpiryDate,
+  getArrayofNonPubliclyAvailableCodes,
+  filterByField,
+  appendMailingAddressDetailsAndRemoveAddresses,
+  rearrangeAndRelabelObjectProperties,
+  addDistrictLabels,
+  normalizeJsonObject,
+  sortJSONByDistrictNumber,
+  removeFieldsByCriteria,
+  filterByPubliclyAvailableCodes,
+} = require("../components/utils.js");
 
 //Batch Routes
 router.get("/all-contacts", checkToken, getAllDistrictContacts);
@@ -319,22 +333,16 @@ async function getAllDistrictMailing(req, res) {
 async function getDistrict(req, res) {
   const { id } = req.params;
 
+  let currentDate = new Date().toISOString().substring(0, 19);
   const params = [
     {
-      condition: null,
+      condition: "AND",
       searchCriteriaList: [
         {
           key: "districtID",
           operation: "eq",
           value: id,
           valueType: "UUID",
-          condition: "AND",
-        },
-        {
-          key: "closedDate",
-          operation: "eq",
-          value: null,
-          valueType: "STRING",
           condition: "AND",
         },
         {
@@ -360,6 +368,37 @@ async function getDistrict(req, res) {
         },
       ],
     },
+    {
+      condition: "AND",
+      searchCriteriaList: [
+        {
+          key: "closedDate",
+          operation: "eq",
+          value: null,
+          valueType: "STRING",
+          condition: "OR",
+        },
+        {
+          key: "closedDate",
+          operation: "gte",
+          value: currentDate,
+          valueType: "DATE_TIME",
+          condition: "OR",
+        },
+      ],
+    },
+    {
+      condition: "AND",
+      searchCriteriaList: [
+        {
+          key: "openedDate",
+          operation: "lte",
+          value: currentDate,
+          valueType: "DATE_TIME",
+          condition: "AND",
+        },
+      ],
+    },
   ];
 
   const jsonString = JSON.stringify(params);
@@ -381,13 +420,13 @@ async function getDistrict(req, res) {
     });
 
     const contactTypeCodes = await getDistrictCodes(req);
-    const schoolCategoryCodes = await listCache.get("categoryCodes")
-    const facilityCodes = await listCache.get("facilityCodes")
-    const fundingGroups = await listCache.get("fundingGroups")
-    const districtContactCodeTypes = await listCache.get("codesList")
-    const nonPublicContactTypeCodes = getNonPublicContactTypeCodes(contactTypeCodes);
-    
-    
+    const schoolCategoryCodes = await listCache.get("categoryCodes");
+    const facilityCodes = await listCache.get("facilityCodes");
+    const fundingGroups = await listCache.get("fundingGroups");
+    const districtContactCodeTypes = await listCache.get("codesList");
+    const nonPublicContactTypeCodes =
+      getNonPublicContactTypeCodes(contactTypeCodes);
+
     const districtDataPublic = removeContacts(
       districtDataResponse.data,
       nonPublicContactTypeCodes
@@ -408,28 +447,43 @@ async function getDistrict(req, res) {
       districtDataPublicWithLabels.contacts
     );
 
-    districtSchoolsResponse.data.content = normalizeJsonObject(districtSchoolsResponse.data.content, schoolCategoryCodes, "schoolCategoryCode",  null, ["label", "description"]);
-    districtSchoolsResponse.data.content = normalizeJsonObject(districtSchoolsResponse.data.content, facilityCodes, "faciltyTypeCode",  null, ["label", "description"]);
-   districtSchoolsResponse.data.content = addFundingGroups(districtSchoolsResponse.data.content, fundingGroups)
+    districtSchoolsResponse.data.content = normalizeJsonObject(
+      districtSchoolsResponse.data.content,
+      schoolCategoryCodes,
+      "schoolCategoryCode",
+      null,
+      ["label", "description"]
+    );
+    districtSchoolsResponse.data.content = normalizeJsonObject(
+      districtSchoolsResponse.data.content,
+      facilityCodes,
+      "faciltyTypeCode",
+      null,
+      ["label", "description"]
+    );
+    districtSchoolsResponse.data.content = addFundingGroups(
+      districtSchoolsResponse.data.content,
+      fundingGroups
+    );
 
-   const today = new Date();
-   const filteredSchoolsResponse = districtSchoolsResponse.data.content.filter(
-     (obj) => {
-       // if openedDate is a valid date is less than today, keep the object
-       const openedDate = new Date(obj.openedDate);
+    const today = new Date();
+    const filteredSchoolsResponse = districtSchoolsResponse.data.content.filter(
+      (obj) => {
+        // if openedDate is a valid date is less than today, keep the object
+        const openedDate = new Date(obj.openedDate);
 
-       // If closedDate is a valid date greater than today, keep the object
-       const closedDate = new Date(obj.closedDate);
+        // If closedDate is a valid date greater than today, keep the object
+        const closedDate = new Date(obj.closedDate);
 
-       // return obj IF closedDate does not exist OR is after than current date
-       // AND openedDate exists AND is before current date
-       return (
-         (!obj.closedDate || closedDate > today) &&
-         obj.openedDate &&
-         openedDate < today
-       );
-     }
-   );
+        // return obj IF closedDate does not exist OR is after than current date
+        // AND openedDate exists AND is before current date
+        return (
+          (!obj.closedDate || closedDate > today) &&
+          obj.openedDate &&
+          openedDate < today
+        );
+      }
+    );
     const districtJSON = {
       districtData: districtDataPublicWithLabels,
       districtSchools: filteredSchoolsResponse,
