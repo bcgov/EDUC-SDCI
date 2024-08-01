@@ -182,7 +182,6 @@ async function getAuthority(req, res) {
         );
       });
 
-    console.log(authorityDataResponse.data);
     const authorityJSON = {
       authorityData: authorityDataResponse.data,
       authoritySchools: filteredSchoolsResponse,
