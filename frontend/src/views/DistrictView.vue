@@ -4,7 +4,7 @@ import { ref, reactive, onMounted, computed, toValue } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { useRoute } from 'vue-router'
 import router from '@/router'
-import { formatPhoneNumber } from '@/utils/common'
+import { formatPhoneNumber, isValidDistrictNumber } from '@/utils/common'
 import type { District, School, Grade, Address, Contact } from '@/types/types.d.ts'
 import jsonexport from 'jsonexport/dist'
 import { useSanitizeURL } from '@/composables/string'
@@ -13,7 +13,7 @@ import DisplayAddress from '@/components/common/DisplayAddress.vue'
 import DisplayAlert from '@/components/common/DisplayAlert.vue'
 
 const appStore = useAppStore()
-const districtId = ref<string | null>(null) // Initialize with null initially
+const districtId = ref<string | undefined>(undefined) // Initialize with null initially
 const district = reactive({ value: {} as District })
 const schools = ref<any>([])
 const contacts = ref<any>([])
@@ -74,178 +74,200 @@ function downloadDistrictSchools() {
     appStore.exportCSV(csv)
   })
 }
+async function getDistrictId(): Promise<string> {
+  const route = useRoute()
+  return appStore.getDistrictByDistrictNumber(String(route.params.districtNumber))?.districtId ?? ''
+}
+async function getDistrictData(): Promise<void> {
+  // Set the districtId inside the onMounted hook; null if districtId not found
+  districtId.value = await getDistrictId() //move this getter to the backend? QUESTION
+  //districtId.value = '349664f8-47e3-a226-075c-081d56d93d39'
+  // get district data
+  if (!!districtId.value) {
+    try {
+      const response = await InstituteService.getDistrictView(districtId.value)
+      if (response.data?.districtData?.contacts) {
+        district.value = response.data
+        contacts.value = response.data?.districtData?.contacts
+        schools.value = district.value?.districtSchools
+
+        //Change School date for DL
+        const transformedSchoolData = schools.value.map((school: School) => {
+          const { contacts, addresses, ...rest } = school
+          const transformedContacts = contacts.map(({ schoolContactTypeCode, ...contactRest }) => ({
+            schoolContactTypeCode,
+            ...contactRest
+          }))
+          const physicalAddress = addresses.find(
+            (address: Address) => address?.addressTypeCode === 'PHYSICAL'
+          )
+          const mailingAddress = addresses.find(
+            (address: Address) => address?.addressTypeCode === 'MAILING'
+          )
+          return {
+            ...rest,
+            contacts: transformedContacts.reduce((acc, contact) => ({ ...acc, ...contact }), {}),
+            physicalAddress: physicalAddress,
+            mailingAddress: mailingAddress,
+            grades: [],
+            neighborhoodLearning: [],
+            schoolMove: []
+          }
+        })
+        //Change School data for DL
+        filteredSchools.value = transformedSchoolData.map((item: any) => {
+          return {
+            'District Number': response.data.districtData.districtNumber,
+            Mincode: item.mincode,
+            'Display Name': item.displayName,
+            'Mailing Address': item.mailingAddress?.addressLine1,
+            'Mailing Address Line2': item.mailingAddress?.addressLine2,
+            'Mailing Address City': item.mailingAddress?.city,
+            'Mailing Address Province': item.mailingAddress?.provinceCode,
+            'Mailing Address PostalCode': item.mailingAddress?.postal,
+            'Physical Address': item.physicalAddress?.addressLine1,
+            'Physical Address Line2': item.physicalAddress?.addressLine2,
+            'Physical Address City': item.physicalAddress?.city,
+            'Physical Address Province': item.physicalAddress?.provinceCode,
+            'Physical Address Postal Code': item.physicalAddress?.postal,
+            Role: item.contacts?.jobTitle,
+            'Contact First Name': item.contacts?.firstName,
+            'Contact Last Name': item.contacts?.lastName,
+            'Contact Phone Extension': item.contacts?.phoneExtension,
+            'Contact Phone Number': item.contacts?.phoneNumber,
+            'Facility Type Code': appStore.getFacilityCodeLabel(item.facilityTypeCode),
+            'School Category Code': appStore.getCategoryCodeLabel(item.schoolCategoryCode),
+            'Phone Number': item.phoneNumber,
+            Fax: item.faxNumber,
+            Email: item.email,
+            Website: item.website,
+            'Group Classification Primary K-3': item.primaryK3,
+            'Group Classification Elementary 4-7 EU': item.elementary47,
+            'Group Classification Junior Secondary 8-10 SU': item.juniorSecondary810,
+            'Group Classification Senior Secondary 11-12': item.seniorSecondary1112
+          }
+        })
+        filteredContacts.value = contacts.value.map((item: any) => {
+          return {
+            'District Number': response.data.districtData?.districtNumber,
+            'District Name': response.data.districtData?.displayName,
+            'Contact Type': item.label,
+            'Job Title': item.jobTitle,
+            'First Name': item.firstName,
+            'Last Name': item.lastName,
+            'Phone Number': item.phoneNumber,
+            'Phone Extension': item.phoneExtension,
+            'Alternate Phone Number': item.alternatePhoneNumber,
+            'Alternate Phone Extension': item.alternatePhoneExtension,
+            Email: item.email,
+            'Mailing Address': response.data.districtData?.addresses[0].addressLine1,
+            'Mailing City': response.data.districtData?.addresses[0].city,
+            'Mailing Province': response.data.districtData?.addresses[0].provinceCode,
+            'Mailing Postal Code': response.data.districtData?.addresses[0].postal,
+            'District Phone': response.data.districtData?.phoneNumber,
+            'District Fax': response.data.districtData?.faxNumber,
+            Website: response.data.districtData?.website
+          }
+        })
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+}
 
 onMounted(async () => {
-  const route = useRoute()
-  // Set the districtId inside the onMounted hook; null if districtId not found
-  districtId.value =
-    appStore.getDistrictByDistrictNumber(String(route.params.districtNumber))?.districtId ?? null
-  // get district data
-  try {
-    const response = await InstituteService.getDistrictView(districtId.value as string)
-    if (response.data?.districtData?.contacts) {
-      district.value = response.data
-      contacts.value = response.data?.districtData?.contacts
-      schools.value = district.value?.districtSchools
-
-      //Change School date for DL
-      const transformedSchoolData = schools.value.map((school: School) => {
-        const { contacts, addresses, ...rest } = school
-        const transformedContacts = contacts.map(({ schoolContactTypeCode, ...contactRest }) => ({
-          schoolContactTypeCode,
-          ...contactRest
-        }))
-        const physicalAddress = addresses.find(
-          (address: Address) => address?.addressTypeCode === 'PHYSICAL'
-        )
-        const mailingAddress = addresses.find(
-          (address: Address) => address?.addressTypeCode === 'MAILING'
-        )
-        return {
-          ...rest,
-          contacts: transformedContacts.reduce((acc, contact) => ({ ...acc, ...contact }), {}),
-          physicalAddress: physicalAddress,
-          mailingAddress: mailingAddress,
-          grades: [],
-          neighborhoodLearning: [],
-          schoolMove: []
-        }
-      })
-      //Change School data for DL
-      filteredSchools.value = transformedSchoolData.map((item: any) => {
-        return {
-          'District Number': response.data.districtData.districtNumber,
-          Mincode: item.mincode,
-          'Display Name': item.displayName,
-          'Mailing Address': item.mailingAddress?.addressLine1,
-          'Mailing Address Line2': item.mailingAddress?.addressLine2,
-          'Mailing Address City': item.mailingAddress?.city,
-          'Mailing Address Province': item.mailingAddress?.provinceCode,
-          'Mailing Address PostalCode': item.mailingAddress?.postal,
-          'Physical Address': item.physicalAddress?.addressLine1,
-          'Physical Address Line2': item.physicalAddress?.addressLine2,
-          'Physical Address City': item.physicalAddress?.city,
-          'Physical Address Province': item.physicalAddress?.provinceCode,
-          'Physical Address Postal Code': item.physicalAddress?.postal,
-          Role: item.contacts?.jobTitle,
-          'Contact First Name': item.contacts?.firstName,
-          'Contact Last Name': item.contacts?.lastName,
-          'Contact Phone Extension': item.contacts?.phoneExtension,
-          'Contact Phone Number': item.contacts?.phoneNumber,
-          'Facility Type Code': appStore.getFacilityCodeLabel(item.facilityTypeCode),
-          'School Category Code': appStore.getCategoryCodeLabel(item.schoolCategoryCode),
-          'Phone Number': item.phoneNumber,
-          Fax: item.faxNumber,
-          Email: item.email,
-          Website: item.website,
-          'Group Classification Primary K-3': item.primaryK3,
-          'Group Classification Elementary 4-7 EU': item.elementary47,
-          'Group Classification Junior Secondary 8-10 SU': item.juniorSecondary810,
-          'Group Classification Senior Secondary 11-12': item.seniorSecondary1112
-        }
-      })
-      filteredContacts.value = contacts.value.map((item: any) => {
-        return {
-          'District Number': response.data.districtData?.districtNumber,
-          'District Name': response.data.districtData?.displayName,
-          'Job Title': item.jobTitle,
-          'First Name': item.firstName,
-          'Last Name': item.lastName,
-          'Phone Number': item.phoneNumber,
-          'Phone Extension': item.phoneExtension,
-          'Alternate Phone Number': item.alternatePhoneNumber,
-          'Alternate Phone Extension': item.alternatePhoneExtension,
-          Email: item.email,
-          'Mailing Address': response.data.districtData?.addresses[0].addressLine1,
-          'Mailing City': response.data.districtData?.addresses[0].city,
-          'Mailing Province': response.data.districtData?.addresses[0].provinceCode,
-          'Mailing Postal Code': response.data.districtData?.addresses[0].postal,
-          'District Phone': response.data.districtData?.phoneNumber,
-          'District Fax': response.data.districtData?.faxNumber,
-          Website: response.data.districtData?.website
-        }
-      })
-    }
-  } catch (error) {
-    console.error(error)
-  }
-  // get district contact type codes
-  // try {
-  //   const response = await InstituteService.getDistrictContactTypeCodes()
-  //   districtContactTypeCodes.value = response.data
-  // } catch (error) {
-  //   console.error(error)
-  // }
+  await getDistrictData()
 })
 </script>
 
 <template>
   <div>
-    <v-spacer />
     <v-breadcrumbs
       class="breadcrumbs"
       bg-color="white"
       :items="[
         { title: 'Home', href: '/' },
         'District',
-        district.value.districtData?.districtNumber + ' ' + district.value.districtData?.displayName
+        district.value.districtData
+          ? district.value.districtData.districtNumber +
+            ' ' +
+            district.value.districtData.displayName
+          : ''
       ]"
     ></v-breadcrumbs>
 
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
-      <DisplayAlert />
-      <v-row no-gutters justify="space-between">
-        <v-col v-if="district.value.districtData">
-          <v-row no-gutters>
-            <h1 class="mt-3 mb-2">
-              {{ district.value.districtData?.districtNumber }} -
-              {{ district.value.districtData?.displayName }}
-            </h1>
-          </v-row>
-          <v-row no-gutters justify="space-between">
-            <v-col>
-              <p>
-                <strong>Phone:</strong>
-                {{ formatPhoneNumber(district.value.districtData?.phoneNumber) }}
-              </p>
-              <p>
-                <strong>Fax:</strong>
-                {{ formatPhoneNumber(district.value.districtData?.faxNumber) }}
-              </p>
-              <p><strong>Email:</strong> {{ district.value.districtData?.email }}</p>
-              <p>
-                <a :href="district.value.districtData?.website">{{
-                  district.value.districtData?.website
-                }}</a>
-              </p>
-            </v-col>
+      <v-container id="main">
+        <DisplayAlert class="mx-4 mx-lg-0" />
+        <v-row no-gutters justify="space-between" class="pa-4 pa-md-5 pa-lg-0">
+          <v-col cols="12" v-if="district.value.districtData">
+            <v-row no-gutters justify="space-between">
+              <v-col>
+                <h1 class="mt-1 mt-md-3 mb-6 mb-md-2">
+                  <span class="d-inline d-md-none">District </span>
+                  <span>
+                    {{ district.value.districtData?.districtNumber }}
+                  </span>
+                  <span class="d-none d-md-inline"> - </span>
+                  <span class="d-block d-md-inline institute-name">
+                    {{ district.value.districtData?.displayName }}
+                  </span>
+                </h1>
+              </v-col>
+            </v-row>
+            <v-row no-gutters justify="space-between">
+              <v-col cols="11" md="auto" class="mb-4">
+                <p v-if="district.value.districtData?.phoneNumber">
+                  <strong>Phone:</strong>
+                  {{ formatPhoneNumber(district.value.districtData?.phoneNumber) }}
+                </p>
+                <p v-if="district.value.districtData?.faxNumber">
+                  <strong>Fax:</strong>
+                  {{ formatPhoneNumber(district.value.districtData?.faxNumber) }}
+                </p>
+                <p v-if="district.value.districtData?.email">
+                  <strong>Email: </strong
+                  ><a :href="'mailto:' + district.value.districtData?.email">{{
+                    district.value.districtData?.email
+                  }}</a>
+                </p>
+                <p>
+                  <a :href="district.value.districtData?.website">{{
+                    district.value.districtData?.website
+                  }}</a>
+                </p>
+              </v-col>
 
-            <v-col
-              v-for="item in district.value.districtData.addresses"
-              :key="item.addressTypeCode"
-            >
-              <DisplayAddress v-bind="item" />
-            </v-col>
+              <v-col
+                cols="11"
+                md="auto"
+                v-for="item in district.value.districtData.addresses"
+                :key="item.addressTypeCode"
+              >
+                <DisplayAddress v-bind="item" class="mb-3" />
+              </v-col>
 
-            <v-col>
-              <v-btn
-                variant="text"
-                class="text-none text-subtitle-1 ma-1 v-btn-align-left"
-                @click="downloadDistrictContacts"
-                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
-                District Contacts (CSV)</v-btn
-              >
-              <v-btn
-                variant="text"
-                class="text-none text-subtitle-1 ma-1 v-btn-align-left"
-                @click="downloadDistrictSchools"
-                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
-                District Schools (CSV)</v-btn
-              >
-            </v-col>
-          </v-row>
-        </v-col>
-      </v-row>
+              <v-col cols="11" md="4" class="pa-0 pa-md-3">
+                <v-btn
+                  variant="text"
+                  class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+                  @click="downloadDistrictContacts"
+                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
+                  District Contacts (CSV)</v-btn
+                >
+                <v-btn
+                  variant="text"
+                  class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+                  @click="downloadDistrictSchools"
+                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
+                  District Schools (CSV)</v-btn
+                >
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+      </v-container>
     </v-sheet>
     <!-- END DISTRICT HEADER INFO -->
 
@@ -284,7 +306,9 @@ onMounted(async () => {
               :sort-by="[{ key: 'label', order: 'asc' }]"
             >
               <template v-slot:item.email="{ item }">
-                <a :href="`mailto:${item.email}`">{{ item.email }}</a>
+                <div style="max-width: 250px; overflow: hidden">
+                  <a :href="`mailto:${item.email}`">{{ item.email }}</a>
+                </div>
               </template>
 
               <template v-slot:item.phoneNumber="{ item }">
@@ -315,20 +339,13 @@ onMounted(async () => {
                   item.displayName
                 }}</a>
               </template>
+
               <template v-slot:item.schoolCategoryCode="{ item }">
                 {{ appStore.getCategoryCodeLabel(item.schoolCategoryCode) }}
               </template>
 
               <template v-slot:item.facilityTypeCode="{ item }">
                 {{ appStore.getFacilityCodeLabel(item.facilityTypeCode) }}
-              </template>
-
-              <template v-slot:item.email="{ item }">
-                <a :href="`mailto:${item.email}`">{{ item.email }}</a>
-              </template>
-
-              <template v-slot:item.website="{ item }">
-                <a :href="item.website">{{ item.website }}</a>
               </template>
 
               <template v-slot:item.phoneNumber="{ item }">
@@ -341,6 +358,18 @@ onMounted(async () => {
               <template v-slot:item.faxNumber="{ item }">
                 <div style="min-width: 125px">
                   {{ formatPhoneNumber(item.faxNumber) }}
+                </div>
+              </template>
+
+              <template v-slot:item.email="{ item }">
+                <div style="max-width: 250px; overflow: hidden">
+                  <a :href="`mailto:${item.email}`">{{ item.email }}</a>
+                </div>
+              </template>
+
+              <template v-slot:item.website="{ item }">
+                <div style="max-width: 200px">
+                  <a :href="item.website">{{ item.website }}</a>
                 </div>
               </template>
             </v-data-table>
