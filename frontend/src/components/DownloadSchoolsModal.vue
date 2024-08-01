@@ -6,13 +6,9 @@ const appStore = useAppStore()
 // used for open and close modal
 const dialog = ref(false)
 // varibles used for search
-
-function downloadAllSchoolsMailing() {
-  alert('TODO - Implement all schools mailing extract download')
-}
 </script>
 <template>
-  <v-dialog v-model="dialog" width="25%">
+  <v-dialog v-model="dialog" max-width="500">
     <template v-slot:activator="{ props }">
       <v-btn
         block

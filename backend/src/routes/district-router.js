@@ -7,8 +7,22 @@ const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
 const { checkToken } = require("../components/auth");
-const { listCache} = require("../components/cache");
-const {addFundingGroups, getArrayofPubliclyAvailableCodes,filterRemoveByField, filterByExpiryDate, getArrayofNonPubliclyAvailableCodes, filterByField,appendMailingAddressDetailsAndRemoveAddresses, rearrangeAndRelabelObjectProperties, addDistrictLabels, normalizeJsonObject, sortJSONByDistrictNumber, removeFieldsByCriteria, filterByPubliclyAvailableCodes} = require("../components/utils.js")
+const { listCache } = require("../components/cache");
+const {
+  addFundingGroups,
+  getArrayofPubliclyAvailableCodes,
+  filterRemoveByField,
+  filterByExpiryDate,
+  getArrayofNonPubliclyAvailableCodes,
+  filterByField,
+  appendMailingAddressDetailsAndRemoveAddresses,
+  rearrangeAndRelabelObjectProperties,
+  addDistrictLabels,
+  normalizeJsonObject,
+  sortJSONByDistrictNumber,
+  removeFieldsByCriteria,
+  filterByPubliclyAvailableCodes,
+} = require("../components/utils.js");
 
 //Batch Routes
 router.get("/all-contacts", checkToken, getAllDistrictContacts);
@@ -33,7 +47,7 @@ function addContactTypeLabels(districtDataResponse, nonPublicContactTypeCodes) {
     Array.isArray(updatedDistrictData.contacts)
   ) {
     updatedDistrictData.contacts.forEach((contact) => {
-      const matchingType = nonPublicContactTypeCodes.find(
+      const matchingType = nonPublicContactTypeCodes?.find(
         (codeObj) =>
           codeObj.districtContactTypeCode === contact.districtContactTypeCode
       );
@@ -79,7 +93,7 @@ async function getDistrictCodes(req) {
       return districtCodeList;
     } catch (e) {
       log.error(
-        "getDistrictList Error",
+        "getDistrictCodesList Error",
         e.response ? e.response.status : e.message
       );
     }
@@ -236,7 +250,6 @@ async function getAllDistrictContacts(req, res) {
 
 async function getAllDistrictMailing(req, res) {
   const districtList = await listCache.get("districtlist");
-  const contactTypeCodes = await listCache.get("codesList");
 
   const propertyOrder = [
     { property: "districtId_districtNumber", label: "District Number" },
@@ -309,13 +322,11 @@ async function getAllDistrictMailing(req, res) {
     const contentByDistrict = sortJSONByDistrictNumber(content);
 
     res.json(contentByDistrict);
-    //res.json(districtContactsReorderedAndRelabeled );
   } catch (e) {
     log.error("getData Error", e.response ? e.response.status : e.message);
   }
 }
 
-//api/v1/institute/district/12342525
 async function getDistrict(req, res) {
   const { id } = req.params;
 
@@ -381,13 +392,14 @@ async function getDistrict(req, res) {
     });
 
     const contactTypeCodes = await getDistrictCodes(req);
-    const schoolCategoryCodes = await listCache.get("categoryCodes")
-    const facilityCodes = await listCache.get("facilityCodes")
-    const fundingGroups = await listCache.get("fundingGroups")
-    const districtContactCodeTypes = await listCache.get("codesList")
-    const nonPublicContactTypeCodes = getNonPublicContactTypeCodes(contactTypeCodes);
-    
-    
+    const schoolCategoryCodes = await listCache.get("categoryCodes");
+    const facilityCodes = await listCache.get("facilityCodes");
+    const fundingGroups = await listCache.get("fundingGroups");
+    const districtContactCodeTypes = await listCache.get("codesList");
+    const nonPublicContactTypeCodes = await getNonPublicContactTypeCodes(
+      contactTypeCodes
+    );
+
     const districtDataPublic = removeContacts(
       districtDataResponse.data,
       nonPublicContactTypeCodes
@@ -396,40 +408,56 @@ async function getDistrict(req, res) {
       districtDataPublic,
       contactTypeCodes
     );
-    districtDataPublicWithLabels.contacts = filterByPubliclyAvailableCodes(
-      districtDataPublicWithLabels.contacts,
-      "districtContactTypeCode",
-      getArrayofPubliclyAvailableCodes(
-        districtContactCodeTypes.codesList.districtContactTypeCodes,
-        "districtContactTypeCode"
-      )
+    if (!!districtContactCodeTypes) {
+      districtDataPublicWithLabels.contacts = filterByPubliclyAvailableCodes(
+        districtDataPublicWithLabels.contacts,
+        "districtContactTypeCode",
+        getArrayofPubliclyAvailableCodes(
+          districtContactCodeTypes.codesList.districtContactTypeCodes,
+          "districtContactTypeCode"
+        )
+      );
+      districtDataPublicWithLabels.contacts = filterByExpiryDate(
+        districtDataPublicWithLabels.contacts
+      );
+      districtSchoolsResponse.data.content = normalizeJsonObject(
+        districtSchoolsResponse.data.content,
+        schoolCategoryCodes,
+        "schoolCategoryCode",
+        null,
+        ["label", "description"]
+      );
+      districtSchoolsResponse.data.content = normalizeJsonObject(
+        districtSchoolsResponse.data.content,
+        facilityCodes,
+        "faciltyTypeCode",
+        null,
+        ["label", "description"]
+      );
+      districtSchoolsResponse.data.content = addFundingGroups(
+        districtSchoolsResponse.data.content,
+        fundingGroups
+      );
+    }
+
+    const today = new Date();
+    const filteredSchoolsResponse = districtSchoolsResponse.data.content.filter(
+      (obj) => {
+        // if openedDate is a valid date is less than today, keep the object
+        const openedDate = new Date(obj.openedDate);
+
+        // If closedDate is a valid date greater than today, keep the object
+        const closedDate = new Date(obj.closedDate);
+
+        // return obj IF closedDate does not exist OR is after than current date
+        // AND openedDate exists AND is before current date
+        return (
+          (!obj.closedDate || closedDate > today) &&
+          obj.openedDate &&
+          openedDate < today
+        );
+      }
     );
-    districtDataPublicWithLabels.contacts = filterByExpiryDate(
-      districtDataPublicWithLabels.contacts
-    );
-
-    districtSchoolsResponse.data.content = normalizeJsonObject(districtSchoolsResponse.data.content, schoolCategoryCodes, "schoolCategoryCode",  null, ["label", "description"]);
-    districtSchoolsResponse.data.content = normalizeJsonObject(districtSchoolsResponse.data.content, facilityCodes, "faciltyTypeCode",  null, ["label", "description"]);
-   districtSchoolsResponse.data.content = addFundingGroups(districtSchoolsResponse.data.content, fundingGroups)
-
-   const today = new Date();
-   const filteredSchoolsResponse = districtSchoolsResponse.data.content.filter(
-     (obj) => {
-       // if openedDate is a valid date is less than today, keep the object
-       const openedDate = new Date(obj.openedDate);
-
-       // If closedDate is a valid date greater than today, keep the object
-       const closedDate = new Date(obj.closedDate);
-
-       // return obj IF closedDate does not exist OR is after than current date
-       // AND openedDate exists AND is before current date
-       return (
-         (!obj.closedDate || closedDate > today) &&
-         obj.openedDate &&
-         openedDate < today
-       );
-     }
-   );
     const districtJSON = {
       districtData: districtDataPublicWithLabels,
       districtSchools: filteredSchoolsResponse,

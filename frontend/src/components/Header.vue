@@ -11,8 +11,8 @@
         height="125"
       />
     </a>
-    <v-divider class="mx-3" inset vertical />
-    <h1>BC School & District Contact Information</h1>
+    <v-divider class="mx-3 d-none d-md-inline-flex" inset vertical />
+    <h1 class="d-none d-md-block">BC School & District Contact Information</h1>
   </v-app-bar>
 </template>
 
@@ -22,5 +22,6 @@
 .v-toolbar__extension {
   justify-content: start;
   max-width: 1280px;
+  /* padding: 0 2rem; */
 }
 </style>

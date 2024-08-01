@@ -207,61 +207,73 @@ onMounted(async () => {
       :items="[
         { title: 'Home', href: '/' },
         'Authority',
-        authority.value.authorityData?.authorityNumber +
-          ' ' +
-          authority.value.authorityData?.displayName
+        authority.value.authorityData
+          ? authority.value.authorityData.authorityNumber +
+            ' ' +
+            authority.value.authorityData.displayName
+          : ''
       ]"
     ></v-breadcrumbs>
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
-      <DisplayAlert />
-      <v-row no-gutters justify="space-between">
-        <v-col>
-          <h1 class="mt-3 mb-2">
-            {{ authority.value.authorityData?.authorityNumber }} -
-            {{ authority.value.authorityData?.displayName }}
-          </h1>
-          <v-row v-if="authority.value.authorityData">
-            <v-col>
-              <p>
-                <strong>Phone:</strong>
-                {{ formatPhoneNumber(authority.value.authorityData?.phoneNumber) }}
-              </p>
-              <p>
-                <strong>Fax:</strong>
-                {{ formatPhoneNumber(authority.value.authorityData?.faxNumber) }}
-              </p>
-              <p>
-                <strong>Email: </strong>
-                <a :href="'mailto:' + authority.value.authorityData?.email">{{
-                  authority.value.authorityData?.email
-                }}</a>
-              </p>
-            </v-col>
-            <v-col
-              v-for="item in authority.value.authorityData.addresses"
-              :key="item.addressTypeCode"
-            >
-              <DisplayAddress v-bind="item" />
-            </v-col>
-            <v-col>
-              <v-btn
-                variant="text"
-                class="text-none text-subtitle-1 ma-1 v-btn-align-left"
-                @click="downloadAuthorityContacts()"
-                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
-                Authority Contacts (CSV)</v-btn
+      <v-container id="main">
+        <DisplayAlert class="mx-4 mx-lg-0" />
+        <v-row no-gutters justify="space-between" class="pa-4 pa-md-5 pa-lg-0">
+          <v-col cols="12">
+            <h1 class="mt-1 mt-md-3 mb-6 mb-md-2">
+              <span class="d-inline d-md-none">Authority </span>
+              <span>
+                {{ authority.value.authorityData?.authorityNumber }}
+              </span>
+              <span class="d-none d-md-inline"> - </span>
+              <span class="d-block d-md-inline institute-name">
+                {{ authority.value.authorityData?.displayName }}
+              </span>
+            </h1>
+            <v-row v-if="authority.value.authorityData" justify="space-between">
+              <v-col cols="11" md="auto">
+                <p v-if="authority.value.authorityData?.phoneNumber">
+                  <strong>Phone:</strong>
+                  {{ formatPhoneNumber(authority.value.authorityData?.phoneNumber) }}
+                </p>
+                <p v-if="authority.value.authorityData?.faxNumber">
+                  <strong>Fax:</strong>
+                  {{ formatPhoneNumber(authority.value.authorityData?.faxNumber) }}
+                </p>
+                <p v-if="authority.value.authorityData?.email">
+                  <strong>Email: </strong>
+                  <a :href="'mailto:' + authority.value.authorityData?.email">{{
+                    authority.value.authorityData?.email
+                  }}</a>
+                </p>
+              </v-col>
+              <v-col
+                cols="11"
+                md="auto"
+                v-for="item in authority.value.authorityData.addresses"
+                :key="item.addressTypeCode"
               >
-              <v-btn
-                variant="text"
-                class="text-none text-subtitle-1 ma-1 v-btn-align-left"
-                @click="downloadAuthoritySchools()"
-                ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
-                Authority Schools (CSV)</v-btn
-              >
-            </v-col>
-          </v-row>
-        </v-col>
-      </v-row>
+                <DisplayAddress v-bind="item" />
+              </v-col>
+              <v-col cols="11" md="4" class="pa-0 pa-md-3">
+                <v-btn
+                  variant="text"
+                  class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+                  @click="downloadAuthorityContacts()"
+                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
+                  Authority Contacts (CSV)</v-btn
+                >
+                <v-btn
+                  variant="text"
+                  class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+                  @click="downloadAuthoritySchools()"
+                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
+                  Authority Schools (CSV)</v-btn
+                >
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+      </v-container>
     </v-sheet>
     <!-- END Authority Info Header Block -->
     <v-sheet class="pa-6">
@@ -303,7 +315,9 @@ onMounted(async () => {
               </template>
 
               <template v-slot:item.email="{ item }">
-                <a :href="`mailto:${item.email}`">{{ item.email }}</a>
+                <div style="max-width: 250px; overflow: hidden">
+                  <a :href="`mailto:${item.email}`">{{ item.email }}</a>
+                </div>
               </template>
 
               <template v-slot:item.phoneNumber="{ item }">
@@ -341,11 +355,15 @@ onMounted(async () => {
               </template>
 
               <template v-slot:item.email="{ item }">
-                <a :href="`mailto:${item.email}`">{{ item.email }}</a>
+                <div style="max-width: 250px; overflow: hidden">
+                  <a :href="`mailto:${item.email}`">{{ item.email }}</a>
+                </div>
               </template>
 
               <template v-slot:item.website="{ item }">
-                <a :href="item.website">{{ item.website }}</a>
+                <div style="max-width: 200px">
+                  <a :href="item.website">{{ item.website }}</a>
+                </div>
               </template>
 
               <template v-slot:item.phoneNumber="{ item }">

@@ -30,30 +30,35 @@ function downloadDistrictsMailing() {
 </script>
 
 <template>
-  <v-card class="px-6 py-4 mt-5">
+  <v-card class="px-6 py-4 w-100">
     <h2 class="mb-5">School Districts</h2>
     <v-row no-gutters justify="space-between">
-      <v-col class="ma-1">
-        <v-row>
-          <v-autocomplete
-            v-model="selectedDistrict"
-            label="Select a District"
-            :items="appStore.getDistrictList"
-            :item-title="
-              (item) => (item?.districtNumber ? item.districtNumber + ' - ' + item.displayName : '')
-            "
-            :item-value="(item) => item"
-            class="selectDistrictInput w-75"
-          ></v-autocomplete>
-          <v-btn
-            icon="mdi-magnify"
-            color="primary"
-            variant="flat"
-            rounded="lg"
-            size="large"
-            @click="goToDistrict"
-            class="v-btn-align-left text-none text-subtitle-1 ml-3"
-          />
+      <v-col class="ma-2">
+        <v-row justify="space-between">
+          <v-col cols="10" class="pa-0">
+            <v-autocomplete
+              class="mr-2"
+              v-model="selectedDistrict"
+              label="Select a District"
+              :items="appStore.getDistrictList"
+              :item-title="
+                (item) =>
+                  item?.districtNumber ? item.districtNumber + ' - ' + item.displayName : ''
+              "
+              :item-value="(item) => item"
+            ></v-autocomplete>
+          </v-col>
+          <v-col cols="2" class="pa-0">
+            <v-btn
+              icon="mdi-magnify"
+              color="primary"
+              variant="flat"
+              rounded="lg"
+              size="large"
+              @click="goToDistrict"
+              class="v-btn-align-left text-none text-subtitle-1 ml-1"
+            />
+          </v-col>
         </v-row>
         <v-row>
           <v-btn
@@ -63,7 +68,7 @@ function downloadDistrictsMailing() {
             block
             class="text-none text-subtitle-1 my-1"
             ><template v-slot:append> <v-icon icon="mdi-chevron-right" /> </template>
-            View Contacts by Type
+            View District Contacts by Type
           </v-btn>
 
           <v-btn
