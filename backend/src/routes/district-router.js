@@ -330,22 +330,16 @@ async function getAllDistrictMailing(req, res) {
 async function getDistrict(req, res) {
   const { id } = req.params;
 
+  let currentDate = new Date().toISOString().substring(0, 19);
   const params = [
     {
-      condition: null,
+      condition: "AND",
       searchCriteriaList: [
         {
           key: "districtID",
           operation: "eq",
           value: id,
           valueType: "UUID",
-          condition: "AND",
-        },
-        {
-          key: "closedDate",
-          operation: "eq",
-          value: null,
-          valueType: "STRING",
           condition: "AND",
         },
         {
@@ -367,6 +361,37 @@ async function getDistrict(req, res) {
           operation: "neq",
           value: "POST_SEC",
           valueType: "STRING",
+          condition: "AND",
+        },
+      ],
+    },
+    {
+      condition: "AND",
+      searchCriteriaList: [
+        {
+          key: "closedDate",
+          operation: "eq",
+          value: null,
+          valueType: "STRING",
+          condition: "OR",
+        },
+        {
+          key: "closedDate",
+          operation: "gte",
+          value: currentDate,
+          valueType: "DATE_TIME",
+          condition: "OR",
+        },
+      ],
+    },
+    {
+      condition: "AND",
+      searchCriteriaList: [
+        {
+          key: "openedDate",
+          operation: "lte",
+          value: currentDate,
+          valueType: "DATE_TIME",
           condition: "AND",
         },
       ],
