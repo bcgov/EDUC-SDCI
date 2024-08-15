@@ -483,6 +483,12 @@ function createSchoolCache(schoolData, schoolGrades) {
     return school;
   });
 }
+
+function isActiveEntity(effective, expiry) {
+  let today = new Date();
+  return today > new Date(effective) && (!expiry || today < new Date(expiry));
+}
+
 module.exports = {
   addFundingGroups,
   filterByOpenedAndClosedDate,
@@ -507,4 +513,5 @@ module.exports = {
   createSchoolCache,
   formatGrades,
   rearrangeAndRelabelObjectProperties,
+  isActiveEntity,
 };

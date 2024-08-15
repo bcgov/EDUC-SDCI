@@ -17,7 +17,8 @@ const {
   sortJSONBySchoolCode,
   rearrangeAndRelabelObjectProperties,
   filterByPubliclyAvailableCodes,
-  addFundingGroups
+  addFundingGroups,
+  isActiveEntity,
 } = require("../components/utils");
 const { checkToken } = require("../components/auth");
 const { schoolCache, listCache, codeCache } = require("../components/cache");
@@ -167,6 +168,7 @@ async function getSchool(req, res) {
           expiryDate: "2099-12-31T00:00:00",
         },
       ];
+
       const schoolData = response.data;
 
       const includedFields = ["label", "description"];
@@ -177,7 +179,6 @@ async function getSchool(req, res) {
         (info) => info.publiclyAvailable === true,
         includedFields
       );
-      
 
       schoolData.contacts = filterByPubliclyAvailableCodes(
         schoolData.contacts,
@@ -186,26 +187,27 @@ async function getSchool(req, res) {
           contactTypeCodes.codesList.schoolContactTypeCodes,
           "schoolContactTypeCode"
         )
-      );
+      ).filter((contact) =>
+        isActiveEntity(contact.effectiveDate, contact.expiryDate)
+      ); // Filter out inactive contacts
       schoolData.contacts = filterByExpiryDate(schoolData.contacts);
       const formattedGrades = formatGrades(schoolData.grades, schoolGrades);
       const schoolWithFormattedGrades = [{ ...schoolData, ...formattedGrades }];
-      
-      const schoolsWithFundingGroups = addFundingGroups(schoolWithFormattedGrades, fundingGroups)
+
+      const schoolsWithFundingGroups = addFundingGroups(
+        schoolWithFormattedGrades,
+        fundingGroups
+      );
       res.json(schoolsWithFundingGroups[0]);
-      
     })
     .catch((e) => {
       log.error("getSchools Error", e.response ? e.response.status : e.message);
     });
 }
-async function getAllSchoolMailing(req, res) {
-  const allSchools = await getAllSchools(req, res);
-  res.json(allSchools);
-}
+
 async function getAllSchools(req, res) {
   const { schoolCategory } = req.params;
-  const contactTypeCodes = await listCache.get("codesList");
+  //const contactTypeCodes = await listCache.get("codesList");
   let params = [];
 
   if (await !schoolCache.has("openschoollist" + schoolCategory)) {
@@ -286,7 +288,7 @@ async function getAllSchools(req, res) {
           { property: "physical_addressLine1", label: "Physical Address" },
           { property: "physical_city", label: "Physical City" },
           { property: "physical_provinceCode", label: "Physical Province" },
-          { property: "physical_postal", label: "Physical Postal Code" },    
+          { property: "physical_postal", label: "Physical Postal Code" },
           { property: "firstName", label: "Principal First Name" },
           { property: "lastName", label: "Principal Last Name" },
           { property: "facilityTypeCode", label: "Type" },
@@ -315,9 +317,18 @@ async function getAllSchools(req, res) {
           { property: "GRADE11", label: "Grade 11 Enrollment" },
           { property: "GRADE12", label: "Grade 12 Enrollment" },
           { property: "primaryK3", label: "Group Classification Primary K-3" },
-          { property: "elementary47", label: "Group Classification Elementary 4-7 EU" },
-          { property: "juniorSecondary810", label: "Group Classification Junior Secondary 8-10 SU" },
-          { property: "seniorSecondary1112", label: "Group Classification Senior Secondary 11-12" },        
+          {
+            property: "elementary47",
+            label: "Group Classification Elementary 4-7 EU",
+          },
+          {
+            property: "juniorSecondary810",
+            label: "Group Classification Junior Secondary 8-10 SU",
+          },
+          {
+            property: "seniorSecondary1112",
+            label: "Group Classification Senior Secondary 11-12",
+          },
         ];
         const mailingListpropertyOrder = [
           { property: "districtNumber", label: "District Number" },
@@ -343,8 +354,8 @@ async function getAllSchools(req, res) {
             schoolGrades
           )
         );
-        
-        openSchoolList = addFundingGroups(openSchoolListSorted, fundingGroups)
+
+        openSchoolList = addFundingGroups(openSchoolListSorted, fundingGroups);
         let openSchoolMailingList = [...openSchoolList];
 
         openSchoolList = normalizeJsonObject(
@@ -354,7 +365,7 @@ async function getAllSchools(req, res) {
           null,
           ["label", "description"]
         );
-      
+
         openSchoolList = normalizeJsonObject(
           openSchoolList,
           facilityCodes,
