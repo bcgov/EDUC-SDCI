@@ -1,4 +1,4 @@
-import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios';
+import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
 
 // Buffer concurrent requests while refresh token is being acquired
 let failedQueue: {
@@ -21,9 +21,9 @@ function processQueue(error: any, token: string | null = null): void {
 // Create new non-global axios instance and intercept strategy
 const apiAxios: AxiosInstance = axios.create();
 const intercept = apiAxios.interceptors.response.use(
-  (config: AxiosRequestConfig) => config,
+  (config: AxiosResponse) => config,
   (error: any) => {
-    const originalRequest: AxiosRequestConfig = error.config;
+    const originalRequest: AxiosResponse = error.config;
     if (error.response.status !== 401) {
       return Promise.reject(error);
     }
