@@ -94,7 +94,7 @@ async function getDistrictData(): Promise<void> {
         //Change School date for DL
         const transformedSchoolData = schools.value.map((school: School) => {
           const { contacts, addresses, ...rest } = school
-          const transformedContacts = contacts.map(({ schoolContactTypeCode, ...contactRest }) => ({
+          const transformedContacts = contacts?.map(({ schoolContactTypeCode, ...contactRest }) => ({
             schoolContactTypeCode,
             ...contactRest
           }))
@@ -106,7 +106,7 @@ async function getDistrictData(): Promise<void> {
           )
           return {
             ...rest,
-            contacts: transformedContacts.reduce((acc, contact) => ({ ...acc, ...contact }), {}),
+            schoolContact: transformedContacts?.find((contact) => contact.schoolContactTypeCode === 'PRINCIPAL'),
             physicalAddress: physicalAddress,
             mailingAddress: mailingAddress,
             grades: [],
@@ -130,11 +130,11 @@ async function getDistrictData(): Promise<void> {
             'Physical Address City': item.physicalAddress?.city,
             'Physical Address Province': item.physicalAddress?.provinceCode,
             'Physical Address Postal Code': item.physicalAddress?.postal,
-            Role: item.contacts?.jobTitle,
-            'Contact First Name': item.contacts?.firstName,
-            'Contact Last Name': item.contacts?.lastName,
-            'Contact Phone Extension': item.contacts?.phoneExtension,
-            'Contact Phone Number': item.contacts?.phoneNumber,
+            Role: item.schoolContact?.jobTitle,
+            'Contact First Name': item.schoolContact?.firstName,
+            'Contact Last Name': item.schoolContact?.lastName,
+            'Contact Phone Extension': item.schoolContact?.phoneExtension,
+            'Contact Phone Number': item.schoolContact?.phoneNumber,
             'Facility Type Code': appStore.getFacilityCodeLabel(item.facilityTypeCode),
             'School Category Code': appStore.getCategoryCodeLabel(item.schoolCategoryCode),
             'Phone Number': item.phoneNumber,
@@ -147,6 +147,7 @@ async function getDistrictData(): Promise<void> {
             'Group Classification Senior Secondary 11-12': item.seniorSecondary1112
           }
         })
+        console.log(filteredSchools)
         filteredContacts.value = contacts.value.map((item: any) => {
           return {
             'District Number': response.data.districtData?.districtNumber,
