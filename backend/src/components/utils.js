@@ -402,9 +402,19 @@ function createSchoolCache(schoolData, schoolGrades) {
     });
 
     // Extract and format principal contact information if it exists
-    const principalContact = school.contacts?.find(
-      (contact) => contact.schoolContactTypeCode === "PRINCIPAL"
-    );
+    const currentDate = new Date();
+
+    const principalContact = school.contacts?.find((contact) => {
+      const effectiveDate = new Date(contact.effectiveDate);
+      const expiryDate = contact.expiryDate ? new Date(contact.expiryDate) : null;
+    
+      return (
+        contact.schoolContactTypeCode === "PRINCIPAL" &&
+        effectiveDate <= currentDate &&
+        (!expiryDate || expiryDate > currentDate)
+      );
+    });
+    
     if (principalContact) {
       school.firstName = principalContact.firstName;
       school.lastName = principalContact.lastName;
