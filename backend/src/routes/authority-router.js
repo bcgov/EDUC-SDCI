@@ -48,7 +48,7 @@ async function getAllAuthorityMailing(req, res) {
   const encodedParams = encodeURIComponent(jsonString);
   const url = await `${config.get(
     "server:instituteAPIURL"
-  )}/institute/authority/paginated?pageSize=1000&sort[authorityNumber]=ASC&searchCriteriaList=${encodedParams}`;
+  )}/api/v1/institute/authority/paginated?pageSize=1000&sort[authorityNumber]=ASC&searchCriteriaList=${encodedParams}`;
   try {
     const authorityResponse = await axios.get(url, {
       headers: { Authorization: `Bearer ${req.accessToken}` },
@@ -143,10 +143,10 @@ async function getAuthority(req, res) {
 
   const url = `${config.get(
     "server:instituteAPIURL"
-  )}/institute/authority/${id}`;
+  )}/api/v1/institute/authority/${id}`;
   const authoritySchoolsUrl = `${config.get(
     "server:instituteAPIURL"
-  )}/institute/school/paginated?pageNumber=0&pageSize=1000&searchCriteriaList=${encodedParams}`;
+  )}/api/v1/institute/school/paginated?pageNumber=0&pageSize=1000&searchCriteriaList=${encodedParams}`;
 
   try {
     const authorityDataResponse = await axios.get(url, {

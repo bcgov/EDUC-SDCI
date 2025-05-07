@@ -107,7 +107,7 @@ async function createCache(req, res) {
   if (await !listCache.has("categoryCodes")) {
     try {
       const categoryCodesResponse = await axios.get(
-        `${config.get("server:instituteAPIURL")}/institute/category-codes`,
+        `${config.get("server:instituteAPIURL")}/api/v1/institute/category-codes`,
         {
           headers: { Authorization: `Bearer ${req.accessToken}` },
         }
@@ -131,7 +131,7 @@ async function createCache(req, res) {
     log.info("fetched category codes - ", req.url);
   }
   if (await !codeCache.has("gradelist")) {
-    const url = `${config.get("server:instituteAPIURL")}/institute/grade-codes`; // Update the URL according to your API endpoint
+    const url = `${config.get("server:instituteAPIURL")}/api/v1/institute/grade-codes`; // Update the URL according to your API endpoint
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
@@ -155,7 +155,7 @@ async function createCache(req, res) {
   if (!listCache.has("facilityCodes")) {
     try {
       const facilityCodesResponse = await axios.get(
-        `${config.get("server:instituteAPIURL")}/institute/facility-codes`,
+        `${config.get("server:instituteAPIURL")}/api/v1/institute/facility-codes`,
         {
           headers: { Authorization: `Bearer ${req.accessToken}` },
         }
@@ -173,7 +173,7 @@ async function createCache(req, res) {
       const districtsResponse = await axios.get(
         `${config.get(
           "server:instituteAPIURL"
-        )}/institute/district/paginated?pageSize=200`,
+        )}/api/v1/institute/district/paginated?pageSize=200`,
         {
           headers: { Authorization: `Bearer ${req.accessToken}` },
         }
@@ -232,7 +232,7 @@ async function createCache(req, res) {
       const authorityContactTypeCodesResponse = await axios.get(
         `${config.get(
           "server:instituteAPIURL"
-        )}/institute/authority-contact-type-codes`,
+        )}/api/v1/institute/authority-contact-type-codes`,
         {
           headers: { Authorization: `Bearer ${req.accessToken}` },
         }
@@ -241,7 +241,7 @@ async function createCache(req, res) {
       const districtContactTypeCodesResponse = await axios.get(
         `${config.get(
           "server:instituteAPIURL"
-        )}/institute/district-contact-type-codes`,
+        )}/api/v1/institute/district-contact-type-codes`,
         {
           headers: { Authorization: `Bearer ${req.accessToken}` },
         }
@@ -250,7 +250,7 @@ async function createCache(req, res) {
       const schoolContactTypeCodesResponse = await axios.get(
         `${config.get(
           "server:instituteAPIURL"
-        )}/institute/school-contact-type-codes`,
+        )}/api/v1/institute/school-contact-type-codes`,
         {
           headers: { Authorization: `Bearer ${req.accessToken}` },
         }
@@ -290,7 +290,7 @@ async function getContactTypeCodes(req, res) {
       const authorityContactTypeCodesResponse = await axios.get(
         `${config.get(
           "server:instituteAPIURL"
-        )}/institute/authority-contact-type-codes`,
+        )}/api/v1/institute/authority-contact-type-codes`,
         {
           headers: { Authorization: `Bearer ${req.accessToken}` },
         }
@@ -299,7 +299,7 @@ async function getContactTypeCodes(req, res) {
       const districtContactTypeCodesResponse = await axios.get(
         `${config.get(
           "server:instituteAPIURL"
-        )}/institute/district-contact-type-codes`,
+        )}/api/v1/institute/district-contact-type-codes`,
         {
           headers: { Authorization: `Bearer ${req.accessToken}` },
         }
@@ -308,7 +308,7 @@ async function getContactTypeCodes(req, res) {
       const schoolContactTypeCodesResponse = await axios.get(
         `${config.get(
           "server:instituteAPIURL"
-        )}/institute/school-contact-type-codes`,
+        )}/api/v1/institute/school-contact-type-codes`,
         {
           headers: { Authorization: `Bearer ${req.accessToken}` },
         }
@@ -389,7 +389,7 @@ async function getOffshoreSchoolList(req, res) {
   if (await !listCache.has("offshoreschoollist")) {
     const url = `${config.get(
       "server:instituteAPIURL"
-    )}/institute/school/paginated?pageSize=1000&pageNumber=0&searchCriteriaList=${encodedParams}`;
+    )}/api/v1/institute/school/paginated?pageSize=1000&pageNumber=0&searchCriteriaList=${encodedParams}`;
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
@@ -452,7 +452,7 @@ async function getAuthorityList(req, res) {
 
     const url = `${config.get(
       "server:instituteAPIURL"
-    )}/institute/authority/paginated?pageSize=1000&searchCriteriaList=${encodedParams}`;
+    )}/api/v1/institute/authority/paginated?pageSize=1000&searchCriteriaList=${encodedParams}`;
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
@@ -480,7 +480,7 @@ async function getCategoryCodes(req, res) {
   if (!listCache.has("categoryCodes")) {
     try {
       const categoryCodesResponse = await axios.get(
-        `${config.get("server:instituteAPIURL")}/institute/category-codes`,
+        `${config.get("server:instituteAPIURL")}/api/v1/institute/category-codes`,
         {
           headers: { Authorization: `Bearer ${req.accessToken}` },
         }
@@ -505,7 +505,7 @@ async function getCategoryCodes(req, res) {
 }
 async function getSchoolList(req, res) {
   if (await !listCache.has("schoollist")) {
-    const url = `${config.get("server:instituteAPIURL")}/institute/school`; // Update the URL according to your API endpoint
+    const url = `${config.get("server:instituteAPIURL")}/api/v1/institute/school`; // Update the URL according to your API endpoint
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
@@ -545,7 +545,7 @@ async function getSchoolList(req, res) {
 }
 async function getDistrictList(req, res) {
   if (await !listCache.has("districtlist")) {
-    const url = `${config.get("server:instituteAPIURL")}/institute/district`; // Update the URL according to your API endpoint
+    const url = `${config.get("server:instituteAPIURL")}/api/v1/institute/district`; // Update the URL according to your API endpoint
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {
@@ -581,7 +581,7 @@ async function getDistrictList(req, res) {
   }
 }
 async function getInstituteAPI(req, res) {
-  const url = `${config.get("server:instituteAPIURL")}/institute` + req.url;
+  const url = `${config.get("server:instituteAPIURL")}/api/v1/institute` + req.url;
 
   axios
     .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
@@ -595,7 +595,7 @@ async function getInstituteAPI(req, res) {
 }
 
 async function getDistrictContactsAPI(req, res) {
-  const url = `${config.get("server:instituteAPIURL")}/institute` + req.url;
+  const url = `${config.get("server:instituteAPIURL")}/api/v1/institute` + req.url;
 
   const districtList = await listCache.get("districtlist");
   const nonBCDistrictList = await listCache.get("nonbcdistrictlist");
@@ -625,7 +625,7 @@ async function getDistrictContactsAPI(req, res) {
 
 async function getGradeCodes(req, res) {
   if (await !codeCache.has("gradelist")) {
-    const url = `${config.get("server:instituteAPIURL")}/institute/grade-codes`; // Update the URL according to your API endpoint
+    const url = `${config.get("server:instituteAPIURL")}/api/v1/institute/grade-codes`; // Update the URL according to your API endpoint
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {

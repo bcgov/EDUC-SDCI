@@ -17,6 +17,10 @@ const schoolRouter = require("./routes/school-router");
 const searchRouter = require("./routes/search-router");
 const app = express();
 const publicPath = path.join(__dirname, "public");
+const messagePubSub = require('./messaging/message-pub-sub');
+messagePubSub.init().then(() => {
+  require('./messaging/handlers/institute-update-handler').subscribe();
+}).catch((e) => log.error(e));
 
 async function writeFileAsync(filePath, data, encoding) {
   return new Promise((resolve, reject) => {

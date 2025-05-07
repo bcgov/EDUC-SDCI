@@ -34,7 +34,7 @@ async function getSchool(req, res) {
   const fundingGroups = await listCache.get("fundingGroups");
 
   const url =
-    `${config.get("server:instituteAPIURL")}/institute/school/` + schoolId;
+    `${config.get("server:instituteAPIURL")}/api/v1/institute/school/` + schoolId;
   axios
     .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
     .then((response) => {
@@ -273,7 +273,7 @@ async function getAllSchools(req, res) {
     const facilityCodes = await listCache.get("facilityCodes");
     const url = `${config.get(
       "server:instituteAPIURL"
-    )}/institute/school/paginated?pageSize=4000&searchCriteriaList=${encodedParams}`;
+    )}/api/v1/institute/school/paginated?pageSize=4000&searchCriteriaList=${encodedParams}`;
     axios
       .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
       .then((response) => {

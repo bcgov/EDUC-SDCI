@@ -34,7 +34,7 @@ async function getOffshore(req, res) {
   const jsonString = JSON.stringify(params)
   const encodedParams = encodeURIComponent(jsonString)
   
-  const url = `${config.get('server:instituteAPIURL')}/institute/school/paginated?pageNumber=0&pageSize=100&searchCriteriaList=${encodedParams}`;
+  const url = `${config.get('server:instituteAPIURL')}/api/v1/institute/school/paginated?pageNumber=0&pageSize=100&searchCriteriaList=${encodedParams}`;
 
   // try {
     const schoolResponse = await axios.get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } });

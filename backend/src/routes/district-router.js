@@ -83,7 +83,7 @@ async function getDistrictCodes(req) {
   if (!listCache.has("districtCodesList")) {
     const url = `${config.get(
       "server:instituteAPIURL"
-    )}/institute/district-contact-type-codes`; // Update the URL according to your API endpoint
+    )}/api/v1/institute/district-contact-type-codes`; // Update the URL according to your API endpoint
     try {
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${req.accessToken}` },
@@ -145,7 +145,7 @@ async function getAllDistrictContacts(req, res) {
   const encodedParams = encodeURIComponent(jsonString);
   const url = await `${config.get(
     "server:instituteAPIURL"
-  )}/institute/district/contact/paginated?pageSize=4000&searchCriteriaList=${encodedParams}`;
+  )}/api/v1/institute/district/contact/paginated?pageSize=4000&searchCriteriaList=${encodedParams}`;
   try {
     const districtContactResponse = await axios.get(url, {
       headers: { Authorization: `Bearer ${req.accessToken}` },
@@ -289,7 +289,7 @@ async function getAllDistrictMailing(req, res) {
   const encodedParams = encodeURIComponent(jsonString);
   const url = await `${config.get(
     "server:instituteAPIURL"
-  )}/institute/district/paginated?pageSize=100&sort["districtNumber"]=ASC&searchCriteriaList=${encodedParams}`;
+  )}/api/v1/institute/district/paginated?pageSize=100&sort["districtNumber"]=ASC&searchCriteriaList=${encodedParams}`;
 
   try {
     const districtContactResponse = await axios.get(url, {
@@ -403,10 +403,10 @@ async function getDistrict(req, res) {
 
   const url = `${config.get(
     "server:instituteAPIURL"
-  )}/institute/district/${id}`;
+  )}/api/v1/institute/district/${id}`;
   const districtSchoolsUrl = `${config.get(
     "server:instituteAPIURL"
-  )}/institute/school/paginated?pageNumber=0&pageSize=500&searchCriteriaList=${encodedParams}`;
+  )}/api/v1/institute/school/paginated?pageNumber=0&pageSize=500&searchCriteriaList=${encodedParams}`;
 
   try {
     const districtDataResponse = await axios.get(url, {

@@ -13,7 +13,7 @@ const {addFundingGroups, appendMailingAddressDetailsAndRemoveAddresses, rearrang
 router.get("/*", checkToken, getSearchResults)
 async function getSearchResults(req, res) {
   const fundingGroups = await listCache.get("fundingGroups")
-  const url = `${config.get("server:instituteAPIURL")}`+ req.url;
+  const url = `${config.get("server:instituteAPIURL")}/api/v1`+ req.url;
   axios
     .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
     .then((response) => {
