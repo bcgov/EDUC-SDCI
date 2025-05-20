@@ -4,7 +4,7 @@ import { ref, reactive, onMounted, computed, toValue } from 'vue'
 import router from '@/router'
 import { useAppStore } from '@/stores/app'
 import { useRoute } from 'vue-router'
-import { formatPhoneNumber } from '@/utils/common'
+import { formatPhoneNumber, isActiveDateString } from '@/utils/common'
 import jsonexport from 'jsonexport/dist'
 import type { Authority, School, Address } from '@/types/types.d.ts'
 import { useSanitizeURL } from '@/composables/string'
@@ -114,10 +114,12 @@ onMounted(async () => {
     //Change Auth School date for DL
     const transformedSchoolData = schools.value.map((school: School) => {
       const { contacts, addresses, ...rest } = school
-      const transformedContacts = contacts.map(({ schoolContactTypeCode, ...contactRest }) => ({
-        schoolContactTypeCode,
-        ...contactRest
-      }))
+      const transformedContacts = contacts
+        ?.filter((contact) => isActiveDateString(contact.effectiveDate, contact.expiryDate))
+        ?.map(({ schoolContactTypeCode, ...contactRest }) => ({
+          schoolContactTypeCode,
+          ...contactRest
+        }))
       const physicalAddress = addresses.find(
         (address: Address) => address?.addressTypeCode === 'PHYSICAL'
       )
@@ -126,7 +128,9 @@ onMounted(async () => {
       )
       return {
         ...rest,
-        schoolContact: transformedContacts?.find((contact) => contact.schoolContactTypeCode === 'PRINCIPAL'),
+        schoolContact: transformedContacts?.find(
+          (contact) => contact.schoolContactTypeCode === 'PRINCIPAL'
+        ),
         physicalAddress: physicalAddress,
         mailingAddress: mailingAddress,
         grades: [],

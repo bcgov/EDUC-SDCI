@@ -4,7 +4,7 @@ import { ref, reactive, onMounted, computed, toValue } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { useRoute } from 'vue-router'
 import router from '@/router'
-import { formatPhoneNumber, isValidDistrictNumber } from '@/utils/common'
+import { formatPhoneNumber, isValidDistrictNumber, isActiveDateString } from '@/utils/common'
 import type { District, School, Grade, Address, Contact } from '@/types/types.d.ts'
 import jsonexport from 'jsonexport/dist'
 import { useSanitizeURL } from '@/composables/string'
@@ -94,10 +94,12 @@ async function getDistrictData(): Promise<void> {
         //Change School date for DL
         const transformedSchoolData = schools.value.map((school: School) => {
           const { contacts, addresses, ...rest } = school
-          const transformedContacts = contacts?.map(({ schoolContactTypeCode, ...contactRest }) => ({
-            schoolContactTypeCode,
-            ...contactRest
-          }))
+          const transformedContacts = contacts
+            ?.filter((contact) => isActiveDateString(contact.effectiveDate, contact.expiryDate))
+            ?.map(({ schoolContactTypeCode, ...contactRest }) => ({
+              schoolContactTypeCode,
+              ...contactRest
+            }))
           const physicalAddress = addresses.find(
             (address: Address) => address?.addressTypeCode === 'PHYSICAL'
           )
@@ -106,7 +108,9 @@ async function getDistrictData(): Promise<void> {
           )
           return {
             ...rest,
-            schoolContact: transformedContacts?.find((contact) => contact.schoolContactTypeCode === 'PRINCIPAL'),
+            schoolContact: transformedContacts?.find(
+              (contact) => contact.schoolContactTypeCode === 'PRINCIPAL'
+            ),
             physicalAddress: physicalAddress,
             mailingAddress: mailingAddress,
             grades: [],
