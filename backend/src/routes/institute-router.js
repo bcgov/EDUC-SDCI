@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const log = require("../components/logger");
 const config = require("../config/index");
+const { getAllSchoolsList} = require('../components/school');
+const cacheService = require('../components/cache-service')
 
 const axios = require("axios");
 const { checkToken } = require("../components/auth");
@@ -79,6 +81,16 @@ router.get("/district/list", checkToken, getDistrictList);
 router.get("/district/contact/*", checkToken, getDistrictContactsAPI);
 router.get("/create-cache", checkToken, createCache);
 router.get("/category-codes", checkToken, getCategoryCodes);
+router.get("/facility-codes", cacheService.getFacilityCodes);
+router.get("/category-codes/new", cacheService.getCategoryCodes);
+router.get("/active-schools", cacheService.getAllActiveSchoolsJSON);
+router.get("/school/:schoolId", cacheService.getSchoolBySchoolID);
+router.get("/district/:districtId", cacheService.getDistrictByDistrictID);
+router.get("/active-districts", cacheService.getActiveDistricts);
+router.get("/allschoolscontacts", cacheService.createSchoolFiles);
+
+
+
 
 router.get("/*", checkToken, getInstituteAPI);
 
@@ -92,6 +104,7 @@ async function createCache(req, res) {
         }
       );
       listCache.set("fundingGroups", fundingGroupsResponse.data);
+
       res.json(fundingGroupsResponse.data);
       log.info("cached funding groups - ", req.url);
     } catch (error) {

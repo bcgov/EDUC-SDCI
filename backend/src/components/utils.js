@@ -179,7 +179,7 @@ async function getCommonServiceData(url, params) {
 
 async function getData(token, url, correlationID) {
   try {
-    console.log("GETDATA")
+    console.log(url)
     const getDataConfig = {
       headers: {
         Authorization: `Bearer ${token}`,

@@ -16,44 +16,53 @@ const port = config.get('server:port');
 const server = http.createServer(app);
 
 
-//Create Cache for schools
 const cacheService = require('./components/cache-service');
-cacheService.loadAllSchoolsToMap().then(() => {
-  log.info('Loaded school data to memory');
-}).catch((e) => {
-  log.error('Error loading schoolsMap during boot .', e);
-});
-//Create Cache for districts
-cacheService.loadAllDistrictsToMap().then(() => {
-  log.info('Loaded district data to memory');
-}).catch((e) => {
-  log.error('Error loading districtssMap during boot .', e);
-});
-//Create Cache for address type codes.
-cacheService.loadAddressTypeCodes().then(() => {
-  log.info('Loaded address type codes to memory');
-}).catch((e) => {
-  log.error('Error loading address type codes during boot .', e);
-});
 
-//Create Cache for category codes.
-cacheService.loadSchoolCategoryCodes().then(() => {
-  log.info('Loaded category codes to memory');
-}).catch((e) => {
-  log.error('Error loading category codes during boot .', e);
-});
-//Create Cache for Grade Codes.
-cacheService.loadGradeCodes().then(() => {
-  log.info('Loaded grade codes to memory');
-}).catch((e) => {
-  log.error('Error loading grade codes during boot .', e);
-});
-//Create Cache for facility codes.
-cacheService.loadFacilityCodes().then(() => {
-  log.info('Loaded facility codes to memory');
-}).catch((e) => {
-  log.error('Error loading facility codes during boot .', e);
-});
+async function bootstrapCache() {
+  try {
+    // Load district data
+    await cacheService.loadAllDistrictsToMap();
+    log.info('Loaded district data to memory');
+    // Load funding codes
+    await cacheService.loadFundingCodes();
+    log.info('Loaded grade codes to memory');
+    // Load grade codes
+    await cacheService.loadGradeCodes();
+    log.info('Loaded grade codes to memory');
+    
+    // Load school data
+    await cacheService.loadAllSchoolsToMap();
+    log.info('Loaded school data to memory');
+
+    // Add schools to districts
+    cacheService.addSchoolsToDistricts();
+
+    // Load address type codes
+    await cacheService.loadAddressTypeCodes();
+    log.info('Loaded address type codes to memory');
+
+    // Load school category codes
+    await cacheService.loadSchoolCategoryCodes();
+    log.info('Loaded category codes to memory');
+
+
+    // Load facility codes
+    await cacheService.loadFacilityCodes();
+    log.info('Loaded facility codes to memory');
+
+    //Create Files for download
+    await cacheService.createSchoolFiles();
+    log.info('Created school files');
+    await cacheService.createDistrictFiles();
+    log.info('Created district files');
+    
+  } catch (error) {
+    log.error('Error during cache bootstrapping:', error);
+  }
+}
+
+// Start the cache initialization
+bootstrapCache();
 
 /**
  * Listen on provided port, on all network interfaces.

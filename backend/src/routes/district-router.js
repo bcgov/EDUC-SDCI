@@ -420,6 +420,7 @@ async function getDistrict(req, res) {
     const schoolCategoryCodes = await listCache.get("categoryCodes");
     const facilityCodes = await listCache.get("facilityCodes");
     const fundingGroups = await listCache.get("fundingGroups");
+  
     const districtContactCodeTypes = await listCache.get("codesList");
     const nonPublicContactTypeCodes = await getNonPublicContactTypeCodes(
       contactTypeCodes
