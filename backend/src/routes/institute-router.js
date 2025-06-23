@@ -610,7 +610,6 @@ async function getDistrictList(req, res) {
   }
 }
 async function getInstituteAPI(req, res) {
-  console.log("HIT getInstituteAPI", req.url);
   const url = `${config.get("server:instituteAPIURL")}/institute` + req.url;
 
   axios

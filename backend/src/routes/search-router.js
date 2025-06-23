@@ -26,12 +26,10 @@ async function getSearchResults(req, res) {
   )}/institute/school/paginated?pageSize=${req.query?.pageSize}&pageNumber=${
     req.query?.pageNumber
   }&searchCriteriaList=${encodedSearchCriteriaList}`;
-  console.log(url);
 
   axios
     .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
     .then((response) => {
-      console.log(response);
       const results = response.data.content;
       const resultsWithFundingGroups = addFundingGroups(results, fundingGroups);
       response.data.content = resultsWithFundingGroups;

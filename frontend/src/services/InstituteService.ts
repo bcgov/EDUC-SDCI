@@ -50,7 +50,6 @@ export default {
     const pageNumber = req.pageNumber || '' // Set a default value if not provided
     const sortOrder = req.sort && req.sort.order ? req.sort.order.toUpperCase() : ''
     const sortField = req.sort && req.sort.key ? req.sort.key : ''
-    //let url = `/api/v1/search/institute/school/paginated?pageSize=${pageSize}&pageNumber=${pageNumber}&searchCriteriaList=${searchCriteriaList}`;
     let url = `/api/v1/search/schools/paginated?pageSize=${pageSize}&pageNumber=${pageNumber}&searchCriteriaList=${searchCriteriaList}`
     if (sortOrder && sortField) {
       url += `&sort[${sortField}]=${sortOrder}`
