@@ -79,8 +79,8 @@ router.get("/district/list", checkToken, getDistrictList);
 router.get("/district/contact/*", checkToken, getDistrictContactsAPI);
 router.get("/create-cache", checkToken, createCache);
 router.get("/category-codes", checkToken, getCategoryCodes);
-
-router.get("/*", checkToken, getInstituteAPI);
+router.get("/facility-codes", checkToken, getFacilityCodes);
+router.get("/address-type-codes", checkToken, getAddressTypeCodes);
 
 async function createCache(req, res) {
   if (await !listCache.has("fundingGroups")) {
@@ -503,6 +503,35 @@ async function getCategoryCodes(req, res) {
     res.json(categoryCodes);
   }
 }
+
+async function getFacilityCodes(req, res) {
+  try {
+    const facilityCodesResponse = await axios.get(
+      `${config.get("server:instituteAPIURL")}/institute/facility-codes`,
+      { headers: { Authorization: `Bearer ${req.accessToken}` } }
+    );
+    res.json(facilityCodesResponse.data);
+  } catch (error) {
+    const statusCode = error.response ? error.response.status : 500;
+    log.error("Facility Code GET Error", statusCode, error.message);
+    res.status(statusCode).send(error.message);
+  }
+}
+
+async function getAddressTypeCodes(req, res) {
+  try {
+    const facilityCodesResponse = await axios.get(
+      `${config.get("server:instituteAPIURL")}/institute/address-type-codes`,
+      { headers: { Authorization: `Bearer ${req.accessToken}` } }
+    );
+    res.json(facilityCodesResponse.data);
+  } catch (error) {
+    const statusCode = error.response ? error.response.status : 500;
+    log.error("Facility Code GET Error", statusCode, error.message);
+    res.status(statusCode).send(error.message);
+  }
+}
+
 async function getSchoolList(req, res) {
   if (await !listCache.has("schoollist")) {
     const url = `${config.get("server:instituteAPIURL")}/institute/school`; // Update the URL according to your API endpoint
@@ -581,6 +610,7 @@ async function getDistrictList(req, res) {
   }
 }
 async function getInstituteAPI(req, res) {
+  console.log("HIT getInstituteAPI", req.url);
   const url = `${config.get("server:instituteAPIURL")}/institute` + req.url;
 
   axios

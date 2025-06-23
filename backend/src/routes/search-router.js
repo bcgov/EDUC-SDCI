@@ -8,24 +8,38 @@ const fs = require("fs");
 const path = require("path");
 const { checkToken } = require("../components/auth");
 const { listCache } = require("../components/cache");
-const {addFundingGroups, appendMailingAddressDetailsAndRemoveAddresses, rearrangeAndRelabelObjectProperties, sortByProperty} = require("../components/utils.js")
+const {
+  addFundingGroups,
+  appendMailingAddressDetailsAndRemoveAddresses,
+  rearrangeAndRelabelObjectProperties,
+  sortByProperty,
+} = require("../components/utils.js");
 //Batch Routes
-router.get("/*", checkToken, getSearchResults)
+router.get("/schools/paginated", checkToken, getSearchResults);
 async function getSearchResults(req, res) {
-  const fundingGroups = await listCache.get("fundingGroups")
-  const url = `${config.get("server:instituteAPIURL")}`+ req.url;
+  const fundingGroups = await listCache.get("fundingGroups");
+  const encodedSearchCriteriaList = encodeURIComponent(
+    req.query?.searchCriteriaList || ""
+  );
+  const url = `${config.get(
+    "server:instituteAPIURL"
+  )}/institute/school/paginated?pageSize=${req.query?.pageSize}&pageNumber=${
+    req.query?.pageNumber
+  }&searchCriteriaList=${encodedSearchCriteriaList}`;
+  console.log(url);
+
   axios
     .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
     .then((response) => {
+      console.log(response);
       const results = response.data.content;
       const resultsWithFundingGroups = addFundingGroups(results, fundingGroups);
-      response.data.content = resultsWithFundingGroups; 
+      response.data.content = resultsWithFundingGroups;
       res.json(response.data);
     })
     .catch((e) => {
       log.error("getData Error", e.response ? e.response.status : e.message);
     });
 }
-
 
 module.exports = router;
