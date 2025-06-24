@@ -37,7 +37,7 @@ async function getSchoolSearchResults(req, res) {
       const resultsWithFundingGroups = addFundingGroups(results, fundingGroups);
 
       // Remove the 'contacts' array from each object
-      const cleanedResults = resultsWithFundingGroups.map(({ contacts, ...rest }) => rest);
+      const cleanedResults = resultsWithFundingGroups.map(({ notes, contacts, ...rest }) => rest);
 
       response.data.content = cleanedResults;
 
