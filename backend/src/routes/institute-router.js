@@ -76,7 +76,6 @@ router.get("/offshore-school/list", checkToken, getOffshoreSchoolList);
 router.get("/school/list", checkToken, getSchoolList);
 router.get("/authority/list", checkToken, getAuthorityList);
 router.get("/district/list", checkToken, getDistrictList);
-router.get("/district/contact/*", checkToken, getDistrictContactsAPI);
 router.get("/create-cache", checkToken, createCache);
 router.get("/category-codes", checkToken, getCategoryCodes);
 router.get("/facility-codes", checkToken, getFacilityCodes);
@@ -608,48 +607,6 @@ async function getDistrictList(req, res) {
     const districtList = await listCache.get("districtlist");
     res.json(districtList);
   }
-}
-async function getInstituteAPI(req, res) {
-  const url = `${config.get("server:instituteAPIURL")}/institute` + req.url;
-
-  axios
-    .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
-    .then((response) => {
-      res.json(response.data);
-      log.info(req.url);
-    })
-    .catch((e) => {
-      log.error("getData Error", e.response ? e.response.status : e.message);
-    });
-}
-
-async function getDistrictContactsAPI(req, res) {
-  const url = `${config.get("server:instituteAPIURL")}/institute` + req.url;
-
-  const districtList = await listCache.get("districtlist");
-  const nonBCDistrictList = await listCache.get("nonbcdistrictlist");
-  axios
-    .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
-    .then((response) => {
-      if (req.url.includes("/district/contact/paginated")) {
-        const jsonData = addDistrictLabels(response.data, districtList);
-
-        jsonData.content = jsonData.content.filter((contact) => {
-          // Check if districtId is not undefined, empty, or null
-          return (
-            contact.districtNumber !== undefined &&
-            contact.districtNumber !== "" &&
-            contact.districtNumber !== null
-          );
-        });
-        res.json(jsonData);
-      } else {
-        res.json(response.data);
-      }
-    })
-    .catch((e) => {
-      log.error("getData Error", e.response ? e.response.status : e.message);
-    });
 }
 
 async function getGradeCodes(req, res) {
