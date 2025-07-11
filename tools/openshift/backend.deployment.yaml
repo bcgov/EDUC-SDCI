@@ -37,8 +37,8 @@ objects:
                 - name: tls-certs
                   mountPath: "/etc/tls-certs"
                   readOnly: true
-                - name: config-env
-                  mountPath: "/srv/js/config"
+                - name: log-storage
+                  mountPath: /logs
               livenessProbe:
                 initialDelaySeconds: 20
                 failureThreshold: 5
