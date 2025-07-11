@@ -29,52 +29,52 @@ objects:
           creationTimestamp:
           labels:
             app: "${APP_NAME}-${BRANCH}"
-          spec:
-            containers:
-              - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-frontend-static:${TAG}
-                imagePullPolicy: Always
-                volumeMounts:
-                  - name: tls-certs
-                    mountPath: "/etc/tls-certs"
-                    readOnly: true
-                  - name: config-env
-                    mountPath: "/srv/js/config"
-                livenessProbe:
-                  failureThreshold: 3
-                  httpGet:
-                    path: "/"
-                    port: 2015
-                    scheme: HTTP
-                  periodSeconds: 10
-                  successThreshold: 1
-                  timeoutSeconds: 1
-                name: "${APP_NAME}-frontend-${BRANCH}"
-                ports:
-                  - containerPort: 2015
-                    protocol: TCP
-                readinessProbe:
-                  failureThreshold: 3
-                  httpGet:
-                    path: "/"
-                    port: 2015
-                    scheme: HTTP
-                  periodSeconds: 10
-                  successThreshold: 1
-                  timeoutSeconds: 1
-                resources:
-                  requests:
-                    cpu: "${MIN_CPU}"
-                    memory: "${MIN_MEM}"
-                  limits:
-                    cpu: "${MAX_CPU}"
-                    memory: "${MAX_MEM}"
-            volumes:
-              - name: tls-certs
-                secret:
-                  secretName: sdci-frontend-cert
-              - name: config-env
-                configMap:
-                  name: sdci-frontend-config-map
+        spec:
+          containers:
+            - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-frontend-static:${TAG}
+              imagePullPolicy: Always
+              volumeMounts:
+                - name: tls-certs
+                  mountPath: "/etc/tls-certs"
+                  readOnly: true
+                - name: config-env
+                  mountPath: "/srv/js/config"
+              livenessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: "/"
+                  port: 2015
+                  scheme: HTTP
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 1
+              name: "${APP_NAME}-frontend-${BRANCH}"
+              ports:
+                - containerPort: 2015
+                  protocol: TCP
+              readinessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: "/"
+                  port: 2015
+                  scheme: HTTP
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 1
+              resources:
+                requests:
+                  cpu: "${MIN_CPU}"
+                  memory: "${MIN_MEM}"
+                limits:
+                  cpu: "${MAX_CPU}"
+                  memory: "${MAX_MEM}"
+          volumes:
+            - name: tls-certs
+              secret:
+                secretName: sdci-frontend-cert
+            - name: config-env
+              configMap:
+                name: sdci-frontend-config-map
       test: false
       triggers:
         - type: ConfigChange
