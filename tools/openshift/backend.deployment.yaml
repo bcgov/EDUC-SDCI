@@ -31,7 +31,7 @@ objects:
             app: "${APP_NAME}-${BRANCH}"
         spec:
           containers:
-            - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-backend-${BRANCH}:${TAG}
+            - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-backend:${TAG}
               imagePullPolicy: Always
               volumeMounts:
                 - name: tls-certs
