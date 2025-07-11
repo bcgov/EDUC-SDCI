@@ -141,7 +141,7 @@ parameters:
     description: Application repository name
     required: true
   - name: BRANCH
-    description: Job identifier (i.e. 'backend' OR 'frontend')
+    description: Job identifier (i.e. 'pr-5' OR 'master')
     required: true
   - name: NAMESPACE
     description: Target namespace reference (i.e. 'k8vopl-dev')
@@ -149,10 +149,9 @@ parameters:
   - name: APP_NAME
     description: Application name
     required: true
-  - name: CONTAINER_PORT
-    description: The port on which the application will be accessible
-    value: "8080"
-    required: false
+  - name: HOST_ROUTE
+    description: The host the route will use to expose service outside cluster
+    required: true
   - name: TAG
     description: The identifying tag for this specific deployment
     required: true
@@ -173,4 +172,13 @@ parameters:
     required: true
   - name: MAX_MEM
     description: The maximum amount of memory
+    required: true
+  - name: CA_CERT
+    description: The CA Certificate
+    required: true
+  - name: CERTIFICATE
+    description: The Certificate
+    required: true
+  - name: PRIVATE_KEY
+    description: The private key
     required: true
