@@ -10,13 +10,13 @@ objects:
     kind: Deployment
     metadata:
       labels:
-        app: "${APP_NAME}-${BRANCH}"
-      name: "${APP_NAME}-${BRANCH}"
+        app: "${APP_NAME}-frontend-${BRANCH}"
+      name: "${APP_NAME}-frontend-${BRANCH}"
     spec:
       replicas: ${{MIN_REPLICAS}}
       selector:
         matchLabels:
-          app: "${APP_NAME}-${BRANCH}"
+          app: "${APP_NAME}-frontend-${BRANCH}"
       strategy:
         type: RollingUpdate
         rollingUpdate:
@@ -28,7 +28,7 @@ objects:
             openshift.io/generated-by: OpenShiftNewApp
           creationTimestamp:
           labels:
-            app: "${APP_NAME}-${BRANCH}"
+            app: "${APP_NAME}-frontend-${BRANCH}"
         spec:
           containers:
             - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-frontend-static:${TAG}
@@ -100,7 +100,7 @@ objects:
       annotations:
         openshift.io/host.generated: "true"
       labels:
-        app: "${APP_NAME}-${BRANCH}"
+        app: "${APP_NAME}-frontend-${BRANCH}"
       name: "${APP_NAME}-frontend-${BRANCH}"
     spec:
       host: "${HOST_ROUTE}"
