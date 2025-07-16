@@ -13,7 +13,7 @@ objects:
         app: "${APP_NAME}-backend-${BRANCH}"
       name: "${APP_NAME}-backend-${BRANCH}"
     spec:
-      replicas: ${MIN_REPLICAS}
+      replicas: ${{MIN_REPLICAS}}
       selector:
         matchLabels:
           app: "${APP_NAME}-backend-${BRANCH}"
@@ -26,7 +26,7 @@ objects:
         metadata:
           annotations:
             openshift.io/generated-by: OpenShiftNewApp
-
+          creationTimestamp:
           labels:
             app: "${APP_NAME}-backend-${BRANCH}"
         spec:
@@ -132,12 +132,12 @@ objects:
       name: "${APP_NAME}-backend-${BRANCH}-cpu-autoscaler"
     spec:
       scaleTargetRef:
-        apiVersion: apps/v1
+        apiVersion: apps.openshift.io/v1
         kind: Deployment
         name: "${APP_NAME}-backend-${BRANCH}"
         subresource: scale
-      minReplicas: ${MIN_REPLICAS}
-      maxReplicas: ${MAX_REPLICAS}
+      minReplicas: ${{MIN_REPLICAS}}
+      maxReplicas: ${{MAX_REPLICAS}}
       metrics:
         - type: Resource
           resource:
