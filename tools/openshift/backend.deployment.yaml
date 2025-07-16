@@ -83,7 +83,7 @@ objects:
                 name: "${APP_NAME}-backend-config-map"
       test: false
       triggers:
-      - type: ConfigChange
+        - type: ConfigChange
   - apiVersion: v1
     kind: Service
     metadata:
@@ -132,7 +132,7 @@ objects:
       name: "${APP_NAME}-backend-${BRANCH}-cpu-autoscaler"
     spec:
       scaleTargetRef:
-        apiVersion: apps.openshift.io/v1
+        apiVersion: apps/v1
         kind: Deployment
         name: "${APP_NAME}-backend-${BRANCH}"
         subresource: scale
@@ -254,9 +254,11 @@ parameters:
   - name: MIN_REPLICAS
     description: The minimum amount of replicas
     required: true
+    value: 1
   - name: MAX_REPLICAS
     description: The maximum amount of replicas
     required: true
+    value: 2
   - name: MIN_CPU
     description: The minimum amount of cpu
     required: true
