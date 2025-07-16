@@ -78,7 +78,7 @@ objects:
             - name: tls-certs
               secret:
                 secretName: sdci-backend-cert
-            - name: flb-sc-config-volume
+            - name: config-env
               configMap:
                 name: "${APP_NAME}-backend-config-map"
       test: false
