@@ -254,11 +254,9 @@ parameters:
   - name: MIN_REPLICAS
     description: The minimum amount of replicas
     required: true
-    value: 1
   - name: MAX_REPLICAS
     description: The maximum amount of replicas
     required: true
-    value: 2
   - name: MIN_CPU
     description: The minimum amount of cpu
     required: true
