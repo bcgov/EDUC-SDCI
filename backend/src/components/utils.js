@@ -316,8 +316,65 @@ function getArrayofNonPubliclyAvailableCodes(codes, field) {
 
   return nonPubliclyAvailableCodes;
 }
+
+function replaceGroup(input) {
+  return input.replace(/GROUP([1-7])/g, (_, num) => `0${num}`);
+}
+
 function addFundingGroups(schools, fundingGroups) {
   try {
+    // Return an empty object if the input is empty or invalid
+    // Loop through each school object in the array
+    schools.forEach((school) => {
+      // Add the new properties with empty string values
+      school.primaryK3 = "";
+      school.elementary47 = "";
+      school.juniorSecondary810 = "";
+      school.seniorSecondary1112 = "";
+    });
+
+    // Define the grade categories
+    const gradeCategories = {
+      primaryK3: ["KINDFULL", "KINDHALF", "GRADE01", "GRADE02", "GRADE03"],
+      elementary47: ["GRADE04", "GRADE05", "GRADE06", "GRADE07"],
+      juniorSecondary810: ["GRADE08", "GRADE09", "GRADE10"],
+      seniorSecondary1112: ["GRADE11", "GRADE12"],
+    };
+    // Loop through each school object
+    schools.forEach((school) => {
+      // 1. Create a fast lookup map for funding codes
+      const fundingMap = new Map();
+      school.schoolFundingGroups.forEach((group) => {
+        fundingMap.set(group.schoolGradeCode, group.schoolFundingGroupCode);
+      });
+
+      // 2. Check each category and populate the funding group if a grade is present
+      for (const category in gradeCategories) {
+        // Find the first grade in the category list that is offered by the school
+        const offeredGrade = gradeCategories[category].find(
+          (gradeCode) => school[gradeCode] === "Y"
+        );
+
+        if (offeredGrade) {
+          // If an offered grade is found, get its funding code from the map
+          school[category] = fundingMap.get(replaceGroup(offeredGrade));
+        }
+      }
+    });
+    // To verify, log the updated array to the console
+    console.log(JSON.stringify(schools, null, 2));
+    return schools;
+  } catch (error) {
+    // Handle the error here, you can log it or perform other actions
+    console.error("An error occurred in addFundingGroups:", error);
+    // Optionally, you can rethrow the error if needed
+    throw error;
+  }
+}
+
+function V1addFundingGroups(schools, fundingGroups) {
+  try {
+    console.log("schools:", schools.schoolFundingGroups);
     // Process each school in the array
     const schoolsWithFunding = schools.map((school) => {
       // Find all matching funding groups by mincode
@@ -357,7 +414,7 @@ function addFundingGroups(schools, fundingGroups) {
             break;
         }
       });
-
+      console.log("schoolWithFunding: ", schoolWithFunding);
       return schoolWithFunding;
     });
 
