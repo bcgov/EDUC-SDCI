@@ -83,26 +83,6 @@ router.get("/facility-codes", checkToken, getFacilityCodes);
 router.get("/address-type-codes", checkToken, getAddressTypeCodes);
 
 async function createCache(req, res) {
-  if (await !listCache.has("fundingGroups")) {
-    try {
-      const fundingGroupsResponse = await axios.get(
-        `${config.get("server:schoolsAPIURL")}/schools/fundingGroups`,
-        {
-          headers: { Authorization: `Bearer ${req.accessToken}` },
-        }
-      );
-      listCache.set("fundingGroups", fundingGroupsResponse.data);
-      res.json(fundingGroupsResponse.data);
-      log.info("cached funding groups - ", req.url);
-    } catch (error) {
-      const statusCode = error.response ? error.response.status : 500;
-      log.error("getFunding Groups Error", statusCode, error.message);
-      res.status(statusCode).send(error.message);
-    }
-  } else {
-    const cachedFundingGroupList = await listCache.get("fundingGroups");
-    res.json(cachedFundingGroupList);
-  }
   if (await !listCache.has("fundingGroupCodes")) {
     try {
       const fundingGroupCodesResponse = await axios.get(

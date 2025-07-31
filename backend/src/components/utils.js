@@ -342,10 +342,13 @@ function addFundingGroups(schools, fundingGroups) {
     };
     // Loop through each school object
     schools.forEach((school) => {
-      // 1. Create a fast lookup map for funding codes
+      // 1. Create lookup map for funding codes
       const fundingMap = new Map();
       school.schoolFundingGroups.forEach((group) => {
-        fundingMap.set(group.schoolGradeCode, group.schoolFundingGroupCode);
+        fundingMap.set(
+          group.schoolGradeCode,
+          replaceGroup(group.schoolFundingGroupCode)
+        );
       });
 
       // 2. Check each category and populate the funding group if a grade is present
@@ -357,12 +360,12 @@ function addFundingGroups(schools, fundingGroups) {
 
         if (offeredGrade) {
           // If an offered grade is found, get its funding code from the map
-          school[category] = fundingMap.get(replaceGroup(offeredGrade));
+          school[category] = fundingMap.get(offeredGrade);
         }
       }
     });
     // To verify, log the updated array to the console
-    console.log(JSON.stringify(schools, null, 2));
+    // console.log(JSON.stringify(schools, null, 2));
     return schools;
   } catch (error) {
     // Handle the error here, you can log it or perform other actions
@@ -372,60 +375,6 @@ function addFundingGroups(schools, fundingGroups) {
   }
 }
 
-function V1addFundingGroups(schools, fundingGroups) {
-  try {
-    console.log("schools:", schools.schoolFundingGroups);
-    // Process each school in the array
-    const schoolsWithFunding = schools.map((school) => {
-      // Find all matching funding groups by mincode
-      const matchingFundingGroups = fundingGroups.filter(
-        (fundingGroup) => fundingGroup.mincode === school.mincode
-      );
-
-      const schoolWithFunding = {
-        ...school,
-        primaryK3: "", // Replace with an appropriate default value
-        elementary47: "", // Replace with an appropriate default value
-        juniorSecondary810: "", // Replace with an appropriate default value
-        seniorSecondary1112: "", // Replace with an appropriate default value
-      };
-
-      // Iterate through the matching funding groups
-      matchingFundingGroups.forEach((matchingFundingGroup) => {
-        // Access the fundingGroupCode and fundingSubCode properties
-        const fundingGroupCode = matchingFundingGroup.fundingGroupCode;
-        const fundingSubCode = matchingFundingGroup.fundingGroupSubCode;
-
-        // Check the fundingSubCode and update the school information
-        switch (fundingSubCode) {
-          case "01":
-            schoolWithFunding.primaryK3 = fundingGroupCode;
-            break;
-          case "04":
-            schoolWithFunding.elementary47 = fundingGroupCode;
-            break;
-          case "08":
-            schoolWithFunding.juniorSecondary810 = fundingGroupCode;
-            break;
-          case "11":
-            schoolWithFunding.seniorSecondary1112 = fundingGroupCode;
-            break;
-          default:
-            break;
-        }
-      });
-      console.log("schoolWithFunding: ", schoolWithFunding);
-      return schoolWithFunding;
-    });
-
-    return schoolsWithFunding;
-  } catch (error) {
-    // Handle the error here, you can log it or perform other actions
-    console.error("An error occurred in addFundingGroups:", error);
-    // Optionally, you can rethrow the error if needed
-    throw error;
-  }
-}
 function getArrayofPubliclyAvailableCodes(codes, field) {
   if (!Array.isArray(codes)) {
     throw new Error("Invalid input. Expecting an array of objects.");
