@@ -77,30 +77,31 @@ router.get("/school/list", checkToken, getSchoolList);
 router.get("/authority/list", checkToken, getAuthorityList);
 router.get("/district/list", checkToken, getDistrictList);
 router.get("/create-cache", checkToken, createCache);
+router.get("/funding-group-codes", checkToken, getFundingGroupCodes);
 router.get("/category-codes", checkToken, getCategoryCodes);
 router.get("/facility-codes", checkToken, getFacilityCodes);
 router.get("/address-type-codes", checkToken, getAddressTypeCodes);
 
 async function createCache(req, res) {
-  if (await !listCache.has("fundingGroups")) {
+  if (await !listCache.has("fundingGroupCodes")) {
     try {
-      const fundingGroupsResponse = await axios.get(
-        `${config.get("server:schoolsAPIURL")}/schools/fundingGroups`,
+      const fundingGroupCodesResponse = await axios.get(
+        `${config.get("server:instituteAPIURL")}/institute/funding-group-codes`,
         {
           headers: { Authorization: `Bearer ${req.accessToken}` },
         }
       );
-      listCache.set("fundingGroups", fundingGroupsResponse.data);
-      res.json(fundingGroupsResponse.data);
-      log.info("cached funding groups - ", req.url);
+      listCache.set("fundingGroupCodes", fundingGroupCodesResponse.data);
+      log.info("cached fundingGroupCodes - ", req.url);
     } catch (error) {
       const statusCode = error.response ? error.response.status : 500;
-      log.error("getFunding Groups Error", statusCode, error.message);
+      log.error("Funding Group Codes Caching Error", statusCode, error.message);
       res.status(statusCode).send(error.message);
     }
   } else {
-    const cachedFundingGroupList = await listCache.get("fundingGroups");
-    res.json(cachedFundingGroupList);
+    const fundingGroupCodes = await listCache.get("fundingGroupCodes");
+    res.json(fundingGroupCodes);
+    log.info("fetched fundingGroupCodes - ", req.url);
   }
 
   if (await !listCache.has("categoryCodes")) {
@@ -475,6 +476,29 @@ async function getAuthorityList(req, res) {
     res.json(authorityList);
   }
 }
+async function getFundingGroupCodes(req, res) {
+  if (await !listCache.has("fundingGroupCodes")) {
+    try {
+      const fundingGroupCodesResponse = await axios.get(
+        `${config.get("server:instituteAPIURL")}/institute/funding-group-codes`,
+        {
+          headers: { Authorization: `Bearer ${req.accessToken}` },
+        }
+      );
+      listCache.set("fundingGroupCodes", fundingGroupCodesResponse.data);
+      log.info("cached fundingGroupCodes - ", req.url);
+    } catch (error) {
+      const statusCode = error.response ? error.response.status : 500;
+      log.error("Funding Group Codes Caching Error", statusCode, error.message);
+      res.status(statusCode).send(error.message);
+    }
+  } else {
+    const fundingGroupCodes = await listCache.get("fundingGroupCodes");
+    res.json(fundingGroupCodes);
+    log.info("fetched fundingGroupCodes - ", req.url);
+  }
+}
+
 async function getCategoryCodes(req, res) {
   if (!listCache.has("categoryCodes")) {
     try {
