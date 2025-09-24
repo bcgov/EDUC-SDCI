@@ -1,6 +1,3 @@
-import './assets/main.css'
-import '@bcgov/bc-sans/css/BCSans.css'
-
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 
@@ -17,6 +14,9 @@ import '@mdi/font/css/materialdesignicons.css'
 
 import App from './App.vue'
 import router from './router/index'
+
+import './assets/main.css'
+import '@bcgov/bc-sans/css/BCSans.css'
 
 // define custom theme
 const bcGovTheme: ThemeDefinition = {
