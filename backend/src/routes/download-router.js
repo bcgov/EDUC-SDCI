@@ -70,7 +70,7 @@ async function writeFileAsync(filePath, data, encoding) {
 
 async function getDownload(req, res,next){
   const filepath = req.query.filepath;
-  if (!filepath) {s
+  if (!filepath) {
     return res.status(400).send("Missing 'filepath' parameter");
   }else{
     if (!isSafeFilePath(filepath)) {

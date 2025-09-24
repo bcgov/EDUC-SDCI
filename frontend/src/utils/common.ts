@@ -13,3 +13,8 @@ export function useSanitizeURL(input: string | String): String {
     input = input.toLowerCase().replace(/^a-zA-Z0-9 ]/g, '')
     return input
 }
+
+/** VALIDATION FUNCTIONS */
+export function isValidDistrictNumber(input: string | String | number): boolean {
+    return !!input && input.toString().length === 3 && /^\d+$/.test(input.toString());
+}

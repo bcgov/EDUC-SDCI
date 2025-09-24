@@ -801,36 +801,132 @@ function addFundingGroups(schools, fundingGroups) {
         juniorSecondary810: "", // Replace with an appropriate default value
         seniorSecondary1112: "", // Replace with an appropriate default value
       };
+    }
+    return item;
+  });
+}
+function filterRemoveByField(data, field, valuesToExclude) {
+  return data.filter((item) => !valuesToExclude.includes(item[field]));
+}
+function filterIncludeByField(data, field, valuesToInclude) {
+  return data.filter((item) => valuesToInclude.includes(item[field]));
+}
 
-      // Iterate through the matching funding groups
-      matchingFundingGroups.forEach((matchingFundingGroup) => {
-        // Access the fundingGroupCode and fundingSubCode properties
-        const fundingGroupCode = matchingFundingGroup.fundingGroupCode;
-        const fundingSubCode = matchingFundingGroup.fundingGroupSubCode;
+function filterByPubliclyAvailableCodes(jsonArray, fieldName, publicCodes) {
+  // Filter the array based on the condition
+  const filteredArray = jsonArray.filter((item) => {
+    // Extract the field value (or use an empty string if the field is not present)
+    const fieldValue = item[fieldName] || "";
 
-        // Check the fundingSubCode and update the school information
-        switch (fundingSubCode) {
-          case "01":
-            schoolWithFunding.primaryK3 = fundingGroupCode;
-            break;
-          case "04":
-            schoolWithFunding.elementary47 = fundingGroupCode;
-            break;
-          case "08":
-            schoolWithFunding.juniorSecondary810 = fundingGroupCode;
-            break;
-          case "11":
-            schoolWithFunding.seniorSecondary1112 = fundingGroupCode;
-            break;
-          default:
-            break;
-        }
-      });
+    // Check if the fieldValue exactly matches any string from the stringsToRemove array
+    return publicCodes.includes(fieldValue);
+  });
 
-      return schoolWithFunding;
+  return filteredArray;
+}
+function filterByField(jsonArray, fieldName, stringsToRemove) {
+  // Filter the array based on the condition
+  const filteredArray = jsonArray.filter((item) => {
+    // Extract the field value (or use an empty string if the field is not present)
+    const fieldValue = item[fieldName] || "";
+
+    // Check if the fieldValue exactly matches any string from the stringsToRemove array
+    return !stringsToRemove.includes(fieldValue);
+  });
+
+  return filteredArray;
+}
+function filterByOpenedAndClosedDate(data) {
+  const currentDate = new Date();
+
+  return data.filter((item) => {
+    const closedDate = item.closedDate ? new Date(item.closedDate) : null;
+    const openedDate = item.openedDate ? new Date(item.openedDate) : null;
+
+    return (
+      (closedDate === null && currentDate > openedDate) ||
+      (currentDate < closedDate && currentDate > openedDate)
+    );
+  });
+}
+function filterByExpiryDate(data) {
+  const currentDate = new Date();
+
+  return data.filter((item) => {
+    const expiryDate = item.expiryDate ? new Date(item.expiryDate) : null;
+    const effectiveDate = item.effectiveDate
+      ? new Date(item.effectiveDate)
+      : null;
+
+    return (
+      (expiryDate === null && currentDate > effectiveDate) ||
+      (currentDate < expiryDate && currentDate > effectiveDate)
+    );
+  });
+}
+function getArrayofNonPubliclyAvailableCodes(codes, field) {
+  if (!Array.isArray(codes)) {
+    throw new Error("Invalid input. Expecting an array of objects.");
+  }
+
+  // Filter out objects where "publiclyAvailable" is false
+  const nonPubliclyAvailableCodes = codes
+    .filter((item) => item && item.publiclyAvailable !== true)
+    .map((item) => item[field]);
+
+  return nonPubliclyAvailableCodes;
+}
+
+function replaceGroup(input) {
+  return input.replace(/GROUP([1-7])/g, (_, num) => `0${num}`);
+}
+
+function addFundingGroups(schools, fundingGroups) {
+  try {
+    // Return an empty object if the input is empty or invalid
+    // Loop through each school object in the array
+    schools.forEach((school) => {
+      // Add the new properties with empty string values
+      school.primaryK3 = "";
+      school.elementary47 = "";
+      school.juniorSecondary810 = "";
+      school.seniorSecondary1112 = "";
     });
 
-    return schoolsWithFunding;
+    // Define the grade categories
+    const gradeCategories = {
+      primaryK3: ["KINDFULL", "KINDHALF", "GRADE01", "GRADE02", "GRADE03"],
+      elementary47: ["GRADE04", "GRADE05", "GRADE06", "GRADE07"],
+      juniorSecondary810: ["GRADE08", "GRADE09", "GRADE10"],
+      seniorSecondary1112: ["GRADE11", "GRADE12"],
+    };
+    // Loop through each school object
+    schools.forEach((school) => {
+      // 1. Create lookup map for funding codes
+      const fundingMap = new Map();
+      school.schoolFundingGroups.forEach((group) => {
+        fundingMap.set(
+          group.schoolGradeCode,
+          replaceGroup(group.schoolFundingGroupCode)
+        );
+      });
+
+      // 2. Check each category and populate the funding group if a grade is present
+      for (const category in gradeCategories) {
+        // Find the first grade in the category list that is offered by the school
+        const offeredGrade = gradeCategories[category].find(
+          (gradeCode) => school[gradeCode] === "Y"
+        );
+
+        if (offeredGrade) {
+          // If an offered grade is found, get its funding code from the map
+          school[category] = fundingMap.get(offeredGrade);
+        }
+      }
+    });
+    // To verify, log the updated array to the console
+    // console.log(JSON.stringify(schools, null, 2));
+    return schools;
   } catch (error) {
     // Handle the error here, you can log it or perform other actions
     console.error("An error occurred in addFundingGroups:", error);
@@ -875,15 +971,16 @@ function createSchoolCache(schoolData, schoolGrades) {
 
     const principalContact = school.contacts?.find((contact) => {
       const effectiveDate = new Date(contact.effectiveDate);
-      const expiryDate = contact.expiryDate ? new Date(contact.expiryDate) : null;
-    
+      const expiryDate = contact.expiryDate
+        ? new Date(contact.expiryDate)
+        : null;
+
       return (
         contact.schoolContactTypeCode === "PRINCIPAL" &&
         effectiveDate <= currentDate &&
         (!expiryDate || expiryDate > currentDate)
       );
     });
-    
     if (principalContact) {
       school.firstName = principalContact.firstName;
       school.lastName = principalContact.lastName;
