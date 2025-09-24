@@ -15,6 +15,55 @@ const port = config.get('server:port');
 
 const server = http.createServer(app);
 
+
+const cacheService = require('./components/cache-service');
+
+async function bootstrapCache() {
+  try {
+    // Load district data
+    await cacheService.loadAllDistrictsToMap();
+    log.info('Loaded district data to memory');
+    // Load funding codes
+    await cacheService.loadFundingCodes();
+    log.info('Loaded grade codes to memory');
+    // Load grade codes
+    await cacheService.loadGradeCodes();
+    log.info('Loaded grade codes to memory');
+    
+    // Load school data
+    await cacheService.loadAllSchoolsToMap();
+    log.info('Loaded school data to memory');
+
+    // Add schools to districts
+    cacheService.addSchoolsToDistricts();
+
+    // Load address type codes
+    await cacheService.loadAddressTypeCodes();
+    log.info('Loaded address type codes to memory');
+
+    // Load school category codes
+    await cacheService.loadSchoolCategoryCodes();
+    log.info('Loaded category codes to memory');
+
+
+    // Load facility codes
+    await cacheService.loadFacilityCodes();
+    log.info('Loaded facility codes to memory');
+
+    //Create Files for download
+    await cacheService.createSchoolFiles();
+    log.info('Created school files');
+    await cacheService.createDistrictFiles();
+    log.info('Created district files');
+    
+  } catch (error) {
+    log.error('Error during cache bootstrapping:', error);
+  }
+}
+
+// Start the cache initialization
+bootstrapCache();
+
 /**
  * Listen on provided port, on all network interfaces.
  */

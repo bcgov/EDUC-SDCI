@@ -32,10 +32,10 @@ const cacheService = {
   async loadAllSchoolsToMap() {
     await retry(async () => {
       // if anything throws, we retry
-    
-      const data = await auth.getApiCredentials(config.get("oidc:serviceClientId"), config.get("oidc:serviceClientSecret"), "client_credentials", "profile openid"); // get the tokens first to make api calls.
-      const schoolsResponse = await utils.getData(data.accessToken, `${config.get('server:instituteAPIURL')}/api/v1/institute/school/paginated`);
-      const schoolWithFundingGroups = addFundingGroups(schoolsResponse.content, fundingGroups)
+
+      const data = await auth.getApiCredentials(config.get("oidc:clientId"), config.get("oidc:clientSecret"), "client_credentials", "profile openid"); // get the tokens first to make api calls.
+      const schoolsResponse = await utils.getData(data.accessToken, `${config.get('server:instituteAPIURL')}/institute/school/paginated`);
+      const schoolWithFundingGroups = schoolsResponse.content
       schools = []; // reset the value.
       schoolMap.clear();// reset the value.
       mincode_school_ID_Map.clear();
@@ -55,6 +55,7 @@ const cacheService = {
         }
         
       }
+      
       log.info(`Loaded ${schoolMap.size} schools.`);
       log.info(`Loaded ${activeSchools.length} active schools.`);
     }, {
@@ -117,8 +118,8 @@ const cacheService = {
   async loadAddressTypeCodes() {
     await retry(async () => {
       // if anything throws, we retry
-      const data = await auth.getApiCredentials(config.get("oidc:serviceClientId"), config.get("oidc:serviceClientSecret"), "client_credentials", "profile openid"); // get the tokens first to make api calls.
-      const addressTypeCodesResponse = await utils.getData(data.accessToken, `${config.get('server:instituteAPIURL')}/api/v1/institute/address-type-codes`);
+      const data = await auth.getApiCredentials(config.get("oidc:clientId"), config.get("oidc:clientSecret"), "client_credentials", "profile openid"); // get the tokens first to make api calls.
+      const addressTypeCodesResponse = await utils.getData(data.accessToken, `${config.get('server:instituteAPIURL')}/institute/address-type-codes`);
       addressTypeCodes = []; // reset the value.
       if (addressTypeCodesResponse && addressTypeCodesResponse.length > 0) {
           addressTypeCodes = addressTypeCodesResponse
@@ -133,8 +134,8 @@ const cacheService = {
       
       // Get API access token
       const data = await auth.getApiCredentials(
-        config.get("oidc:serviceClientId"),
-        config.get("oidc:serviceClientSecret"),
+        config.get("oidc:clientId"),
+        config.get("oidc:clientSecret"),
         "client_credentials",
         "profile openid"
       );
@@ -142,7 +143,7 @@ const cacheService = {
       // Fetch category codes from the API
       const categoryCodesResponse = await utils.getData(
         data.accessToken,
-        `${config.get('server:instituteAPIURL')}/api/v1/institute/category-codes`
+        `${config.get('server:instituteAPIURL')}/institute/category-codes`
       );
   
       // Reset and filter the category codes
@@ -164,8 +165,8 @@ const cacheService = {
   async loadFacilityCodes() {
     await retry(async () => {
       const accessToken = (await auth.getApiCredentials(
-        config.get("oidc:serviceClientId"),
-        config.get("oidc:serviceClientSecret"),
+        config.get("oidc:clientId"),
+        config.get("oidc:clientSecret"),
         "client_credentials",
         "profile openid"
       ))?.accessToken;
@@ -174,7 +175,7 @@ const cacheService = {
         throw new Error("Failed to retrieve access token.");
       }
   
-      const url = `${config.get("server:instituteAPIURL")}/api/v1/institute/facility-codes`;
+      const url = `${config.get("server:instituteAPIURL")}/institute/facility-codes`;
       const response = await utils.getData(accessToken, url);
   
       const excludedTypes = new Set([
@@ -198,8 +199,9 @@ const cacheService = {
   async loadGradeCodes() {
     await retry(async () => {
       // if anything throws, we retry
-      const data = await auth.getApiCredentials(config.get("oidc:serviceClientId"), config.get("oidc:serviceClientSecret"), "client_credentials", "profile openid"); // get the tokens first to make api calls.
-      const gradeCodesResponse = await utils.getData(data.accessToken, `${config.get('server:instituteAPIURL')}/api/v1/institute/grade-codes`);
+      console.log(`${config.get('server:instituteAPIURL')}/institute/grade-codes`)
+      const data = await auth.getApiCredentials(config.get("oidc:clientId"), config.get("oidc:clientSecret"), "client_credentials", "profile openid"); // get the tokens first to make api calls.
+      const gradeCodesResponse = await utils.getData(data.accessToken, `${config.get('server:instituteAPIURL')}/institute/grade-codes`);
       gradeCodes = []; // reset the value.
       if (gradeCodesResponse && gradeCodesResponse.length > 0) {
         gradeCodes = gradeCodesResponse
@@ -212,8 +214,9 @@ const cacheService = {
   async loadFundingCodes() {
     await retry(async () => {
       // if anything throws, we retry
-      const data = await auth.getApiCredentials(config.get("oidc:serviceClientId"), config.get("oidc:serviceClientSecret"), "client_credentials", "profile openid"); // get the tokens first to make api calls.
-      fundingGroups = await utils.getData(data.accessToken, `${config.get('server:schoolsAPIURL')}/schools/fundingGroups`);
+      // const data = await auth.getApiCredentials(config.get("oidc:clientId"), config.get("oidc:clientSecret"), "client_credentials", "profile openid"); // get the tokens first to make api calls.
+      
+      // fundingGroups = await utils.getData(data.accessToken, `${config.get('server:schoolsAPIURL')}/schools/fundingGroups`);
       
       log.info(`Loaded ${fundingGroups.length} grade codes.`);
     }, {
@@ -261,8 +264,9 @@ const cacheService = {
  
   async loadAllDistrictsToMap() {
     await retry(async () => {
-      const data = await auth.getApiCredentials(config.get("oidc:serviceClientId"), config.get("oidc:serviceClientSecret"), "client_credentials", "profile openid");
-      const districtsResponse = await utils.getData(data.accessToken, `${config.get('server:instituteAPIURL')}/api/v1/institute/district/paginated?pageSize=500`);
+      const data = await auth.getApiCredentials(config.get("oidc:clientId"), config.get("oidc:clientSecret"), "client_credentials", "profile openid");
+      console.log(data)
+      const districtsResponse = await utils.getData(data.accessToken, `${config.get('server:instituteAPIURL')}/institute/district/paginated?pageSize=500`);
       // reset the value.
       districts = [];
       activeDistricts = [];
