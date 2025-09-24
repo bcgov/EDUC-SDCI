@@ -445,7 +445,7 @@ function createSchoolCache(schoolData, schoolGrades) {
             ].includes(field)
           ) {
             addressFields.mailing[`mailing_${field}`] = address[field];
-          }
+          } 
         });
       } else if (address.addressTypeCode === "PHYSICAL") {
         Object.keys(address).forEach((field) => {
