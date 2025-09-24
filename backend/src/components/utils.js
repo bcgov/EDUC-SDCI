@@ -785,26 +785,7 @@ function getArrayofNonPubliclyAvailableCodes(codes, field) {
 
   return nonPubliclyAvailableCodes;
 }
-function addFundingGroups(schools, fundingGroups) {
-  try {
-    // Process each school in the array
-    const schoolsWithFunding = schools.map((school) => {
-      // Find all matching funding groups by mincode
-      const matchingFundingGroups = fundingGroups.filter(
-        (fundingGroup) => fundingGroup.mincode === school.mincode
-      );
 
-      const schoolWithFunding = {
-        ...school,
-        primaryK3: "", // Replace with an appropriate default value
-        elementary47: "", // Replace with an appropriate default value
-        juniorSecondary810: "", // Replace with an appropriate default value
-        seniorSecondary1112: "", // Replace with an appropriate default value
-      };
-    }
-    return item;
-  });
-}
 function filterRemoveByField(data, field, valuesToExclude) {
   return data.filter((item) => !valuesToExclude.includes(item[field]));
 }

@@ -36,14 +36,8 @@ async function getOffshore(req, res) {
   
   const url = `${config.get('server:instituteAPIURL')}/institute/school/paginated?pageNumber=0&pageSize=100&searchCriteriaList=${encodedParams}`;
 
-  // try {
     const schoolResponse = await axios.get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } });
     res.json(schoolResponse.data)
      
-  //   log.info(req.url);
-
-  // } catch (e) {
-  //   log.error('getData Error', e.response ? e.response.status : e.message);
-  // }
 }
 module.exports = router;
