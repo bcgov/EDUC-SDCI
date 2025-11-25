@@ -25,12 +25,11 @@ async function getBackendServiceToken() {
 
 function getUsernameFromToken(token) {
   try {
-      const decoded = jsonwebtoken.decode(token); // Use decode if you don't need verification
-      return decoded?.idir_username || null;
-      
+    const decoded = jsonwebtoken.decode(token); // Use decode if you don't need verification
+    return decoded?.idir_username || null;
   } catch (error) {
-      console.error('Invalid token:', error);
-      return null;
+    console.error("Invalid token:", error);
+    return null;
   }
 }
 
@@ -80,12 +79,12 @@ function getAccessToken(req) {
 
 async function deleteData(token, url, correlationID) {
   try {
-    const username = getUsernameFromToken(token)
+    const username = getUsernameFromToken(token);
     const delConfig = {
       headers: {
         Authorization: `Bearer ${token}`,
         correlationID: correlationID || uuidv4(),
-        "User-Name": username || 'N/A'
+        "User-Name": username || "N/A",
       },
     };
 
@@ -179,12 +178,10 @@ async function getCommonServiceData(url, params) {
 
 async function getData(token, url, correlationID) {
   try {
-    console.log(url)
     const getDataConfig = {
       headers: {
         Authorization: `Bearer ${token}`,
         correlationID: correlationID || uuidv4(),
-
       },
     };
     // log.info('get Data Url', url);
@@ -204,11 +201,11 @@ async function getData(token, url, correlationID) {
 
 async function getDataWithParams(token, url, params, correlationID) {
   try {
-    const username = getUsernameFromToken(token)
+    const username = getUsernameFromToken(token);
     params.headers = {
       Authorization: `Bearer ${token}`,
       correlationID: correlationID || uuidv4(),
-      "User-Name": username || 'N/A'
+      "User-Name": username || "N/A",
     };
 
     log.info("get Data Url", url);
@@ -262,12 +259,12 @@ async function forwardPostReq(req, res, url) {
 
 async function postData(token, url, data, correlationID) {
   try {
-    const username = getUsernameFromToken(token)
+    const username = getUsernameFromToken(token);
     const postDataConfig = {
       headers: {
         Authorization: `Bearer ${token}`,
         correlationID: correlationID || uuidv4(),
-        "User-Name": username || 'N/A'
+        "User-Name": username || "N/A",
       },
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
@@ -307,12 +304,12 @@ async function postData(token, url, data, correlationID) {
 
 async function putData(token, data, url, correlationID) {
   try {
-    const username = getUsernameFromToken(token)
+    const username = getUsernameFromToken(token);
     const putDataConfig = {
       headers: {
         Authorization: `Bearer ${token}`,
         correlationID: correlationID || uuidv4(),
-        "User-Name": username || 'N/A'
+        "User-Name": username || "N/A",
       },
     };
 
@@ -463,9 +460,6 @@ const utils = {
   getCodeTable,
 };
 
-
-
-
 const ALLOWED_FILENAMES = new Set([
   "districtcontacts",
   "districtmailing",
@@ -479,71 +473,6 @@ const ALLOWED_FILENAMES = new Set([
   // Add more allowed filepaths as needed
 ]);
 
-
-const ALLOWED_SCHOOLCATEGORYCODES = new Set([
-  "PUBLIC",
-  "INDEPEND",
-  "OFFSHORE",
-  // Add more allowed filepaths as needed
-]);
-function isAllowedSchoolCategory(category) {
-  return ALLOWED_SCHOOLCATEGORYCODES.has(category);
-}
-function isSafeFilePath(filepath) {
-  return ALLOWED_FILENAMES.has(filepath);
-}
-
-function createList(list, options = {}) {
-  const {
-    fields = [],
-    fieldToInclude = null, // Updated option name
-    valueToInclude = null, // Updated option name
-    sortFunction = null,
-    sortField = null,
-  } = options;
-
-  const filteredList = list
-    .filter(function (item) {
-      // Change the condition from removal to inclusion
-      return !fieldToInclude || item[fieldToInclude] === valueToInclude;
-    })
-    .map(function (item) {
-      const itemData = {};
-      fields.forEach((field) => {
-        itemData[field] = item[field];
-      });
-      return itemData;
-    });
-
-  // Sort the filtered list using the custom sort function if provided
-  if (sortField) {
-    filteredList.sort((a, b) => {
-      const aField = a[sortField];
-      const bField = b[sortField];
-      if (aField < bField) return -1;
-      if (aField > bField) return 1;
-      return 0;
-    });
-  }
-
-  return filteredList;
-}
-function removeFieldsByCriteria(inputData, criteria) {
-  if (!Array.isArray(criteria) || criteria.length === 0) {
-    return inputData; // Return the original data if the criteria is empty or not an array.
-  }
-
-  // Loop through the criteria and filter the fields based on the specified conditions.
-  for (const item of criteria) {
-    inputData = inputData.filter((itemData) => {
-      if (itemData[item.fieldToRemove] !== item.value) {
-        return true; // Keep the field if the condition is not met.
-      }
-    });
-  }
-
-  return inputData;
-}
 function appendMailingAddressDetailsAndRemoveAddresses(data) {
   if (data && data.addresses && data.addresses.length > 0) {
     const physicalAddress = data.addresses?.find(
@@ -647,24 +576,19 @@ function formatGrades(grades, schoolGrades) {
   return result;
 }
 
-function sortJSONByDistrictNumber(districts) {
-  return districts.slice().sort((a, b) => {
-    const districtNumberA = a["District Number"] || "";
-    const districtNumberB = b["District Number"] || "";
-    return districtNumberA.localeCompare(districtNumberB, undefined, {
-      numeric: true,
-      sensitivity: "base",
-    });
-  });
-}
-function sortJSONBySchoolCode(schools) {
-  return schools.slice().sort((a, b) => {
-    const schoolCodeA = a.mincode || "";
-    const schoolCodeB = b.mincode || "";
-    return schoolCodeA.localeCompare(schoolCodeB, undefined, {
-      numeric: true,
-      sensitivity: "base",
-    });
+function sortJSONByKey(items, key, numeric = false) {
+  return items.slice().sort((a, b) => {
+    const valueA = a[key] ?? "";
+    const valueB = b[key] ?? "";
+
+    if (numeric) {
+      return valueA.toString().localeCompare(valueB.toString(), undefined, {
+        numeric: true,
+        sensitivity: "base",
+      });
+    }
+
+    return valueA.toString().localeCompare(valueB.toString());
   });
 }
 
@@ -714,24 +638,8 @@ function normalizeJsonObject(
     return item;
   });
 }
-function filterRemoveByField(data, field, valuesToExclude) {
-  return data.filter((item) => !valuesToExclude.includes(item[field]));
-}
 function filterIncludeByField(data, field, valuesToInclude) {
   return data.filter((item) => valuesToInclude.includes(item[field]));
-}
-
-function filterByPubliclyAvailableCodes(jsonArray, fieldName, publicCodes) {
-  // Filter the array based on the condition
-  const filteredArray = jsonArray.filter((item) => {
-    // Extract the field value (or use an empty string if the field is not present)
-    const fieldValue = item[fieldName] || "";
-
-    // Check if the fieldValue exactly matches any string from the stringsToRemove array
-    return publicCodes.includes(fieldValue);
-  });
-
-  return filteredArray;
 }
 function filterByField(jsonArray, fieldName, stringsToRemove) {
   // Filter the array based on the condition
@@ -745,19 +653,7 @@ function filterByField(jsonArray, fieldName, stringsToRemove) {
 
   return filteredArray;
 }
-function filterByOpenedAndClosedDate(data) {
-  const currentDate = new Date();
 
-  return data.filter((item) => {
-    const closedDate = item.closedDate ? new Date(item.closedDate) : null;
-    const openedDate = item.openedDate ? new Date(item.openedDate) : null;
-
-    return (
-      (closedDate === null && currentDate > openedDate) ||
-      (currentDate < closedDate && currentDate > openedDate)
-    );
-  });
-}
 function filterByExpiryDate(data) {
   const currentDate = new Date();
 
@@ -773,38 +669,11 @@ function filterByExpiryDate(data) {
     );
   });
 }
-function getArrayofNonPubliclyAvailableCodes(codes, field) {
-  if (!Array.isArray(codes)) {
-    throw new Error("Invalid input. Expecting an array of objects.");
-  }
 
-  // Filter out objects where "publiclyAvailable" is false
-  const nonPubliclyAvailableCodes = codes
-    .filter((item) => item && item.publiclyAvailable !== true)
-    .map((item) => item[field]);
-
-  return nonPubliclyAvailableCodes;
-}
-
-function filterRemoveByField(data, field, valuesToExclude) {
-  return data.filter((item) => !valuesToExclude.includes(item[field]));
-}
 function filterIncludeByField(data, field, valuesToInclude) {
   return data.filter((item) => valuesToInclude.includes(item[field]));
 }
 
-function filterByPubliclyAvailableCodes(jsonArray, fieldName, publicCodes) {
-  // Filter the array based on the condition
-  const filteredArray = jsonArray.filter((item) => {
-    // Extract the field value (or use an empty string if the field is not present)
-    const fieldValue = item[fieldName] || "";
-
-    // Check if the fieldValue exactly matches any string from the stringsToRemove array
-    return publicCodes.includes(fieldValue);
-  });
-
-  return filteredArray;
-}
 function filterByField(jsonArray, fieldName, stringsToRemove) {
   // Filter the array based on the condition
   const filteredArray = jsonArray.filter((item) => {
@@ -817,19 +686,7 @@ function filterByField(jsonArray, fieldName, stringsToRemove) {
 
   return filteredArray;
 }
-function filterByOpenedAndClosedDate(data) {
-  const currentDate = new Date();
 
-  return data.filter((item) => {
-    const closedDate = item.closedDate ? new Date(item.closedDate) : null;
-    const openedDate = item.openedDate ? new Date(item.openedDate) : null;
-
-    return (
-      (closedDate === null && currentDate > openedDate) ||
-      (currentDate < closedDate && currentDate > openedDate)
-    );
-  });
-}
 function filterByExpiryDate(data) {
   const currentDate = new Date();
 
@@ -844,18 +701,6 @@ function filterByExpiryDate(data) {
       (currentDate < expiryDate && currentDate > effectiveDate)
     );
   });
-}
-function getArrayofNonPubliclyAvailableCodes(codes, field) {
-  if (!Array.isArray(codes)) {
-    throw new Error("Invalid input. Expecting an array of objects.");
-  }
-
-  // Filter out objects where "publiclyAvailable" is false
-  const nonPubliclyAvailableCodes = codes
-    .filter((item) => item && item.publiclyAvailable !== true)
-    .map((item) => item[field]);
-
-  return nonPubliclyAvailableCodes;
 }
 
 function replaceGroup(input) {
@@ -905,8 +750,6 @@ function addFundingGroups(schools, fundingGroups) {
         }
       }
     });
-    // To verify, log the updated array to the console
-    // console.log(JSON.stringify(schools, null, 2));
     return schools;
   } catch (error) {
     // Handle the error here, you can log it or perform other actions
@@ -914,18 +757,6 @@ function addFundingGroups(schools, fundingGroups) {
     // Optionally, you can rethrow the error if needed
     throw error;
   }
-}
-function getArrayofPubliclyAvailableCodes(codes, field) {
-  if (!Array.isArray(codes)) {
-    throw new Error("Invalid input. Expecting an array of objects.");
-  }
-
-  // Filter out objects where "publiclyAvailable" is true
-  const publiclyAvailableCodes = codes
-    .filter((item) => item && item.publiclyAvailable === true)
-    .map((item) => item[field]);
-
-  return publiclyAvailableCodes;
 }
 function createSchoolCache(schoolData, schoolGrades) {
   // Preload convertedGrades with schoolGrades.schoolGradeCode and set the value to "N"
@@ -1048,23 +879,14 @@ function isActiveEntity(effective, expiry) {
 
 module.exports = {
   addFundingGroups,
-  filterByOpenedAndClosedDate,
-  filterByPubliclyAvailableCodes,
-  getArrayofPubliclyAvailableCodes,
   filterByExpiryDate,
-  filterRemoveByField,
   filterIncludeByField,
   sortByProperty,
-  getArrayofNonPubliclyAvailableCodes,
+
   filterByField,
   appendMailingAddressDetailsAndRemoveAddresses,
-  sortJSONBySchoolCode,
-  sortJSONByDistrictNumber,
+  sortJSONByKey,
   normalizeJsonObject,
-  removeFieldsByCriteria,
-  createList,
-  isSafeFilePath,
-  isAllowedSchoolCategory,
   addDistrictLabels,
   districtNumberSort,
   createSchoolCache,

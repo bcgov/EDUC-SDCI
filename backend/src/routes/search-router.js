@@ -7,20 +7,21 @@ const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
 const { checkToken } = require("../components/auth");
-const { listCache } = require("../components/cache");
+const cacheService = require("../components/cache-service");
 const {
   addFundingGroups,
-  appendMailingAddressDetailsAndRemoveAddresses,
-  rearrangeAndRelabelObjectProperties,
-  sortByProperty,
-  addDistrictLabels
+  addDistrictLabels,
 } = require("../components/utils.js");
 //Batch Routes
 router.get("/schools/paginated", checkToken, getSchoolSearchResults);
-router.get("/districts/contact/paginated", checkToken, getDistrictContactSearchResults);
+router.get(
+  "/districts/contact/paginated",
+  checkToken,
+  getDistrictContactSearchResults
+);
 
 async function getSchoolSearchResults(req, res) {
-  const fundingGroups = await listCache.get("fundingGroups");
+  const fundingGroups = cacheService.getFundingGroupCodes(req, res);
   const encodedSearchCriteriaList = encodeURIComponent(
     req.query?.searchCriteriaList || ""
   );
@@ -37,7 +38,9 @@ async function getSchoolSearchResults(req, res) {
       const resultsWithFundingGroups = addFundingGroups(results, fundingGroups);
 
       // Remove the 'contacts' array from each object
-      const cleanedResults = resultsWithFundingGroups.map(({ notes, contacts, ...rest }) => rest);
+      const cleanedResults = resultsWithFundingGroups.map(
+        ({ notes, contacts, ...rest }) => rest
+      );
 
       response.data.content = cleanedResults;
 
@@ -53,7 +56,9 @@ async function getDistrictContactSearchResults(req, res) {
   );
   const url = `${config.get(
     "server:instituteAPIURL"
-  )}/institute/district/contact/paginated?pageSize=${req.query?.pageSize}&pageNumber=${
+  )}/institute/district/contact/paginated?pageSize=${
+    req.query?.pageSize
+  }&pageNumber=${
     req.query?.pageNumber
   }&searchCriteriaList=${encodedSearchCriteriaList}`;
   const cachedCodeList = await listCache.get("codesList");
@@ -61,9 +66,10 @@ async function getDistrictContactSearchResults(req, res) {
   const nonBCDistrictList = await listCache.get("nonbcdistrictlist");
 
   // Get valid districtContactTypeCode values
-  const validTypeCodes = cachedCodeList?.codesList?.districtContactTypeCodes?.map(
-    (c) => c.districtContactTypeCode
-  ) || [];
+  const validTypeCodes =
+    cachedCodeList?.codesList?.districtContactTypeCodes?.map(
+      (c) => c.districtContactTypeCode
+    ) || [];
 
   axios
     .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
@@ -86,7 +92,6 @@ async function getDistrictContactSearchResults(req, res) {
 
         res.json(jsonData);
       } else {
-        console.log("RESPONSE>DATA IS UNSANITZED")
         res.json(response.data);
       }
     })
@@ -94,6 +99,5 @@ async function getDistrictContactSearchResults(req, res) {
       log.error("getData Error", e.response ? e.response.status : e.message);
     });
 }
-
 
 module.exports = router;

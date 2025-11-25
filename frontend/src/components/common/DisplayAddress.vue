@@ -6,12 +6,12 @@ const appStore = useAppStore()
 
 const props = defineProps<{
   addressTypeCode: string
-  addressLine1: string
-  addressLine2: string
-  city: string
-  provinceCode: string
-  countryCode?: string
-  postal: string
+  addressLine1: string | null
+  addressLine2?: string | null
+  city: string | null
+  provinceCode: string | null
+  countryCode?: string | null
+  postal: string | null
 }>()
 </script>
 

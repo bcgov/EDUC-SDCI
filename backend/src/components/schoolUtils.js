@@ -1,9 +1,9 @@
 'use strict';
 const { LocalDateTime, DateTimeFormatter } = require('@js-joda/core');
+const cacheService = require("../components/cache-service")
 
 function generateSchoolObject(school = {}, gradeCodes = []) {
   const now = new Date();
-
   // Filter active contacts based on effective and expiry dates
   const activeContacts = (school.contacts || []).filter(({ effectiveDate, expiryDate }) => {
     const effective = new Date(effectiveDate);
@@ -20,31 +20,53 @@ function generateSchoolObject(school = {}, gradeCodes = []) {
   allSchoolGrades.forEach(code => {
     gradeStatus[code] = presentGrades.has(code) ? 'Y' : 'N';
   });
-
-  //Add Funding Codes
   
 
-  return {
-    schoolId: school.schoolId || null,
-    districtId: school.districtId || null,
-    mincode: school.mincode || null,
-    independentAuthorityId: school.independentAuthorityId || null,
-    schoolNumber: school.schoolNumber || null,
-    displayName: school.displayName || null,
-    displayNameNoSpecialChars: school.displayNameNoSpecialChars || null,
-    schoolCategoryCode: school.schoolCategoryCode || null,
-    facilityTypeCode: school.facilityTypeCode || null,
-    openedDate: school.openedDate || null,
-    closedDate: school.closedDate || null,
-    canIssueCertificates: !!school.canIssueCertificates,
-    canIssueTranscripts: !!school.canIssueTranscripts,
-    contacts: activeContacts,
-    ...gradeStatus,
-    primaryK3: school.primaryK3, 
-    elementary47: school.elementary47,
-    juniorSecondary810: school.juniorSecondary810,
-    seniorSecondary1112: school.seniorSecondary1112, 
-  };
+  //Add Funding Codes
+  return { 
+  schoolId: school.schoolId || null,
+  districtId: school.districtId || null,
+  mincode: school.mincode || null,
+  independentAuthorityId: school.independentAuthorityId || null,
+  schoolNumber: school.schoolNumber || null,
+  faxNumber: school.faxNumber || null,
+  phoneNumber: school.phoneNumber || null,
+  email: school.email || null,
+  website: school.website || null,
+  schoolReportingRequirementCode: school.schoolReportingRequirementCode || null,
+  vendorSourceSystemCode: school.vendorSourceSystemCode || null,
+  displayName: school.displayName || null,
+  displayNameNoSpecialChars: school.displayNameNoSpecialChars || null,
+  schoolOrganizationCode: school.schoolOrganizationCode || null,
+  schoolCategoryCode: school.schoolCategoryCode || null,
+  facilityTypeCode: school.facilityTypeCode || null,
+  openedDate: school.openedDate || null,
+  closedDate: school.closedDate || null,
+  canIssueCertificates: !!school.canIssueCertificates,
+  canIssueTranscripts: !!school.canIssueTranscripts,
+  contacts: activeContacts || [],
+
+  ...gradeStatus, // if gradeStatus is inside school
+
+  grades: school.grades || [],
+  addresses: school.addresses || [],
+  schoolFundingGroups: school.schoolFundingGroups || [],
+
+  // New fields
+  notes: school.notes || null,
+  neighborhoodLearning: school.neighborhoodLearning || [],
+  schoolMove: school.schoolMove || [],
+  schoolCategoryCode_label: school.schoolCategoryCode_label || "Public",
+  schoolCategoryCode_description: school.schoolCategoryCode_description || "Public School",
+  faciltyTypeCode_label: school.faciltyTypeCode_label || "Provincial",
+  faciltyTypeCode_description: school.faciltyTypeCode_description || "Provincial school",
+  primaryK3: school.primaryK3 || "",
+  elementary47: school.elementary47 || "",
+  juniorSecondary810: school.juniorSecondary810 || "",
+  seniorSecondary1112: school.seniorSecondary1112 || ""
+};
+
+  
 }
 
 function isSchoolActive(school) {

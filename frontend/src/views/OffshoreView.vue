@@ -143,7 +143,7 @@ onBeforeMount(() => {
             ><v-btn
               variant="text"
               class="text-none text-subtitle-1 ma-1 mx-4 mx-md-0 v-btn-align-left"
-              href="/api/v1/download/csv/authority/all-mailing/OFFSHORE?filepath=offshoreschoolrepresentatives"
+              href="/download/offshoreschoolrepresentatives.csv"
               ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download Offshore
               Representatives (CSV)</v-btn
             >

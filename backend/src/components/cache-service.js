@@ -1,17 +1,26 @@
-'use strict';
-const config = require('../config/index');
-const log = require('../components/logger');
-const { auth } = require('../components/auth');
-const {utils, addFundingGroups} = require('../components/utils');
-const retry = require('async-retry');
-const {generateSchoolObject, isSchoolActive} = require('./schoolUtils');
-const {generateDistrictObject, isDistrictActive,generateAuthorityObject,isAuthorityActive} = require('./districtUtils');
-const {LocalDate, DateTimeFormatter} = require('@js-joda/core');
-const jsonExport = require('jsonexport');
-const path = require('path');
-const fs = require('fs');
-const constants = require('../util/constants');
-const { getGradeCodes } = require('./school');
+"use strict";
+const config = require("../config/index");
+const log = require("../components/logger");
+const { auth } = require("../components/auth");
+const {
+  utils,
+  addFundingGroups,
+  appendMailingAddressDetailsAndRemoveAddresses,
+  sortJSONByKey,
+} = require("../components/utils");
+const retry = require("async-retry");
+const { generateSchoolObject, isSchoolActive } = require("./schoolUtils");
+const {
+  generateDistrictObject,
+  isDistrictActive,
+  isBCDistrict,
+  generateAuthorityObject,
+  isAuthorityActive,
+} = require("./districtUtils");
+const jsonExport = require("jsonexport");
+const path = require("path");
+const fs = require("fs");
+const constants = require("../util/constants");
 
 let schoolMap = new Map();
 let schools = [];
@@ -19,48 +28,109 @@ let districts = [];
 let districtsMap = new Map();
 let districtsNumber_ID_Map = new Map();
 let districtID_Name_Map = new Map();
+let authorities = [];
+let authoritiesMap = new Map();
+let activeAuthorities = [];
 let mincode_school_ID_Map = new Map();
 let activeSchools = [];
 let activeDistricts = [];
 let addressTypeCodes = [];
 let schoolCategoryCodes = [];
+let schoolContactTypeCodes = [];
+let contactTypeCodes = {};
 let facilityCodes = [];
 let gradeCodes = [];
-let fundingGroups =[];
+let fundingGroups = [];
 
 const cacheService = {
   async loadAllSchoolsToMap() {
-    await retry(async () => {
-      // if anything throws, we retry
+    await retry(
+      async () => {
+        schools = []; // reset the value.
+        schoolMap.clear(); // reset the value.
+        mincode_school_ID_Map.clear();
+        activeSchools = [];
 
-      const data = await auth.getApiCredentials(config.get("oidc:clientId"), config.get("oidc:clientSecret"), "client_credentials", "profile openid"); // get the tokens first to make api calls.
-      const schoolsResponse = await utils.getData(data.accessToken, `${config.get('server:instituteAPIURL')}/institute/school/paginated`);
-      const schoolWithFundingGroups = schoolsResponse.content
-      schools = []; // reset the value.
-      schoolMap.clear();// reset the value.
-      mincode_school_ID_Map.clear();
-      activeSchools = [];
+        const data = await auth.getApiCredentials(
+          config.get("oidc:clientId"),
+          config.get("oidc:clientSecret"),
+          "client_credentials",
+          "profile openid"
+        ); // get the tokens first to make api calls.
+        const schoolsResponse = await utils.getData(
+          data.accessToken,
+          `${config.get(
+            "server:instituteAPIURL"
+          )}/institute/school/paginated?pageSize=100`
+        );
+        const schoolWithFundingGroups = schoolsResponse.content;
 
-      if (schoolWithFundingGroups && schoolWithFundingGroups.length > 0) {
-        
-        for (const school of schoolWithFundingGroups) {
-          const schoolObject = generateSchoolObject(school, gradeCodes);
-          schoolObject.districtDisplayName = districtID_Name_Map.get(schoolObject.districtID)
-          schoolMap.set(schoolObject.schoolId, schoolObject);
-          mincode_school_ID_Map.set(schoolObject.mincode, schoolObject.schoolId);
-          schools.push(schoolObject);
-          if (isSchoolActive(schoolObject)) {
-            activeSchools.push(schoolObject);
+        // remove contacts that are not publiclyAvailable
+
+        const schoolsWithPubliclyAvailableContacts =
+          schoolWithFundingGroups.map((school) => {
+            return {
+              ...school,
+              contacts: (school.contacts || [])
+                .filter((contact) => {
+                  // find the matching contact code object
+                  const match =
+                    contactTypeCodes.codesList.schoolContactTypeCodes.find(
+                      (codeObj) =>
+                        codeObj.schoolContactTypeCode ===
+                          contact.schoolContactTypeCode &&
+                        codeObj.publiclyAvailable === true
+                    );
+                  // only keep contacts with a publiclyAvailable code
+
+                  return !!match;
+                })
+                .map((contact) => {
+                  const match =
+                    contactTypeCodes.codesList.schoolContactTypeCodes.find(
+                      (codeObj) =>
+                        codeObj.schoolContactTypeCode ===
+                        contact.schoolContactTypeCode
+                    );
+                  return {
+                    ...contact,
+                    schoolContactTypeCode_label: match ? match.label : null,
+                    schoolContactTypeCode_description: match
+                      ? match.description
+                      : null,
+                  };
+                }),
+            };
+          });
+
+        const schoolsToLoadToCache = schoolsWithPubliclyAvailableContacts;
+
+        if (schoolsToLoadToCache && schoolsToLoadToCache.length > 0) {
+          for (const school of schoolsToLoadToCache) {
+            const schoolObject = generateSchoolObject(school, gradeCodes);
+            if (isSchoolActive(schoolObject)) {
+              schoolObject.districtNumber = this.getDistrictNumber(
+                school.districtId
+              );
+
+              schoolMap.set(schoolObject.schoolId, schoolObject);
+              mincode_school_ID_Map.set(
+                schoolObject.mincode,
+                schoolObject.schoolId
+              );
+              schools.push(schoolObject);
+              activeSchools.push(schoolObject);
+            }
           }
         }
-        
+
+        log.info(`Loaded ${schoolMap.size} schools.`);
+        log.info(`Loaded ${activeSchools.length} active schools.`);
+      },
+      {
+        retries: 10,
       }
-      
-      log.info(`Loaded ${schoolMap.size} schools.`);
-      log.info(`Loaded ${activeSchools.length} active schools.`);
-    }, {
-      retries: 10
-    });
+    );
   },
   async addFundingGroups(schools, fundingGroups) {
     try {
@@ -70,7 +140,7 @@ const cacheService = {
         const matchingFundingGroups = fundingGroups.filter(
           (fundingGroup) => fundingGroup.mincode === school.mincode
         );
-  
+
         const schoolWithFunding = {
           ...school,
           primaryK3: "", // Replace with an appropriate default value
@@ -78,13 +148,13 @@ const cacheService = {
           juniorSecondary810: "", // Replace with an appropriate default value
           seniorSecondary1112: "", // Replace with an appropriate default value
         };
-  
+
         // Iterate through the matching funding groups
         matchingFundingGroups.forEach((matchingFundingGroup) => {
           // Access the fundingGroupCode and fundingSubCode properties
           const fundingGroupCode = matchingFundingGroup.fundingGroupCode;
           const fundingSubCode = matchingFundingGroup.fundingGroupSubCode;
-  
+
           // Check the fundingSubCode and update the school information
           switch (fundingSubCode) {
             case "01":
@@ -103,10 +173,10 @@ const cacheService = {
               break;
           }
         });
-  
+
         return schoolWithFunding;
       });
-  
+
       return schoolsWithFunding;
     } catch (error) {
       // Handle the error here, you can log it or perform other actions
@@ -114,218 +184,679 @@ const cacheService = {
       // Optionally, you can rethrow the error if needed
       throw error;
     }
-  }, 
+  },
   async loadAddressTypeCodes() {
-    await retry(async () => {
-      // if anything throws, we retry
-      const data = await auth.getApiCredentials(config.get("oidc:clientId"), config.get("oidc:clientSecret"), "client_credentials", "profile openid"); // get the tokens first to make api calls.
-      const addressTypeCodesResponse = await utils.getData(data.accessToken, `${config.get('server:instituteAPIURL')}/institute/address-type-codes`);
-      addressTypeCodes = []; // reset the value.
-      if (addressTypeCodesResponse && addressTypeCodesResponse.length > 0) {
-          addressTypeCodes = addressTypeCodesResponse
+    await retry(
+      async () => {
+        // if anything throws, we retry
+        const data = await auth.getApiCredentials(
+          config.get("oidc:clientId"),
+          config.get("oidc:clientSecret"),
+          "client_credentials",
+          "profile openid"
+        ); // get the tokens first to make api calls.
+        const addressTypeCodesResponse = await utils.getData(
+          data.accessToken,
+          `${config.get("server:instituteAPIURL")}/institute/address-type-codes`
+        );
+        addressTypeCodes = []; // reset the value.
+        if (addressTypeCodesResponse && addressTypeCodesResponse.length > 0) {
+          addressTypeCodes = addressTypeCodesResponse;
+        }
+        log.info(`Loaded ${addressTypeCodes.length} address type codes.`);
+      },
+      {
+        retries: 10,
       }
-      log.info(`Loaded ${addressTypeCodes.length} address type codes.`);
-    }, {
-      retries: 10
-    });
+    );
   },
   async loadSchoolCategoryCodes() {
-    await retry(async () => {
-      
-      // Get API access token
+    await retry(
+      async () => {
+        // Get API access token
+        const data = await auth.getApiCredentials(
+          config.get("oidc:clientId"),
+          config.get("oidc:clientSecret"),
+          "client_credentials",
+          "profile openid"
+        );
+
+        // Fetch category codes from the API
+        const categoryCodesResponse = await utils.getData(
+          data.accessToken,
+          `${config.get("server:instituteAPIURL")}/institute/category-codes`
+        );
+
+        // Reset and filter the category codes
+        schoolCategoryCodes = [];
+
+        if (
+          Array.isArray(categoryCodesResponse) &&
+          categoryCodesResponse.length > 0
+        ) {
+          // Filter out the unwanted codes
+          const excludedCodes = ["FED_BAND", "YUKON", "POST_SEC"];
+          schoolCategoryCodes = categoryCodesResponse.filter(
+            (code) => !excludedCodes.includes(code.schoolCategoryCode)
+          );
+        }
+
+        log.info(`Loaded ${schoolCategoryCodes.length} school category codes.`);
+      },
+      {
+        retries: 10,
+      }
+    );
+  },
+  async loadFacilityCodes() {
+    await retry(
+      async () => {
+        const accessToken = (
+          await auth.getApiCredentials(
+            config.get("oidc:clientId"),
+            config.get("oidc:clientSecret"),
+            "client_credentials",
+            "profile openid"
+          )
+        )?.accessToken;
+
+        if (!accessToken) {
+          throw new Error("Failed to retrieve access token.");
+        }
+
+        const url = `${config.get(
+          "server:instituteAPIURL"
+        )}/institute/facility-codes`;
+        const response = await utils.getData(accessToken, url);
+
+        const excludedTypes = new Set([
+          "PROVINCIAL",
+          "DIST_CONT",
+          "ELEC_DELIV",
+          "POST_SEC",
+          "JUSTB4PRO",
+          "SUMMER",
+        ]);
+
+        facilityCodes = (Array.isArray(response) ? response : []).filter(
+          (code) => !excludedTypes.has(code.facilityTypeCode)
+        );
+        log.info(
+          `Loaded ${facilityCodes.length} facility codes (after filtering).`
+        );
+      },
+      {
+        retries: 10,
+      }
+    );
+  },
+  async loadGradeCodes() {
+    await retry(
+      async () => {
+        // if anything throws, we retry
+        const data = await auth.getApiCredentials(
+          config.get("oidc:clientId"),
+          config.get("oidc:clientSecret"),
+          "client_credentials",
+          "profile openid"
+        ); // get the tokens first to make api calls.
+        const gradeCodesResponse = await utils.getData(
+          data.accessToken,
+          `${config.get("server:instituteAPIURL")}/institute/grade-codes`
+        );
+        gradeCodes = []; // reset the value.
+        if (gradeCodesResponse && gradeCodesResponse.length > 0) {
+          gradeCodes = gradeCodesResponse;
+        }
+        log.info(`Loaded ${gradeCodes.length} grade codes.`);
+      },
+      {
+        retries: 10,
+      }
+    );
+  },
+  async loadFundingCodes() {
+    await retry(
+      async () => {
+        // if anything throws, we retry
+        // const data = await auth.getApiCredentials(config.get("oidc:clientId"), config.get("oidc:clientSecret"), "client_credentials", "profile openid"); // get the tokens first to make api calls.
+
+        // fundingGroups = await utils.getData(data.accessToken, `${config.get('server:schoolsAPIURL')}/schools/fundingGroups`);
+
+        log.info(`Loaded ${fundingGroups.length} grade codes.`);
+      },
+      {
+        retries: 10,
+      }
+    );
+  },
+
+  async loadContactTypeCodes() {
+    await retry(
+      async () => {
+        // if anything throws, we retry
+
+        const data = await auth.getApiCredentials(
+          config.get("oidc:clientId"),
+          config.get("oidc:clientSecret"),
+          "client_credentials",
+          "profile openid"
+        ); // get the tokens first to make api calls.
+        const schoolContactTypeCodesResponse = await utils.getData(
+          data.accessToken,
+          `${config.get(
+            "server:instituteAPIURL"
+          )}/institute/school-contact-type-codes`
+        );
+        const districtContactTypeCodesResponse = await utils.getData(
+          data.accessToken,
+          `${config.get(
+            "server:instituteAPIURL"
+          )}/institute/district-contact-type-codes`
+        );
+        const authorityContactTypeCodesResponse = await utils.getData(
+          data.accessToken,
+          `${config.get(
+            "server:instituteAPIURL"
+          )}/institute/authority-contact-type-codes`
+        );
+
+        let schoolContactTypeCodes;
+        let districtContactTypeCodes;
+        let authorityContactTypeCodes;
+
+        if (
+          schoolContactTypeCodesResponse &&
+          schoolContactTypeCodesResponse.length > 0
+        ) {
+          schoolContactTypeCodes = schoolContactTypeCodesResponse.filter(
+            (code) => code.publiclyAvailable === true
+          );
+          console.log(
+            "school unfiltered  contacts " +
+              schoolContactTypeCodesResponse.length
+          );
+        }
+
+        if (
+          districtContactTypeCodesResponse &&
+          districtContactTypeCodesResponse.length > 0
+        ) {
+          districtContactTypeCodes = districtContactTypeCodesResponse.filter(
+            (code) => code.publiclyAvailable === true
+          );
+          console.log(
+            "district unfiltered contacts " +
+              districtContactTypeCodesResponse.length
+          );
+        }
+        if (
+          authorityContactTypeCodesResponse &&
+          authorityContactTypeCodesResponse.length > 0
+        ) {
+          authorityContactTypeCodes = authorityContactTypeCodesResponse.filter(
+            (code) => code.publiclyAvailable === true
+          );
+          console.log(
+            "authority unfiltered  contacts " +
+              authorityContactTypeCodesResponse.length
+          );
+        }
+
+        contactTypeCodes = {
+          codesList: {
+            authorityContactTypeCodes: authorityContactTypeCodes,
+            districtContactTypeCodes: districtContactTypeCodes,
+            schoolContactTypeCodes: schoolContactTypeCodes,
+          },
+        };
+        log.info(`Loaded contact type codes.`);
+      },
+      {
+        retries: 10,
+      }
+    );
+  },
+  async createAuthorityMailingFile() {
+    const params = [
+      {
+        condition: null,
+        searchCriteriaList: [
+          {
+            key: "closedDate",
+            operation: "eq",
+            value: null,
+            valueType: "STRING",
+            condition: "AND",
+          },
+          {
+            key: "authorityTypeCode",
+            operation: "eq",
+            value: "INDEPENDNT",
+            valueType: "STRING",
+            condition: "AND",
+          },
+        ],
+      },
+    ];
+
+    const jsonString = JSON.stringify(params);
+    const encodedParams = encodeURIComponent(jsonString);
+    const url = `${config.get(
+      "server:instituteAPIURL"
+    )}/institute/authority/paginated?pageSize=10&sort[authorityNumber]=ASC&searchCriteriaList=${encodedParams}`;
+
+    try {
       const data = await auth.getApiCredentials(
         config.get("oidc:clientId"),
         config.get("oidc:clientSecret"),
         "client_credentials",
         "profile openid"
+      ); // get the tokens first to make api calls.
+      const authorityResponse = await utils.getData(data.accessToken, url);
+
+      const propertyOrder = [
+        { property: "authorityNumber", label: "Number" },
+        { property: "displayName", label: "Name" },
+        { property: "mailingAddressLine1", label: "Address" },
+        { property: "mailingAddressLine2", label: "Address Line 2" },
+        { property: "mailingCity", label: "City" },
+        { property: "mailingProvinceCode", label: "Province" },
+        { property: "mailingPostal", label: "Postal Code" },
+        { property: "phoneNumber", label: "Phone Number" },
+        { property: "faxNumber", label: "Fax" },
+        { property: "email", label: "Email" },
+      ];
+
+      authorityResponse.content.forEach(
+        appendMailingAddressDetailsAndRemoveAddresses
       );
-  
-      // Fetch category codes from the API
-      const categoryCodesResponse = await utils.getData(
-        data.accessToken,
-        `${config.get('server:instituteAPIURL')}/institute/category-codes`
+
+      // 🔥 No rearrangeAndRelabelObjectProperties needed
+      authorityResponse.content = authorityResponse.content.map((item) => {
+        const result = {};
+        propertyOrder.forEach(({ property, label }) => {
+          result[label] = item[property] ?? "";
+        });
+        return result;
+      });
+      const FILE_STORAGE_DIR = path.join(__dirname, "../..", "public");
+      const filePathPublic = path.join(
+        FILE_STORAGE_DIR,
+        "authorityMailing.csv"
       );
-  
-      // Reset and filter the category codes
-      schoolCategoryCodes = [];
-  
-      if (Array.isArray(categoryCodesResponse) && categoryCodesResponse.length > 0) {
-        // Filter out the unwanted codes
-        const excludedCodes = ["FED_BAND", "YUKON", "POST_SEC"];
-        schoolCategoryCodes = categoryCodesResponse.filter(
-          (code) => !excludedCodes.includes(code.schoolCategoryCode)
-        );
-      }
-  
-      log.info(`Loaded ${schoolCategoryCodes.length} school category codes.`);
-    }, {
-      retries: 10
-    });
+
+      await this.writeCSVToFile(authorityResponse.content, filePathPublic);
+    } catch (e) {
+      log.error(
+        "getAllAuthorityMailing Error:",
+        e.response ? e.response.status : e.message
+      );
+      console.log(e);
+    }
   },
-  async loadFacilityCodes() {
-    await retry(async () => {
-      const accessToken = (await auth.getApiCredentials(
+  async createOffshoreFile() {
+    const params = [
+      {
+        condition: null,
+        searchCriteriaList: [
+          {
+            key: "closedDate",
+            operation: "eq",
+            value: null,
+            valueType: "STRING",
+            condition: "AND",
+          },
+          {
+            key: "authorityTypeCode",
+            operation: "eq",
+            value: "OFFSHORE",
+            valueType: "STRING",
+            condition: "AND",
+          },
+        ],
+      },
+    ];
+
+    const jsonString = JSON.stringify(params);
+    const encodedParams = encodeURIComponent(jsonString);
+    const url = `${config.get(
+      "server:instituteAPIURL"
+    )}/institute/authority/paginated?pageSize=10&sort[authorityNumber]=ASC&searchCriteriaList=${encodedParams}`;
+
+    try {
+      const data = await auth.getApiCredentials(
         config.get("oidc:clientId"),
         config.get("oidc:clientSecret"),
         "client_credentials",
         "profile openid"
-      ))?.accessToken;
-  
-      if (!accessToken) {
-        throw new Error("Failed to retrieve access token.");
-      }
-  
-      const url = `${config.get("server:instituteAPIURL")}/institute/facility-codes`;
-      const response = await utils.getData(accessToken, url);
-  
-      const excludedTypes = new Set([
-        "PROVINCIAL",
-        "DIST_CONT",
-        "ELEC_DELIV",
-        "POST_SEC",
-        "JUSTB4PRO",
-        "SUMMER"
-      ]);
-  
-      facilityCodes = (Array.isArray(response) ? response : []).filter(
-        code => !excludedTypes.has(code.facilityTypeCode)
+      ); // get the tokens first to make api calls.
+      const authorityResponse = await utils.getData(data.accessToken, url);
+
+      const propertyOrder = [
+        { property: "authorityNumber", label: "Number" },
+        { property: "displayName", label: "Name" },
+        { property: "mailingAddressLine1", label: "Address" },
+        { property: "mailingAddressLine2", label: "Address Line 2" },
+        { property: "mailingCity", label: "City" },
+        { property: "mailingProvinceCode", label: "Province" },
+        { property: "mailingPostal", label: "Postal Code" },
+        { property: "phoneNumber", label: "Phone Number" },
+        { property: "faxNumber", label: "Fax" },
+        { property: "email", label: "Email" },
+      ];
+
+      authorityResponse.content.forEach(
+        appendMailingAddressDetailsAndRemoveAddresses
       );
-  
-      log.info(`Loaded ${facilityCodes.length} facility codes (after filtering).`);
-    }, {
-      retries: 10
-    });
+
+      // 🔥 No rearrangeAndRelabelObjectProperties needed
+      authorityResponse.content = authorityResponse.content.map((item) => {
+        const result = {};
+        propertyOrder.forEach(({ property, label }) => {
+          result[label] = item[property] ?? "";
+        });
+        return result;
+      });
+      const FILE_STORAGE_DIR = path.join(__dirname, "../..", "public");
+      const filePathPublic = path.join(
+        FILE_STORAGE_DIR,
+        "offshoreschoolrepresentatives.csv"
+      );
+
+      await this.writeCSVToFile(authorityResponse.content, filePathPublic);
+    } catch (e) {
+      log.error(
+        "getAllAuthorityMailing Error:",
+        e.response ? e.response.status : e.message
+      );
+      console.log(e);
+    }
   },
-  async loadGradeCodes() {
-    await retry(async () => {
-      // if anything throws, we retry
-      console.log(`${config.get('server:instituteAPIURL')}/institute/grade-codes`)
-      const data = await auth.getApiCredentials(config.get("oidc:clientId"), config.get("oidc:clientSecret"), "client_credentials", "profile openid"); // get the tokens first to make api calls.
-      const gradeCodesResponse = await utils.getData(data.accessToken, `${config.get('server:instituteAPIURL')}/institute/grade-codes`);
-      gradeCodes = []; // reset the value.
-      if (gradeCodesResponse && gradeCodesResponse.length > 0) {
-        gradeCodes = gradeCodesResponse
-      }
-      log.info(`Loaded ${gradeCodes.length} grade codes.`);
-    }, {
-      retries: 10
-    });
-  },  
-  async loadFundingCodes() {
-    await retry(async () => {
-      // if anything throws, we retry
-      // const data = await auth.getApiCredentials(config.get("oidc:clientId"), config.get("oidc:clientSecret"), "client_credentials", "profile openid"); // get the tokens first to make api calls.
-      
-      // fundingGroups = await utils.getData(data.accessToken, `${config.get('server:schoolsAPIURL')}/schools/fundingGroups`);
-      
-      log.info(`Loaded ${fundingGroups.length} grade codes.`);
-    }, {
-      retries: 10
-    });
-  },    
-  getGradeCodes(){
-    return gradeCodes;
+  getFundingGroupCodes(_req, res) {
+    return res.status(200).json(fundingGroups ? fundingGroups : []);
   },
-  getFacilityCodes(_req,res){
+  getGradeCodes(_req, res) {
+    return res.status(200).json(gradeCodes ? gradeCodes : []);
+  },
+  getFacilityCodes(_req, res) {
     return res.status(200).json(facilityCodes ? facilityCodes : []);
   },
-  getCategoryCodes(_req, res){
-    
+  getCategoryCodes(_req, res) {
     return res.status(200).json(schoolCategoryCodes ? schoolCategoryCodes : []);
   },
-  getAddressTypeCodes(){
-     return addressTypeCodes;
+  getContactTypeCodes(_req, res) {
+    return res.status(200).json(contactTypeCodes ? contactTypeCodes : []);
+  },
+  getAddressTypeCodes(_req, res) {
+    return res.status(200).json(addressTypeCodes ? addressTypeCodes : []);
   },
   getAllSchoolsJSON() {
-    return res.status(200).json(schools ? schools : []); 
+    return res.status(200).json(schools ? schools : []);
   },
 
   getSchoolBySchoolID(req, res) {
     const schoolID = req.params.schoolId; // match param name in route
-  
     const school = schoolMap.get(schoolID);
     return res.status(200).json(school ? school : []);
   },
-  getDistrictByDistrictID(req, res) {
-  
-    const districtId = req.params.districtId;
-  
+  getDistrictNumber(districtId) {
     const district = districtsMap.get(districtId);
-  
-    if (!district) {
-      return res.status(404).json({ message: "District not found" });
-    }
-  
-    return res.status(200).json(district);
+    return district ? district.districtNumber : "N/A";
   },
-  getAllActiveSchoolsJSON(_req,res) {
+
+  getDistrictByDistrictID(id) {
+    const district = districtsMap.get(id);
+    return district || null; // always return a value
+  },
+  getDistrictContactLabel(districtContactTypeCode) {
+    const codeList =
+      contactTypeCodes?.codesList?.districtContactTypeCodes || [];
+    const match = codeList.find(
+      (c) => c.districtContactTypeCode === districtContactTypeCode
+    );
+    return match ? match.label : districtContactTypeCode;
+  },
+  isDistrictContactPublic(districtContactTypeCode) {
+    const codeList =
+      contactTypeCodes?.codesList?.districtContactTypeCodes || [];
+    const match = codeList.find(
+      (c) => c.districtContactTypeCode === districtContactTypeCode
+    );
+    return match ? !!match.publiclyAvailable : false;
+  },
+  getAllActiveSchoolsJSON(_req, res) {
     return res.status(200).json(activeSchools ? activeSchools : []);
   },
- 
   async loadAllDistrictsToMap() {
-    await retry(async () => {
-      const data = await auth.getApiCredentials(config.get("oidc:clientId"), config.get("oidc:clientSecret"), "client_credentials", "profile openid");
-      console.log(data)
-      const districtsResponse = await utils.getData(data.accessToken, `${config.get('server:instituteAPIURL')}/institute/district/paginated?pageSize=500`);
-      // reset the value.
-      districts = [];
-      activeDistricts = [];
-      districtsMap.clear();
-      districtsNumber_ID_Map.clear();
-      districtID_Name_Map.clear();
-      if (districtsResponse.content && districtsResponse.content.length > 0) {
-        for (const district of districtsResponse.content) {
-          const districtData = generateDistrictObject(district);
-          districtsMap.set(district.districtId, districtData);
-          districtsNumber_ID_Map.set(district.districtNumber, district.districtId);
-          districtID_Name_Map.set(district.districtId, district.displayName)
-          
-          districts.push(districtData);
-          if(isDistrictActive(districtData)){
-            activeDistricts.push(districtData);
+    await retry(
+      async () => {
+        const clientId = config.get("oidc:clientId");
+        const clientSecret = config.get("oidc:clientSecret");
+        const instituteApiUrl = config.get("server:instituteAPIURL");
+
+        const data = await auth.getApiCredentials(
+          clientId,
+          clientSecret,
+          "client_credentials",
+          "profile openid"
+        );
+
+        const districtsResponse = await utils.getData(
+          data.accessToken,
+          `${instituteApiUrl}/institute/district/paginated?pageSize=500`
+        );
+
+        // Reset collections
+        districts = [];
+        activeDistricts = [];
+        districtsMap.clear();
+        districtsNumber_ID_Map.clear();
+        districtID_Name_Map.clear();
+
+        if (districtsResponse?.content?.length > 0) {
+          for (const district of districtsResponse.content) {
+            const districtData = generateDistrictObject(district);
+
+            // Only process active + BC districts
+            if (isDistrictActive(districtData) && isBCDistrict(districtData)) {
+              if (
+                districtData.contacts &&
+                Array.isArray(districtData.contacts)
+              ) {
+                try {
+                  // Filter only public contacts and add labels
+                  districtData.contacts = districtData.contacts
+                    .filter((contact) =>
+                      this.isDistrictContactPublic(
+                        contact.districtContactTypeCode
+                      )
+                    )
+                    .map((contact) => ({
+                      ...contact,
+                      districtContactLabel: this.getDistrictContactLabel(
+                        contact.districtContactTypeCode
+                      ),
+                    }));
+                } catch (error) {
+                  console.error(
+                    `Error processing contacts for district ${districtData.districtId}:`,
+                    error
+                  );
+                }
+              }
+
+              // Add to maps and arrays
+              districtsMap.set(district.districtId, districtData);
+              districtsNumber_ID_Map.set(
+                district.districtNumber,
+                district.districtId
+              );
+              districtID_Name_Map.set(
+                district.districtId,
+                district.displayName
+              );
+              districts.push(districtData);
+              activeDistricts.push(districtData);
+            }
           }
+
+          // Sort active districts by district number (padded to 3 digits)
+          activeDistricts.sort((a, b) => {
+            const numA = a.districtNumber.toString().padStart(3, "0");
+            const numB = b.districtNumber.toString().padStart(3, "0");
+            return numA.localeCompare(numB);
+          });
+
+          log.info(`Loaded ${districtsMap.size} districts.`);
+          log.info(`Loaded ${activeDistricts.length} active districts.`);
         }
+      },
+      {
+        retries: 50,
       }
-      
-      log.info(`loaded ${districtsMap.size} districts.`);
-      log.info(`loaded ${activeDistricts.length} active districts.`);
-    }, {
-      retries: 50
-    });
+    );
   },
+
   getDistrictSchools(districtId) {
     return Array.from(schoolMap.entries())
       .filter(([_, value]) => value.districtId === districtId)
       .map(([key, value]) => ({ key, ...value }));
   },
-  
-  async addSchoolsToDistricts() {
-
-    await retry(async () => {
-      try{
-
-      
-      for (const [districtId, districtData] of districtsMap.entries()) {
-      
-        const schools = this.getDistrictSchools(districtId);
-        districtData.districtSchools = schools;
-        // Optionally update the Map if needed
-        districtsMap.set(districtId, districtData);
-      }
-    }catch(e){
-      console.log(e)
-    }
-    }, {
-      retries: 50
-    });
+  getAuthoritySchools(authorityId) {
+    return Array.from(schoolMap.entries())
+      .filter(([_, value]) => value.independentAuthorityId === authorityId)
+      .map(([key, value]) => ({ key, ...value }));
   },
+
+  async loadAllAuthoritiesToMap() {
+    try {
+      await retry(
+        async () => {
+          const data = await auth.getApiCredentials(
+            config.get("oidc:clientId"),
+            config.get("oidc:clientSecret"),
+            "client_credentials",
+            "profile openid"
+          );
+
+          const url = `${config.get(
+            "server:instituteAPIURL"
+          )}/institute/authority/paginated?pageSize=5000`;
+          const authoritiesResponse = await utils.getData(
+            data.accessToken,
+            url
+          );
+          // reset the value
+          authorities = [];
+          activeAuthorities = [];
+          authoritiesMap.clear();
+
+          if (
+            authoritiesResponse.content &&
+            authoritiesResponse.content.length > 0
+          ) {
+            for (const authority of authoritiesResponse.content) {
+              const authorityData = generateAuthorityObject(authority);
+
+              authorities.push(authorityData);
+              if (isAuthorityActive(authorityData)) {
+                activeAuthorities.push(authorityData);
+                authoritiesMap.set(authority.independentAuthorityId, authority);
+              }
+            }
+          }
+
+          log.info(`Loaded ${authoritiesMap.size} authorities.`);
+          log.info(`Loaded ${activeAuthorities.length} active authorities.`);
+        },
+        {
+          retries: 50,
+        }
+      );
+    } catch (error) {
+      log.error("Error loading authorities:", error);
+      console.error("Error in loadAllAuthoritiesToMap:", error);
+      throw error; // rethrow so caller knows it failed
+    }
+  },
+
+  async addSchoolsToDistricts() {
+    await retry(
+      async () => {
+        try {
+          for (const [districtId, districtData] of districtsMap.entries()) {
+            const schools = await this.getDistrictSchools(districtId);
+
+            districtsMap.set(districtId, {
+              ...districtData, // spreads properties of districtData at top level
+              districtSchools: schools,
+            });
+          }
+        } catch (e) {
+          console.error("Error adding schools to districts:", e);
+          throw e;
+        }
+      },
+      {
+        retries: 50,
+      }
+    );
+  },
+  async addSchoolsToAuthorities() {
+    await retry(
+      async () => {
+        try {
+          for (const [authorityId, authorityData] of authoritiesMap.entries()) {
+            const schools = await this.getAuthoritySchools(authorityId);
+
+            authoritiesMap.set(authorityId, {
+              ...authorityData, // spreads properties of districtData at top level
+              authoritySchools: schools,
+            });
+          }
+        } catch (e) {
+          console.error("Error adding schools to districts:", e);
+          throw e;
+        }
+      },
+      {
+        retries: 50,
+      }
+    );
+  },
+  getOffshoreSchoolList(_req, res) {
+    return res.status(200).json(activeSchools ? activeSchools : []);
+  },
+  getSchoolList(_req, res) {
+    // Example: only return mincode, displayName, schoolId, closedDate, openedDate, schoolCategoryCode
+    const trimmedSchools = (activeSchools || []).map((school) => ({
+      mincode: school.mincode,
+      displayName: school.displayName,
+      schoolId: school.schoolId,
+      closedDate: school.closedDate,
+      openedDate: school.openedDate,
+      schoolCategoryCode: school.schoolCategoryCode,
+    }));
+    return res.status(200).json(trimmedSchools);
+  },
+
+  getAuthorityList(_req, res) {
+    return res.status(200).json(activeAuthorities ? activeAuthorities : []);
+  },
+
+  getDistrictList(_req, res) {
+    return res.status(200).json(activeDistricts ? activeDistricts : []);
+  },
+
   getAllDistrictsJSON() {
     return districts;
   },
-  getActiveDistricts(req_, res){
+
+  getActiveDistricts(req_, res) {
     return res.status(200).json(activeDistricts ? activeDistricts : []);
   },
-  getAuthorityJSONByAuthorityID(authorityID) {
+  getAuthorityByAuthorityID(authorityID) {
     return authoritiesMap.get(authorityID);
   },
   getDistrictJSONByDistrictID(districtID) {
@@ -342,13 +873,13 @@ const cacheService = {
     try {
       let districtContacts = [];
 
-      districts.forEach(district => {
+      districts.forEach((district) => {
         if (Array.isArray(district.contacts)) {
-          district.contacts.forEach(contact => {
+          district.contacts.forEach((contact) => {
             const contactObject = {
               districtId: district.districtId,
               districtNumber: district.districtNumber,
-              name: district.name,
+              name: district.displayName,
               phoneNumber: contact.phoneNumber,
               jobTitle: contact.jobTitle,
               phoneExtension: contact.phoneExtension,
@@ -357,13 +888,26 @@ const cacheService = {
               email: contact.email,
               firstName: contact.firstName,
               lastName: contact.lastName,
-              districtContactTypeCode: contact.districtContactTypeCode
+              districtContactTypeCode: contact.districtContactTypeCode,
+              districtContactLabel: contact.districtContactLabel,
+              mailingAddressLine1: district.mailingAddressLine1,
+              mailingAddressLine2: district.mailingAddressLine2,
+              mailingCity: district.mailingCity,
+              mailingPostal: district.mailingPostal,
+              mailingProvinceCode: district.mailingProvinceCode,
+              mailingCountryCode: district.mailingCountryCode,
+              physicalAddressLine1: district.physicalAddressLine1,
+              physicalAddressLine2: district.physicalAddressLine2,
+              physicalCity: district.physicalCity,
+              physicalPostal: district.physicalPostal,
+              physicalProvinceCode: district.physicalProvinceCode,
+              physicalCountryCode: district.physicalCountryCode,
             };
-      
             districtContacts.push(contactObject);
           });
         }
       });
+
       const propertyOrder = [
         { property: "districtId", label: "District Number" },
         { property: "name", label: "District Name" },
@@ -372,7 +916,7 @@ const cacheService = {
           label: "District Number",
         },
         {
-          property: "districtContactTypeCode_description",
+          property: "districtContactLabel",
           label: "District Contact",
         },
         { property: "firstName", label: "Contact First Name" },
@@ -386,58 +930,125 @@ const cacheService = {
         { property: "mailingPostal", label: "Postal Code" },
         { property: "mailingCountryCode", label: "Country" },
         {
-          property: "districtId_physical_addressLine1",
+          property: "physicalAddressLine1",
           label: "Courier Address Line 1",
         },
         {
-          property: "districtId_physical_addressLine2",
+          property: "physicalAddressLine2",
           label: "Courier Address Line 2",
         },
-        { property: "districtId_physical_city", label: "Courier City" },
+        { property: "physicalCity", label: "Courier City" },
         {
-          property: "districtId_physical_provinceCode",
+          property: "physicalProvinceCode",
           label: "Courier Province",
         },
-        { property: "districtId_physical_postal", label: "Courier Postal Code" },
-        { property: "districtId_physical_countryCode", label: "Courier Country" },
+        { property: "physicalPostal", label: "Courier Postal Code" },
+        { property: "physicalCountryCode", label: "Courier Country" },
         { property: "phoneNumber", label: "Contact Phone" },
         { property: "phoneExtension", label: "Contact Phone Extension" },
-        { property: "email", label: "Contact Email" },
+        { property: "email", label: "Contact Emailx" },
       ];
-      const FILE_STORAGE_DIR = path.join(__dirname, '../..', 'public');
-  
-      // District Contacts
-      
-      districtContacts = this.relabelSchoolProperties(districtContacts, propertyOrder)
-      const filePathPublic = path.join(FILE_STORAGE_DIR, 'alldistrictcontacts.csv');
+      const FILE_STORAGE_DIR = path.join(__dirname, "../..", "public");
 
-  
+      // District Contacts
+      districtContacts.sort((a, b) => a.districtNumber - b.districtNumber);
+      districtContacts = this.mapPropertiesToLabels(
+        districtContacts,
+        propertyOrder
+      );
+      const filePathPublic = path.join(
+        FILE_STORAGE_DIR,
+        "alldistrictcontacts.csv"
+      );
+
       await this.writeCSVToFile(districtContacts, filePathPublic);
-  
-      
-      
     } catch (e) {
-      console.error('Error generating CSV:', e);
+      console.error("Error generating CSV:", e);
     }
   },
+
+  async createDistrictMailingFile(res_, req_) {
+    try {
+      const districtMailing = [];
+
+      // Build CSV-ready objects using forEach
+      districts.forEach((district) => {
+        const districtMailingObject = {
+          "District Number": district.districtNumber,
+          "District Name": district.displayName,
+          "Address Line 1": district.mailingAddressLine1 ?? "",
+          "Address Line 2": district.mailingAddressLine2 ?? "",
+          City: district.mailingCity ?? "",
+          Province: district.mailingProvinceCode ?? "",
+          "Postal Code": district.mailingPostal ?? "",
+          Country: district.mailingCountryCode ?? "",
+          "Courier Address Line 1": district.physicalAddressLine1 ?? "",
+          "Courier Address Line 2": district.physicalAddressLine2 ?? "",
+          "Courier City": district.physicalCity ?? "",
+          "Courier Province": district.physicalProvinceCode ?? "",
+          "Courier Postal Code": district.physicalPostal ?? "",
+          "Courier Country": district.physicalCountryCode ?? "",
+          "Web Address": district.webAddress ?? "",
+          Phone: district.phoneNumber ?? "",
+          Fax: district.fax ?? "",
+        };
+
+        districtMailing.push(districtMailingObject);
+      });
+
+      // Sort by "District Number" numerically
+      const sortedDistrictMailing = sortJSONByKey(
+        districtMailing,
+        "District Number",
+        true
+      );
+
+      // Define file path
+      const FILE_STORAGE_DIR = path.join(__dirname, "../..", "public");
+      const filePathPublic = path.join(FILE_STORAGE_DIR, "districtmailing.csv");
+
+      // Write CSV once
+      await this.writeCSVToFile(sortedDistrictMailing, filePathPublic);
+
+      console.log("CSV generated successfully at:", filePathPublic);
+    } catch (e) {
+      console.error("Error generating CSV:", e);
+    }
+  },
+
   async createSchoolFiles(res_, req_) {
     try {
       const schoolList = [];
-  
-      districts.forEach(item => {
+
+      districtsMap.forEach((item) => {
         if (Array.isArray(item.districtSchools)) {
-          item.districtSchools.forEach(school => {
+          item.districtSchools.forEach((school) => {
             const principal = school.contacts?.find(
-              contact => contact.schoolContactTypeCode === 'PRINCIPAL'
+              (contact) => contact.schoolContactTypeCode === "PRINCIPAL"
             );
-  
+
             school.principalEmail = principal?.email || null;
             school.principalFirstName = principal?.firstName || null;
             school.principalLastName = principal?.lastName || null;
-  
+
+            const flattenedAddresses =
+              school.addresses?.reduce((acc, addr) => {
+                const prefix = addr.addressTypeCode.toLowerCase(); // 'mailing' or 'physical'
+                acc[`${prefix}AddressLine1`] = addr.addressLine1;
+                acc[`${prefix}AddressLine2`] = addr.addressLine2;
+                acc[`${prefix}City`] = addr.city;
+                acc[`${prefix}Province`] = addr.provinceCode;
+                acc[`${prefix}Postal`] = addr.postal;
+                acc[`${prefix}Country`] = addr.countryCode;
+                return acc;
+              }, {}) || {};
+
+            Object.assign(school, flattenedAddresses);
+
             delete school.contacts;
             delete school.schoolFundingGroups;
-  
+            delete school.addresses;
+
             schoolList.push(school);
           });
         }
@@ -446,14 +1057,14 @@ const cacheService = {
         { property: "districtNumber", label: "District Number" },
         { property: "mincode", label: "School Code" },
         { property: "displayName", label: "School Name" },
-        { property: "mailing_addressLine1", label: "Address" },
-        { property: "mailing_city", label: "City" },
-        { property: "mailing_provinceCode", label: "Province" },
-        { property: "mailing_postal", label: "Postal Code" },
-        { property: "physical_addressLine1", label: "Physical Address" },
-        { property: "physical_city", label: "Physical City" },
-        { property: "physical_provinceCode", label: "Physical Province" },
-        { property: "physical_postal", label: "Physical Postal Code" },
+        { property: "mailingAddressLine1", label: "Address" },
+        { property: "mailingCity", label: "City" },
+        { property: "mailingProvince", label: "Province" },
+        { property: "mailingPostal", label: "Postal Code" },
+        { property: "physicalAddressLine1", label: "Physical Address" },
+        { property: "physicalCity", label: "Physical City" },
+        { property: "physicalProvince", label: "Physical Province" },
+        { property: "physicalPostal", label: "Physical Postal Code" },
         { property: "firstName", label: "Principal First Name" },
         { property: "lastName", label: "Principal Last Name" },
         { property: "facilityTypeCode", label: "Type" },
@@ -462,9 +1073,11 @@ const cacheService = {
           property: "schoolCategoryCode_description",
           label: "School Category",
         },
-        // { property: "gradeRange", label: "Grade Range" },
-        // { property: "fundingGroups", label: "Funding Group(s)" },
-        { property: "phoneNumber", label: "Phone" },
+        +(
+          // { property: "gradeRange", label: "Grade Range" },
+          // { property: "fundingGroups", label: "Funding Group(s)" },
+          { property: "phoneNumber", label: "Phone" }
+        ),
         { property: "faxNumber", label: "Fax" },
         { property: "email", label: "Email" },
         { property: "KINDHALF", label: "Kindergarten Half Enrollment" },
@@ -496,40 +1109,59 @@ const cacheService = {
         },
       ];
 
-      const FILE_STORAGE_DIR = path.join(__dirname, '../..', 'public');
-  
+      const FILE_STORAGE_DIR = path.join(__dirname, "../..", "public");
+
       // PUBLIC schools
-      let publicSchools = schoolList.filter(s => s.schoolCategoryCode === 'PUBLIC');
-      publicSchools = this.relabelSchoolProperties(publicSchools, propertyOrder)
-      const filePathPublic = path.join(FILE_STORAGE_DIR, 'allpublicschools.csv');
 
-  
+      let publicSchools = schoolList.filter(
+        (s) => s.schoolCategoryCode === "PUBLIC"
+      );
+      publicSchools = this.mapPropertiesToLabels(publicSchools, propertyOrder);
+      const filePathPublic = path.join(
+        FILE_STORAGE_DIR,
+        "publicschoolcontacts.csv"
+      );
+
       await this.writeCSVToFile(publicSchools, filePathPublic);
-  
+
       // INDEPENDENT schools
-      let independentSchools = schoolList.filter(s => s.schoolCategoryCode === 'INDEPEND');
-      
+      let independentSchools = schoolList.filter(
+        (s) => s.schoolCategoryCode === "INDEPEND"
+      );
+      const filePathIndependent = path.join(
+        FILE_STORAGE_DIR,
+        "independentschoolcontacts.csv"
+      );
+      independentSchools = this.mapPropertiesToLabels(
+        independentSchools,
+        propertyOrder
+      );
 
-
-      const filePathIndependent = path.join(FILE_STORAGE_DIR, 'allindependentschools.csv');
-      independentSchools = this.relabelSchoolProperties(independentSchools, propertyOrder)
-  
       await this.writeCSVToFile(independentSchools, filePathIndependent);
-  
-      // ✅ Send file response for public schools
-      
-      
+
+      // INDEPENDENT schools
+      let allSchools = schoolList;
+      const filePathAllSchools = path.join(
+        FILE_STORAGE_DIR,
+        "allschoolcontacts.csv"
+      );
+      independentSchools = this.mapPropertiesToLabels(
+        independentSchools,
+        propertyOrder
+      );
+
+      await this.writeCSVToFile(independentSchools, filePathIndependent);
     } catch (e) {
-      console.error('Error generating CSV:', e);
+      console.error("Error generating CSV:", e);
     }
   },
-  relabelSchoolProperties(schools, propertyOrder) {
-    return schools.map(school => {
-      const relabeled = {};
+  mapPropertiesToLabels(items, propertyOrder) {
+    return items.map((item) => {
+      const mapped = {};
       propertyOrder.forEach(({ property, label }) => {
-        relabeled[label] = school[property] ?? "";
+        mapped[label] = item[property] ?? "";
       });
-      return relabeled;
+      return mapped;
     });
   },
   // Helper function to convert JSON to CSV and write to file
@@ -537,14 +1169,13 @@ const cacheService = {
     return new Promise((resolve, reject) => {
       jsonExport(data, (err, csv) => {
         if (err) return reject(err);
-        fs.writeFile(filePath, '\ufeff' + csv, (error) => {
+        fs.writeFile(filePath, "\ufeff" + csv, (error) => {
           if (error) return reject(error);
           resolve();
         });
       });
     });
-  }
-    
-}
+  },
+};
 
 module.exports = cacheService;

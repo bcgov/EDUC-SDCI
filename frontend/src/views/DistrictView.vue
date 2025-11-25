@@ -27,7 +27,7 @@ const tabOptions = {
 const tab = ref(tabOptions.contacts) // Default to contacts tab
 const contactHeaders = [
   { title: 'Role', key: 'jobTitle' },
-  { title: 'Contact', key: 'label' },
+  { title: 'Contact', key: 'districtContactLabel' },
   { title: 'First Name', key: 'firstName' },
   { title: 'Last Name', key: 'lastName' },
   { title: 'Phone', key: 'phoneNumber' },
@@ -63,6 +63,7 @@ function goToSchool(displayName: string, mincode: string, id: string) {
   })
 }
 function downloadDistrictContacts() {
+
   jsonexport(filteredContacts.value, function (err: any, csv: any) {
     if (err) return console.error(err)
     appStore.exportCSV(csv)
@@ -88,9 +89,8 @@ async function getDistrictData(): Promise<void> {
       const response = await InstituteService.getDistrictView(districtId.value)
       if (response.data?.districtData?.contacts) {
         district.value = response.data
-        contacts.value = response.data?.districtData?.contacts
-        schools.value = district.value?.districtSchools
-
+        contacts.value = response.data.districtData?.contacts
+        schools.value = district.value?.districtData?.districtSchools
         //Change School date for DL
         const transformedSchoolData = schools.value.map((school: School) => {
           const { contacts, addresses, ...rest } = school
@@ -98,12 +98,15 @@ async function getDistrictData(): Promise<void> {
             schoolContactTypeCode,
             ...contactRest
           }))
-          const physicalAddress = addresses.find(
-            (address: Address) => address?.addressTypeCode === 'PHYSICAL'
-          )
-          const mailingAddress = addresses.find(
-            (address: Address) => address?.addressTypeCode === 'MAILING'
-          )
+          let physicalAddress: Address | null = null
+          let mailingAddress: Address | null = null
+
+          for (const address of addresses || []) {
+            if (address.addressTypeCode === 'PHYSICAL') physicalAddress = address
+            else if (address.addressTypeCode === 'MAILING') mailingAddress = address
+
+            if (physicalAddress && mailingAddress) break
+          }
           return {
             ...rest,
             schoolContact: transformedContacts?.find((contact) => contact.schoolContactTypeCode === 'PRINCIPAL'),
@@ -120,16 +123,16 @@ async function getDistrictData(): Promise<void> {
             'District Number': response.data.districtData.districtNumber,
             Mincode: item.mincode,
             'Display Name': item.displayName,
-            'Mailing Address': item.mailingAddress?.addressLine1,
-            'Mailing Address Line2': item.mailingAddress?.addressLine2,
-            'Mailing Address City': item.mailingAddress?.city,
-            'Mailing Address Province': item.mailingAddress?.provinceCode,
-            'Mailing Address PostalCode': item.mailingAddress?.postal,
-            'Physical Address': item.physicalAddress?.addressLine1,
-            'Physical Address Line2': item.physicalAddress?.addressLine2,
-            'Physical Address City': item.physicalAddress?.city,
-            'Physical Address Province': item.physicalAddress?.provinceCode,
-            'Physical Address Postal Code': item.physicalAddress?.postal,
+            'Mailing Address': item.mailingAddressLine1,
+            'Mailing Address Line2': item.mailingAddressLine2,
+            'Mailing Address City': item.mailingCity,
+            'Mailing Address Province': item.mailingProvince,
+            'Mailing Address PostalCode': item.mailingPostal,
+            'Physical Address': item.physicalAddressLine1,
+            'Physical Address Line2': item.physicalAddressLine2,
+            'Physical Address City': item.physicalCity,
+            'Physical Address Province': item.physicalProvince,
+            'Physical Address Postal Code': item.physicalPostal,
             Role: item.schoolContact?.jobTitle,
             'Contact First Name': item.schoolContact?.firstName,
             'Contact Last Name': item.schoolContact?.lastName,
@@ -147,7 +150,6 @@ async function getDistrictData(): Promise<void> {
             'Group Classification Senior Secondary 11-12': item.seniorSecondary1112
           }
         })
-        console.log(filteredSchools)
         filteredContacts.value = contacts.value.map((item: any) => {
           return {
             'District Number': response.data.districtData?.districtNumber,
@@ -161,15 +163,15 @@ async function getDistrictData(): Promise<void> {
             'Alternate Phone Number': item.alternatePhoneNumber,
             'Alternate Phone Extension': item.alternatePhoneExtension,
             Email: item.email,
-            'Mailing Address': response.data.districtData?.addresses[0].addressLine1,
-            'Mailing City': response.data.districtData?.addresses[0].city,
-            'Mailing Province': response.data.districtData?.addresses[0].provinceCode,
-            'Mailing Postal Code': response.data.districtData?.addresses[0].postal,
+            'Mailing Address': response.data.districtData?.addresses?.[0]?.addressLine1,
+            'Mailing City': response.data.districtData?.addresses?.[0]?.city,
+            'Mailing Province': response.data.districtData?.addresses?.[0]?.provinceCode,
+            'Mailing Postal Code': response.data.districtData?.addresses?.[0]?.postal,
             'District Phone': response.data.districtData?.phoneNumber,
             'District Fax': response.data.districtData?.faxNumber,
             Website: response.data.districtData?.website
           }
-        })
+        });
       }
     } catch (error) {
       console.error(error)
@@ -184,24 +186,22 @@ onMounted(async () => {
 
 <template>
   <div>
-    <v-breadcrumbs
-      class="breadcrumbs"
-      bg-color="white"
-      :items="[
-        { title: 'Home', href: '/' },
-        'District',
-        district.value.districtData
-          ? district.value.districtData.districtNumber +
-            ' ' +
-            district.value.districtData.displayName
-          : ''
-      ]"
-    ></v-breadcrumbs>
+    <v-breadcrumbs class="breadcrumbs" bg-color="white" :items="[
+      { title: 'Home', href: '/' },
+      'District',
+      district.value.districtData
+        ? district.value.districtData.districtNumber +
+        ' ' +
+        district.value.districtData.displayName
+        : ''
+    ]"></v-breadcrumbs>
 
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-container id="main">
         <DisplayAlert class="mx-4 mx-lg-0" />
+
         <v-row no-gutters justify="space-between" class="pa-4 pa-md-5 pa-lg-0">
+
           <v-col cols="12" v-if="district.value.districtData">
             <v-row no-gutters justify="space-between">
               <v-col>
@@ -228,8 +228,7 @@ onMounted(async () => {
                   {{ formatPhoneNumber(district.value.districtData?.faxNumber) }}
                 </p>
                 <p v-if="district.value.districtData?.email">
-                  <strong>Email: </strong
-                  ><a :href="'mailto:' + district.value.districtData?.email">{{
+                  <strong>Email: </strong><a :href="'mailto:' + district.value.districtData?.email">{{
                     district.value.districtData?.email
                   }}</a>
                 </p>
@@ -240,30 +239,21 @@ onMounted(async () => {
                 </p>
               </v-col>
 
-              <v-col
-                cols="11"
-                md="auto"
-                v-for="item in district.value.districtData.addresses"
-                :key="item.addressTypeCode"
-              >
+              <v-col cols="11" md="auto" v-for="item in district.value.districtData.addresses"
+                :key="item.addressTypeCode">
+
                 <DisplayAddress v-bind="item" class="mb-3" />
               </v-col>
 
               <v-col cols="11" md="4" class="pa-0 pa-md-3">
-                <v-btn
-                  variant="text"
-                  class="text-none text-subtitle-1 ma-1 v-btn-align-left"
-                  @click="downloadDistrictContacts"
-                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
-                  District Contacts (CSV)</v-btn
-                >
-                <v-btn
-                  variant="text"
-                  class="text-none text-subtitle-1 ma-1 v-btn-align-left"
-                  @click="downloadDistrictSchools"
-                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
-                  District Schools (CSV)</v-btn
-                >
+                <v-btn variant="text" class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+                  @click="downloadDistrictContacts"><template v-slot:prepend> <v-icon icon="mdi-download" />
+                  </template>Download
+                  District Contacts (CSV)</v-btn>
+                <v-btn variant="text" class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+                  @click="downloadDistrictSchools"><template v-slot:prepend> <v-icon icon="mdi-download" />
+                  </template>Download
+                  District Schools (CSV)</v-btn>
               </v-col>
             </v-row>
           </v-col>
@@ -283,7 +273,7 @@ onMounted(async () => {
         <v-tab :value="tabOptions.schools">
           District Schools
           <v-chip color="bcGovBlue" size="small" class="ml-1" variant="tonal">{{
-            district.value.districtSchools?.length
+            district.value.districtData?.districtSchools?.length
           }}</v-chip>
         </v-tab>
       </v-tabs>
@@ -292,20 +282,10 @@ onMounted(async () => {
         <v-window v-model="tab">
           <!-- District Contacts tab contents -->
           <v-window-item :value="tabOptions.contacts">
-            <v-text-field
-              v-model="contactSearch"
-              append-icon="mdi-magnify"
-              label="Filter District Contacts"
-              single-line
-              hide-details
-            ></v-text-field>
-            <v-data-table
-              items-per-page="-1"
-              :headers="contactHeaders"
-              :items="district.value.districtData?.contacts"
-              :search="contactSearch"
-              :sort-by="[{ key: 'label', order: 'asc' }]"
-            >
+            <v-text-field v-model="contactSearch" append-icon="mdi-magnify" label="Filter District Contacts" single-line
+              hide-details></v-text-field>
+            <v-data-table items-per-page="-1" :headers="contactHeaders" :items="district.value.districtData?.contacts"
+              :search="contactSearch" :sort-by="[{ key: 'label', order: 'asc' }]">
               <template v-slot:item.email="{ item }">
                 <div style="max-width: 250px; overflow: hidden">
                   <a :href="`mailto:${item.email}`">{{ item.email }}</a>
@@ -321,20 +301,11 @@ onMounted(async () => {
           </v-window-item>
           <!-- District Schools tab contents -->
           <v-window-item :value="tabOptions.schools">
-            <v-text-field
-              v-model="schoolSearch"
-              append-icon="mdi-magnify"
-              label="Filter District Schools"
-              single-line
-              hide-details
-            ></v-text-field>
-            <v-data-table
-              items-per-page="-1"
-              :headers="schoolHeaders"
-              :items="district.value.districtSchools"
-              :search="schoolSearch"
-              :sort-by="[{ key: 'mincode', order: 'asc' }]"
-            >
+            <v-text-field v-model="schoolSearch" append-icon="mdi-magnify" label="Filter District Schools" single-line
+              hide-details></v-text-field>
+            <v-data-table items-per-page="-1" :headers="schoolHeaders"
+              :items="district.value.districtData.districtSchools" :search="schoolSearch"
+              :sort-by="[{ key: 'mincode', order: 'asc' }]">
               <template v-slot:item.displayName="{ item }">
                 <a @click="goToSchool(item.displayName, item.mincode, item.schoolId)">{{
                   item.displayName

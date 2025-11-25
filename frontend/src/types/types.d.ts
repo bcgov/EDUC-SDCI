@@ -43,7 +43,7 @@ export interface Grade {
 
 export interface Address {
   addressLine1: string;
-  addressLine2: string;
+  addressLine2: string | null;
   addressTypeCode: string;
   city: string;
   countryCode: string;

@@ -18,6 +18,17 @@ export const useAppStore = defineStore('app', {
     gradeCodes: [] as Grade[]
   }),
   actions: {
+    async setCodes(){
+      await this.setDistricts()
+      await this.setAuthorityList()
+      await this.setSchoolList()
+      await this.setOffshoreSchoolList()
+      await this.setContactTypeCodes()
+      await this.setCategoryCodes()
+      await this.setFacilityCodes()
+      await this.setGradeCodes()
+      await this.setAddressTypeCodes()
+    },
     convertToCSV(jsonArray: any) {
       let csvContent = "";
       if (jsonArray.length === 0) {
@@ -46,8 +57,16 @@ export const useAppStore = defineStore('app', {
         a.download = 'output.csv';
         a.click();
     },
-    compareSchoolGrades(schoolGradesCode: Grade[], schoolGrades: Grade[]): Grade[] {
-      return schoolGradesCode.filter(sg1 => schoolGrades.some(sg2 => sg1.schoolGradeCode === sg2.schoolGradeCode));
+    async mapSchoolGradesToLabels(schoolGrades: Grade[]): Promise<Grade[]> {
+      // If gradeCodes not loaded, fetch them first
+      if (!this.gradeCodes || this.gradeCodes.length === 0) {
+        await this.setGradeCodes();
+      }
+
+      // Map the given schoolGrades to the loaded gradeCodes
+      return this.gradeCodes.filter(sg1 =>
+        schoolGrades.some(sg2 => sg1.schoolGradeCode === sg2.schoolGradeCode)
+      );
     },
     extractGradeLabels(schoolGrades: Grade[]){
       const gradeLabels: (string | undefined)[] = schoolGrades.map(grade => grade.label)
@@ -101,94 +120,30 @@ export const useAppStore = defineStore('app', {
         // Handle the error
         console.error(error)
       })
-
     },
-    async setCodes(): Promise<void> {
-      await InstituteService.loadCache().then((response) => {
-        //console.log(response)
-      }).catch((error) => {
-        console.error("ERRPR LOADING CACHE" + error)
-      })
-      // set category codes
-      await InstituteService.getCategoryCodes().then((response) => {
-        const currentDate: Date = new Date()
-        this.categoryCodes = response.data?.filter((item: any) => {
-          const effectiveDate: Date = new Date(item.effectiveDate);
-          const expiryDate: Date = new Date(item.expiryDate);
-          return expiryDate >= currentDate && effectiveDate <= currentDate;
-        })
-         //sort by display order
-        this.categoryCodes?.sort((a: any, b: any) => {
-          return a.displayOrder - b.displayOrder
-        })
-      }).catch((error) => {
-        console.error(error)
-      })
-
-      // set facility type codes
-      await InstituteService.getFacilityCodes().then((response) => {
-        this.facilityCodes = response.data
-      }).catch((error) => {
-        console.error(error)
-      })
-
-      // set contact type codes for Districts, Authorities, and Schools
-      await InstituteService.getContactTypeCodes().then((response) => {
-        const currentDate: Date = new Date()
-
-
-        if (response.data && response.data.codesList && response.data.codesList.authorityContactTypeCodes) {
-          response.data.codesList.authorityContactTypeCodes = response.data.codesList.authorityContactTypeCodes.filter((item: any) => {
-            const currentDate: Date = new Date(); // Assuming currentDate is defined somewhere
-            const effectiveDate: Date = new Date(item.effectiveDate);
-            const expiryDate: Date = new Date(item.expiryDate);
-            return expiryDate >= currentDate && effectiveDate <= currentDate;
-          });
-          response.data.codesList.authorityContactTypeCodes.sort((a: any, b: any) => {
-            return a.displayOrder - b.displayOrder
-          })
-        }
-
-        if (response.data && response.data.codesList && response.data.codesList.districtContactTypeCodes) {
-          response.data.codesList.districtContactTypeCodes = response.data.codesList.districtContactTypeCodes.filter((item: any) => {
-            const currentDate: Date = new Date(); // Assuming currentDate is defined somewhere
-            const effectiveDate: Date = new Date(item.effectiveDate);
-            const expiryDate: Date = new Date(item.expiryDate);
-            return expiryDate >= currentDate && effectiveDate <= currentDate;
-          });
-          response.data.codesList.districtContactTypeCodes.sort((a: any, b: any) => {
-            return a.displayOrder - b.displayOrder
-          })
-        }
-        if (response.data && response.data.codesList && response.data.codesList.schoolContactTypeCodes) {
-          response.data.codesList.schoolContactTypeCodes = response.data.codesList.schoolContactTypeCodes.filter((item: any) => {
-            const currentDate: Date = new Date(); // Assuming currentDate is defined somewhere
-            const effectiveDate: Date = new Date(item.effectiveDate);
-            const expiryDate: Date = new Date(item.expiryDate);
-            return expiryDate >= currentDate && effectiveDate <= currentDate;
-          });
-          response.data.codesList.schoolContactTypeCodes.sort((a: any, b: any) => {
-            return a.displayOrder - b.displayOrder
-          })
-        }
-        this.contactTypeCodes = response.data
-      }).catch((error) => {
-        console.error(error)
-      })
-
-      // set address type codes for institute addresses
-      await InstituteService.getAddressTypeCodes().then((response) => {
-        this.addressTypeCodes = response.data
-      }).catch((error) => {
-        console.error(error)
-      })
-
-      await InstituteService.getGradeCodes().then((response) => {
-        this.gradeCodes = response.data
-      }).catch((error) => {
-        console.error(error)
-      })
-    }
+  
+    async setContactTypeCodes(): Promise<any> {
+      const contactsResponse = await InstituteService.getContactTypeCodes()
+      this.contactTypeCodes = contactsResponse.data
+    },
+    async setCategoryCodes(): Promise<any> {
+      const categoryCodeResponse = await InstituteService.getCategoryCodes()
+      this.categoryCodes = categoryCodeResponse.data
+    },  
+    async setFacilityCodes(): Promise<any> {
+      const facilityCodeResponse = await InstituteService.getFacilityCodes()
+      this.facilityCodes = facilityCodeResponse.data
+      
+    },    
+    async setAddressTypeCodes(): Promise<any> {
+      const addressTypeCodeResponse = await InstituteService.getAddressTypeCodes()
+      this.addressTypeCodes = addressTypeCodeResponse.data
+      
+    },    
+    async setGradeCodes(): Promise<any> {
+      const gradeCodeResponse = await InstituteService.getGradeCodes()
+      this.gradeCodes = gradeCodeResponse.data  
+    },    
 
   },
   getters: {
@@ -201,7 +156,12 @@ export const useAppStore = defineStore('app', {
       return state.districts.map((district) => {return {districtNumber: district.districtNumber, displayName: district.displayName}})
     },
     getDistrictByDistrictId: (state) => {
-      return (districtId: string) => state.districts.find((district) => districtId === district.districtId)
+      return (districtId: string) => {
+        const result = state.districts.find(
+          (district) => districtId === district.districtId
+        )
+        return result
+      }
     },
     getDistrictByDistrictNumber: (state) => {
       return (distNum: string): ListDistrict | undefined => state.districts.find((district: ListDistrict): Boolean => distNum === district.districtNumber)
@@ -211,13 +171,26 @@ export const useAppStore = defineStore('app', {
       return state.authorities
     },
     getAuthoritiesList: (state) => {
-      return state.authorities.map((authority) => {return {authorityNumber: authority.authorityNumber, displayName: authority.displayName}})
-    },
+      return state.authorities
+        .map((authority) => ({
+          authorityNumber: authority.authorityNumber,
+          displayName: authority.displayName
+        }))
+        .sort((a, b) => a.authorityNumber - b.authorityNumber);
+    },  
     getAuthorityByAuthorityId: (state) => {
-      return (authorityId: string) => state.authorities.find((authority) => authorityId === authority.independentAuthorityId)
+      return (authorityId: string) => {
+        return state.authorities.find(
+          (authority) => authority.authorityID === authorityId
+        )
+      }
     },
     getAuthorityByAuthorityNumber: (state) => {
-      return (authNum: string | String) => state.authorities.find((authority) => authNum === authority.authorityNumber)
+      return (authNum: string) => {
+        return state.authorities.find(
+          (authority) => authority.authorityNumber === authNum
+        );
+      };
     },
     // Schools
     getSchools: (state) => {
@@ -227,8 +200,12 @@ export const useAppStore = defineStore('app', {
       return state.offshoreSchools
     },
     // Codes
-    getGradeByGradeCodes: (state) => {
-      return state.gradeCodes
+    getGradeCodes: async (state) => {
+      if (!state.gradeCodes || state.gradeCodes.length === 0) {
+        // fetch and set grade codes if empty
+        await appStore.setGradeCodes(); 
+      }
+      return state.gradeCodes;
     },
     getContactTypeCodes: (state) => {
       return state.contactTypeCodes
@@ -240,6 +217,7 @@ export const useAppStore = defineStore('app', {
       return (searchCode: string ) => state.contactTypeCodes.codesList.districtContactTypeCodes.find((contactCode: any) => searchCode === contactCode.districtContactTypeCode)?.label
     },
     getAuthorityContactTypeCodeLabel: (state) => {
+      
       return (searchCode: string ) => state.contactTypeCodes.codesList.authorityContactTypeCodes.find((contactCode: any) => searchCode === contactCode.authorityContactTypeCode)?.label
     },
     getAllDistrictContactTypeCodesLabel: (state) => {
@@ -249,9 +227,6 @@ export const useAppStore = defineStore('app', {
 
     getCategoryCodes: (state) => {
       return state.categoryCodes
-    },
-    getSchoolCategoryCodeLabel: (state) => {
-      return (searchCode: string ) => state.contactTypeCodes.codesList.schoolContactTypeCodes.find((categoryCode) => searchCode === categoryCode.schoolContactTypeCode)?.label
     },
     getCategoryCodeLabel: (state) => {
       return (searchCode: string ) => state.categoryCodes.find((categoryCode) => searchCode === categoryCode.schoolCategoryCode)?.label

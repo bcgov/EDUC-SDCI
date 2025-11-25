@@ -163,7 +163,7 @@ const searchSchools = async () => {
         ...rest,
         schoolCategoryCodeLabel: appStore.getCategoryCodeLabel(item.schoolCategoryCode),
         facilityTypeCodeLabel: appStore.getFacilityCodeLabel(item.facilityTypeCode),
-        grades: appStore.compareSchoolGrades(appStore.getGradeByGradeCodes, item.grades)
+        grades: appStore.mapSchoolGradesToLabels(item.grades)
       }
     })
     results.value = searchresults.data.totalElements
