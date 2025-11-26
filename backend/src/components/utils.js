@@ -707,57 +707,47 @@ function replaceGroup(input) {
   return input.replace(/GROUP([1-7])/g, (_, num) => `0${num}`);
 }
 
-function addFundingGroups(schools, fundingGroups) {
+function addFundingGroups(school) {
   try {
-    // Return an empty object if the input is empty or invalid
-    // Loop through each school object in the array
-    schools.forEach((school) => {
-      // Add the new properties with empty string values
-      school.primaryK3 = "";
-      school.elementary47 = "";
-      school.juniorSecondary810 = "";
-      school.seniorSecondary1112 = "";
-    });
-
-    // Define the grade categories
     const gradeCategories = {
       primaryK3: ["KINDFULL", "KINDHALF", "GRADE01", "GRADE02", "GRADE03"],
       elementary47: ["GRADE04", "GRADE05", "GRADE06", "GRADE07"],
       juniorSecondary810: ["GRADE08", "GRADE09", "GRADE10"],
       seniorSecondary1112: ["GRADE11", "GRADE12"],
     };
-    // Loop through each school object
-    schools.forEach((school) => {
-      // 1. Create lookup map for funding codes
-      const fundingMap = new Map();
-      school.schoolFundingGroups.forEach((group) => {
-        fundingMap.set(
-          group.schoolGradeCode,
-          replaceGroup(group.schoolFundingGroupCode)
-        );
-      });
 
-      // 2. Check each category and populate the funding group if a grade is present
-      for (const category in gradeCategories) {
-        // Find the first grade in the category list that is offered by the school
-        const offeredGrade = gradeCategories[category].find(
-          (gradeCode) => school[gradeCode] === "Y"
-        );
+    // Initialize category fields
+    school.primaryK3 = "";
+    school.elementary47 = "";
+    school.juniorSecondary810 = "";
+    school.seniorSecondary1112 = "";
 
-        if (offeredGrade) {
-          // If an offered grade is found, get its funding code from the map
-          school[category] = fundingMap.get(offeredGrade);
-        }
+    // Build grade → fundingGroup map
+    const fundingMap = new Map(
+      school.schoolFundingGroups?.map((group) => [
+        group.schoolGradeCode,
+        replaceGroup(group.schoolFundingGroupCode),
+      ]) || []
+    );
+
+    // Assign funding group per category
+    for (const category in gradeCategories) {
+      const offeredGrade = gradeCategories[category].find(
+        (gradeCode) => school[gradeCode] === "Y"
+      );
+
+      if (offeredGrade) {
+        school[category] = fundingMap.get(offeredGrade) || "";
       }
-    });
-    return schools;
+    }
+
+    return school;
   } catch (error) {
-    // Handle the error here, you can log it or perform other actions
     console.error("An error occurred in addFundingGroups:", error);
-    // Optionally, you can rethrow the error if needed
     throw error;
   }
 }
+
 function createSchoolCache(schoolData, schoolGrades) {
   // Preload convertedGrades with schoolGrades.schoolGradeCode and set the value to "N"
 
@@ -872,17 +862,11 @@ function createSchoolCache(schoolData, schoolGrades) {
   });
 }
 
-function isActiveEntity(effective, expiry) {
-  let today = new Date();
-  return today > new Date(effective) && (!expiry || today < new Date(expiry));
-}
-
 module.exports = {
   addFundingGroups,
   filterByExpiryDate,
   filterIncludeByField,
   sortByProperty,
-
   filterByField,
   appendMailingAddressDetailsAndRemoveAddresses,
   sortJSONByKey,
@@ -890,8 +874,6 @@ module.exports = {
   addDistrictLabels,
   districtNumberSort,
   createSchoolCache,
-  formatGrades,
   rearrangeAndRelabelObjectProperties,
-  isActiveEntity,
   utils,
 };

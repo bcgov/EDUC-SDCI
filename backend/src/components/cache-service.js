@@ -36,7 +36,6 @@ let activeSchools = [];
 let activeDistricts = [];
 let addressTypeCodes = [];
 let schoolCategoryCodes = [];
-let schoolContactTypeCodes = [];
 let contactTypeCodes = {};
 let facilityCodes = [];
 let gradeCodes = [];
@@ -61,14 +60,14 @@ const cacheService = {
           data.accessToken,
           `${config.get(
             "server:instituteAPIURL"
-          )}/institute/school/paginated?pageSize=100`
+          )}/institute/school/paginated?pageSize=200`
         );
-        const schoolWithFundingGroups = schoolsResponse.content;
+        const schoolsData = schoolsResponse.content;
 
         // remove contacts that are not publiclyAvailable
 
-        const schoolsWithPubliclyAvailableContacts =
-          schoolWithFundingGroups.map((school) => {
+        const schoolsWithPubliclyAvailableContacts = schoolsData.map(
+          (school) => {
             return {
               ...school,
               contacts: (school.contacts || [])
@@ -101,17 +100,21 @@ const cacheService = {
                   };
                 }),
             };
-          });
+          }
+        );
 
         const schoolsToLoadToCache = schoolsWithPubliclyAvailableContacts;
-
         if (schoolsToLoadToCache && schoolsToLoadToCache.length > 0) {
           for (const school of schoolsToLoadToCache) {
-            const schoolObject = generateSchoolObject(school, gradeCodes);
+            let schoolObject = generateSchoolObject(school, gradeCodes);
+
             if (isSchoolActive(schoolObject)) {
               schoolObject.districtNumber = this.getDistrictNumber(
                 school.districtId
               );
+              //add fundingGroups to school
+
+              schoolObject = addFundingGroups(schoolObject);
 
               schoolMap.set(schoolObject.schoolId, schoolObject);
               mincode_school_ID_Map.set(
@@ -123,7 +126,6 @@ const cacheService = {
             }
           }
         }
-
         log.info(`Loaded ${schoolMap.size} schools.`);
         log.info(`Loaded ${activeSchools.length} active schools.`);
       },
@@ -132,59 +134,7 @@ const cacheService = {
       }
     );
   },
-  async addFundingGroups(schools, fundingGroups) {
-    try {
-      // Process each school in the array
-      const schoolsWithFunding = schools.map((school) => {
-        // Find all matching funding groups by mincode
-        const matchingFundingGroups = fundingGroups.filter(
-          (fundingGroup) => fundingGroup.mincode === school.mincode
-        );
 
-        const schoolWithFunding = {
-          ...school,
-          primaryK3: "", // Replace with an appropriate default value
-          elementary47: "", // Replace with an appropriate default value
-          juniorSecondary810: "", // Replace with an appropriate default value
-          seniorSecondary1112: "", // Replace with an appropriate default value
-        };
-
-        // Iterate through the matching funding groups
-        matchingFundingGroups.forEach((matchingFundingGroup) => {
-          // Access the fundingGroupCode and fundingSubCode properties
-          const fundingGroupCode = matchingFundingGroup.fundingGroupCode;
-          const fundingSubCode = matchingFundingGroup.fundingGroupSubCode;
-
-          // Check the fundingSubCode and update the school information
-          switch (fundingSubCode) {
-            case "01":
-              schoolWithFunding.primaryK3 = fundingGroupCode;
-              break;
-            case "04":
-              schoolWithFunding.elementary47 = fundingGroupCode;
-              break;
-            case "08":
-              schoolWithFunding.juniorSecondary810 = fundingGroupCode;
-              break;
-            case "11":
-              schoolWithFunding.seniorSecondary1112 = fundingGroupCode;
-              break;
-            default:
-              break;
-          }
-        });
-
-        return schoolWithFunding;
-      });
-
-      return schoolsWithFunding;
-    } catch (error) {
-      // Handle the error here, you can log it or perform other actions
-      console.error("An error occurred in addFundingGroups:", error);
-      // Optionally, you can rethrow the error if needed
-      throw error;
-    }
-  },
   async loadAddressTypeCodes() {
     await retry(
       async () => {
@@ -240,7 +190,6 @@ const cacheService = {
             (code) => !excludedCodes.includes(code.schoolCategoryCode)
           );
         }
-
         log.info(`Loaded ${schoolCategoryCodes.length} school category codes.`);
       },
       {
@@ -263,7 +212,6 @@ const cacheService = {
         if (!accessToken) {
           throw new Error("Failed to retrieve access token.");
         }
-
         const url = `${config.get(
           "server:instituteAPIURL"
         )}/institute/facility-codes`;
