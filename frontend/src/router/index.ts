@@ -17,6 +17,12 @@ const router = createRouter({
       )
     },
     {
+      path: '/contacts',
+      name: 'contacts',
+      component: () =>  import('../views/ContactsView.vue'
+      )
+    },
+    {
       path: '/school/:schoolId', //TODO: Add mincode once we setup axios call to get school data
       name: 'school',
       component: () =>  import('../views/SchoolView.vue'),

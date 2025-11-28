@@ -61,21 +61,20 @@ async function getDistrictContactSearchResults(req, res) {
   }&pageNumber=${
     req.query?.pageNumber
   }&searchCriteriaList=${encodedSearchCriteriaList}`;
-  const cachedCodeList = await listCache.get("codesList");
-  const districtList = await listCache.get("districtlist");
-  const nonBCDistrictList = await listCache.get("nonbcdistrictlist");
 
-  // Get valid districtContactTypeCode values
-  const validTypeCodes =
-    cachedCodeList?.codesList?.districtContactTypeCodes?.map(
-      (c) => c.districtContactTypeCode
-    ) || [];
+  // // Get valid districtContactTypeCode values
+  const validTypeCodes = cacheService.getContactTypeCodes();
 
   axios
     .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
     .then((response) => {
       if (req.url.includes("/districts/contact/paginated")) {
-        let jsonData = addDistrictLabels(response.data, districtList);
+        let jsonData = response.data;
+
+        jsonData = addDistrictLabels(
+          response.data,
+          cacheService.getActiveDistricts()
+        );
 
         // Filter out entries with missing/invalid districtNumber
         jsonData.content = jsonData.content.filter(
@@ -86,9 +85,10 @@ async function getDistrictContactSearchResults(req, res) {
         );
 
         // Keep only contacts with valid districtContactTypeCode
-        jsonData.content = jsonData.content.filter((contact) =>
-          validTypeCodes.includes(contact.districtContactTypeCode)
-        );
+        console.log(validTypeCodes);
+        // jsonData.content = jsonData.content.filter((contact) =>
+        //   validTypeCodes.includes(contact.districtContactTypeCode)
+        // );
 
         res.json(jsonData);
       } else {

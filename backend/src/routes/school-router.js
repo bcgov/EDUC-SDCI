@@ -6,21 +6,14 @@ const axios = require("axios");
 
 const { checkToken } = require("../components/auth");
 const cacheService = require("../components/cache-service");
+const { getSchoolBySchoolID } = require("../components/school");
 
 //Batch Routes
-
-router.get("/all-contacts/:schoolCategory", checkToken, getAllSchools);
 router.get("/:schoolId", checkToken, getSchool);
 
 async function getSchool(req, res) {
-  const { schoolId } = req.params;
-  const response = cacheService.getSchoolBySchoolID(req, res);
+  const response = getSchoolBySchoolID(req, res);
   return response;
-}
-
-async function getAllSchools(req, res) {
-  const { schoolCategory } = req.params;
-  return res.json([]);
 }
 
 module.exports = router;

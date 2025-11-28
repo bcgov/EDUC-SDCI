@@ -498,33 +498,28 @@ const cacheService = {
       console.log(e);
     }
   },
-  getFundingGroupCodes(_req, res) {
-    return res.status(200).json(fundingGroups ? fundingGroups : []);
+  getFundingGroupCodes() {
+    return fundingGroups ? fundingGroups : [];
   },
-  getGradeCodes(_req, res) {
-    return res.status(200).json(gradeCodes ? gradeCodes : []);
+  getGradeCodes() {
+    return gradeCodes ? gradeCodes : [];
   },
-  getFacilityCodes(_req, res) {
-    return res.status(200).json(facilityCodes ? facilityCodes : []);
+  getFacilityCodes() {
+    return facilityCodes ? facilityCodes : [];
   },
-  getCategoryCodes(_req, res) {
-    return res.status(200).json(schoolCategoryCodes ? schoolCategoryCodes : []);
+  getCategoryCodes() {
+    return schoolCategoryCodes ? schoolCategoryCodes : [];
   },
-  getContactTypeCodes(_req, res) {
-    return res.status(200).json(contactTypeCodes ? contactTypeCodes : []);
+  getContactTypeCodes() {
+    return contactTypeCodes ? contactTypeCodes : [];
   },
-  getAddressTypeCodes(_req, res) {
-    return res.status(200).json(addressTypeCodes ? addressTypeCodes : []);
+  getAddressTypeCodes() {
+    return addressTypeCodes ? addressTypeCodes : [];
   },
   getAllSchoolsJSON() {
     return res.status(200).json(schools ? schools : []);
   },
 
-  getSchoolBySchoolID(req, res) {
-    const schoolID = req.params.schoolId; // match param name in route
-    const school = schoolMap.get(schoolID);
-    return res.status(200).json(school ? school : []);
-  },
   getDistrictNumber(districtId) {
     const district = districtsMap.get(districtId);
     return district ? district.districtNumber : "N/A";
@@ -549,9 +544,6 @@ const cacheService = {
       (c) => c.districtContactTypeCode === districtContactTypeCode
     );
     return match ? !!match.publiclyAvailable : false;
-  },
-  getAllActiveSchoolsJSON(_req, res) {
-    return res.status(200).json(activeSchools ? activeSchools : []);
   },
   async loadAllDistrictsToMap() {
     await retry(
@@ -753,18 +745,6 @@ const cacheService = {
   getOffshoreSchoolList(_req, res) {
     return res.status(200).json(activeSchools ? activeSchools : []);
   },
-  getSchoolList(_req, res) {
-    // Example: only return mincode, displayName, schoolId, closedDate, openedDate, schoolCategoryCode
-    const trimmedSchools = (activeSchools || []).map((school) => ({
-      mincode: school.mincode,
-      displayName: school.displayName,
-      schoolId: school.schoolId,
-      closedDate: school.closedDate,
-      openedDate: school.openedDate,
-      schoolCategoryCode: school.schoolCategoryCode,
-    }));
-    return res.status(200).json(trimmedSchools);
-  },
 
   getAuthorityList(_req, res) {
     return res.status(200).json(activeAuthorities ? activeAuthorities : []);
@@ -773,13 +753,19 @@ const cacheService = {
   getDistrictList(_req, res) {
     return res.status(200).json(activeDistricts ? activeDistricts : []);
   },
+  getDistrictList() {
+    return activeDistricts ? activeDistricts : [];
+  },
 
   getAllDistrictsJSON() {
     return districts;
   },
 
-  getActiveDistricts(req_, res) {
-    return res.status(200).json(activeDistricts ? activeDistricts : []);
+  getActiveDistricts() {
+    return activeDistricts ? activeDistricts : [];
+  },
+  getActiveSchools() {
+    return activeSchools ? activeSchools : [];
   },
   getAuthorityByAuthorityID(authorityID) {
     return authoritiesMap.get(authorityID);
@@ -793,8 +779,11 @@ const cacheService = {
   getSchoolIdByMincode(mincode) {
     return mincode_school_ID_Map.get(mincode);
   },
+  getSchoolMap() {
+    return schoolMap ? schoolMap : {};
+  },
 
-  async createDistrictFiles(res_, req_) {
+  async createDistrictFiles(_res, _req) {
     try {
       let districtContacts = [];
 
@@ -892,7 +881,7 @@ const cacheService = {
     }
   },
 
-  async createDistrictMailingFile(res_, req_) {
+  async createDistrictMailingFile(_res, _req) {
     try {
       const districtMailing = [];
 
@@ -941,7 +930,7 @@ const cacheService = {
     }
   },
 
-  async createSchoolFiles(res_, req_) {
+  async createSchoolFiles(_res, _req) {
     try {
       const schoolList = [];
 
