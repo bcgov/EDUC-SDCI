@@ -24,13 +24,9 @@ async function bootstrapCache() {
     // Load district data
     await cacheService.loadAllDistrictsToMap();
     log.info("Loaded district data to memory");
-    // Load funding codes
-    await cacheService.loadFundingCodes();
-    log.info("Loaded funding codes to memory");
     // Load grade codes
     await cacheService.loadGradeCodes();
     log.info("Loaded grade codes to memory");
-    // Load school contact type codes
 
     // Load school data
     await cacheService.loadAllSchoolsToMap();

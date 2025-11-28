@@ -114,7 +114,7 @@ onBeforeMount(async () => {
     //add the missing labels
     const filteredGrades = await appStore.mapSchoolGradesToLabels(schoolData.value.grades)
     const labels = appStore.extractGradeLabels(filteredGrades)
-    console.log(filteredGrades)
+
     if (labels && labels.length > 0) {
       filteredGradesLabels.value = labels // assign the whole array instead of push
     }
@@ -135,7 +135,6 @@ onBeforeMount(async () => {
         filteredAddresses.value = response.data.addresses[0]
       }
     }
-    // console.log(appStore.getFacilityCodeLabel(response.data?.facilityTypeCode))
     //setting school contacts
     if (response.data) {
       if (response.data.contacts.length > 0) {

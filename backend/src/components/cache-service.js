@@ -134,7 +134,6 @@ const cacheService = {
       }
     );
   },
-
   async loadAddressTypeCodes() {
     await retry(
       async () => {
@@ -263,27 +262,9 @@ const cacheService = {
       }
     );
   },
-  async loadFundingCodes() {
-    await retry(
-      async () => {
-        // if anything throws, we retry
-        // const data = await auth.getApiCredentials(config.get("oidc:clientId"), config.get("oidc:clientSecret"), "client_credentials", "profile openid"); // get the tokens first to make api calls.
-
-        // fundingGroups = await utils.getData(data.accessToken, `${config.get('server:schoolsAPIURL')}/schools/fundingGroups`);
-
-        log.info(`Loaded ${fundingGroups.length} grade codes.`);
-      },
-      {
-        retries: 10,
-      }
-    );
-  },
-
   async loadContactTypeCodes() {
     await retry(
       async () => {
-        // if anything throws, we retry
-
         const data = await auth.getApiCredentials(
           config.get("oidc:clientId"),
           config.get("oidc:clientSecret"),
@@ -319,10 +300,6 @@ const cacheService = {
         ) {
           schoolContactTypeCodes = schoolContactTypeCodesResponse.filter(
             (code) => code.publiclyAvailable === true
-          );
-          console.log(
-            "school unfiltered  contacts " +
-              schoolContactTypeCodesResponse.length
           );
         }
 
@@ -1078,8 +1055,9 @@ const cacheService = {
       );
       const filePathIndependent = path.join(
         FILE_STORAGE_DIR,
-        "independentschoolcontacts.csv"
+        "allindependentschools.csv"
       );
+
       independentSchools = this.mapPropertiesToLabels(
         independentSchools,
         propertyOrder
@@ -1087,18 +1065,15 @@ const cacheService = {
 
       await this.writeCSVToFile(independentSchools, filePathIndependent);
 
-      // INDEPENDENT schools
+      // All Schools
       let allSchools = schoolList;
       const filePathAllSchools = path.join(
         FILE_STORAGE_DIR,
-        "allschoolcontacts.csv"
+        "allschoolContacts.csv"
       );
-      independentSchools = this.mapPropertiesToLabels(
-        independentSchools,
-        propertyOrder
-      );
+      allSchools = this.mapPropertiesToLabels(allSchools, propertyOrder);
 
-      await this.writeCSVToFile(independentSchools, filePathIndependent);
+      await this.writeCSVToFile(allSchools, filePathAllSchools);
     } catch (e) {
       console.error("Error generating CSV:", e);
     }

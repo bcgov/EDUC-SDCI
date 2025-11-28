@@ -542,40 +542,6 @@ function addDistrictLabels(jsonData, districtList) {
   return jsonData;
 }
 
-function districtNumberSort(a, b) {
-  // Convert the strings to numbers for comparison
-  const numA = parseInt(a, 10);
-  const numB = parseInt(b, 10);
-
-  if (numA < numB) {
-    return -1;
-  }
-  if (numA > numB) {
-    return 1;
-  }
-  return 0;
-}
-function formatGrades(grades, schoolGrades) {
-  const result = {};
-
-  // Create a set of all school grade codes from the provided grades
-  const gradeCodesSet = new Set(grades.map((grade) => grade.schoolGradeCode));
-
-  // Include all school grade codes in the result object
-  for (const grade of grades) {
-    result[grade.schoolGradeCode] = "Y";
-  }
-
-  // Set the value to "N" for school grade codes not in the provided grades
-  for (const grade of schoolGrades) {
-    if (!gradeCodesSet.has(grade.schoolGradeCode)) {
-      result[grade.schoolGradeCode] = "N";
-    }
-  }
-
-  return result;
-}
-
 function sortJSONByKey(items, key, numeric = false) {
   return items.slice().sort((a, b) => {
     const valueA = a[key] ?? "";
@@ -613,34 +579,6 @@ function rearrangeAndRelabelObjectProperties(object, propertyList) {
   });
   return reorderedObject;
 }
-
-function normalizeJsonObject(
-  sourceArray,
-  referenceArray,
-  matchKey,
-  condition,
-  includeFields
-) {
-  return sourceArray.map((item) => {
-    const matchingItem = referenceArray?.find(
-      (info) =>
-        info[matchKey] === item[matchKey] && (!condition || condition(info))
-    );
-    if (matchingItem) {
-      return {
-        ...item,
-        ...includeFields.reduce((result, field) => {
-          result[matchKey + "_" + field] = matchingItem[field];
-          return result;
-        }, {}),
-      };
-    }
-    return item;
-  });
-}
-function filterIncludeByField(data, field, valuesToInclude) {
-  return data.filter((item) => valuesToInclude.includes(item[field]));
-}
 function filterByField(jsonArray, fieldName, stringsToRemove) {
   // Filter the array based on the condition
   const filteredArray = jsonArray.filter((item) => {
@@ -653,27 +591,6 @@ function filterByField(jsonArray, fieldName, stringsToRemove) {
 
   return filteredArray;
 }
-
-function filterByExpiryDate(data) {
-  const currentDate = new Date();
-
-  return data.filter((item) => {
-    const expiryDate = item.expiryDate ? new Date(item.expiryDate) : null;
-    const effectiveDate = item.effectiveDate
-      ? new Date(item.effectiveDate)
-      : null;
-
-    return (
-      (expiryDate === null && currentDate > effectiveDate) ||
-      (currentDate < expiryDate && currentDate > effectiveDate)
-    );
-  });
-}
-
-function filterIncludeByField(data, field, valuesToInclude) {
-  return data.filter((item) => valuesToInclude.includes(item[field]));
-}
-
 function filterByField(jsonArray, fieldName, stringsToRemove) {
   // Filter the array based on the condition
   const filteredArray = jsonArray.filter((item) => {
@@ -685,22 +602,6 @@ function filterByField(jsonArray, fieldName, stringsToRemove) {
   });
 
   return filteredArray;
-}
-
-function filterByExpiryDate(data) {
-  const currentDate = new Date();
-
-  return data.filter((item) => {
-    const expiryDate = item.expiryDate ? new Date(item.expiryDate) : null;
-    const effectiveDate = item.effectiveDate
-      ? new Date(item.effectiveDate)
-      : null;
-
-    return (
-      (expiryDate === null && currentDate > effectiveDate) ||
-      (currentDate < expiryDate && currentDate > effectiveDate)
-    );
-  });
 }
 
 function replaceGroup(input) {
@@ -748,132 +649,13 @@ function addFundingGroups(school) {
   }
 }
 
-function createSchoolCache(schoolData, schoolGrades) {
-  // Preload convertedGrades with schoolGrades.schoolGradeCode and set the value to "N"
-
-  // Map over each school object
-  return schoolData.map((school) => {
-    const convertedGrades = {};
-    schoolGrades.forEach((grade) => {
-      convertedGrades[grade.schoolGradeCode] = "N";
-    });
-
-    const addressFields = {
-      mailing: {},
-      physical: {},
-    };
-
-    // Loop through the grades and set the value to "Y" for each grade
-    school.grades.forEach((grade) => {
-      convertedGrades[grade.schoolGradeCode] = "Y";
-    });
-
-    // Extract and format principal contact information if it exists
-    const currentDate = new Date();
-
-    const principalContact = school.contacts?.find((contact) => {
-      const effectiveDate = new Date(contact.effectiveDate);
-      const expiryDate = contact.expiryDate
-        ? new Date(contact.expiryDate)
-        : null;
-
-      return (
-        contact.schoolContactTypeCode === "PRINCIPAL" &&
-        effectiveDate <= currentDate &&
-        (!expiryDate || expiryDate > currentDate)
-      );
-    });
-    if (principalContact) {
-      school.firstName = principalContact.firstName;
-      school.lastName = principalContact.lastName;
-    }
-
-    // Loop through addresses and update the fields based on addressTypeCode
-    school.addresses.forEach((address) => {
-      if (address.addressTypeCode === "MAILING") {
-        Object.keys(address).forEach((field) => {
-          // Exclude the specified fields
-          if (
-            ![
-              "createUser",
-              "updateUser",
-              "createDate",
-              "updateDate",
-              "schoolAddressId",
-              "schoolId",
-              "addressTypeCode",
-            ].includes(field)
-          ) {
-            addressFields.mailing[`mailing_${field}`] = address[field];
-          }
-        });
-      } else if (address.addressTypeCode === "PHYSICAL") {
-        Object.keys(address).forEach((field) => {
-          if (
-            ![
-              "createUser",
-              "updateUser",
-              "createDate",
-              "updateDate",
-              "schoolAddressId",
-              "schoolId",
-              "addressTypeCode",
-            ].includes(field)
-          ) {
-            addressFields.mailing[`physical_${field}`] = address[field];
-          }
-        });
-      }
-    });
-
-    // Concatenate neighborhoodLearningTypeCode into a single string
-    const nlc = school.neighborhoodLearning
-      .map((learning) => learning.neighborhoodLearningTypeCode)
-      .join(" | ");
-
-    // Merge the address fields and nlc into the school object
-    Object.assign(
-      school,
-      convertedGrades,
-      addressFields.mailing,
-      addressFields.physical,
-      { nlc }
-    );
-
-    // Remove the original grades property and the updated address object
-    delete school.grades;
-    delete school.addresses;
-    delete school.neighborhoodLearning;
-    delete school.createUser;
-    delete school.updateUser;
-    delete school.updateDate;
-    delete school.createDate;
-    delete school.schoolId;
-    delete school.openedDate;
-    delete school.closedDate;
-    delete school.notes;
-    delete school.schoolMove.createUser;
-    delete school.schoolMove;
-
-    // Remove the contacts property
-    delete school.contacts;
-
-    return school;
-  });
-}
-
 module.exports = {
   addFundingGroups,
-  filterByExpiryDate,
-  filterIncludeByField,
   sortByProperty,
   filterByField,
   appendMailingAddressDetailsAndRemoveAddresses,
   sortJSONByKey,
-  normalizeJsonObject,
   addDistrictLabels,
-  districtNumberSort,
-  createSchoolCache,
   rearrangeAndRelabelObjectProperties,
   utils,
 };
