@@ -742,17 +742,11 @@ const cacheService = {
       }
     );
   },
-  getOffshoreSchoolList(_req, res) {
-    return res.status(200).json(activeSchools ? activeSchools : []);
+
+  getAuthorityList() {
+    return activeAuthorities ? activeAuthorities : [];
   },
 
-  getAuthorityList(_req, res) {
-    return res.status(200).json(activeAuthorities ? activeAuthorities : []);
-  },
-
-  getDistrictList(_req, res) {
-    return res.status(200).json(activeDistricts ? activeDistricts : []);
-  },
   getDistrictList() {
     return activeDistricts ? activeDistricts : [];
   },

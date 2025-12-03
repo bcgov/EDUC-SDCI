@@ -8,7 +8,7 @@ const { checkToken } = require("../components/auth");
 const { getDistrictList } = require("../components/district");
 const { getSchoolList } = require("../components/school");
 const { getOffshoreSchoolList } = require("../components/offshore");
-const { getAuthorityList } = require("../components/cache-service");
+const { getAuthorityList } = require("../components/authority");
 
 const {
   getAddressTypeCodes,
@@ -34,7 +34,7 @@ router.get("/offshore-school/list", checkToken, getOffshoreSchoolList);
 router.get("/school/list", checkToken, getSchoolList);
 
 //move to district.js
-router.get("/authority/list", checkToken, getAuthorityList);
+
 router.get("/district/list", checkToken, getDistrictList);
 
 module.exports = router;

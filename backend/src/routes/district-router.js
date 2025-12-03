@@ -5,8 +5,10 @@ const config = require("../config/index");
 const NodeCache = require("node-cache");
 const fs = require("fs");
 const { checkToken } = require("../components/auth");
+const { getDistrictList } = require("../components/district");
 const cacheService = require("../components/cache-service");
 
+router.get("/list", checkToken, getDistrictList);
 router.get("/:id", checkToken, getDistrict);
 
 async function getDistrict(req, res) {
