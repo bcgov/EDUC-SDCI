@@ -19,7 +19,7 @@ export default {
   },
   // Schools
   async getSchoolList(): Promise<AxiosResponse> {
-    return ApiService.apiAxios.get('/api/v1/institute/school/list')
+    return ApiService.apiAxios.get('/api/v1/school/list')
   },
   async getOffshoreSchoolList(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/offshore/list')

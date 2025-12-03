@@ -72,7 +72,7 @@ async function getOffshoreSchoolList(req, res) {
     //   offshoreSchoolList[i] = { ...offshoreSchoolList[i], ...formattedGrades };
     // }
 
-    res.json([offshoreSchoolList]);
+    res.json(offshoreSchoolList);
   } catch (e) {
     log.error(
       "getOffshoreSchoolsList Error",

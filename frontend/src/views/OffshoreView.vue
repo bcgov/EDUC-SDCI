@@ -25,7 +25,6 @@ const headers = ref([
   }
   // Add more header objects for additional columns
 ])
-console.log(offshoreSchools)
 const downloadCSV = () => {
   jsonexport(downloadSchools.value, function (err: any, csv: any) {
     if (err) return console.error(err)
@@ -196,7 +195,3 @@ onBeforeMount(() => {
     </v-sheet>
   </div>
 </template>
-
-<style></style>
-
-<style></style>
