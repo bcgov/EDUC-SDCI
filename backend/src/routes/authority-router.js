@@ -3,7 +3,6 @@ const router = express.Router();
 const log = require("../components/logger");
 const cacheService = require("../components/cache-service.js");
 const { getAuthorityList } = require("../components/authority.js");
-
 const { checkToken } = require("../components/auth");
 
 router.get("/list", checkToken, getAuthorityList);
