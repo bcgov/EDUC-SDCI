@@ -84,12 +84,6 @@ async function getDistrictContactSearchResults(req, res) {
             contact.districtNumber !== null
         );
 
-        // Keep only contacts with valid districtContactTypeCode
-        console.log(validTypeCodes);
-        // jsonData.content = jsonData.content.filter((contact) =>
-        //   validTypeCodes.includes(contact.districtContactTypeCode)
-        // );
-
         res.json(jsonData);
       } else {
         res.json(response.data);

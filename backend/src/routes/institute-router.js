@@ -5,10 +5,6 @@ const config = require("../config/index");
 
 const axios = require("axios");
 const { checkToken } = require("../components/auth");
-const { getDistrictList } = require("../components/district");
-const { getSchoolList } = require("../components/school");
-const { getOffshoreSchoolList } = require("../components/offshore");
-const { getAuthorityList } = require("../components/cache-service");
 
 const {
   getAddressTypeCodes,
@@ -27,14 +23,6 @@ router.get("/category-codes", checkToken, getCategoryCodes);
 router.get("/facility-codes", checkToken, getFacilityCodes);
 router.get("/address-type-codes", checkToken, getAddressTypeCodes);
 
-//move to offshore.js?
-router.get("/offshore-school/list", checkToken, getOffshoreSchoolList);
-
-//move to school.js
-router.get("/school/list", checkToken, getSchoolList);
-
 //move to district.js
-router.get("/authority/list", checkToken, getAuthorityList);
-router.get("/district/list", checkToken, getDistrictList);
 
 module.exports = router;

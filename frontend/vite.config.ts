@@ -5,22 +5,20 @@ import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    vue(),
-  ],
+  plugins: [vue()],
   server: {
     port: 8081,
     proxy: {
       '/download': {
         target: 'http://localhost:8080',
         changeOrigin: true
+        // remove rewrite so /download/file.txt goes to /download/file.txt
       },
       '/api': {
         target: 'http://localhost:8080',
         changeOrigin: true
       }
-
-    },
+    }
   },
   resolve: {
     alias: {

@@ -4,7 +4,7 @@ import { type AxiosResponse } from 'axios'
 export default {
   // Districts
   async getDistricts(): Promise<AxiosResponse> {
-    return ApiService.apiAxios.get('/api/v1/institute/district/list')
+    return ApiService.apiAxios.get('/api/v1/district/list')
   },
   //DO NOT USE; TODO: Factor this out and use getDistrictView instead
   getDistrict(districtId: string): Promise<AxiosResponse> {
@@ -12,17 +12,17 @@ export default {
   },
   // Independent Authorities
   async getAuthorityList(): Promise<AxiosResponse> {
-    return ApiService.apiAxios.get('/api/v1/institute/authority/list')
+    return ApiService.apiAxios.get('/api/v1/authority/list')
   },
   async getAuthority(authorityId: string): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/authority/' + authorityId)
   },
   // Schools
   async getSchoolList(): Promise<AxiosResponse> {
-    return ApiService.apiAxios.get('/api/v1/institute/school/list')
+    return ApiService.apiAxios.get('/api/v1/school/list')
   },
   async getOffshoreSchoolList(): Promise<AxiosResponse> {
-    return ApiService.apiAxios.get('/api/v1/institute/offshore-school/list')
+    return ApiService.apiAxios.get('/api/v1/offshore/list')
   },
   async getSchool(schoolId: string): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/school/' + schoolId)

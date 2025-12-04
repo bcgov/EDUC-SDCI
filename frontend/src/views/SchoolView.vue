@@ -104,7 +104,6 @@ const transformContactForDownload = (inputData: any): {} => {
 }
 // loading component
 onBeforeMount(async () => {
-  console.log('BEFORE MOUNT')
   const route = useRoute()
   const selectedSchoolId: string | string[] = route.params.schoolId
   try {

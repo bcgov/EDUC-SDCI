@@ -4,7 +4,7 @@ import { ref, reactive, onMounted, computed, toValue } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { useRoute } from 'vue-router'
 import router from '@/router'
-import { formatPhoneNumber, isValidDistrictNumber } from '@/utils/common'
+import { formatPhoneNumber, isValidDistrictNumber, isActiveDateString } from '@/utils/common'
 import type { District, School, Grade, Address, Contact } from '@/types/types.d.ts'
 import jsonexport from 'jsonexport/dist'
 import { useSanitizeURL } from '@/composables/string'
@@ -39,7 +39,6 @@ const schoolHeaders = [
   { title: 'Mincode', key: 'mincode' },
   { title: 'Category', key: 'schoolCategoryCode' },
   { title: 'Type', key: 'facilityTypeCode' },
-  //{ title: 'Grades', key: ''},
   { title: 'Phone', key: 'phoneNumber' },
   { title: 'Fax', key: 'faxNumber' },
   { title: 'Email', key: 'email' },
@@ -63,7 +62,6 @@ function goToSchool(displayName: string, mincode: string, id: string) {
   })
 }
 function downloadDistrictContacts() {
-
   jsonexport(filteredContacts.value, function (err: any, csv: any) {
     if (err) return console.error(err)
     appStore.exportCSV(csv)
@@ -94,10 +92,12 @@ async function getDistrictData(): Promise<void> {
         //Change School date for DL
         const transformedSchoolData = schools.value.map((school: School) => {
           const { contacts, addresses, ...rest } = school
-          const transformedContacts = contacts?.map(({ schoolContactTypeCode, ...contactRest }) => ({
-            schoolContactTypeCode,
-            ...contactRest
-          }))
+          const transformedContacts = contacts?.map(
+            ({ schoolContactTypeCode, ...contactRest }) => ({
+              schoolContactTypeCode,
+              ...contactRest
+            })
+          )
           let physicalAddress: Address | null = null
           let mailingAddress: Address | null = null
 
@@ -109,7 +109,9 @@ async function getDistrictData(): Promise<void> {
           }
           return {
             ...rest,
-            schoolContact: transformedContacts?.find((contact) => contact.schoolContactTypeCode === 'PRINCIPAL'),
+            schoolContact: transformedContacts?.find(
+              (contact) => contact.schoolContactTypeCode === 'PRINCIPAL'
+            ),
             physicalAddress: physicalAddress,
             mailingAddress: mailingAddress,
             grades: [],
@@ -171,7 +173,7 @@ async function getDistrictData(): Promise<void> {
             'District Fax': response.data.districtData?.faxNumber,
             Website: response.data.districtData?.website
           }
-        });
+        })
       }
     } catch (error) {
       console.error(error)
@@ -186,22 +188,25 @@ onMounted(async () => {
 
 <template>
   <div>
-    <v-breadcrumbs class="breadcrumbs" bg-color="white" :items="[
-      { title: 'Home', href: '/' },
-      'District',
-      district.value.districtData
-        ? district.value.districtData.districtNumber +
-        ' ' +
-        district.value.districtData.displayName
-        : ''
-    ]"></v-breadcrumbs>
+    <v-breadcrumbs
+      class="breadcrumbs"
+      bg-color="white"
+      :items="[
+        { title: 'Home', href: '/' },
+        'District',
+        district.value.districtData
+          ? district.value.districtData.districtNumber +
+            ' ' +
+            district.value.districtData.displayName
+          : ''
+      ]"
+    ></v-breadcrumbs>
 
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-container id="main">
         <DisplayAlert class="mx-4 mx-lg-0" />
 
         <v-row no-gutters justify="space-between" class="pa-4 pa-md-5 pa-lg-0">
-
           <v-col cols="12" v-if="district.value.districtData">
             <v-row no-gutters justify="space-between">
               <v-col>
@@ -228,7 +233,8 @@ onMounted(async () => {
                   {{ formatPhoneNumber(district.value.districtData?.faxNumber) }}
                 </p>
                 <p v-if="district.value.districtData?.email">
-                  <strong>Email: </strong><a :href="'mailto:' + district.value.districtData?.email">{{
+                  <strong>Email: </strong
+                  ><a :href="'mailto:' + district.value.districtData?.email">{{
                     district.value.districtData?.email
                   }}</a>
                 </p>
@@ -239,21 +245,30 @@ onMounted(async () => {
                 </p>
               </v-col>
 
-              <v-col cols="11" md="auto" v-for="item in district.value.districtData.addresses"
-                :key="item.addressTypeCode">
-
+              <v-col
+                cols="11"
+                md="auto"
+                v-for="item in district.value.districtData.addresses"
+                :key="item.addressTypeCode"
+              >
                 <DisplayAddress v-bind="item" class="mb-3" />
               </v-col>
 
               <v-col cols="11" md="4" class="pa-0 pa-md-3">
-                <v-btn variant="text" class="text-none text-subtitle-1 ma-1 v-btn-align-left"
-                  @click="downloadDistrictContacts"><template v-slot:prepend> <v-icon icon="mdi-download" />
-                  </template>Download
-                  District Contacts (CSV)</v-btn>
-                <v-btn variant="text" class="text-none text-subtitle-1 ma-1 v-btn-align-left"
-                  @click="downloadDistrictSchools"><template v-slot:prepend> <v-icon icon="mdi-download" />
-                  </template>Download
-                  District Schools (CSV)</v-btn>
+                <v-btn
+                  variant="text"
+                  class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+                  @click="downloadDistrictContacts"
+                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
+                  District Contacts (CSV)</v-btn
+                >
+                <v-btn
+                  variant="text"
+                  class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+                  @click="downloadDistrictSchools"
+                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
+                  District Schools (CSV)</v-btn
+                >
               </v-col>
             </v-row>
           </v-col>
@@ -282,10 +297,20 @@ onMounted(async () => {
         <v-window v-model="tab">
           <!-- District Contacts tab contents -->
           <v-window-item :value="tabOptions.contacts">
-            <v-text-field v-model="contactSearch" append-icon="mdi-magnify" label="Filter District Contacts" single-line
-              hide-details></v-text-field>
-            <v-data-table items-per-page="-1" :headers="contactHeaders" :items="district.value.districtData?.contacts"
-              :search="contactSearch" :sort-by="[{ key: 'label', order: 'asc' }]">
+            <v-text-field
+              v-model="contactSearch"
+              append-icon="mdi-magnify"
+              label="Filter District Contacts"
+              single-line
+              hide-details
+            ></v-text-field>
+            <v-data-table
+              items-per-page="-1"
+              :headers="contactHeaders"
+              :items="district.value.districtData?.contacts"
+              :search="contactSearch"
+              :sort-by="[{ key: 'label', order: 'asc' }]"
+            >
               <template v-slot:item.email="{ item }">
                 <div style="max-width: 250px; overflow: hidden">
                   <a :href="`mailto:${item.email}`">{{ item.email }}</a>
@@ -301,11 +326,20 @@ onMounted(async () => {
           </v-window-item>
           <!-- District Schools tab contents -->
           <v-window-item :value="tabOptions.schools">
-            <v-text-field v-model="schoolSearch" append-icon="mdi-magnify" label="Filter District Schools" single-line
-              hide-details></v-text-field>
-            <v-data-table items-per-page="-1" :headers="schoolHeaders"
-              :items="district.value.districtData.districtSchools" :search="schoolSearch"
-              :sort-by="[{ key: 'mincode', order: 'asc' }]">
+            <v-text-field
+              v-model="schoolSearch"
+              append-icon="mdi-magnify"
+              label="Filter District Schools"
+              single-line
+              hide-details
+            ></v-text-field>
+            <v-data-table
+              items-per-page="-1"
+              :headers="schoolHeaders"
+              :items="district.value.districtData.districtSchools"
+              :search="schoolSearch"
+              :sort-by="[{ key: 'mincode', order: 'asc' }]"
+            >
               <template v-slot:item.displayName="{ item }">
                 <a @click="goToSchool(item.displayName, item.mincode, item.schoolId)">{{
                   item.displayName

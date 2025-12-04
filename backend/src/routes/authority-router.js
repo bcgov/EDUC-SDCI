@@ -1,17 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const log = require("../components/logger");
-const config = require("../config/index");
-const axios = require("axios");
 const cacheService = require("../components/cache-service.js");
-const { checkToken } = require("../components/auth");
-const {
-  appendMailingAddressDetailsAndRemoveAddresses,
-  rearrangeAndRelabelObjectProperties,
-  sortByProperty,
-} = require("../components/utils.js");
+const { getAuthorityList } = require("../components/authority.js");
 
-// Batch Routes
+const { checkToken } = require("../components/auth");
+
+router.get("/list", checkToken, getAuthorityList);
 router.get("/:id", checkToken, getAuthority);
 
 async function getAuthority(req, res) {
