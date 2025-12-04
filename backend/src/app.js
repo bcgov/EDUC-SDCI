@@ -1,10 +1,7 @@
 const config = require("./config/index");
-const log = require("./components/logger");
-const dotenv = require("dotenv");
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
-const axios = require("axios");
 const cors = require("cors");
 const NodeCache = require("node-cache");
 const apiRouter = express.Router();
@@ -15,22 +12,36 @@ const offshoreRouter = require("./routes/offshore-router");
 const schoolRouter = require("./routes/school-router");
 const searchRouter = require("./routes/search-router");
 const app = express();
-const publicPath = path.join(__dirname, "public");
+const publicPath = path.join(__dirname, "../public");
 
-async function writeFileAsync(filePath, data, encoding) {
-  return new Promise((resolve, reject) => {
-    fs.writeFile(filePath, data, encoding, (error) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve();
+app.get("/download/*", (req, res) => {
+  try {
+    // Resolve requested file path
+    const requestedFile = req.params[0];
+    const filePath = path.resolve(publicPath, requestedFile);
+
+    // Security check: ensure filePath is inside publicPath
+    if (!filePath.startsWith(publicPath)) {
+      return res.status(403).send("Forbidden");
+    }
+
+    // Check if the file exists
+    if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
+      return res.status(404).send("File not found");
+    }
+
+    // Send the file for download
+    res.download(filePath, (err) => {
+      if (err) {
+        console.error("Download error:", err);
+        res.status(500).send("Internal server error");
       }
     });
-  });
-}
-app.use(express.static(publicPath));
-
-app.use(express.static("public"));
+  } catch (err) {
+    console.error("Error in /download route:", err);
+    res.status(500).send("Internal server error");
+  }
+});
 app.use(cors());
 app.get("/api/health", (req, res) => {
   res.status(200).send("OK");

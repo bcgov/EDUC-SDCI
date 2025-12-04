@@ -1,8 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const log = require("../components/logger");
-const config = require("../config/index");
-const axios = require("axios");
 const cacheService = require("../components/cache-service.js");
 const { getAuthorityList } = require("../components/authority.js");
 

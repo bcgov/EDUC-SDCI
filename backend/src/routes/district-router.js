@@ -1,9 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const log = require("../components/logger");
-const config = require("../config/index");
-const NodeCache = require("node-cache");
-const fs = require("fs");
 const { checkToken } = require("../components/auth");
 const { getDistrictList } = require("../components/district");
 const cacheService = require("../components/cache-service");
@@ -17,8 +13,6 @@ async function getDistrict(req, res) {
 
     // If getDistrictByDistrictID returns a promise, await it
     const districtJSON = await cacheService.getDistrictByDistrictID(id);
-
-    // Wrap the response
     res.json({ districtData: districtJSON });
   } catch (e) {
     console.error(

@@ -1,8 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const log = require("../components/logger");
 const config = require("../config/index");
-const NodeCache = require("node-cache");
 const axios = require("axios");
 const { checkToken } = require("../components/auth");
 const { getOffshoreSchoolList } = require("../components/offshore");
