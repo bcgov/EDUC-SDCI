@@ -14,11 +14,11 @@ const appStore = useAppStore()
 
 // props
 const districtInfo = reactive<any>({ value: {} })
-const authorityInfo = reactive<any>({ value: {} })
+const authorityInfo = ref<any>({})
 const downloadContacts = ref<any>([])
 const filteredContacts = ref<any>([])
 const filteredAddresses = reactive<any>({ value: {} })
-const filteredGradesLabels = reactive<any>([])
+const filteredGradesLabels = ref<any[]>([])
 const headers = [
   { title: 'Contact Type', key: 'schoolContactTypeCode_label' },
   { title: 'Role', key: 'jobTitle' },
@@ -111,13 +111,11 @@ onBeforeMount(async () => {
     schoolData.value = response.data
 
     //add the missing labels
-    const filteredGrades = appStore.compareSchoolGrades(
-      appStore.getGradeByGradeCodes,
-      schoolData.value.grades
-    )
-    //extract only the labels for UI (no longer used for extract)
-    if (filteredGradesLabels.length == 0) {
-      filteredGradesLabels.push(...appStore.extractGradeLabels(filteredGrades))
+    const filteredGrades = await appStore.mapSchoolGradesToLabels(schoolData.value.grades)
+    const labels = appStore.extractGradeLabels(filteredGrades)
+
+    if (labels && labels.length > 0) {
+      filteredGradesLabels.value = labels // assign the whole array instead of push
     }
 
     //setting district name and number
@@ -136,7 +134,6 @@ onBeforeMount(async () => {
         filteredAddresses.value = response.data.addresses[0]
       }
     }
-    // console.log(appStore.getFacilityCodeLabel(response.data?.facilityTypeCode))
     //setting school contacts
     if (response.data) {
       if (response.data.contacts.length > 0) {
@@ -201,7 +198,6 @@ onBeforeMount(async () => {
             filteredContacts.value[i].seniorSecondary1112 = response.data.seniorSecondary1112
           }
         }
-
         downloadContacts.value = transformContactForDownload(filteredContacts.value)
       }
     }
@@ -267,15 +263,21 @@ function goToDistrict() {
                 District {{ districtInfo.value.districtNumber }} -
                 {{ districtInfo.value.displayName }}
               </a>
-              <a
-                id="authority-link"
-                :href="`/authority/${authorityInfo.value.authorityNumber}-${authorityInfo.value.displayName}`"
+              <router-link
                 v-if="schoolData.value?.independentAuthorityId && authorityInfo.value"
+                :to="{
+                  name: 'authority',
+                  params: {
+                    authorityNumber: authorityInfo.value.authorityNumber,
+                    displayName: authorityInfo.value.displayName
+                  }
+                }"
+                id="authority-link"
                 class="ml-1"
               >
                 Independent Authority {{ authorityInfo.value.authorityNumber }} -
                 {{ authorityInfo.value.displayName }}
-              </a>
+              </router-link>
             </v-row>
             <v-row no-gutters class="mt-1 mb-4">
               <v-chip
@@ -366,9 +368,6 @@ function goToDistrict() {
               item-value="name"
               :sort-by="[{ key: 'schoolContactTypeCode_label', order: 'asc' }]"
             >
-              <!-- <template v-slot:item.jobTitle="{ item }">
-                {{ item.label }}
-              </template> -->
               <template v-slot:item.phoneNumber="{ item }">
                 {{ formatPhoneNumber(item.phoneNumber) }}
               </template>

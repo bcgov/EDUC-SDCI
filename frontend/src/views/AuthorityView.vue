@@ -102,9 +102,10 @@ const transformContactForDownload = (inputData: any): {} => {
 }
 onMounted(async () => {
   const route = useRoute()
+
   authorityId.value = appStore.getAuthorityByAuthorityNumber(
     String(route.params.authorityNumber)
-  )?.independentAuthorityId
+  )?.authorityID
 
   try {
     const response = await InstituteService.getAuthority(authorityId.value)
@@ -205,25 +206,23 @@ onMounted(async () => {
 
 <template>
   <div>
-    <v-breadcrumbs
-      class="breadcrumbs"
-      bg-color="white"
-      :items="[
-        { title: 'Home', href: '/' },
-        'Authority',
-        authority.value.authorityData
-          ? authority.value.authorityData.authorityNumber +
-            ' ' +
-            authority.value.authorityData.displayName
-          : ''
-      ]"
-    ></v-breadcrumbs>
+
+    <v-breadcrumbs class="breadcrumbs" bg-color="white" :items="[
+      { title: 'Home', href: '/' },
+      'Authority',
+      authority.value.authorityData
+        ? authority.value.authorityData.authorityNumber +
+        ' ' +
+        authority.value.authorityData.displayName
+        : ''
+    ]"></v-breadcrumbs>
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-container id="main">
         <DisplayAlert class="mx-4 mx-lg-0" />
         <v-row no-gutters justify="space-between" class="pa-4 pa-md-5 pa-lg-0">
           <v-col cols="12">
             <h1 class="mt-1 mt-md-3 mb-6 mb-md-2">
+
               <span class="d-inline d-md-none">Authority </span>
               <span>
                 {{ authority.value.authorityData?.authorityNumber }}
@@ -250,29 +249,19 @@ onMounted(async () => {
                   }}</a>
                 </p>
               </v-col>
-              <v-col
-                cols="11"
-                md="auto"
-                v-for="item in authority.value.authorityData.addresses"
-                :key="item.addressTypeCode"
-              >
+              <v-col cols="11" md="auto" v-for="item in authority.value.authorityData.addresses"
+                :key="item.addressTypeCode">
                 <DisplayAddress v-bind="item" />
               </v-col>
               <v-col cols="11" md="4" class="pa-0 pa-md-3">
-                <v-btn
-                  variant="text"
-                  class="text-none text-subtitle-1 ma-1 v-btn-align-left"
-                  @click="downloadAuthorityContacts()"
-                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
-                  Authority Contacts (CSV)</v-btn
-                >
-                <v-btn
-                  variant="text"
-                  class="text-none text-subtitle-1 ma-1 v-btn-align-left"
-                  @click="downloadAuthoritySchools()"
-                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
-                  Authority Schools (CSV)</v-btn
-                >
+                <v-btn variant="text" class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+                  @click="downloadAuthorityContacts()"><template v-slot:prepend> <v-icon icon="mdi-download" />
+                  </template>Download
+                  Authority Contacts (CSV)</v-btn>
+                <v-btn variant="text" class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+                  @click="downloadAuthoritySchools()"><template v-slot:prepend> <v-icon icon="mdi-download" />
+                  </template>Download
+                  Authority Schools (CSV)</v-btn>
               </v-col>
             </v-row>
           </v-col>
@@ -286,8 +275,7 @@ onMounted(async () => {
           Authority Contacts
           <v-chip color="bcGovBlue" size="small" class="ml-1" variant="tonal">{{
             authority.value?.authorityData?.contacts.length
-          }}</v-chip></v-tab
-        >
+          }}</v-chip></v-tab>
         <v-tab :value="tabOptions.schools">
           Authority Schools
           <v-chip color="bcGovBlue" size="small" class="ml-1" variant="tonal">{{
@@ -300,20 +288,10 @@ onMounted(async () => {
         <v-window v-model="tab">
           <!-- District Contacts tab contents -->
           <v-window-item :value="tabOptions.contacts">
-            <v-text-field
-              v-model="contactSearch"
-              append-icon="mdi-magnify"
-              label="Filter District Contacts"
-              single-line
-              hide-details
-            ></v-text-field>
-            <v-data-table
-              items-per-page="-1"
-              :headers="contactHeaders"
-              :items="authority.value.authorityData?.contacts"
-              :search="contactSearch"
-              :sort-by="[{ key: 'authorityContactTypeCode', order: 'asc' }]"
-            >
+            <v-text-field v-model="contactSearch" append-icon="mdi-magnify" label="Filter District Contacts" single-line
+              hide-details></v-text-field>
+            <v-data-table items-per-page="-1" :headers="contactHeaders" :items="authority.value.authorityData?.contacts"
+              :search="contactSearch" :sort-by="[{ key: 'authorityContactTypeCode', order: 'asc' }]">
               <template v-slot:item.authorityContactTypeCode="{ item }">
                 {{ appStore.getAuthorityContactTypeCodeLabel(item.authorityContactTypeCode) }}
               </template>
@@ -331,20 +309,10 @@ onMounted(async () => {
           </v-window-item>
           <!-- District Schools tab contents -->
           <v-window-item :value="tabOptions.schools">
-            <v-text-field
-              v-model="schoolSearch"
-              append-icon="mdi-magnify"
-              label="Filter District Schools"
-              single-line
-              hide-details
-            ></v-text-field>
-            <v-data-table
-              items-per-page="-1"
-              :headers="schoolHeaders"
-              :items="authority.value.authoritySchools"
-              :search="schoolSearch"
-              :sort-by="[{ key: 'mincode', order: 'asc' }]"
-            >
+            <v-text-field v-model="schoolSearch" append-icon="mdi-magnify" label="Filter District Schools" single-line
+              hide-details></v-text-field>
+            <v-data-table items-per-page="-1" :headers="schoolHeaders" :items="authority.value.authoritySchools"
+              :search="schoolSearch" :sort-by="[{ key: 'mincode', order: 'asc' }]">
               <template v-slot:item.displayName="{ item }">
                 <a @click="goToSchool(item.displayName, item.mincode, item.schoolId)">{{
                   item.displayName

@@ -11,19 +11,15 @@ const router = createRouter({
       component: HomeView
     },
     {
-      path: '/list-districts',
-      name: 'list districts',
-      component: () =>  import('../views/ListDistricts.vue')
-    },
-    {
-      path: '/list-schools',
-      name: 'list schools',
-      component: () =>  import('../views/ListSchools.vue')
-    },
-    {
       path: '/search',
       name: 'search',
       component: () =>  import('../views/SchoolSearchView.vue'
+      )
+    },
+    {
+      path: '/contacts',
+      name: 'contacts',
+      component: () =>  import('../views/ContactsView.vue'
       )
     },
     {
@@ -54,11 +50,6 @@ const router = createRouter({
       }
     },
     {
-      path: '/contacts',
-      name: 'contacts',
-      component: () => import('../views/ContactsView.vue')
-    },
-    {
       path: '/offshore',
       name: 'offshore',
       component: () => import('../views/OffshoreView.vue')
@@ -68,7 +59,6 @@ const router = createRouter({
       name: 'not-found',
       component: () => import('../views/ErrorView.vue') // Use your error page component here
     }
-
   ]
 })
 

@@ -27,7 +27,7 @@ const tabOptions = {
 const tab = ref(tabOptions.contacts) // Default to contacts tab
 const contactHeaders = [
   { title: 'Role', key: 'jobTitle' },
-  { title: 'Contact', key: 'label' },
+  { title: 'Contact', key: 'districtContactLabel' },
   { title: 'First Name', key: 'firstName' },
   { title: 'Last Name', key: 'lastName' },
   { title: 'Phone', key: 'phoneNumber' },
@@ -39,7 +39,6 @@ const schoolHeaders = [
   { title: 'Mincode', key: 'mincode' },
   { title: 'Category', key: 'schoolCategoryCode' },
   { title: 'Type', key: 'facilityTypeCode' },
-  //{ title: 'Grades', key: ''},
   { title: 'Phone', key: 'phoneNumber' },
   { title: 'Fax', key: 'faxNumber' },
   { title: 'Email', key: 'email' },
@@ -88,24 +87,26 @@ async function getDistrictData(): Promise<void> {
       const response = await InstituteService.getDistrictView(districtId.value)
       if (response.data?.districtData?.contacts) {
         district.value = response.data
-        contacts.value = response.data?.districtData?.contacts
-        schools.value = district.value?.districtSchools
-
+        contacts.value = response.data.districtData?.contacts
+        schools.value = district.value?.districtData?.districtSchools
         //Change School date for DL
         const transformedSchoolData = schools.value.map((school: School) => {
           const { contacts, addresses, ...rest } = school
-          const transformedContacts = contacts
-            ?.filter((contact) => isActiveDateString(contact.effectiveDate, contact.expiryDate))
-            ?.map(({ schoolContactTypeCode, ...contactRest }) => ({
+          const transformedContacts = contacts?.map(
+            ({ schoolContactTypeCode, ...contactRest }) => ({
               schoolContactTypeCode,
               ...contactRest
-            }))
-          const physicalAddress = addresses.find(
-            (address: Address) => address?.addressTypeCode === 'PHYSICAL'
+            })
           )
-          const mailingAddress = addresses.find(
-            (address: Address) => address?.addressTypeCode === 'MAILING'
-          )
+          let physicalAddress: Address | null = null
+          let mailingAddress: Address | null = null
+
+          for (const address of addresses || []) {
+            if (address.addressTypeCode === 'PHYSICAL') physicalAddress = address
+            else if (address.addressTypeCode === 'MAILING') mailingAddress = address
+
+            if (physicalAddress && mailingAddress) break
+          }
           return {
             ...rest,
             schoolContact: transformedContacts?.find(
@@ -124,16 +125,16 @@ async function getDistrictData(): Promise<void> {
             'District Number': response.data.districtData.districtNumber,
             Mincode: item.mincode,
             'Display Name': item.displayName,
-            'Mailing Address': item.mailingAddress?.addressLine1,
-            'Mailing Address Line2': item.mailingAddress?.addressLine2,
-            'Mailing Address City': item.mailingAddress?.city,
-            'Mailing Address Province': item.mailingAddress?.provinceCode,
-            'Mailing Address PostalCode': item.mailingAddress?.postal,
-            'Physical Address': item.physicalAddress?.addressLine1,
-            'Physical Address Line2': item.physicalAddress?.addressLine2,
-            'Physical Address City': item.physicalAddress?.city,
-            'Physical Address Province': item.physicalAddress?.provinceCode,
-            'Physical Address Postal Code': item.physicalAddress?.postal,
+            'Mailing Address': item.mailingAddressLine1,
+            'Mailing Address Line2': item.mailingAddressLine2,
+            'Mailing Address City': item.mailingCity,
+            'Mailing Address Province': item.mailingProvince,
+            'Mailing Address PostalCode': item.mailingPostal,
+            'Physical Address': item.physicalAddressLine1,
+            'Physical Address Line2': item.physicalAddressLine2,
+            'Physical Address City': item.physicalCity,
+            'Physical Address Province': item.physicalProvince,
+            'Physical Address Postal Code': item.physicalPostal,
             Role: item.schoolContact?.jobTitle,
             'Contact First Name': item.schoolContact?.firstName,
             'Contact Last Name': item.schoolContact?.lastName,
@@ -151,7 +152,6 @@ async function getDistrictData(): Promise<void> {
             'Group Classification Senior Secondary 11-12': item.seniorSecondary1112
           }
         })
-        console.log(filteredSchools)
         filteredContacts.value = contacts.value.map((item: any) => {
           return {
             'District Number': response.data.districtData?.districtNumber,
@@ -165,10 +165,10 @@ async function getDistrictData(): Promise<void> {
             'Alternate Phone Number': item.alternatePhoneNumber,
             'Alternate Phone Extension': item.alternatePhoneExtension,
             Email: item.email,
-            'Mailing Address': response.data.districtData?.addresses[0].addressLine1,
-            'Mailing City': response.data.districtData?.addresses[0].city,
-            'Mailing Province': response.data.districtData?.addresses[0].provinceCode,
-            'Mailing Postal Code': response.data.districtData?.addresses[0].postal,
+            'Mailing Address': response.data.districtData?.addresses?.[0]?.addressLine1,
+            'Mailing City': response.data.districtData?.addresses?.[0]?.city,
+            'Mailing Province': response.data.districtData?.addresses?.[0]?.provinceCode,
+            'Mailing Postal Code': response.data.districtData?.addresses?.[0]?.postal,
             'District Phone': response.data.districtData?.phoneNumber,
             'District Fax': response.data.districtData?.faxNumber,
             Website: response.data.districtData?.website
@@ -205,6 +205,7 @@ onMounted(async () => {
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-container id="main">
         <DisplayAlert class="mx-4 mx-lg-0" />
+
         <v-row no-gutters justify="space-between" class="pa-4 pa-md-5 pa-lg-0">
           <v-col cols="12" v-if="district.value.districtData">
             <v-row no-gutters justify="space-between">
@@ -287,7 +288,7 @@ onMounted(async () => {
         <v-tab :value="tabOptions.schools">
           District Schools
           <v-chip color="bcGovBlue" size="small" class="ml-1" variant="tonal">{{
-            district.value.districtSchools?.length
+            district.value.districtData?.districtSchools?.length
           }}</v-chip>
         </v-tab>
       </v-tabs>
@@ -335,7 +336,7 @@ onMounted(async () => {
             <v-data-table
               items-per-page="-1"
               :headers="schoolHeaders"
-              :items="district.value.districtSchools"
+              :items="district.value.districtData.districtSchools"
               :search="schoolSearch"
               :sort-by="[{ key: 'mincode', order: 'asc' }]"
             >

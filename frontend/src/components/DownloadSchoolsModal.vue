@@ -23,11 +23,11 @@ const dialog = ref(false)
     <template v-slot:default="{ isActive }">
       <v-card title="School Information Downloads">
         <v-card-actions>
-          <v-column class="pl-3">
+          <v-col class="pl-3">
             <v-row class="pt-2">
               <v-col class="py-1 my-0"
                 ><v-btn
-                  href="/api/v1/download/csv/school/all-contacts/PUBLIC?filepath=publicschoolcontacts"
+                  href="/download/publicschoolcontacts.csv"
                   block
                   class="v-btn-align-left text-none text-subtitle-1 my-1"
                   @click="dialog = false"
@@ -39,7 +39,7 @@ const dialog = ref(false)
             <v-row>
               <v-col class="py-1 my-0">
                 <v-btn
-                  href="/api/v1/download/csv/school/all-contacts/INDEPEND?filepath=independentschoolcontacts"
+                  href="/download/allindependentschools.csv"
                   block
                   style="text-align: left"
                   class="v-btn-align-left text-left text-none text-subtitle-1 my-1"
@@ -53,7 +53,7 @@ const dialog = ref(false)
             <v-row>
               <v-col class="py-1 my-0">
                 <v-btn
-                  href="/api/v1/download/csv/school/all-contacts/ALL?filepath=allschoolcontacts"
+                  href="/download/allschoolcontacts.csv"
                   block
                   class="v-btn-align-left text-left text-none text-subtitle-1 my-1"
                   @click="dialog = false"
@@ -65,7 +65,7 @@ const dialog = ref(false)
             <v-row>
               <v-col class="py-1 my-0">
                 <v-btn
-                  href="/api/v1/download/csv/school/all-contacts/ALLMAILING?filepath=allschoolmailing"
+                  href="/download/allschoolmailing.csv"
                   block
                   class="v-btn-align-left text-left text-none text-subtitle-1 my-1"
                   @click="dialog = false"
@@ -74,7 +74,7 @@ const dialog = ref(false)
                 >
               </v-col>
             </v-row>
-          </v-column>
+          </v-col>
         </v-card-actions>
         <v-card-actions>
           <v-spacer></v-spacer>

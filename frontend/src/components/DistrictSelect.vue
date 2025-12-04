@@ -36,57 +36,33 @@ function downloadDistrictsMailing() {
       <v-col class="ma-2">
         <v-row justify="space-between">
           <v-col cols="10" class="pa-0">
-            <v-autocomplete
-              class="mr-2"
-              v-model="selectedDistrict"
-              label="Select a District"
-              :items="appStore.getDistrictList"
-              :item-title="
-                (item) =>
-                  item?.districtNumber ? item.districtNumber + ' - ' + item.displayName : ''
-              "
-              :item-value="(item) => item"
-            ></v-autocomplete>
+            <v-autocomplete class="mr-2" v-model="selectedDistrict" label="Select a District"
+              :items="appStore.getDistrictList" :item-title="(item) =>
+                item?.districtNumber ? item.districtNumber + ' - ' + item.displayName : ''
+                " :item-value="(item) => item"></v-autocomplete>
           </v-col>
           <v-col cols="2" class="pa-0">
-            <v-btn
-              icon="mdi-magnify"
-              color="primary"
-              variant="flat"
-              rounded="lg"
-              size="large"
-              @click="goToDistrict"
-              class="v-btn-align-left text-none text-subtitle-1 ml-1"
-            />
+            <v-btn icon="mdi-magnify" color="primary" variant="flat" rounded="lg" size="large" @click="goToDistrict"
+              class="v-btn-align-left text-none text-subtitle-1 ml-1" />
           </v-col>
         </v-row>
         <v-row>
-          <v-btn
-            @click="$router.push('contacts')"
-            variant="outlined"
-            color="bcGovBlue"
-            block
-            class="text-none text-subtitle-1 my-1"
-            ><template v-slot:append> <v-icon icon="mdi-chevron-right" /> </template>
+          <v-btn @click="$router.push('contacts')" variant="outlined" color="bcGovBlue" block
+            class="text-none text-subtitle-1 my-1"><template v-slot:append> <v-icon icon="mdi-chevron-right" />
+            </template>
             View District Contacts by Type
           </v-btn>
 
-          <v-btn
-            href="/api/v1/download/csv/district/all-mailing?filepath=districtmailing"
-            variant="text"
-            class="v-btn-align-left text-none text-subtitle-1 my-1"
-            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>
+          <v-btn href="/download/districtmailing.csv" variant="text"
+            class="v-btn-align-left text-none text-subtitle-1 my-1"><template v-slot:prepend> <v-icon
+                icon="mdi-download" /> </template>
 
-            Mailing for All Districts (CSV)</v-btn
-          >
-          <v-btn
-            href="/api/v1/download/csv/district/all-contacts?filepath=districtcontacts"
-            variant="text"
-            class="v-btn-align-left text-none text-subtitle-1 my-1"
-            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>
+            Mailing for All Districts (CSV)</v-btn>
+          <v-btn href="/download/alldistrictcontacts.csv" variant="text"
+            class="v-btn-align-left text-none text-subtitle-1 my-1"><template v-slot:prepend> <v-icon
+                icon="mdi-download" /> </template>
 
-            Contacts for All Districts (CSV)</v-btn
-          >
+            Contacts for All Districts (CSV)</v-btn>
         </v-row>
       </v-col>
     </v-row>
