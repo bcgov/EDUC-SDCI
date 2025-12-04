@@ -67,12 +67,11 @@ export const useAppStore = defineStore('app', {
       a.download = 'output.csv'
       a.click()
     },
-    async mapSchoolGradesToLabels(schoolGrades: Grade[]): Promise<Grade[]> {
+    mapSchoolGradesToLabels(schoolGrades: Grade[]): Promise<Grade[]> {
       // If gradeCodes not loaded, fetch them first
       if (!this.gradeCodes || this.gradeCodes.length === 0) {
-        await this.setGradeCodes()
+        this.setGradeCodes()
       }
-
       // Map the given schoolGrades to the loaded gradeCodes
       return this.gradeCodes.filter((sg1) =>
         schoolGrades.some((sg2) => sg1.schoolGradeCode === sg2.schoolGradeCode)
