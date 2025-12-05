@@ -59,13 +59,13 @@ function goToSchool(displayName: string, mincode: string, id: string) {
 function downloadDistrictContacts() {
   jsonexport(filteredContacts.value, function (err: any, csv: any) {
     if (err) return console.error(err)
-    appStore.exportCSV(csv)
+    appStore.exportCSV(csv, "districtContacts.csv")
   })
 }
 function downloadDistrictSchools() {
   jsonexport(filteredSchools.value, function (err: any, csv: any) {
     if (err) return console.error(err)
-    appStore.exportCSV(csv)
+    appStore.exportCSV(csv, "districtSchools.csv")
   })
 }
 async function getDistrictId(): Promise<string> {

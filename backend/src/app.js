@@ -16,22 +16,24 @@ const publicPath = path.join(__dirname, "../public");
 
 app.get("/download/*", (req, res) => {
   try {
-    // Resolve requested file path
     const requestedFile = req.params[0];
     const filePath = path.resolve(publicPath, requestedFile);
 
-    // Security check: ensure filePath is inside publicPath
+    // Security check
     if (!filePath.startsWith(publicPath)) {
       return res.status(403).send("Forbidden");
     }
 
-    // Check if the file exists
+    // Check if file exists
     if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
       return res.status(404).send("File not found");
     }
 
-    // Send the file for download
-    res.download(filePath, (err) => {
+    // Extract actual filename
+    const filename = path.basename(filePath);
+
+    // Force filename in download
+    res.download(filePath, filename, (err) => {
       if (err) {
         console.error("Download error:", err);
         res.status(500).send("Internal server error");

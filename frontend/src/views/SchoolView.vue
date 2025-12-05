@@ -40,7 +40,7 @@ const tab = ref(tabOptions.contacts)
 const downloadCSV = () => {
   jsonexport(downloadContacts.value, function (err: any, csv: any) {
     if (err) return console.error(err)
-    appStore.exportCSV(csv)
+    appStore.exportCSV(csv, 'schoolInfo.csv')
   })
 }
 const transformContactForDownload = (inputData: any): {} => {
