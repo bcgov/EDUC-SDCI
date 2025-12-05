@@ -65,13 +65,13 @@ function goToSchool(displayName: string, mincode: string, id: string) {
 function downloadAuthorityContacts() {
   jsonexport(downloadContacts.value, function (err: any, csv: any) {
     if (err) return console.error(err)
-    appStore.exportCSV(csv)
+    appStore.exportCSV(csv, "authorityContacts.csv")
   })
 }
 function downloadAuthoritySchools() {
   jsonexport(filteredSchools.value, function (err: any, csv: any) {
     if (err) return console.error(err)
-    appStore.exportCSV(csv)
+    appStore.exportCSV(csv, "authoritySchools.csv")
   })
 }
 const transformContactForDownload = (inputData: any): {} => {

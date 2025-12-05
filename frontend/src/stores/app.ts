@@ -56,15 +56,17 @@ export const useAppStore = defineStore('app', {
       })
       return csvContent
     },
-    exportCSV(csvData: any) {
-      // Create a blob with the CSV data
+    exportCSV(csvData: any, filename = 'download.csv') {
       const utf8EncodedData = new TextEncoder().encode('\uFEFF' + csvData)
       const blob = new Blob([utf8EncodedData], { type: 'text/csv;charset=utf-8' })
-      // Create a temporary anchor element to trigger the file download
+
       const a = document.createElement('a')
       a.href = URL.createObjectURL(blob)
-      a.download = 'output.csv'
+      a.download = filename // <-- dynamic filename
       a.click()
+
+      // Cleanup URL object later
+      URL.revokeObjectURL(a.href)
     },
     mapSchoolGradesToLabels(schoolGrades: Grade[]): Promise<Grade[]> {
       // If gradeCodes not loaded, fetch them first
