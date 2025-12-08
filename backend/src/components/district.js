@@ -3,8 +3,20 @@
 const cacheService = require("./cache-service");
 
 async function getDistrictList(_req, res) {
-  const districtList = cacheService.getActiveDistricts();
-  return res.status(200).json(districtList ? districtList : []);
+  try {
+    const districtList = cacheService.getActiveDistricts() || [];
+
+    const filteredList = districtList.map((d) => ({
+      districtId: d.districtId,
+      displayName: d.displayName,
+      districtNumber: d.districtNumber,
+    }));
+
+    return res.status(200).json(filteredList);
+  } catch (err) {
+    console.error("Error in getDistrictList:", err);
+    return res.status(500).send("Internal server error");
+  }
 }
 
 async function getDistrict(req, res) {

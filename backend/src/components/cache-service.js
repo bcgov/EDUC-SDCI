@@ -643,6 +643,7 @@ const cacheService = {
       .filter(([_, value]) => value.districtId === districtId)
       .map(([key, value]) => ({ key, ...value }));
   },
+
   getAuthoritySchools(authorityId) {
     return Array.from(schoolMap.entries())
       .filter(([_, value]) => value.independentAuthorityId === authorityId)
@@ -707,7 +708,6 @@ const cacheService = {
         try {
           for (const [districtId, districtData] of districtsMap.entries()) {
             const schools = await this.getDistrictSchools(districtId);
-
             districtsMap.set(districtId, {
               ...districtData, // spreads properties of districtData at top level
               districtSchools: schools,
