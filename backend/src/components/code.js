@@ -1,26 +1,7 @@
 "use strict";
-const {
-  logApiError,
-  errorResponse,
-  getAccessToken,
-  getDataWithParams,
-  getData,
-  putData,
-  postData,
-  handleExceptionResponse,
-  getCreateOrUpdateUserValue,
-} = require("./utils");
+const { logApiError, errorResponse } = require("./utils");
 const cacheService = require("./cache-service");
-const log = require("./logger");
-const config = require("../config");
-const {
-  FILTER_OPERATION,
-  VALUE_TYPE,
-  CONDITION,
-} = require("../util/constants");
-const HttpStatus = require("http-status-codes");
 const _ = require("lodash");
-const { LocalDate, DateTimeFormatter } = require("@js-joda/core");
 
 async function getAddressTypeCodes(_req, res) {
   try {

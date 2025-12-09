@@ -407,24 +407,6 @@ function getCodes(urlKey, cacheKey, extraPath, useCache = true) {
     }
   };
 }
-function cacheMiddleware() {
-  return (req, res, next) => {
-    let key = "__express__" + req.originalUrl || req.url;
-    let cacheContent = memCache.get(key);
-    if (cacheContent) {
-      res.send(cacheContent);
-    } else {
-      res.sendResponse = res.send;
-      res.send = (body) => {
-        if (res.statusCode < 300 && res.statusCode >= 200) {
-          memCache.put(key, body);
-        }
-        res.sendResponse(body);
-      };
-      next();
-    }
-  };
-}
 
 function unauthorizedError(res) {
   return res.status(HttpStatus.UNAUTHORIZED).json({
@@ -455,23 +437,9 @@ const utils = {
   formatCommentTimestamp,
   errorResponse,
   getCodes,
-  cacheMiddleware,
   getBackendServiceToken,
   getCodeTable,
 };
-
-const ALLOWED_FILENAMES = new Set([
-  "districtcontacts",
-  "districtmailing",
-  "publicschoolcontacts",
-  "independentschoolcontacts",
-  "allschoolcontacts",
-  "allschoolmailing",
-  "authoritycontacts",
-  "authoritymailing",
-  "offshoreschoolrepresentatives",
-  // Add more allowed filepaths as needed
-]);
 
 function appendMailingAddressDetailsAndRemoveAddresses(data) {
   if (data && data.addresses && data.addresses.length > 0) {
@@ -553,7 +521,6 @@ function sortJSONByKey(items, key, numeric = false) {
         sensitivity: "base",
       });
     }
-
     return valueA.toString().localeCompare(valueB.toString());
   });
 }
@@ -588,7 +555,6 @@ function filterByField(jsonArray, fieldName, stringsToRemove) {
     // Check if the fieldValue exactly matches any string from the stringsToRemove array
     return !stringsToRemove.includes(fieldValue);
   });
-
   return filteredArray;
 }
 function filterByField(jsonArray, fieldName, stringsToRemove) {
@@ -600,7 +566,6 @@ function filterByField(jsonArray, fieldName, stringsToRemove) {
     // Check if the fieldValue exactly matches any string from the stringsToRemove array
     return !stringsToRemove.includes(fieldValue);
   });
-
   return filteredArray;
 }
 

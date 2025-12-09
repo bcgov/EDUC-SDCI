@@ -18,20 +18,6 @@ const HttpStatus = require("http-status-codes");
 const _ = require("lodash");
 const { LocalDate, DateTimeFormatter } = require("@js-joda/core");
 
-async function getAllCachedSchools(_req, res) {
-  try {
-    let cachedSchools = cacheService.getAllSchoolsJSON();
-    return res.status(200).json(cachedSchools ? cachedSchools : []);
-  } catch (e) {
-    logApiError(
-      e,
-      "getAllCachedSchools",
-      "Error occurred while attempting to GET school entity."
-    );
-    return errorResponse(res);
-  }
-}
-
 function checkSchoolBelongsToDistrict(req, res) {
   if (!res.locals.requestedInstituteIdentifier) {
     return res.status(200).json(false);
@@ -250,7 +236,6 @@ async function getSchoolBySchoolID(req, res) {
 }
 
 module.exports = {
-  getAllCachedSchools,
   getAllSchoolDetails,
   getFullSchoolDetails,
   checkSchoolBelongsToDistrict,

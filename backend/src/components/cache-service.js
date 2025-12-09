@@ -8,6 +8,7 @@ const {
   appendMailingAddressDetailsAndRemoveAddresses,
   sortJSONByKey,
 } = require("../components/utils");
+
 const retry = require("async-retry");
 const { generateSchoolObject, isSchoolActive } = require("./schoolUtils");
 const {
@@ -17,10 +18,14 @@ const {
   generateAuthorityObject,
   isAuthorityActive,
 } = require("./districtUtils");
+const { isActiveDateRange } = require("../util/dateUtils");
 const jsonExport = require("jsonexport");
 const path = require("path");
 const fs = require("fs");
-const constants = require("../util/constants");
+const {
+  EXCLUDED_FACILITY_TYPES,
+  EXCLUDED_SCHOOL_CATEGORY_CODES,
+} = require("../util/constants");
 
 let schoolMap = new Map();
 let schools = [];
@@ -186,11 +191,17 @@ const cacheService = {
           Array.isArray(categoryCodesResponse) &&
           categoryCodesResponse.length > 0
         ) {
-          // Filter out the unwanted codes
-          const excludedCodes = ["FED_BAND", "YUKON", "POST_SEC"];
-          schoolCategoryCodes = categoryCodesResponse.filter(
-            (code) => !excludedCodes.includes(code.schoolCategoryCode)
-          );
+          // Filter out unwanted codes and keep only currently active ones
+          schoolCategoryCodes = categoryCodesResponse.filter((code) => {
+            // Exclude unwanted school category codes
+            if (
+              EXCLUDED_SCHOOL_CATEGORY_CODES.includes(code.schoolCategoryCode)
+            ) {
+              return false;
+            }
+            // Only include codes active based on effective and expiry dates
+            return isActiveDateRange(code.effectiveDate, code.expiryDate);
+          });
         }
         log.info(`Loaded ${schoolCategoryCodes.length} school category codes.`);
       },
@@ -219,18 +230,10 @@ const cacheService = {
         )}/institute/facility-codes`;
         const response = await utils.getData(accessToken, url);
 
-        const excludedTypes = new Set([
-          "PROVINCIAL",
-          "DIST_CONT",
-          "ELEC_DELIV",
-          "POST_SEC",
-          "JUSTB4PRO",
-          "SUMMER",
-        ]);
-
         facilityCodes = (Array.isArray(response) ? response : []).filter(
-          (code) => !excludedTypes.has(code.facilityTypeCode)
+          (code) => !EXCLUDED_FACILITY_TYPES.includes(code.facilityTypeCode)
         );
+
         log.info(
           `Loaded ${facilityCodes.length} facility codes (after filtering).`
         );
@@ -519,10 +522,6 @@ const cacheService = {
   getAddressTypeCodes() {
     return addressTypeCodes ? addressTypeCodes : [];
   },
-  getAllSchoolsJSON() {
-    return res.status(200).json(schools ? schools : []);
-  },
-
   getDistrictNumber(districtId) {
     const district = districtsMap.get(districtId);
     return district ? district.districtNumber : "N/A";
@@ -532,6 +531,7 @@ const cacheService = {
     const district = districtsMap.get(id);
     return district || null; // always return a value
   },
+
   getDistrictContactLabel(districtContactTypeCode) {
     const codeList =
       contactTypeCodes?.codesList?.districtContactTypeCodes || [];
@@ -633,7 +633,7 @@ const cacheService = {
         }
       },
       {
-        retries: 50,
+        retries: 10,
       }
     );
   },
@@ -643,6 +643,7 @@ const cacheService = {
       .filter(([_, value]) => value.districtId === districtId)
       .map(([key, value]) => ({ key, ...value }));
   },
+
   getAuthoritySchools(authorityId) {
     return Array.from(schoolMap.entries())
       .filter(([_, value]) => value.independentAuthorityId === authorityId)
@@ -691,7 +692,7 @@ const cacheService = {
           log.info(`Loaded ${activeAuthorities.length} active authorities.`);
         },
         {
-          retries: 50,
+          retries: 10,
         }
       );
     } catch (error) {
@@ -707,7 +708,6 @@ const cacheService = {
         try {
           for (const [districtId, districtData] of districtsMap.entries()) {
             const schools = await this.getDistrictSchools(districtId);
-
             districtsMap.set(districtId, {
               ...districtData, // spreads properties of districtData at top level
               districtSchools: schools,
@@ -719,7 +719,7 @@ const cacheService = {
         }
       },
       {
-        retries: 50,
+        retries: 10,
       }
     );
   },
@@ -741,7 +741,7 @@ const cacheService = {
         }
       },
       {
-        retries: 50,
+        retries: 10,
       }
     );
   },
@@ -920,8 +920,6 @@ const cacheService = {
 
       // Write CSV once
       await this.writeCSVToFile(sortedDistrictMailing, filePathPublic);
-
-      console.log("CSV generated successfully at:", filePathPublic);
     } catch (e) {
       console.error("Error generating CSV:", e);
     }
@@ -984,11 +982,7 @@ const cacheService = {
           property: "schoolCategoryCode_description",
           label: "School Category",
         },
-        +(
-          // { property: "gradeRange", label: "Grade Range" },
-          // { property: "fundingGroups", label: "Funding Group(s)" },
-          { property: "phoneNumber", label: "Phone" }
-        ),
+        { property: "phoneNumber", label: "Phone" },
         { property: "faxNumber", label: "Fax" },
         { property: "email", label: "Email" },
         { property: "KINDHALF", label: "Kindergarten Half Enrollment" },
