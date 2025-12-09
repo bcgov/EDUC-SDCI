@@ -2,17 +2,14 @@ const express = require("express");
 const router = express.Router();
 const log = require("../components/logger");
 const config = require("../config/index");
-const NodeCache = require("node-cache");
 const axios = require("axios");
-const fs = require("fs");
-const path = require("path");
-const { checkToken } = require("../components/auth");
 const cacheService = require("../components/cache-service");
+const { checkToken } = require("../components/auth");
 const {
   addFundingGroups,
   addDistrictLabels,
 } = require("../components/utils.js");
-//Batch Routes
+
 router.get("/schools/paginated", checkToken, getSchoolSearchResults);
 router.get(
   "/districts/contact/paginated",
@@ -36,7 +33,6 @@ async function getSchoolSearchResults(req, res) {
     .then((response) => {
       const results = response.data.content;
       const resultsWithFundingGroups = addFundingGroups(results, fundingGroups);
-
       // Remove the 'contacts' array from each object
       const cleanedResults = resultsWithFundingGroups.map(
         ({ notes, contacts, ...rest }) => rest
@@ -64,7 +60,6 @@ async function getDistrictContactSearchResults(req, res) {
 
   // // Get valid districtContactTypeCode values
   const validTypeCodes = cacheService.getContactTypeCodes();
-
   axios
     .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
     .then((response) => {
@@ -75,7 +70,6 @@ async function getDistrictContactSearchResults(req, res) {
           response.data,
           cacheService.getActiveDistricts()
         );
-
         // Filter out entries with missing/invalid districtNumber
         jsonData.content = jsonData.content.filter(
           (contact) =>
@@ -83,7 +77,6 @@ async function getDistrictContactSearchResults(req, res) {
             contact.districtNumber !== "" &&
             contact.districtNumber !== null
         );
-
         res.json(jsonData);
       } else {
         res.json(response.data);

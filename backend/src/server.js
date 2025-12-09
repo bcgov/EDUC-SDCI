@@ -19,7 +19,20 @@ const cacheService = require("./components/cache-service");
 
 async function bootstrapCache() {
   try {
+    // Load address type codes
+    await cacheService.loadAddressTypeCodes();
+    log.info("Loaded address type codes to memory");
+
+    // Load school category codes
+    await cacheService.loadSchoolCategoryCodes();
+    log.info("Loaded category codes to memory");
+
+    // Load facility codes
+    await cacheService.loadFacilityCodes();
+
+    log.info("Loaded facility codes to memory");
     await cacheService.loadContactTypeCodes();
+
     log.info("Loaded contact type codes to memory");
     // Load district data
     await cacheService.loadAllDistrictsToMap();
@@ -38,18 +51,6 @@ async function bootstrapCache() {
     // Load authority data
     await cacheService.loadAllAuthoritiesToMap();
     log.info("Loaded authority data to memory");
-
-    // Load address type codes
-    await cacheService.loadAddressTypeCodes();
-    log.info("Loaded address type codes to memory");
-
-    // Load school category codes
-    await cacheService.loadSchoolCategoryCodes();
-    log.info("Loaded category codes to memory");
-
-    // Load facility codes
-    await cacheService.loadFacilityCodes();
-    log.info("Loaded facility codes to memory");
 
     //Create Files for download
     await cacheService.createSchoolFiles();

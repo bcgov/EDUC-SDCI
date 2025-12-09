@@ -197,11 +197,8 @@ onBeforeMount(async () => {
 
 <template>
   <div>
-    <v-breadcrumbs
-      class="breadcrumbs"
-      bg-color="white"
-      :items="[{ title: 'Home', href: '/' }, 'Search']"
-    ></v-breadcrumbs>
+    <v-breadcrumbs class="breadcrumbs" bg-color="white"
+      :items="[{ title: 'Home', href: '/' }, 'Search']"></v-breadcrumbs>
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-container id="main">
         <DisplayAlert class="mx-4 mx-md-0" />
@@ -210,70 +207,37 @@ onBeforeMount(async () => {
             <h1>Find Schools</h1>
           </v-col>
           <v-col cols="11" md="3" class="pr-md-2">
-            <v-select
-              v-model="selectedJurisdiction"
-              :items="jurisdictions"
-              item-title="label"
-              item-value="schoolCategoryCode"
-              label="Category"
-              multiple
-            ></v-select>
+            <v-select v-model="selectedJurisdiction" :items="jurisdictions" item-title="label"
+              item-value="schoolCategoryCode" label="Category" multiple></v-select>
           </v-col>
           <v-col cols="11" md="3" class="pl-md-2">
-            <v-select
-              v-model="selectedType"
-              item-title="label"
-              item-value="facilityTypeCode"
-              :items="types"
-              label="Types"
-              multiple
-            ></v-select>
+            <v-select v-model="selectedType" item-title="label" item-value="facilityTypeCode" :items="types"
+              label="Types" multiple></v-select>
           </v-col>
-          <v-col cols="3"
-            ><v-btn
-              icon="mdi-magnify"
-              color="primary"
-              variant="flat"
-              rounded="lg"
-              size="large"
-              @click="searchSchools"
-              class="text-none text-subtle-1 ml-md-4"
-          /></v-col>
+          <v-col cols="3"><v-btn icon="mdi-magnify" color="primary" variant="flat" rounded="lg" size="large"
+              @click="searchSchools" class="text-none text-subtle-1 ml-md-4" /></v-col>
           <v-spacer class="d-block d-md-none" />
           <v-col cols="3" md="11">
-            <v-btn @click="resetFilters" variant="outlined" color="primary" class="text-none"
-              >Reset</v-btn
-            >
+            <v-btn @click="resetFilters" variant="outlined" color="primary" class="text-none">Reset</v-btn>
             <!-- <v-btn @click="searchSchools" color="primary">Search</v-btn> -->
           </v-col>
         </v-row>
+
       </v-container>
     </v-sheet>
-
-    <!-- <v-card class="pa-6" width="100%"> -->
-    <v-sheet class="pa-6">
+    <v-sheet>
       <!-- Search Results Table -->
-      Total: {{ results }} <span v-if="results != 0">Current Page {{ currentPage + 1 }}</span>
-      <v-data-table-server
-        v-if="results != 0"
-        v-model:items-per-page="itemsPerPage"
-        :items-per-page-options="[
-          { value: 10, title: '10' },
-          { value: 25, title: '25' },
-          { value: 50, title: '50' },
-          { value: 100, title: '100' }
-        ]"
-        :expanded="expanded"
-        :headers="headers"
-        :items-length="results"
-        :items="transformedSchools"
-        show-expand
-        class="elevation-1"
-        item-value="schoolId"
-        :loading="loading"
-        @page-change:page="handlePageChange"
-        @update:options="handleUpdate"
-      >
+
+      <v-data-table-server v-if="results != 0" v-model:items-per-page="itemsPerPage" :items-per-page-options="[
+        { value: 10, title: '10' },
+        { value: 25, title: '25' },
+        { value: 50, title: '50' },
+        { value: 100, title: '100' }
+      ]" :expanded="expanded" :headers="headers" :items-length="results" :items="transformedSchools" show-expand
+        class="elevation-1" item-value="schoolId" :loading="loading" @page-change:page="handlePageChange"
+        @update:options="handleUpdate">
+
+
         <template v-slot:item.displayName="{ item }">
           <a :href="`/school/${item.schoolId}`">{{ item.displayName }}</a>
         </template>
@@ -282,25 +246,14 @@ onBeforeMount(async () => {
             <td :colspan="headers.length">
               <v-col>
                 <v-row class="my-1 pl-2">
-                  <v-chip
-                    v-for="(grade, index) in item.grades"
-                    :key="index"
-                    class="ml-1"
-                    size="small"
-                    color="primary"
-                    label
-                  >
-                    {{ grade.label }}</v-chip
-                  >
+                  <v-chip v-for="(grade, index) in item.grades" :key="index" class="ml-1" size="small" color="primary"
+                    label>
+                    {{ grade.label }}</v-chip>
                 </v-row>
                 <v-row>
                   <p>
-                    <router-link
-                      class="pl-4"
-                      :to="`/district/${
-                        appStore.getDistrictByDistrictId(item.districtId)?.districtNumber
-                      }-${appStore.getDistrictByDistrictId(item.districtId)?.displayName}`"
-                    >
+                    <router-link class="pl-4" :to="`/district/${appStore.getDistrictByDistrictId(item.districtId)?.districtNumber
+                      }-${appStore.getDistrictByDistrictId(item.districtId)?.displayName}`">
                       District
                       {{ appStore.getDistrictByDistrictId(item.districtId)?.districtNumber }} -
                       {{ appStore.getDistrictByDistrictId(item.districtId)?.displayName }}
@@ -326,6 +279,4 @@ onBeforeMount(async () => {
   </div>
 </template>
 
-<style>
-/* Add custom styles here if needed */
-</style>
+<style></style>

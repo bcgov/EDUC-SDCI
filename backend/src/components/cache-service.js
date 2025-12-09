@@ -60,14 +60,18 @@ const cacheService = {
           data.accessToken,
           `${config.get(
             "server:instituteAPIURL"
-          )}/institute/school/paginated?pageSize=200`
+          )}/institute/school/paginated?pageSize=1000`
         );
         const schoolsData = schoolsResponse.content;
-
         // remove contacts that are not publiclyAvailable
 
-        const schoolsWithPubliclyAvailableContacts = schoolsData.map(
-          (school) => {
+        const schoolsWithPubliclyAvailableContacts = schoolsData
+          .filter((school) => {
+            return facilityCodes.some(
+              (fc) => fc.facilityTypeCode === school.facilityTypeCode
+            );
+          })
+          .map((school) => {
             return {
               ...school,
               contacts: (school.contacts || [])
@@ -100,8 +104,7 @@ const cacheService = {
                   };
                 }),
             };
-          }
-        );
+          });
 
         const schoolsToLoadToCache = schoolsWithPubliclyAvailableContacts;
         if (schoolsToLoadToCache && schoolsToLoadToCache.length > 0) {
