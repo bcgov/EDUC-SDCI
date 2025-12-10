@@ -2,9 +2,7 @@
 
 const log = require("./logger");
 const config = require("../config");
-const HttpStatus = require("http-status-codes");
 const { LocalDate, DateTimeFormatter } = require("@js-joda/core");
-const cacheService = require("./cache-service");
 const axios = require("axios");
 
 async function getOffshoreSchoolList(req, res) {
@@ -64,14 +62,6 @@ async function getOffshoreSchoolList(req, res) {
     });
 
     const offshoreSchoolList = response.data.content;
-
-    // Optional: format grades if needed
-    // const schoolGrades = cacheService.getGradeCodes();
-    // for (let i = 0; i < offshoreSchoolList.length; i++) {
-    //   const formattedGrades = formatGrades(offshoreSchoolList[i].grades, schoolGrades);
-    //   offshoreSchoolList[i] = { ...offshoreSchoolList[i], ...formattedGrades };
-    // }
-
     res.json(offshoreSchoolList);
   } catch (e) {
     log.error(

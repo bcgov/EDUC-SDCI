@@ -61,7 +61,7 @@ apiRouter.use("/v1/search", searchRouter);
 //Handle 500 error
 app.use((err, _req, res, next) => {
   res?.redirect(
-    config?.get("server:frontend") + "/error?message=500_internal_error"
+    config?.get("server:frontend") + "/error?message_internal_error"
   );
 });
 
