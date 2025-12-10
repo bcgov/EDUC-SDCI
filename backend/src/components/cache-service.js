@@ -935,7 +935,7 @@ const cacheService = {
         if (Array.isArray(item.districtSchools)) {
           item.districtSchools.forEach((school) => {
             const principal = school.contacts?.find(
-              (contact) => contact.jobTitle === "Principal"
+              (contact) => contact.schoolContactTypeCode === "PRINCIPAL"
             );
             school.principalEmail = principal?.email || null;
             school.principalFirstName = principal?.firstName || null;
