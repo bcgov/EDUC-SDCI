@@ -7,13 +7,29 @@
 
 root * /srv
 
-file_server
+# Reverse proxy API requests to Node
+reverse_proxy /api/* {$HOST_ROUTE}
 
+# Reverse proxy download requests to Node
+reverse_proxy /download/* {$HOST_ROUTE}
+
+# Redirect www to main domain
 @www_host {
 	host www.{$HOST_ROUTE}
 }
 redir @www_host http://{$HOST_ROUTE}{path}
 
+# Serve static files for everything else
+@unspecified_path {
+	not path_regexp ^\/0.0.0.0
+	not path /api/*
+	not path /download/*
+}
+handle @unspecified_path {
+	try_files {path} {path}/ /?_url={uri}
+}
+
+# Security headers
 header {
 	X-Frame-Options "SAMEORIGIN"
 	X-XSS-Protection "1;mode=block"
@@ -25,24 +41,15 @@ header {
 	Feature-Policy "fullscreen 'self'; camera 'none'; microphone 'none'"
 }
 
-@unspecified_path {
-	not path_regexp ^\/0.0.0.0
-	not path /api/*
-}
-handle @unspecified_path {
-	try_files {path} {path}/ /?_url={uri}
-}
-
+# Compression
 encode {
 	gzip 7
 }
 
+# Logging
 log {
 	output stdout
 }
 
-reverse_proxy /api/* {$HOST_ROUTE}
-
-# Reverse proxy download requests to Express
-reverse_proxy /download/* {$HOST_ROUTE}
-
+# Serve remaining static files
+file_server
