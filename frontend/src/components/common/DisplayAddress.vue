@@ -22,7 +22,7 @@ const props = defineProps<{
       <p>{{ addressLine1 }}</p>
       <p>{{ addressLine2 }}</p>
       <p>{{ city }}, {{ provinceCode }}</p>
-      <p>{{ formatPostalCode(postal) }}</p>
+      <p>{{ postal ? formatPostalCode(postal) : '' }}</p>
     </div>
   </div>
 </template>
