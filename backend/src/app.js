@@ -14,11 +14,14 @@ const searchRouter = require("./routes/search-router");
 const app = express();
 const publicPath = path.join(__dirname, "../public");
 
+app.use(cors());
+
 app.get("/download/*", (req, res) => {
   try {
     const requestedFile = req.params[0];
     const filePath = path.resolve(publicPath, requestedFile);
-
+    console.log("publicPath:", publicPath);
+    console.log("filePath" + filePath);
     // Security check
     if (!filePath.startsWith(publicPath)) {
       return res.status(403).send("Forbidden");
@@ -44,7 +47,7 @@ app.get("/download/*", (req, res) => {
     res.status(500).send("Internal server error");
   }
 });
-app.use(cors());
+
 app.get("/api/health", (req, res) => {
   res.status(200).send("OK");
 });
