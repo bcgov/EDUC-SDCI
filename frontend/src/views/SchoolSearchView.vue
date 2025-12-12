@@ -252,7 +252,7 @@ onBeforeMount(async () => {
                 </v-row>
                 <v-row>
                   <p>
-                    <router-link class="pl-4" :to="`/district/${appStore.getDistrictByDistrictId(item.districtId)?.districtNumber
+                    <router-link v-if="appStore.getDistrictByDistrictId(item.districtId)" class="pl-4" :to="`/district/${appStore.getDistrictByDistrictId(item.districtId)?.districtNumber
                       }-${appStore.getDistrictByDistrictId(item.districtId)?.displayName}`">
                       District
                       {{ appStore.getDistrictByDistrictId(item.districtId)?.districtNumber }} -

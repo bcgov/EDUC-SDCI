@@ -1,6 +1,10 @@
-'use strict';
-const { LocalDate, LocalDateTime, DateTimeFormatter } = require('@js-joda/core');
-
+"use strict";
+const {
+  LocalDate,
+  LocalDateTime,
+  DateTimeFormatter,
+} = require("@js-joda/core");
+const { NON_BC_DISTRICTS } = require("../util/constants");
 
 function generateAuthorityObject(authority) {
   return {
@@ -23,9 +27,15 @@ function isAuthorityActive(authority) {
     if (!openedDate) return false;
 
     // Parse as LocalDateTime, then convert to LocalDate
-    const opened = LocalDateTime.parse(openedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME).toLocalDate();
+    const opened = LocalDateTime.parse(
+      openedDate,
+      DateTimeFormatter.ISO_LOCAL_DATE_TIME
+    ).toLocalDate();
     const closed = closedDate
-      ? LocalDateTime.parse(closedDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME).toLocalDate()
+      ? LocalDateTime.parse(
+          closedDate,
+          DateTimeFormatter.ISO_LOCAL_DATE_TIME
+        ).toLocalDate()
       : null;
 
     const isActive =
@@ -41,22 +51,25 @@ function isAuthorityActive(authority) {
 
 function generateDistrictObject(district = {}) {
   const now = new Date();
-  const activeContacts = (district.contacts || []).filter(({ effectiveDate, expiryDate }) => {
-    const effective = new Date(effectiveDate);
-    const expiry = expiryDate ? new Date(expiryDate) : null;
-    return effective <= now && (!expiry || expiry >= now);
-  });
-  
+  const activeContacts = (district.contacts || []).filter(
+    ({ effectiveDate, expiryDate }) => {
+      const effective = new Date(effectiveDate);
+      const expiry = expiryDate ? new Date(expiryDate) : null;
+      return effective <= now && (!expiry || expiry >= now);
+    }
+  );
 
-  const excludedKeys = ['createUser', 'updateUser', 'createDate', 'updateDate'];
+  const excludedKeys = ["createUser", "updateUser", "createDate", "updateDate"];
   const flattenedAddressFields = {};
-  
-  (district.addresses || []).forEach(address => {
+
+  (district.addresses || []).forEach((address) => {
     const prefix = address.addressTypeCode?.toLowerCase();
     if (prefix) {
       Object.entries(address).forEach(([key, value]) => {
-        if (key !== 'addressTypeCode' && !excludedKeys.includes(key)) {
-          flattenedAddressFields[`${prefix}${key.charAt(0).toUpperCase() + key.slice(1)}`] = value;
+        if (key !== "addressTypeCode" && !excludedKeys.includes(key)) {
+          flattenedAddressFields[
+            `${prefix}${key.charAt(0).toUpperCase() + key.slice(1)}`
+          ] = value;
         }
       });
     }
@@ -79,17 +92,15 @@ function generateDistrictObject(district = {}) {
     email: district.email,
     website: district.website,
     addresses: district.addresses,
-    
   };
 }
 
 function isDistrictActive(district) {
-
-  return (district?.districtStatusCode?.toUpperCase() === 'ACTIVE');
+  return district?.districtStatusCode?.toUpperCase() === "ACTIVE";
 }
 function isBCDistrict(districtData) {
   // Return true if districtNumber is NOT 102, 103, or 098
-  return !['102', '103', '098'].includes(String(districtData?.districtNumber));
+  return !NON_BC_DISTRICTS.includes(String(districtData?.districtNumber));
 }
 
 module.exports = {
@@ -97,6 +108,5 @@ module.exports = {
   isDistrictActive,
   generateAuthorityObject,
   isAuthorityActive,
-  isBCDistrict
-  
+  isBCDistrict,
 };

@@ -65,7 +65,7 @@ const cacheService = {
           data.accessToken,
           `${config.get(
             "server:instituteAPIURL"
-          )}/institute/school/paginated?pageSize=1000`
+          )}/institute/school/paginated?pageSize=800`
         );
         const schoolsData = schoolsResponse.content;
         // remove contacts that are not publiclyAvailable

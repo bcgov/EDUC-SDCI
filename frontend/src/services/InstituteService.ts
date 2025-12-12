@@ -68,13 +68,23 @@ export default {
     }
     return ApiService.apiAxios.get(url)
   },
+  searchContactByType2(type: string, req: any): Promise<AxiosResponse> {
+    const pageSize = req.pageSize?.value || 1000
+    const pageNumber = req.pageNumber || 0
+    const sortOrder = req.sort?.order ? req.sort.order.toUpperCase() : ''
+    const sortField = req.sort?.key ? req.sort.key : ''
+    const params: any = { pageSize, pageNumber }
+    if (sortOrder && sortField) {
+      params.sortField = sortField
+      params.sortOrder = sortOrder
+    }
+    return ApiService.apiAxios.get(`/api/v1/search/district-contacts/${type}`, { params })
+  },
+
   getDistrictView(id: string | undefined): Promise<AxiosResponse> {
     return ApiService.apiAxios.get(`/api/v1/district/${id}`)
   },
   getDistrictContactTypeCodes(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/institute/district-contact-type-codes')
-  },
-  async loadCache(): Promise<AxiosResponse> {
-    return ApiService.apiAxios.get('/api/v1/institute/create-cache')
   }
 }
