@@ -1,73 +1,48 @@
 {
-    auto_https off
-    admin off
+	auto_https off
+	admin off
 }
 
 :2015
 
-# Serve static files from /srv
 root * /srv
 
 file_server
 
-# Redirect www → non-www
 @www_host {
-    host www.{$HOST_ROUTE}
+	host www.{$HOST_ROUTE}
 }
 redir @www_host http://{$HOST_ROUTE}{path}
 
-# Security headers
 header {
-    X-Frame-Options "SAMEORIGIN"
-    X-XSS-Protection "1;mode=block"
-    Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate"
-    X-Content-Type-Options "nosniff"
-    Strict-Transport-Security "max-age=31536000"
-    Content-Security-Policy "default-src 'self' https://spt.apps.gov.bc.ca; script-src 'self' https://www2.gov.bc.ca ;style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://use.fontawesome.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://fonts.googleapis.com http://www.w3.org https://spm.gov.bc.ca"
-    Referrer-Policy "same-origin"
-    Feature-Policy "fullscreen 'self'; camera 'none'; microphone 'none'"
+	X-Frame-Options "SAMEORIGIN"
+	X-XSS-Protection "1;mode=block"
+	Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate"
+	X-Content-Type-Options "nosniff"
+	Strict-Transport-Security "max-age=31536000"
+	Content-Security-Policy "default-src 'self' https://spt.apps.gov.bc.ca; script-src 'self' https://www2.gov.bc.ca ;style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://use.fontawesome.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://fonts.googleapis.com http://www.w3.org https://spm.gov.bc.ca"
+	Referrer-Policy "same-origin"
+	Feature-Policy "fullscreen 'self'; camera 'none'; microphone 'none'"
 }
 
-# -----------------------------
-# FIXED DOWNLOAD ROUTE
-# -----------------------------
-# Download requests MUST bypass gzip and buffering
-@download path /download/*
-
-handle @download {
-    # Disable encoding because Express streams the file
-    encode {}
-
-    # Proxy directly to Express (8081 by env var)
-    reverse_proxy {$HOST_ROUTE} {
-        # Force immediate streaming
-        flush_interval -1
-    }
-}
-
-# -----------------------------
-# API ROUTE
-# -----------------------------
-reverse_proxy /api/* {$HOST_ROUTE}
-
-# -----------------------------
-# SPA fallback (Vue/React/etc.)
-# -----------------------------
 @unspecified_path {
-    not path_regexp ^\/0.0.0.0
-    not path /api/*
-    not path /download/*
+	not path_regexp ^\/0.0.0.0
+	not path /api/*
 }
-
 handle @unspecified_path {
-    try_files {path} {path}/ /?_url={uri}
+	try_files {path} {path}/ /?_url={uri}
 }
 
-# Default gzip (disabled for /download/* only)
 encode {
-    gzip 7
+	gzip 7
 }
 
 log {
-    output stdout
+	output stdout
 }
+
+reverse_proxy /api/* {$HOST_ROUTE}
+
+# Reverse proxy download requests to Express
+reverse_proxy /download/* {$HOST_ROUTE}
+
