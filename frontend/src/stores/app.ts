@@ -68,7 +68,7 @@ export const useAppStore = defineStore('app', {
       // Cleanup URL object later
       URL.revokeObjectURL(a.href)
     },
-    mapSchoolGradesToLabels(schoolGrades: Grade[]): Promise<Grade[]> {
+    mapSchoolGradesToLabels(schoolGrades: Grade[]): Grade[] {
       // If gradeCodes not loaded, fetch them first
       if (!this.gradeCodes || this.gradeCodes.length === 0) {
         this.setGradeCodes()
@@ -183,7 +183,7 @@ export const useAppStore = defineStore('app', {
           authorityNumber: authority.authorityNumber,
           displayName: authority.displayName
         }))
-        .sort((a, b) => a.authorityNumber - b.authorityNumber)
+        .sort((a, b) => Number(a.authorityNumber) - Number(b.authorityNumber))
     },
     getAuthorityByAuthorityId: (state) => {
       return (authorityId: string) => {
@@ -203,12 +203,12 @@ export const useAppStore = defineStore('app', {
       return state.offshoreSchools
     },
     // Codes
-    getGradeCodes: async (state) => {
+    getGradeCodes(this: any, state) {
       if (!state.gradeCodes || state.gradeCodes.length === 0) {
-        // fetch and set grade codes if empty
-        await appStore.setGradeCodes()
+        // Trigger loading of grade codes asynchronously if not loaded
+        void this.setGradeCodes()
       }
-      return state.gradeCodes
+      return state.gradeCodes ?? []
     },
     getContactTypeCodes: (state) => {
       return state.contactTypeCodes
