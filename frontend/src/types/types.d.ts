@@ -170,8 +170,8 @@ export interface District {
     notes: []
     contacts: DistrictContact[]
     addresses: Address[]
+    districtSchools: School[]
   }
-  districtSchools: School[]
 }
 
 // used to define lightweight list of all districts for UI components
@@ -224,5 +224,5 @@ export interface Authority {
 export interface ListAuthority {
   displayName: string
   authorityNumber: string
-  independentAuthorityId: string
+  authorityID: string
 }

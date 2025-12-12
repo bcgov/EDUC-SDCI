@@ -111,7 +111,7 @@ onBeforeMount(async () => {
     schoolData.value = response.data
 
     //add the missing labels
-    const filteredGrades = await appStore.mapSchoolGradesToLabels(schoolData.value.grades)
+    const filteredGrades = appStore.mapSchoolGradesToLabels(schoolData.value.grades)
     const labels = appStore.extractGradeLabels(filteredGrades)
 
     if (labels && labels.length > 0) {
