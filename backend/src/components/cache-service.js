@@ -935,7 +935,6 @@ const cacheService = {
             const principal = school.contacts?.find(
               (contact) => contact.schoolContactTypeCode === "PRINCIPAL"
             );
-
             school.principalEmail = principal?.email || null;
             school.principalFirstName = principal?.firstName || null;
             school.principalLastName = principal?.lastName || null;
@@ -951,7 +950,12 @@ const cacheService = {
                 acc[`${prefix}Country`] = addr.countryCode;
                 return acc;
               }, {}) || {};
-
+            const facilityMatch = facilityCodes.find(
+              (ref) => ref.facilityTypeCode === school.facilityTypeCode
+            );
+            if (facilityMatch) {
+              school.facilityTypeCode = facilityMatch.description;
+            }
             Object.assign(school, flattenedAddresses);
 
             delete school.contacts;
@@ -974,10 +978,10 @@ const cacheService = {
         { property: "physicalCity", label: "Physical City" },
         { property: "physicalProvince", label: "Physical Province" },
         { property: "physicalPostal", label: "Physical Postal Code" },
-        { property: "firstName", label: "Principal First Name" },
-        { property: "lastName", label: "Principal Last Name" },
+        { property: "principalFirstName", label: "Principal First Name" },
+        { property: "principalLastName", label: "Principal Last Name" },
         { property: "facilityTypeCode", label: "Type" },
-        { property: "facilityTypeCode_description", label: "Type" },
+        // { property: "facilityTypeCode_description", label: "Type" },
         {
           property: "schoolCategoryCode_description",
           label: "School Category",
