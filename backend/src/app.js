@@ -14,7 +14,7 @@ const schoolRouter = require("./routes/school-router");
 const searchRouter = require("./routes/search-router");
 const app = express();
 const publicPath = path.join(__dirname, "../public");
-
+app.use(express.static(publicPath));
 app.use(cors());
 
 app.get("/download/*", (req, res) => {
