@@ -2,6 +2,7 @@ const config = require("./config/index");
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
+const log = require("./components/logger");
 const cors = require("cors");
 const NodeCache = require("node-cache");
 const apiRouter = express.Router();
@@ -13,15 +14,16 @@ const schoolRouter = require("./routes/school-router");
 const searchRouter = require("./routes/search-router");
 const app = express();
 const publicPath = path.join(__dirname, "../public");
-
+app.use(express.static(publicPath));
 app.use(cors());
 
 app.get("/download/*", (req, res) => {
   try {
+    log.info("trying" + req.params[0]);
     const requestedFile = req.params[0];
     const filePath = path.resolve(publicPath, requestedFile);
-    console.log("publicPath:", publicPath);
-    console.log("filePath" + filePath);
+    log.info("publicPath:", publicPath);
+    log.info("filePath" + filePath);
     // Security check
     if (!filePath.startsWith(publicPath)) {
       return res.status(403).send("Forbidden");
