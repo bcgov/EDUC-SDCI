@@ -11,10 +11,10 @@ file_server
 
 @www_host_static {
 	host www.{$HOST_ROUTE}
-		not path /api/*
+	not path /api/*
 	not path /download/*
 }
-redir @www_host http://{$HOST_ROUTE}{path}
+redir @www_host_static http://{$HOST_ROUTE}{path}
 
 header {
 	X-Frame-Options "SAMEORIGIN"
