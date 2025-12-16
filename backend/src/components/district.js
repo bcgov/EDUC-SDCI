@@ -23,7 +23,14 @@ async function getDistrict(req, res) {
   try {
     const { id } = req.params;
     const districtJSON = await cacheService.getDistrictByDistrictID(id);
-    res.json({ districtData: districtJSON });
+    const {
+      createDate,
+      createUser,
+      updateDate,
+      updateUser,
+      ...filteredDistrict
+    } = districtJSON;
+    res.json({ districtData: filteredDistrict });
   } catch (e) {
     console.error(
       "getDistrict Error:",
