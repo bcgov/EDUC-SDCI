@@ -34,7 +34,7 @@ handle_path /api/* {
 	}
 }
 
-handle_path /download/* {
+handle /download/* {
 	reverse_proxy {$HOST_ROUTE} {
 		header_up Host {$HOST_ROUTE}
 		header_up X-Forwarded-Proto https
