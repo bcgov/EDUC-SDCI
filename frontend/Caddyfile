@@ -42,7 +42,3 @@ log {
 }
 
 reverse_proxy /api/* {$HOST_ROUTE}
-
-# Reverse proxy download requests to Express
-reverse_proxy /download/* {$HOST_ROUTE}
-
