@@ -9,12 +9,10 @@ root * /srv
 
 file_server
 
-@www_host_static {
+@www_host {
 	host www.{$HOST_ROUTE}
-	not path /api/*
-	not path /download/*
 }
-redir @www_host_static http://{$HOST_ROUTE}{path}
+redir @www_host http://{$HOST_ROUTE}{path}
 
 header {
 	X-Frame-Options "SAMEORIGIN"
@@ -27,27 +25,20 @@ header {
 	Feature-Policy "fullscreen 'self'; camera 'none'; microphone 'none'"
 }
 
-handle_path /api/* {
-	reverse_proxy {$HOST_ROUTE} {
-		header_up Host {$HOST_ROUTE}
-		header_up X-Forwarded-Proto https
-	}
+@unspecified_path {
+	not path_regexp ^\/0.0.0.0
+	not path /api/*
 }
-
-handle /download/* {
-	reverse_proxy {$HOST_ROUTE} {
-		header_up Host {$HOST_ROUTE}
-		header_up X-Forwarded-Proto https
-	}
-}
-
-handle {
+handle @unspecified_path {
 	try_files {path} {path}/ /?_url={uri}
 }
 
-encode gzip
+encode {
+	gzip 7
+}
 
 log {
 	output stdout
 }
 
+reverse_proxy /api/* {$HOST_ROUTE}

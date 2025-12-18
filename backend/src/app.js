@@ -17,7 +17,7 @@ const publicPath = path.join(__dirname, "../public");
 app.use(express.static(publicPath));
 app.use(cors());
 
-app.get("/download/*", (req, res) => {
+app.get("/api/download/*", (req, res) => {
   try {
     log.info("trying" + req.params[0]);
     const requestedFile = req.params[0];

@@ -28,7 +28,7 @@ const headers = ref([
 const downloadCSV = () => {
   jsonexport(downloadSchools.value, function (err: any, csv: any) {
     if (err) return console.error(err)
-    appStore.exportCSV(csv, "offshoreSchools.csv")
+    appStore.exportCSV(csv, 'offshoreSchools.csv')
   })
 }
 const transformContactForDownload = (inputData: any): {} => {
@@ -124,8 +124,11 @@ onBeforeMount(() => {
 
 <template>
   <div>
-    <v-breadcrumbs class="breadcrumbs" bg-color="white"
-      :items="[{ title: 'Home', href: '/' }, 'Offshore Schools']"></v-breadcrumbs>
+    <v-breadcrumbs
+      class="breadcrumbs"
+      bg-color="white"
+      :items="[{ title: 'Home', href: '/' }, 'Offshore Schools']"
+    ></v-breadcrumbs>
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-container id="main">
         <DisplayAlert class="mx-4 mx-md-0" />
@@ -135,15 +138,21 @@ onBeforeMount(() => {
           </v-col>
         </v-row>
         <v-row no-gutters justify="space-between">
-          <v-col cols="11" md="4"><v-btn variant="text"
+          <v-col cols="11" md="4"
+            ><v-btn
+              variant="text"
               class="text-none text-subtitle-1 ma-1 mx-4 mx-md-0 v-btn-align-left"
-              href="/download/offshoreschoolrepresentatives.csv"><template v-slot:prepend> <v-icon
-                  icon="mdi-download" /> </template>Download Offshore
-              Representatives (CSV)</v-btn>
-            <v-btn @click="downloadCSV" variant="text"
-              class="text-none text-subtitle-1 ma-1 mx-4 mx-md-0 v-btn-align-left"><template v-slot:prepend> <v-icon
-                  icon="mdi-download" /> </template>Download Offshore
-              Schools(CSV)</v-btn>
+              href="/api/download/offshoreschoolrepresentatives.csv"
+              ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download Offshore
+              Representatives (CSV)</v-btn
+            >
+            <v-btn
+              @click="downloadCSV"
+              variant="text"
+              class="text-none text-subtitle-1 ma-1 mx-4 mx-md-0 v-btn-align-left"
+              ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download Offshore
+              Schools(CSV)</v-btn
+            >
           </v-col>
         </v-row>
       </v-container>
@@ -152,10 +161,21 @@ onBeforeMount(() => {
 
     <v-sheet class="pa-6">
       <v-container>
-        <v-text-field v-model="schoolSearch" append-icon="mdi-magnify" label="Filter Offshore School" single-line
-          hide-details></v-text-field>
-        <v-data-table :headers="schoolHeaders" :hide-default-footer="true" items-per-page="50" :items="offshoreSchools"
-          :search="schoolSearch" :sort-by="[{ key: 'mincode', order: 'asc' }]">
+        <v-text-field
+          v-model="schoolSearch"
+          append-icon="mdi-magnify"
+          label="Filter Offshore School"
+          single-line
+          hide-details
+        ></v-text-field>
+        <v-data-table
+          :headers="schoolHeaders"
+          :hide-default-footer="true"
+          items-per-page="50"
+          :items="offshoreSchools"
+          :search="schoolSearch"
+          :sort-by="[{ key: 'mincode', order: 'asc' }]"
+        >
           <template v-slot:item.displayName="{ item }">
             <a :href="`/school/${item.schoolId}`"> {{ item.displayName }} </a>
           </template>

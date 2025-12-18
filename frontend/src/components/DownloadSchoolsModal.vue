@@ -27,7 +27,7 @@ const dialog = ref(false)
             <v-row class="pt-2">
               <v-col class="py-1 my-0"
                 ><v-btn
-                  href="/download/publicschoolcontacts.csv"
+                  href="/api/download/publicschoolcontacts.csv"
                   block
                   class="v-btn-align-left text-none text-subtitle-1 my-1"
                   @click="dialog = false"
@@ -39,7 +39,7 @@ const dialog = ref(false)
             <v-row>
               <v-col class="py-1 my-0">
                 <v-btn
-                  href="/download/allindependentschools.csv"
+                  href="/api/download/allindependentschools.csv"
                   block
                   style="text-align: left"
                   class="v-btn-align-left text-left text-none text-subtitle-1 my-1"
@@ -53,7 +53,7 @@ const dialog = ref(false)
             <v-row>
               <v-col class="py-1 my-0">
                 <v-btn
-                  href="/download/allschoolcontacts.csv"
+                  href="/api/download/allschoolcontacts.csv"
                   block
                   class="v-btn-align-left text-left text-none text-subtitle-1 my-1"
                   @click="dialog = false"
@@ -65,7 +65,7 @@ const dialog = ref(false)
             <v-row>
               <v-col class="py-1 my-0">
                 <v-btn
-                  href="/download/allschoolmailing.csv"
+                  href="/api/download/allschoolmailing.csv"
                   block
                   class="v-btn-align-left text-left text-none text-subtitle-1 my-1"
                   @click="dialog = false"
