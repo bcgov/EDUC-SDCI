@@ -938,7 +938,9 @@ const cacheService = {
             school.principalEmail = principal?.email || null;
             school.principalFirstName = principal?.firstName || null;
             school.principalLastName = principal?.lastName || null;
-
+            school.principalPhoneNumber = principal?.phoneNumber || null;
+            school.principalPhoneExtension = principal?.phoneExtension || null;
+            school.principalJobTile = principal?.jobTitle || null;
             const flattenedAddresses =
               school.addresses?.reduce((acc, addr) => {
                 const prefix = addr.addressTypeCode.toLowerCase(); // 'mailing' or 'physical'
