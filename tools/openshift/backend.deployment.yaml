@@ -31,7 +31,7 @@ objects:
             app: "${APP_NAME}-backend-${BRANCH}"
         spec:
           containers:
-            - image: ghcr.io/bcgov/sdci-backend-main:latest
+            - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-backend:${TAG}
               imagePullPolicy: Always
               volumeMounts:
                 - name: tls-certs
