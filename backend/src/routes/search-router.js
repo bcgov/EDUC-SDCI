@@ -22,34 +22,132 @@ router.get(
   getDistrictContactSearchResults2
 );
 
+// async function getSchoolSearchResults(req, res) {
+//   const fundingGroups = cacheService.getFundingGroupCodes(req, res);
+//   const encodedSearchCriteriaList = encodeURIComponent(
+//     req.query?.searchCriteriaList || ""
+//   );
+//   const url = `${config.get(
+//     "server:instituteAPIURL"
+//   )}/institute/school/paginated?pageSize=${req.query?.pageSize}&pageNumber=${
+//     req.query?.pageNumber
+//   }&searchCriteriaList=${encodedSearchCriteriaList}`;
+
+//   axios
+//     .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
+//     .then((response) => {
+//       const results = response.data.content;
+//       const resultsWithFundingGroups = addFundingGroups(results, fundingGroups);
+//       // Remove the 'contacts' array from each object
+//       const cleanedResults = resultsWithFundingGroups.map(
+//         ({ notes, contacts, ...rest }) => rest
+//       );
+
+//       response.data.content = cleanedResults;
+
+//       res.json(response.data);
+//     })
+//     .catch((e) => {
+//       log.error("getData Error", e.response ? e.response.status : e.message);
+//     });
+// }
 async function getSchoolSearchResults(req, res) {
-  const fundingGroups = cacheService.getFundingGroupCodes(req, res);
-  const encodedSearchCriteriaList = encodeURIComponent(
-    req.query?.searchCriteriaList || ""
-  );
-  const url = `${config.get(
-    "server:instituteAPIURL"
-  )}/institute/school/paginated?pageSize=${req.query?.pageSize}&pageNumber=${
-    req.query?.pageNumber
-  }&searchCriteriaList=${encodedSearchCriteriaList}`;
+  try {
+    const fundingGroups = cacheService.getFundingGroupCodes(req, res);
 
-  axios
-    .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
-    .then((response) => {
-      const results = response.data.content;
-      const resultsWithFundingGroups = addFundingGroups(results, fundingGroups);
-      // Remove the 'contacts' array from each object
-      const cleanedResults = resultsWithFundingGroups.map(
-        ({ notes, contacts, ...rest }) => rest
-      );
+    // Search Logic Here
+    // ---------------------------------------------
+    let currentDate = new Date().toISOString().substring(0, 19);
 
-      response.data.content = cleanedResults;
+    const criteriaParams = [
+      {
+        condition: null,
+        searchCriteriaList: [],
+      },
+    ];
 
-      res.json(response.data);
-    })
-    .catch((e) => {
-      log.error("getData Error", e.response ? e.response.status : e.message);
+    // Handle Jurisdiction (schoolCategoryCode)
+    if (req.query.jurisdiction) {
+      // Split string back into array to check length
+      const jurisdictionList = req.query.jurisdiction.split(",");
+
+      criteriaParams[0].searchCriteriaList.push({
+        key: "schoolCategoryCode",
+        operation: jurisdictionList.length > 1 ? "in" : "eq",
+        value: req.query.jurisdiction, // Already comma-separated from frontend
+        valueType: "STRING",
+        condition: "AND",
+      });
+    }
+
+    // Handle Type (facilityTypeCode)
+    if (req.query.type) {
+      criteriaParams[0].searchCriteriaList.push({
+        key: "facilityTypeCode",
+        operation: "in", // Your frontend logic always used 'in' for type
+        value: req.query.type,
+        valueType: "STRING",
+        condition: "AND",
+      });
+    }
+
+    // Always filter for OPEN schools (moved from frontend)
+    criteriaParams[0].searchCriteriaList.push({
+      key: "openedDate",
+      operation: "lte",
+      value: currentDate,
+      valueType: "DATE_TIME",
+      condition: "AND",
     });
+
+    criteriaParams[0].searchCriteriaList.push({
+      key: "closedDate",
+      operation: "eq",
+      value: null,
+      valueType: "STRING",
+      condition: "AND",
+    });
+    // ---------------------------------------------
+
+    // Encode parameters for the downstream API
+    const jsonString = JSON.stringify(criteriaParams);
+    const encodedSearchCriteriaList = encodeURIComponent(jsonString);
+
+    // Construct URL
+    let downstreamUrl = `${config.get(
+      "server:instituteAPIURL"
+    )}/institute/school/paginated?pageSize=${req.query.pageSize}&pageNumber=${
+      req.query.pageNumber
+    }&searchCriteriaList=${encodedSearchCriteriaList}`;
+
+    // Handle Sort
+    // Note: Express parses "sort[key]=val" into an object req.query.sort = { key: val }
+    if (req.query.sort) {
+      // assuming downstream takes &sort[col]=DIR
+      for (const [key, order] of Object.entries(req.query.sort)) {
+        downstreamUrl += `&sort[${key}]=${order}`;
+      }
+    }
+
+    // Call API
+    const response = await axios.get(downstreamUrl, {
+      headers: { Authorization: `Bearer ${req.accessToken}` },
+    });
+
+    // Process Response (same as before)
+    const results = response.data.content;
+    const resultsWithFundingGroups = addFundingGroups(results, fundingGroups);
+
+    const cleanedResults = resultsWithFundingGroups.map(
+      ({ notes, contacts, ...rest }) => rest
+    );
+
+    response.data.content = cleanedResults;
+    res.json(response.data);
+  } catch (e) {
+    log.error("getData Error", e.response ? e.response.status : e.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 }
 async function getDistrictContactSearchResults(req, res) {
   const encodedSearchCriteriaList = encodeURIComponent(
