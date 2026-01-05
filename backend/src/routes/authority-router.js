@@ -21,7 +21,6 @@ async function getAuthority(req, res) {
     };
 
     res.json(authorityJSON);
-    log.info(`Authority details fetched for ID ${id}`);
   } catch (e) {
     log.error(
       "getAuthority Error:",

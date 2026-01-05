@@ -316,10 +316,6 @@ const cacheService = {
           districtContactTypeCodes = districtContactTypeCodesResponse.filter(
             (code) => code.publiclyAvailable === true
           );
-          console.log(
-            "district unfiltered contacts " +
-              districtContactTypeCodesResponse.length
-          );
         }
         if (
           authorityContactTypeCodesResponse &&
@@ -327,10 +323,6 @@ const cacheService = {
         ) {
           authorityContactTypeCodes = authorityContactTypeCodesResponse.filter(
             (code) => code.publiclyAvailable === true
-          );
-          console.log(
-            "authority unfiltered  contacts " +
-              authorityContactTypeCodesResponse.length
           );
         }
 
@@ -983,7 +975,6 @@ const cacheService = {
         { property: "principalFirstName", label: "Principal First Name" },
         { property: "principalLastName", label: "Principal Last Name" },
         { property: "facilityTypeCode", label: "Type" },
-        // { property: "facilityTypeCode_description", label: "Type" },
         {
           property: "schoolCategoryCode_description",
           label: "School Category",
@@ -1059,7 +1050,31 @@ const cacheService = {
       );
       allSchools = this.mapPropertiesToLabels(allSchools, propertyOrder);
 
-      await this.writeCSVToFile(allSchools, filePathAllSchools);
+      // All Schools Mailing
+      const filePathAllSchoolsMailing = path.join(
+        FILE_STORAGE_DIR,
+        "allschoolMailing.csv"
+      );
+      const propertyOrderAllSchools = [
+        { property: "mailingAddressLine1", label: "Address" },
+        { property: "mailingCity", label: "City" },
+        { property: "mailingProvince", label: "Province" },
+        { property: "mailingPostal", label: "Postal Code" },
+        { property: "physicalAddressLine1", label: "Physical Address" },
+        { property: "physicalCity", label: "Physical City" },
+        { property: "physicalProvince", label: "Physical Province" },
+        { property: "physicalPostal", label: "Physical Postal Code" },
+        { property: "principalFirstName", label: "Principal First Name" },
+        { property: "principalLastName", label: "Principal Last Name" },
+        { property: "facilityTypeCode", label: "Type" },
+      ];
+      allSchools = schoolList;
+      allSchools = this.mapPropertiesToLabels(
+        allSchools,
+        propertyOrderAllSchools
+      );
+
+      await this.writeCSVToFile(allSchools, filePathAllSchoolsMailing);
     } catch (e) {
       console.error("Error generating CSV:", e);
     }

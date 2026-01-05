@@ -19,7 +19,6 @@ app.use(cors());
 
 app.get("/api/download/*", (req, res) => {
   try {
-    log.info("trying" + req.params[0]);
     const requestedFile = req.params[0];
     const filePath = path.resolve(publicPath, requestedFile);
     log.info("publicPath:", publicPath);
