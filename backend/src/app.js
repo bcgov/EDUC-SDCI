@@ -53,7 +53,7 @@ app.get("/api/health", (req, res) => {
   res.status(200).send("OK");
 });
 
-app.use(/(\/api)?/, apiRouter);
+app.use("/api", apiRouter);
 
 apiRouter.use("/v1/institute", instituteRouter);
 apiRouter.use("/v1/district", districtRouter);
