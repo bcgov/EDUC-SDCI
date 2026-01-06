@@ -219,7 +219,6 @@ onBeforeMount(async () => {
           <v-spacer class="d-block d-md-none" />
           <v-col cols="3" md="11">
             <v-btn @click="resetFilters" variant="outlined" color="primary" class="text-none">Reset</v-btn>
-            <!-- <v-btn @click="searchSchools" color="primary">Search</v-btn> -->
           </v-col>
         </v-row>
 

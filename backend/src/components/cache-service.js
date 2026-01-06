@@ -111,7 +111,9 @@ const cacheService = {
             };
           });
 
-        const schoolsToLoadToCache = schoolsWithPubliclyAvailableContacts;
+        const schoolsToLoadToCache = [
+          ...schoolsWithPubliclyAvailableContacts,
+        ].sort((a, b) => a.mincode.localeCompare(b.mincode));
         if (schoolsToLoadToCache && schoolsToLoadToCache.length > 0) {
           for (const school of schoolsToLoadToCache) {
             let schoolObject = generateSchoolObject(school, gradeCodes);
@@ -960,6 +962,8 @@ const cacheService = {
           });
         }
       });
+      schoolList.sort((a, b) => a.mincode.localeCompare(b.mincode));
+
       const propertyOrder = [
         { property: "districtNumber", label: "District Number" },
         { property: "mincode", label: "School Code" },
@@ -1018,6 +1022,7 @@ const cacheService = {
       let publicSchools = schoolList.filter(
         (s) => s.schoolCategoryCode === "PUBLIC"
       );
+
       publicSchools = this.mapPropertiesToLabels(publicSchools, propertyOrder);
       const filePathPublic = path.join(
         FILE_STORAGE_DIR,
@@ -1049,6 +1054,7 @@ const cacheService = {
         "allschoolContacts.csv"
       );
       allSchools = this.mapPropertiesToLabels(allSchools, propertyOrder);
+      await this.writeCSVToFile(allSchools, filePathAllSchools);
 
       // All Schools Mailing
       const filePathAllSchoolsMailing = path.join(
@@ -1056,6 +1062,9 @@ const cacheService = {
         "allschoolMailing.csv"
       );
       const propertyOrderAllSchools = [
+        { property: "districtNumber", label: "District Number" },
+        { property: "mincode", label: "School Code" },
+        { property: "displayName", label: "School Name" },
         { property: "mailingAddressLine1", label: "Address" },
         { property: "mailingCity", label: "City" },
         { property: "mailingProvince", label: "Province" },
@@ -1067,6 +1076,13 @@ const cacheService = {
         { property: "principalFirstName", label: "Principal First Name" },
         { property: "principalLastName", label: "Principal Last Name" },
         { property: "facilityTypeCode", label: "Type" },
+        {
+          property: "schoolCategoryCode_description",
+          label: "School Category",
+        },
+        { property: "phoneNumber", label: "Phone" },
+        { property: "faxNumber", label: "Fax" },
+        { property: "email", label: "Email" },
       ];
       allSchools = schoolList;
       allSchools = this.mapPropertiesToLabels(

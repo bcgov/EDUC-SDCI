@@ -1,15 +1,15 @@
-'use strict';
-const config = require('../config/index');
-const log = require('../components/logger');
+"use strict";
+const config = require("../config/index");
+const log = require("../components/logger");
 let connection;
 let connectionClosed = true;
-const server = config.get('messaging:natsUrl');
-const nats = require('nats');
+const server = config.get("messaging:natsUrl");
+const nats = require("nats");
 const natsOptions = {
   url: server,
   servers: [server],
   maxReconnectAttempts: 24,
-  name: 'EDUC-GRAD-ADMIN-NODE',
+  name: "EDUC-SDCI-NODE",
   reconnectTimeWait: 5000, // wait 5 seconds before retrying...
   waitOnFirstConnect: true,
   pingInterval: 2000,
@@ -20,17 +20,16 @@ const NATS = {
     try {
       connection = await nats.connect(natsOptions);
       connectionClosed = false;
-      log.info('NATS connected!', connection.getServer());
+      log.info("NATS connected!", connection.getServer());
       connection.closed().then((err) => {
         if (err) {
           log.error(`NATS closed with an error: ${err.message}`);
         } else {
-          log.error('NATS closed :');
+          log.error("NATS closed :");
         }
         connectionClosed = true;
       });
     } catch (e) {
-      
       log.error(`error ${e}`);
     }
   },
@@ -60,15 +59,20 @@ const NATS = {
    */
   requestMessage(topic, payload, timeout = 120000) {
     const opts = {
-      timeout
+      timeout,
     };
     return new Promise((resolve, reject) => {
-      connection.request(topic, nats.StringCodec().encode(payload), opts).then((msg) => {
-        return resolve(nats.StringCodec().decode(msg.data));
-      }).catch((e) => {
-        log.error(`Request to NATS failed for topic ${topic} and payload ${payload}`);
-        return reject(e?.message);
-      });
+      connection
+        .request(topic, nats.StringCodec().encode(payload), opts)
+        .then((msg) => {
+          return resolve(nats.StringCodec().decode(msg.data));
+        })
+        .catch((e) => {
+          log.error(
+            `Request to NATS failed for topic ${topic} and payload ${payload}`
+          );
+          return reject(e?.message);
+        });
     });
   },
 
@@ -87,7 +91,7 @@ const NATS = {
   },
   getConnection() {
     return connection;
-  }
+  },
 };
 
 module.exports = NATS;
