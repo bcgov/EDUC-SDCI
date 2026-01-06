@@ -101,61 +101,97 @@ const filteredSchools = ref(schools)
 const search = ref('')
 const expanded = ref([])
 const transformedSchools = ref(schools)
+// TODO: Refactor searchSchools to use backend filtering
+// const searchSchools = async () => {
+//   // Filter schools based on selected filters
+//   let currentDate = new Date().toISOString().substring(0, 19)
+//   const params: any = [
+//     {
+//       condition: null,
+//       searchCriteriaList: []
+//     }
+//   ]
+//   if (selectedJurisdiction.value) {
+//     params[0].searchCriteriaList.push({
+//       key: 'schoolCategoryCode',
+//       operation: selectedJurisdiction.value.length > 1 ? 'in' : 'eq',
+//       value: selectedJurisdiction.value.join(','),
+//       valueType: 'STRING',
+//       condition: 'AND'
+//     })
+//   }
+//   if (selectedType.value) {
+//     params[0].searchCriteriaList.push({
+//       key: 'facilityTypeCode',
+//       operation: 'in',
+//       value: selectedType.value.join(','),
+//       valueType: 'STRING',
+//       condition: 'AND'
+//     })
+//   }
+//   //only add open schools
+//   params[0].searchCriteriaList.push({
+//     key: 'openedDate',
+//     operation: 'lte',
+//     value: currentDate,
+//     valueType: 'DATE_TIME',
+//     condition: 'AND'
+//   })
+//   params[0].searchCriteriaList.push({
+//     key: 'closedDate',
+//     operation: 'eq',
+//     value: null,
+//     valueType: 'STRING',
+//     condition: 'AND'
+//   })
+
+//   const jsonString = JSON.stringify(params)
+//   const encodedParams = encodeURIComponent(jsonString)
+
+//   const req = {
+//     pageNumber: currentPage.value !== 0 ? currentPage.value - 1 : currentPage.value,
+//     pageSize: itemsPerPage,
+//     searchCriteriaList: encodedParams,
+//     sort: itemsSort.value
+//   }
+
+//   try {
+//     const searchresults = await InstituteService.searchSchools(req)
+//     filteredSchools.value = searchresults.data?.content
+//     transformedSchools.value = filteredSchools.value.map((item: any) => {
+//       const { ...rest } = item
+//       return {
+//         ...rest,
+//         schoolCategoryCodeLabel: appStore.getCategoryCodeLabel(item.schoolCategoryCode),
+//         facilityTypeCodeLabel: appStore.getFacilityCodeLabel(item.facilityTypeCode),
+//         grades: appStore.mapSchoolGradesToLabels(item.grades)
+//       }
+//     })
+//     results.value = searchresults.data.totalElements
+//     // Update current page and total pages
+//     currentPage.value = req.pageNumber
+//     totalPages.value = searchresults.data.totalPages
+//   } catch (error) {
+//     console.error('Error fetching schools:', error)
+//   }
+// }
 const searchSchools = async () => {
-  // Filter schools based on selected filters
-  let currentDate = new Date().toISOString().substring(0, 19)
-  const params: any = [
-    {
-      condition: null,
-      searchCriteriaList: []
-    }
-  ]
-  if (selectedJurisdiction.value) {
-    params[0].searchCriteriaList.push({
-      key: 'schoolCategoryCode',
-      operation: selectedJurisdiction.value.length > 1 ? 'in' : 'eq',
-      value: selectedJurisdiction.value.join(','),
-      valueType: 'STRING',
-      condition: 'AND'
-    })
-  }
-  if (selectedType.value) {
-    params[0].searchCriteriaList.push({
-      key: 'facilityTypeCode',
-      operation: 'in',
-      value: selectedType.value.join(','),
-      valueType: 'STRING',
-      condition: 'AND'
-    })
-  }
-  //only add open schools
-  params[0].searchCriteriaList.push({
-    key: 'openedDate',
-    operation: 'lte',
-    value: currentDate,
-    valueType: 'DATE_TIME',
-    condition: 'AND'
-  })
-  params[0].searchCriteriaList.push({
-    key: 'closedDate',
-    operation: 'eq',
-    value: null,
-    valueType: 'STRING',
-    condition: 'AND'
-  })
-
-  const jsonString = JSON.stringify(params)
-  const encodedParams = encodeURIComponent(jsonString)
-
+  // Prepare simple payload with raw values
   const req = {
+    // Pass the raw arrays directly
+    jurisdiction: selectedJurisdiction.value,
+    type: selectedType.value,
+
+    // Pagination & Sorting
     pageNumber: currentPage.value !== 0 ? currentPage.value - 1 : currentPage.value,
     pageSize: itemsPerPage,
-    searchCriteriaList: encodedParams,
     sort: itemsSort.value
   }
 
   try {
+    // Call the service (which now accepts simple params)
     const searchresults = await InstituteService.searchSchools(req)
+
     filteredSchools.value = searchresults.data?.content
     transformedSchools.value = filteredSchools.value.map((item: any) => {
       const { ...rest } = item
@@ -167,14 +203,12 @@ const searchSchools = async () => {
       }
     })
     results.value = searchresults.data.totalElements
-    // Update current page and total pages
     currentPage.value = req.pageNumber
     totalPages.value = searchresults.data.totalPages
   } catch (error) {
     console.error('Error fetching schools:', error)
   }
 }
-
 const resetFilters = () => {
   // Reset selected filters and search input to show all schools
   selectedJurisdiction.value = null
@@ -221,7 +255,6 @@ onBeforeMount(async () => {
             <v-btn @click="resetFilters" variant="outlined" color="primary" class="text-none">Reset</v-btn>
           </v-col>
         </v-row>
-
       </v-container>
     </v-sheet>
     <v-sheet>
@@ -235,8 +268,6 @@ onBeforeMount(async () => {
       ]" :expanded="expanded" :headers="headers" :items-length="results" :items="transformedSchools" show-expand
         class="elevation-1" item-value="schoolId" :loading="loading" @page-change:page="handlePageChange"
         @update:options="handleUpdate">
-
-
         <template v-slot:item.displayName="{ item }">
           <a :href="`/school/${item.schoolId}`">{{ item.displayName }}</a>
         </template>

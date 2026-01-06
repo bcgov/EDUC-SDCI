@@ -45,15 +45,28 @@ export default {
   },
 
   searchSchools(req: any): Promise<AxiosResponse> {
-    const searchCriteriaList = req.searchCriteriaList || ''
-    const pageSize = req.pageSize.value || '' // Set a default value if not provided
-    const pageNumber = req.pageNumber || '' // Set a default value if not provided
-    const sortOrder = req.sort && req.sort.order ? req.sort.order.toUpperCase() : ''
-    const sortField = req.sort && req.sort.key ? req.sort.key : ''
-    let url = `/api/v1/search/schools/paginated?pageSize=${pageSize}&pageNumber=${pageNumber}&searchCriteriaList=${searchCriteriaList}`
-    if (sortOrder && sortField) {
-      url += `&sort[${sortField}]=${sortOrder}`
+    const params = new URLSearchParams()
+
+    // Append standard pagination params
+    params.append('pageNumber', req.pageNumber || 0)
+    params.append('pageSize', req.pageSize.value || 10)
+
+    // Append sorting if it exists
+    if (req.sort && req.sort.key && req.sort.order) {
+      params.append(`sort[${req.sort.key}]`, req.sort.order.toUpperCase())
     }
+
+    // Append filter params (only if they exist)
+    if (req.jurisdiction && req.jurisdiction.length) {
+      params.append('jurisdiction', req.jurisdiction.join(','))
+    }
+    if (req.type && req.type.length) {
+      params.append('type', req.type.join(','))
+    }
+
+    // Construct URL
+    const url = `/api/v1/search/schools/paginated?${params.toString()}`
+
     return ApiService.apiAxios.get(url)
   },
   searchContactByType(req: any): Promise<AxiosResponse> {
