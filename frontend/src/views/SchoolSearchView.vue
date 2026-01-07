@@ -304,7 +304,6 @@ onBeforeMount(async () => {
           </tr>
         </template>
       </v-data-table-server>
-      <!-- </v-card> -->
     </v-sheet>
   </div>
 </template>
