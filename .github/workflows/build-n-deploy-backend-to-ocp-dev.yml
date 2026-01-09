@@ -192,13 +192,13 @@ jobs:
           bash tools/config/update-configmap.sh \
           dev \
           ${{ env.APP_NAME }} \
-          ${{ env.OPENSHIFT_NAMESPACE }}\
-          ${{secrets.COMMON_NAMESPACE }} \
+          ${{ env.NAMESPACE }} \
+          ${{env.COMMON_NAMESPACE}} \
           ${{secrets.KC_CLIENT_ID}} \
           ${{secrets.KC_CLIENT_SECRET}} \
           ${{secrets.KC_TOKEN_URL}} \
           ${{secrets.CLEAR_FILES_KEY}} \
-          ${{env.HOST_ROUTE}}   
+          ${{ env.HOST_ROUTE}}
 
           # Start rollout (if necessary) and follow it
           oc rollout restart deployment/${{ env.IMAGE_NAME }} 2> /dev/null \
