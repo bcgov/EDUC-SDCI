@@ -191,16 +191,14 @@ jobs:
           | oc apply -f -
           bash tools/config/update-configmap.sh \
           dev \
-          ${{ env.REPO_NAME }} \
           ${{ env.APP_NAME }} \
           ${{ env.OPENSHIFT_NAMESPACE }}\
-          ${{ secrets.COMMON_NAMESPACE }} \
+          ${{secrets.COMMON_NAMESPACE }} \
           ${{secrets.KC_CLIENT_ID}} \
           ${{secrets.KC_CLIENT_SECRET}} \
           ${{secrets.KC_TOKEN_URL}} \
           ${{secrets.CLEAR_FILES_KEY}} \
-          ${{ env.HOST_ROUTE}} \
-          # curl -s https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/main/tools/config/update-configmap.sh | bash /dev/stdin dev ${{ env.APP_NAME }} ${{ env.NAMESPACE }} ${{env.COMMON_NAMESPACE}} ${{secrets.KC_CLIENT_ID}} ${{secrets.KC_CLIENT_SECRET}} ${{secrets.KC_TOKEN_URL}} ${{secrets.CLEAR_FILES_KEY}} ${{ env.HOST_ROUTE}}
+          ${{env.HOST_ROUTE}}   
 
           # Start rollout (if necessary) and follow it
           oc rollout restart deployment/${{ env.IMAGE_NAME }} 2> /dev/null \
