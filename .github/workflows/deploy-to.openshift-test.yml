@@ -26,7 +26,7 @@ env:
 
   APP_NAME: "sdci"
   REPO_NAME: "educ-sdci"
-  BRANCH: "main"
+  BRANCH: ${{ inputs.target_branch || 'main' }}
   APP_NAME_BACKEND: "sdci-backend-main"
   APP_NAME_FRONTEND: "sdci-frontend"
   APP_NAME_FRONTEND_MAIN: "sdci-frontend-main"
@@ -45,7 +45,12 @@ env:
 on:
   # https://docs.github.com/en/actions/reference/events-that-trigger-workflows
   workflow_dispatch:
-
+    inputs:
+      target_branch:
+        description: 'Branch to deploy (e.g., main, feature/login)'
+        required: true
+        default: 'main'
+        type: string
 jobs:
   openshift-ci-cd:
     name: Build and deploy to TEST
