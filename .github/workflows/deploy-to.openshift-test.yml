@@ -45,12 +45,6 @@ env:
 on:
   # https://docs.github.com/en/actions/reference/events-that-trigger-workflows
   workflow_dispatch:
-    inputs:
-      target_branch:
-        description: 'Branch to deploy (e.g., main, feature/login)'
-        required: true
-        default: 'main'
-        type: string
 jobs:
   openshift-ci-cd:
     name: Build and deploy to TEST
