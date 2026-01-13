@@ -61,12 +61,51 @@ const cacheService = {
           "client_credentials",
           "profile openid"
         ); // get the tokens first to make api calls.
-        const schoolsResponse = await utils.getData(
-          data.accessToken,
-          `${config.get(
-            "server:instituteAPIURL"
-          )}/institute/school/paginated?pageSize=8000`
-        );
+
+        const currentDate = new Date().toISOString().substring(0, 19);
+
+        const params = [
+          {
+            condition: "AND",
+            searchCriteriaList: [
+              {
+                key: "openedDate",
+                operation: "lte",
+                value: currentDate,
+                valueType: "DATE_TIME",
+                condition: "AND",
+              },
+            ],
+          },
+          {
+            condition: "AND",
+            searchCriteriaList: [
+              {
+                key: "closedDate",
+                operation: "eq",
+                value: null,
+                valueType: "STRING",
+                condition: "OR",
+              },
+              {
+                key: "closedDate",
+                operation: "gte",
+                value: currentDate,
+                valueType: "DATE_TIME",
+                condition: "OR",
+              },
+            ],
+          },
+        ];
+
+        const jsonString = JSON.stringify(params);
+        const encodedParams = encodeURIComponent(jsonString);
+
+        const url = `${config.get(
+          "server:instituteAPIURL"
+        )}/institute/school/paginated?pageSize=8000&pageNumber=0&searchCriteriaList=${encodedParams}`;
+
+        const schoolsResponse = await utils.getData(data.accessToken, url);
         const schoolsData = schoolsResponse.content;
         // remove contacts that are not publiclyAvailable
 
