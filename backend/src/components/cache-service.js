@@ -1098,7 +1098,7 @@ const cacheService = {
       // All Schools Mailing
       const filePathAllSchoolsMailing = path.join(
         FILE_STORAGE_DIR,
-        "allschoolMailing.csv"
+        "allschoolmailing.csv"
       );
       const propertyOrderAllSchools = [
         { property: "districtNumber", label: "District Number" },

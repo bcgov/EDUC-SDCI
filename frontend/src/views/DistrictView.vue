@@ -151,7 +151,7 @@ async function getDistrictData(): Promise<void> {
           return {
             'District Number': response.data.districtData?.districtNumber,
             'District Name': response.data.districtData?.displayName,
-            'Contact Type': item.label,
+            'Contact Type': item.districtContactLabel,
             'Job Title': item.jobTitle,
             'First Name': item.firstName,
             'Last Name': item.lastName,
