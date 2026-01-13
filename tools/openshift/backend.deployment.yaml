@@ -148,23 +148,23 @@ objects:
   - apiVersion: batch/v1
     kind: CronJob
     metadata:
-      name: generate-csv-downloads
+      name: sdci-backend-main-rollout-restart
     spec:
-      schedule: 1,2,3,4 2,14 * * *
+      schedule: 0 2,14 * * *
+      concurrencyPolicy: Allow
+      suspend: false
       jobTemplate:
         spec:
           template:
             spec:
               containers:
-                - name: api-request
-                  image: alpine/curl
+                - name: restart
+                  image: "bitnami/kubectl:latest"
                   command:
                     - /bin/sh
                     - "-c"
                   args:
-                    - >
-                      curl -X GET
-                      "https://${HOST_ROUTE}/api/v1/download/csv/school/all-contacts/ALL?filepath=allschoolcontacts"
+                    - kubectl rollout restart deployment/${APP_NAME}-backend-${BRANCH}
                   resources: {}
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
@@ -172,66 +172,12 @@ objects:
               restartPolicy: OnFailure
               terminationGracePeriodSeconds: 30
               dnsPolicy: ClusterFirst
+              serviceAccountName: sdci-cronjob-sa
+              serviceAccount: sdci-cronjob-sa
               securityContext: {}
               schedulerName: default-scheduler
-  - apiVersion: batch/v1
-    kind: CronJob
-    metadata:
-      name: flush-file-cache
-    spec:
-      schedule: "50,51,52,53 1,13 * * *"
-      jobTemplate:
-        spec:
-          template:
-            spec:
-              containers:
-                - name: api-request
-                  image: alpine/curl
-                  command:
-                    - /bin/sh
-                    - "-c"
-                  args:
-                    - >
-                      curl -X GET
-                      "https://${HOST_ROUTE}/api/v1/download/flush-cache/a1e6f7b3c8d2e9a0b5d7c1e0f3c4b9a1"
-                  resources: {}
-                  terminationMessagePath: /dev/termination-log
-                  terminationMessagePolicy: File
-                  imagePullPolicy: Always
-              restartPolicy: OnFailure
-              terminationGracePeriodSeconds: 30
-              dnsPolicy: ClusterFirst
-              securityContext: {}
-              schedulerName: default-scheduler
-  - apiVersion: batch/v1
-    kind: CronJob
-    metadata:
-      name: create-cache-schools
-    spec:
-      schedule: "55,56,57,58 1,13 * * *"
-      jobTemplate:
-        spec:
-          template:
-            spec:
-              containers:
-                - name: api-request
-                  image: alpine/curl
-                  command:
-                    - /bin/sh
-                    - "-c"
-                  args:
-                    - >
-                      curl -X GET
-                      "https://${HOST_ROUTE}/api/v1/institute/create-cache"
-                  resources: {}
-                  terminationMessagePath: /dev/termination-log
-                  terminationMessagePolicy: File
-                  imagePullPolicy: Always
-              restartPolicy: OnFailure
-              terminationGracePeriodSeconds: 30
-              dnsPolicy: ClusterFirst
-              securityContext: {}
-              schedulerName: default-scheduler
+      successfulJobsHistoryLimit: 3
+      failedJobsHistoryLimit: 1
 parameters:
   - name: REPO_NAME
     description: Application repository name
