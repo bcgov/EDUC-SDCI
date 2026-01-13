@@ -65,7 +65,7 @@ const cacheService = {
           data.accessToken,
           `${config.get(
             "server:instituteAPIURL"
-          )}/institute/school/paginated?pageSize=800`
+          )}/institute/school/paginated?pageSize=8000`
         );
         const schoolsData = schoolsResponse.content;
         // remove contacts that are not publiclyAvailable
@@ -408,7 +408,7 @@ const cacheService = {
       const FILE_STORAGE_DIR = path.join(__dirname, "../..", "public");
       const filePathPublic = path.join(
         FILE_STORAGE_DIR,
-        "authorityMailing.csv"
+        "authoritymailing.csv"
       );
 
       await this.writeCSVToFile(authorityResponse.content, filePathPublic);
@@ -1051,7 +1051,7 @@ const cacheService = {
       let allSchools = schoolList;
       const filePathAllSchools = path.join(
         FILE_STORAGE_DIR,
-        "allschoolContacts.csv"
+        "allschoolcontacts.csv"
       );
       allSchools = this.mapPropertiesToLabels(allSchools, propertyOrder);
       await this.writeCSVToFile(allSchools, filePathAllSchools);
