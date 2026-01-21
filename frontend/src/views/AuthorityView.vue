@@ -268,26 +268,35 @@ onMounted(async () => {
     </v-sheet>
     <!-- END Authority Info Header Block -->
     <v-sheet class="pa-6">
-      <v-tabs v-model="tab">
-        <v-tab :value="tabOptions.contacts">
-          Authority Contacts
-          <v-chip color="bcGovBlue" size="small" class="ml-1" variant="tonal">{{
-            authority.value?.authorityData?.contacts.length
-          }}</v-chip></v-tab>
-        <v-tab :value="tabOptions.schools">
-          Authority Schools
-          <v-chip color="bcGovBlue" size="small" class="ml-1" variant="tonal">{{
-            authority.value.authoritySchools?.length
-          }}</v-chip>
-        </v-tab>
-      </v-tabs>
+      <div class="d-flex align-center mb-4" style="gap: 16px; justify-content: space-between;">
+        <div style="flex:1 1 auto; min-width:0;">
+          <v-tabs v-model="tab">
+            <v-tab :value="tabOptions.contacts">
+              Authority Contacts
+              <v-chip color="bcGovBlue" size="small" class="ml-1" variant="tonal">{{
+                authority.value?.authorityData?.contacts.length
+              }}</v-chip>
+            </v-tab>
+            <v-tab :value="tabOptions.schools">
+              Authority Schools
+              <v-chip color="bcGovBlue" size="small" class="ml-1" variant="tonal">{{
+                authority.value.authoritySchools?.length
+              }}</v-chip>
+            </v-tab>
+          </v-tabs>
+        </div>
+        <div style="flex:0 0 auto; min-width:320px; max-width:420px;">
+          <v-text-field v-if="tab === tabOptions.contacts" v-model="contactSearch" append-icon="mdi-magnify"
+            label="Filter Authority Contacts" single-line hide-details></v-text-field>
+          <v-text-field v-if="tab === tabOptions.schools" v-model="schoolSearch" append-icon="mdi-magnify"
+            label="Filter Authority Schools" single-line hide-details></v-text-field>
+        </div>
+      </div>
 
       <v-card-text>
         <v-window v-model="tab">
-          <!-- District Contacts tab contents -->
+          <!-- Authority Contacts tab contents -->
           <v-window-item :value="tabOptions.contacts">
-            <v-text-field v-model="contactSearch" append-icon="mdi-magnify" label="Filter District Contacts" single-line
-              hide-details></v-text-field>
             <v-data-table items-per-page="-1" :headers="contactHeaders" :items="authority.value.authorityData?.contacts"
               :search="contactSearch" :sort-by="[{ key: 'authorityContactTypeCode', order: 'asc' }]">
               <template v-slot:item.authorityContactTypeCode="{ item }">
@@ -305,10 +314,8 @@ onMounted(async () => {
               </template>
             </v-data-table>
           </v-window-item>
-          <!-- District Schools tab contents -->
+          <!-- Authority Schools tab contents -->
           <v-window-item :value="tabOptions.schools">
-            <v-text-field v-model="schoolSearch" append-icon="mdi-magnify" label="Filter District Schools" single-line
-              hide-details></v-text-field>
             <v-data-table items-per-page="-1" :headers="schoolHeaders" :items="authority.value.authoritySchools"
               :search="schoolSearch" :sort-by="[{ key: 'mincode', order: 'asc' }]">
               <template v-slot:item.displayName="{ item }">

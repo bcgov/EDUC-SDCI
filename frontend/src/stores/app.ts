@@ -203,11 +203,7 @@ export const useAppStore = defineStore('app', {
       return state.offshoreSchools
     },
     // Codes
-    getGradeCodes(this: any, state) {
-      if (!state.gradeCodes || state.gradeCodes.length === 0) {
-        // Trigger loading of grade codes asynchronously if not loaded
-        void this.setGradeCodes()
-      }
+    getGradeCodes: (state) => {
       return state.gradeCodes ?? []
     },
     getContactTypeCodes: (state) => {

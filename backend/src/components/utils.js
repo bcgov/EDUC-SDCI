@@ -441,6 +441,7 @@ const utils = {
   getCodeTable,
 };
 
+
 function appendMailingAddressDetailsAndRemoveAddresses(data) {
   if (data && data.addresses && data.addresses.length > 0) {
     const physicalAddress = data.addresses?.find(
