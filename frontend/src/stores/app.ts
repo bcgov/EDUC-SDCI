@@ -20,6 +20,7 @@ export const useAppStore = defineStore('app', {
     authorities: [] as ListAuthority[],
     schools: [] as ListSchool[],
     offshoreSchools: [] as ListSchool[],
+    offshoreSchoolRepresentatives: [] as ListAuthority[],
     categoryCodes: [] as CategoryCode[],
     facilityCodes: [] as FacilityCode[],
     addressTypeCodes: [] as AddressTypeCode[],
@@ -32,6 +33,7 @@ export const useAppStore = defineStore('app', {
       await this.setAuthorityList()
       await this.setSchoolList()
       await this.setOffshoreSchoolList()
+      await this.setOffshoreSchoolRepresentatives()
       await this.setContactTypeCodes()
       await this.setCategoryCodes()
       await this.setFacilityCodes()
@@ -112,6 +114,17 @@ export const useAppStore = defineStore('app', {
         .then((response) => {
           // Handle the response data
           this.schools = response.data
+        })
+        .catch((error) => {
+          // Handle the error
+          console.error(error)
+        })
+    },
+    async setOffshoreSchoolRepresentatives(): Promise<void> {
+      InstituteService.getOffshoreSchoolRepresentatives()
+        .then((response) => {
+          // Handle the response data
+          this.offshoreSchoolRepresentatives = response.data
         })
         .catch((error) => {
           // Handle the error

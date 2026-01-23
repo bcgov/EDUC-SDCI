@@ -38,6 +38,8 @@ let authoritiesMap = new Map();
 let activeAuthorities = [];
 let mincode_school_ID_Map = new Map();
 let activeSchools = [];
+let offshoreSchools = [];
+let offshoreSchoolRepresentatives = [];
 let activeDistricts = [];
 let addressTypeCodes = [];
 let schoolCategoryCodes = [];
@@ -54,12 +56,13 @@ const cacheService = {
         schoolMap.clear(); // reset the value.
         mincode_school_ID_Map.clear();
         activeSchools = [];
+        offshoreSchools = [];
 
         const data = await auth.getApiCredentials(
           config.get("oidc:clientId"),
           config.get("oidc:clientSecret"),
           "client_credentials",
-          "profile openid"
+          "profile openid",
         ); // get the tokens first to make api calls.
 
         const currentDate = new Date().toISOString().substring(0, 19);
@@ -102,7 +105,7 @@ const cacheService = {
         const encodedParams = encodeURIComponent(jsonString);
 
         const url = `${config.get(
-          "server:instituteAPIURL"
+          "server:instituteAPIURL",
         )}/institute/school/paginated?pageSize=8000&pageNumber=0&searchCriteriaList=${encodedParams}`;
 
         const schoolsResponse = await utils.getData(data.accessToken, url);
@@ -112,7 +115,7 @@ const cacheService = {
         const schoolsWithPubliclyAvailableContacts = schoolsData
           .filter((school) => {
             return facilityCodes.some(
-              (fc) => fc.facilityTypeCode === school.facilityTypeCode
+              (fc) => fc.facilityTypeCode === school.facilityTypeCode,
             );
           })
           .map((school) => {
@@ -126,7 +129,7 @@ const cacheService = {
                       (codeObj) =>
                         codeObj.schoolContactTypeCode ===
                           contact.schoolContactTypeCode &&
-                        codeObj.publiclyAvailable === true
+                        codeObj.publiclyAvailable === true,
                     );
                   // only keep contacts with a publiclyAvailable code
 
@@ -137,11 +140,11 @@ const cacheService = {
                     contactTypeCodes.codesList.schoolContactTypeCodes.find(
                       (codeObj) =>
                         codeObj.schoolContactTypeCode ===
-                        contact.schoolContactTypeCode
+                        contact.schoolContactTypeCode,
                     );
                   return {
                     ...contact,
-                    schoolContactTypeCode_label: match ? match.label : null,
+                    schoolContactTypeCodeLabel: match ? match.label : null,
                     schoolContactTypeCode_description: match
                       ? match.description
                       : null,
@@ -159,7 +162,7 @@ const cacheService = {
 
             if (isSchoolActive(schoolObject)) {
               schoolObject.districtNumber = this.getDistrictNumber(
-                school.districtId
+                school.districtId,
               );
               //add fundingGroups to school
 
@@ -168,8 +171,11 @@ const cacheService = {
               schoolMap.set(schoolObject.schoolId, schoolObject);
               mincode_school_ID_Map.set(
                 schoolObject.mincode,
-                schoolObject.schoolId
+                schoolObject.schoolId,
               );
+              if (schoolObject.schoolCategoryCode == "OFFSHORE") {
+                offshoreSchools.push(schoolObject);
+              }
               schools.push(schoolObject);
               activeSchools.push(schoolObject);
             }
@@ -180,7 +186,7 @@ const cacheService = {
       },
       {
         retries: 10,
-      }
+      },
     );
   },
   async loadAddressTypeCodes() {
@@ -191,11 +197,11 @@ const cacheService = {
           config.get("oidc:clientId"),
           config.get("oidc:clientSecret"),
           "client_credentials",
-          "profile openid"
+          "profile openid",
         ); // get the tokens first to make api calls.
         const addressTypeCodesResponse = await utils.getData(
           data.accessToken,
-          `${config.get("server:instituteAPIURL")}/institute/address-type-codes`
+          `${config.get("server:instituteAPIURL")}/institute/address-type-codes`,
         );
         addressTypeCodes = []; // reset the value.
         if (addressTypeCodesResponse && addressTypeCodesResponse.length > 0) {
@@ -205,7 +211,7 @@ const cacheService = {
       },
       {
         retries: 10,
-      }
+      },
     );
   },
   async loadSchoolCategoryCodes() {
@@ -216,13 +222,13 @@ const cacheService = {
           config.get("oidc:clientId"),
           config.get("oidc:clientSecret"),
           "client_credentials",
-          "profile openid"
+          "profile openid",
         );
 
         // Fetch category codes from the API
         const categoryCodesResponse = await utils.getData(
           data.accessToken,
-          `${config.get("server:instituteAPIURL")}/institute/category-codes`
+          `${config.get("server:instituteAPIURL")}/institute/category-codes`,
         );
 
         // Reset and filter the category codes
@@ -248,7 +254,7 @@ const cacheService = {
       },
       {
         retries: 10,
-      }
+      },
     );
   },
   async loadFacilityCodes() {
@@ -259,7 +265,7 @@ const cacheService = {
             config.get("oidc:clientId"),
             config.get("oidc:clientSecret"),
             "client_credentials",
-            "profile openid"
+            "profile openid",
           )
         )?.accessToken;
 
@@ -267,21 +273,21 @@ const cacheService = {
           throw new Error("Failed to retrieve access token.");
         }
         const url = `${config.get(
-          "server:instituteAPIURL"
+          "server:instituteAPIURL",
         )}/institute/facility-codes`;
         const response = await utils.getData(accessToken, url);
 
         facilityCodes = (Array.isArray(response) ? response : []).filter(
-          (code) => !EXCLUDED_FACILITY_TYPES.includes(code.facilityTypeCode)
+          (code) => !EXCLUDED_FACILITY_TYPES.includes(code.facilityTypeCode),
         );
 
         log.info(
-          `Loaded ${facilityCodes.length} facility codes (after filtering).`
+          `Loaded ${facilityCodes.length} facility codes (after filtering).`,
         );
       },
       {
         retries: 10,
-      }
+      },
     );
   },
   async loadGradeCodes() {
@@ -292,11 +298,11 @@ const cacheService = {
           config.get("oidc:clientId"),
           config.get("oidc:clientSecret"),
           "client_credentials",
-          "profile openid"
+          "profile openid",
         ); // get the tokens first to make api calls.
         const gradeCodesResponse = await utils.getData(
           data.accessToken,
-          `${config.get("server:instituteAPIURL")}/institute/grade-codes`
+          `${config.get("server:instituteAPIURL")}/institute/grade-codes`,
         );
         gradeCodes = []; // reset the value.
         if (gradeCodesResponse && gradeCodesResponse.length > 0) {
@@ -306,7 +312,7 @@ const cacheService = {
       },
       {
         retries: 10,
-      }
+      },
     );
   },
   async loadContactTypeCodes() {
@@ -316,25 +322,25 @@ const cacheService = {
           config.get("oidc:clientId"),
           config.get("oidc:clientSecret"),
           "client_credentials",
-          "profile openid"
+          "profile openid",
         ); // get the tokens first to make api calls.
         const schoolContactTypeCodesResponse = await utils.getData(
           data.accessToken,
           `${config.get(
-            "server:instituteAPIURL"
-          )}/institute/school-contact-type-codes`
+            "server:instituteAPIURL",
+          )}/institute/school-contact-type-codes`,
         );
         const districtContactTypeCodesResponse = await utils.getData(
           data.accessToken,
           `${config.get(
-            "server:instituteAPIURL"
-          )}/institute/district-contact-type-codes`
+            "server:instituteAPIURL",
+          )}/institute/district-contact-type-codes`,
         );
         const authorityContactTypeCodesResponse = await utils.getData(
           data.accessToken,
           `${config.get(
-            "server:instituteAPIURL"
-          )}/institute/authority-contact-type-codes`
+            "server:instituteAPIURL",
+          )}/institute/authority-contact-type-codes`,
         );
 
         let schoolContactTypeCodes;
@@ -346,7 +352,7 @@ const cacheService = {
           schoolContactTypeCodesResponse.length > 0
         ) {
           schoolContactTypeCodes = schoolContactTypeCodesResponse.filter(
-            (code) => code.publiclyAvailable === true
+            (code) => code.publiclyAvailable === true,
           );
         }
 
@@ -355,7 +361,7 @@ const cacheService = {
           districtContactTypeCodesResponse.length > 0
         ) {
           districtContactTypeCodes = districtContactTypeCodesResponse.filter(
-            (code) => code.publiclyAvailable === true
+            (code) => code.publiclyAvailable === true,
           );
         }
         if (
@@ -363,7 +369,7 @@ const cacheService = {
           authorityContactTypeCodesResponse.length > 0
         ) {
           authorityContactTypeCodes = authorityContactTypeCodesResponse.filter(
-            (code) => code.publiclyAvailable === true
+            (code) => code.publiclyAvailable === true,
           );
         }
 
@@ -378,7 +384,7 @@ const cacheService = {
       },
       {
         retries: 10,
-      }
+      },
     );
   },
   async createAuthorityMailingFile() {
@@ -407,7 +413,7 @@ const cacheService = {
     const jsonString = JSON.stringify(params);
     const encodedParams = encodeURIComponent(jsonString);
     const url = `${config.get(
-      "server:instituteAPIURL"
+      "server:instituteAPIURL",
     )}/institute/authority/paginated?pageSize=10&sort[authorityNumber]=ASC&searchCriteriaList=${encodedParams}`;
 
     try {
@@ -415,7 +421,7 @@ const cacheService = {
         config.get("oidc:clientId"),
         config.get("oidc:clientSecret"),
         "client_credentials",
-        "profile openid"
+        "profile openid",
       ); // get the tokens first to make api calls.
       const authorityResponse = await utils.getData(data.accessToken, url);
 
@@ -433,7 +439,7 @@ const cacheService = {
       ];
 
       authorityResponse.content.forEach(
-        appendMailingAddressDetailsAndRemoveAddresses
+        appendMailingAddressDetailsAndRemoveAddresses,
       );
 
       // 🔥 No rearrangeAndRelabelObjectProperties needed
@@ -447,19 +453,20 @@ const cacheService = {
       const FILE_STORAGE_DIR = path.join(__dirname, "../..", "public");
       const filePathPublic = path.join(
         FILE_STORAGE_DIR,
-        "authoritymailing.csv"
+        "authoritymailing.csv",
       );
 
       await this.writeCSVToFile(authorityResponse.content, filePathPublic);
     } catch (e) {
       log.error(
         "getAllAuthorityMailing Error:",
-        e.response ? e.response.status : e.message
+        e.response ? e.response.status : e.message,
       );
       console.log(e);
     }
   },
-  async createOffshoreFile() {
+  async loadoffshoreSchoolRepresentatives() {
+    offshoreSchoolRepresentatives = [];
     const params = [
       {
         condition: null,
@@ -485,7 +492,7 @@ const cacheService = {
     const jsonString = JSON.stringify(params);
     const encodedParams = encodeURIComponent(jsonString);
     const url = `${config.get(
-      "server:instituteAPIURL"
+      "server:instituteAPIURL",
     )}/institute/authority/paginated?pageSize=10&sort[authorityNumber]=ASC&searchCriteriaList=${encodedParams}`;
 
     try {
@@ -493,7 +500,7 @@ const cacheService = {
         config.get("oidc:clientId"),
         config.get("oidc:clientSecret"),
         "client_credentials",
-        "profile openid"
+        "profile openid",
       ); // get the tokens first to make api calls.
       const authorityResponse = await utils.getData(data.accessToken, url);
 
@@ -511,7 +518,7 @@ const cacheService = {
       ];
 
       authorityResponse.content.forEach(
-        appendMailingAddressDetailsAndRemoveAddresses
+        appendMailingAddressDetailsAndRemoveAddresses,
       );
 
       // 🔥 No rearrangeAndRelabelObjectProperties needed
@@ -522,20 +529,22 @@ const cacheService = {
         });
         return result;
       });
-      const FILE_STORAGE_DIR = path.join(__dirname, "../..", "public");
-      const filePathPublic = path.join(
-        FILE_STORAGE_DIR,
-        "offshoreschoolrepresentatives.csv"
-      );
-
-      await this.writeCSVToFile(authorityResponse.content, filePathPublic);
+      offshoreSchoolRepresentatives = authorityResponse.content;
     } catch (e) {
       log.error(
         "getAllAuthorityMailing Error:",
-        e.response ? e.response.status : e.message
+        e.response ? e.response.status : e.message,
       );
       console.log(e);
     }
+  },
+  async createOffshoreFile() {
+    const FILE_STORAGE_DIR = path.join(__dirname, "../..", "public");
+    const filePathPublic = path.join(
+      FILE_STORAGE_DIR,
+      "offshoreSchoolRepresentatives.csv",
+    );
+    await this.writeCSVToFile(offshoreSchoolRepresentatives, filePathPublic);
   },
   getFundingGroupCodes() {
     return fundingGroups ? fundingGroups : [];
@@ -569,7 +578,7 @@ const cacheService = {
     const codeList =
       contactTypeCodes?.codesList?.districtContactTypeCodes || [];
     const match = codeList.find(
-      (c) => c.districtContactTypeCode === districtContactTypeCode
+      (c) => c.districtContactTypeCode === districtContactTypeCode,
     );
     return match ? match.label : districtContactTypeCode;
   },
@@ -577,7 +586,7 @@ const cacheService = {
     const codeList =
       contactTypeCodes?.codesList?.districtContactTypeCodes || [];
     const match = codeList.find(
-      (c) => c.districtContactTypeCode === districtContactTypeCode
+      (c) => c.districtContactTypeCode === districtContactTypeCode,
     );
     return match ? !!match.publiclyAvailable : false;
   },
@@ -592,12 +601,12 @@ const cacheService = {
           clientId,
           clientSecret,
           "client_credentials",
-          "profile openid"
+          "profile openid",
         );
 
         const districtsResponse = await utils.getData(
           data.accessToken,
-          `${instituteApiUrl}/institute/district/paginated?pageSize=500`
+          `${instituteApiUrl}/institute/district/paginated?pageSize=500`,
         );
 
         // Reset collections
@@ -622,19 +631,19 @@ const cacheService = {
                   districtData.contacts = districtData.contacts
                     .filter((contact) =>
                       this.isDistrictContactPublic(
-                        contact.districtContactTypeCode
-                      )
+                        contact.districtContactTypeCode,
+                      ),
                     )
                     .map((contact) => ({
                       ...contact,
                       districtContactLabel: this.getDistrictContactLabel(
-                        contact.districtContactTypeCode
+                        contact.districtContactTypeCode,
                       ),
                     }));
                 } catch (error) {
                   console.error(
                     `Error processing contacts for district ${districtData.districtId}:`,
-                    error
+                    error,
                   );
                 }
               }
@@ -643,11 +652,11 @@ const cacheService = {
               districtsMap.set(district.districtId, districtData);
               districtsNumber_ID_Map.set(
                 district.districtNumber,
-                district.districtId
+                district.districtId,
               );
               districtID_Name_Map.set(
                 district.districtId,
-                district.displayName
+                district.displayName,
               );
               districts.push(districtData);
               activeDistricts.push(districtData);
@@ -667,7 +676,7 @@ const cacheService = {
       },
       {
         retries: 10,
-      }
+      },
     );
   },
 
@@ -691,15 +700,15 @@ const cacheService = {
             config.get("oidc:clientId"),
             config.get("oidc:clientSecret"),
             "client_credentials",
-            "profile openid"
+            "profile openid",
           );
 
           const url = `${config.get(
-            "server:instituteAPIURL"
+            "server:instituteAPIURL",
           )}/institute/authority/paginated?pageSize=5000`;
           const authoritiesResponse = await utils.getData(
             data.accessToken,
-            url
+            url,
           );
           // reset the value
           authorities = [];
@@ -726,7 +735,7 @@ const cacheService = {
         },
         {
           retries: 10,
-        }
+        },
       );
     } catch (error) {
       log.error("Error loading authorities:", error);
@@ -753,7 +762,7 @@ const cacheService = {
       },
       {
         retries: 10,
-      }
+      },
     );
   },
   async addSchoolsToAuthorities() {
@@ -775,7 +784,7 @@ const cacheService = {
       },
       {
         retries: 10,
-      }
+      },
     );
   },
 
@@ -796,6 +805,12 @@ const cacheService = {
   },
   getActiveSchools() {
     return activeSchools ? activeSchools : [];
+  },
+  getOffshoreSchools() {
+    return offshoreSchools ? offshoreSchools : [];
+  },
+  getOffshoreSchoolRepresentatives() {
+    return offshoreSchoolRepresentatives ? offshoreSchoolRepresentatives : [];
   },
   getAuthorityByAuthorityID(authorityID) {
     return authoritiesMap.get(authorityID);
@@ -898,11 +913,11 @@ const cacheService = {
       districtContacts.sort((a, b) => a.districtNumber - b.districtNumber);
       districtContacts = this.mapPropertiesToLabels(
         districtContacts,
-        propertyOrder
+        propertyOrder,
       );
       const filePathPublic = path.join(
         FILE_STORAGE_DIR,
-        "alldistrictcontacts.csv"
+        "alldistrictcontacts.csv",
       );
 
       await this.writeCSVToFile(districtContacts, filePathPublic);
@@ -944,7 +959,7 @@ const cacheService = {
       const sortedDistrictMailing = sortJSONByKey(
         districtMailing,
         "District Number",
-        true
+        true,
       );
 
       // Define file path
@@ -966,7 +981,7 @@ const cacheService = {
         if (Array.isArray(item.districtSchools)) {
           item.districtSchools.forEach((school) => {
             const principal = school.contacts?.find(
-              (contact) => contact.schoolContactTypeCode === "PRINCIPAL"
+              (contact) => contact.schoolContactTypeCode === "PRINCIPAL",
             );
             school.principalEmail = principal?.email || null;
             school.principalFirstName = principal?.firstName || null;
@@ -986,7 +1001,7 @@ const cacheService = {
                 return acc;
               }, {}) || {};
             const facilityMatch = facilityCodes.find(
-              (ref) => ref.facilityTypeCode === school.facilityTypeCode
+              (ref) => ref.facilityTypeCode === school.facilityTypeCode,
             );
             if (facilityMatch) {
               school.facilityTypeCode = facilityMatch.description;
@@ -1059,29 +1074,29 @@ const cacheService = {
       // PUBLIC schools
 
       let publicSchools = schoolList.filter(
-        (s) => s.schoolCategoryCode === "PUBLIC"
+        (s) => s.schoolCategoryCode === "PUBLIC",
       );
 
       publicSchools = this.mapPropertiesToLabels(publicSchools, propertyOrder);
       const filePathPublic = path.join(
         FILE_STORAGE_DIR,
-        "publicschoolcontacts.csv"
+        "publicschoolcontacts.csv",
       );
 
       await this.writeCSVToFile(publicSchools, filePathPublic);
 
       // INDEPENDENT schools
       let independentSchools = schoolList.filter(
-        (s) => s.schoolCategoryCode === "INDEPEND"
+        (s) => s.schoolCategoryCode === "INDEPEND",
       );
       const filePathIndependent = path.join(
         FILE_STORAGE_DIR,
-        "allindependentschools.csv"
+        "allindependentschools.csv",
       );
 
       independentSchools = this.mapPropertiesToLabels(
         independentSchools,
-        propertyOrder
+        propertyOrder,
       );
 
       await this.writeCSVToFile(independentSchools, filePathIndependent);
@@ -1090,7 +1105,7 @@ const cacheService = {
       let allSchools = schoolList;
       const filePathAllSchools = path.join(
         FILE_STORAGE_DIR,
-        "allschoolcontacts.csv"
+        "allschoolcontacts.csv",
       );
       allSchools = this.mapPropertiesToLabels(allSchools, propertyOrder);
       await this.writeCSVToFile(allSchools, filePathAllSchools);
@@ -1098,7 +1113,7 @@ const cacheService = {
       // All Schools Mailing
       const filePathAllSchoolsMailing = path.join(
         FILE_STORAGE_DIR,
-        "allschoolmailing.csv"
+        "allschoolmailing.csv",
       );
       const propertyOrderAllSchools = [
         { property: "districtNumber", label: "District Number" },
@@ -1126,7 +1141,7 @@ const cacheService = {
       allSchools = schoolList;
       allSchools = this.mapPropertiesToLabels(
         allSchools,
-        propertyOrderAllSchools
+        propertyOrderAllSchools,
       );
 
       await this.writeCSVToFile(allSchools, filePathAllSchoolsMailing);

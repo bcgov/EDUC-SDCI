@@ -61,6 +61,8 @@ async function bootstrapCache() {
     log.info("Created district mailing file");
     await cacheService.createAuthorityMailingFile();
     log.info("Created authority mailing file");
+    await cacheService.loadoffshoreSchoolRepresentatives();
+    log.info("Loaded Offshore School representatives to memory ");
     await cacheService.createOffshoreFile();
     log.info("Created authority offshore file");
   } catch (error) {
