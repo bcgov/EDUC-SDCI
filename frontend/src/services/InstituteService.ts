@@ -24,6 +24,9 @@ export default {
   async getOffshoreSchoolList(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/offshore/list')
   },
+  async getOffshoreSchoolRepresentatives(): Promise<AxiosResponse> {
+    return ApiService.apiAxios.get('/api/v1/offshore/representatives')
+  },
   async getSchool(schoolId: string): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/v1/school/' + schoolId)
   },

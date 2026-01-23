@@ -4,6 +4,7 @@ const CONSTANTS = require('../../util/constants');
 const NATS = require('../message-pub-sub');
 const cacheService = require('../../components/cache-service');
 
+
 async function subscribeToInstituteAPIMessageTopic(nats) {
   const opts = {};
 

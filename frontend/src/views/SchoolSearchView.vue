@@ -101,80 +101,7 @@ const filteredSchools = ref(schools)
 const search = ref('')
 const expanded = ref([])
 const transformedSchools = ref(schools)
-// TODO: Refactor searchSchools to use backend filtering
-// const searchSchools = async () => {
-//   // Filter schools based on selected filters
-//   let currentDate = new Date().toISOString().substring(0, 19)
-//   const params: any = [
-//     {
-//       condition: null,
-//       searchCriteriaList: []
-//     }
-//   ]
-//   if (selectedJurisdiction.value) {
-//     params[0].searchCriteriaList.push({
-//       key: 'schoolCategoryCode',
-//       operation: selectedJurisdiction.value.length > 1 ? 'in' : 'eq',
-//       value: selectedJurisdiction.value.join(','),
-//       valueType: 'STRING',
-//       condition: 'AND'
-//     })
-//   }
-//   if (selectedType.value) {
-//     params[0].searchCriteriaList.push({
-//       key: 'facilityTypeCode',
-//       operation: 'in',
-//       value: selectedType.value.join(','),
-//       valueType: 'STRING',
-//       condition: 'AND'
-//     })
-//   }
-//   //only add open schools
-//   params[0].searchCriteriaList.push({
-//     key: 'openedDate',
-//     operation: 'lte',
-//     value: currentDate,
-//     valueType: 'DATE_TIME',
-//     condition: 'AND'
-//   })
-//   params[0].searchCriteriaList.push({
-//     key: 'closedDate',
-//     operation: 'eq',
-//     value: null,
-//     valueType: 'STRING',
-//     condition: 'AND'
-//   })
 
-//   const jsonString = JSON.stringify(params)
-//   const encodedParams = encodeURIComponent(jsonString)
-
-//   const req = {
-//     pageNumber: currentPage.value !== 0 ? currentPage.value - 1 : currentPage.value,
-//     pageSize: itemsPerPage,
-//     searchCriteriaList: encodedParams,
-//     sort: itemsSort.value
-//   }
-
-//   try {
-//     const searchresults = await InstituteService.searchSchools(req)
-//     filteredSchools.value = searchresults.data?.content
-//     transformedSchools.value = filteredSchools.value.map((item: any) => {
-//       const { ...rest } = item
-//       return {
-//         ...rest,
-//         schoolCategoryCodeLabel: appStore.getCategoryCodeLabel(item.schoolCategoryCode),
-//         facilityTypeCodeLabel: appStore.getFacilityCodeLabel(item.facilityTypeCode),
-//         grades: appStore.mapSchoolGradesToLabels(item.grades)
-//       }
-//     })
-//     results.value = searchresults.data.totalElements
-//     // Update current page and total pages
-//     currentPage.value = req.pageNumber
-//     totalPages.value = searchresults.data.totalPages
-//   } catch (error) {
-//     console.error('Error fetching schools:', error)
-//   }
-// }
 const searchSchools = async () => {
   // Prepare simple payload with raw values
   const req = {
@@ -273,9 +200,9 @@ onBeforeMount(async () => {
         </template>
         <template v-slot:expanded-row="{ item }">
           <tr>
-            <td :colspan="headers.length">
+            <td :colspan="headers.length" style="padding-left: 48px;">
               <v-col>
-                <v-row class="my-1 pl-2">
+                <v-row class=" my-1 pl-2">
                   <v-chip v-for="(grade, index) in item.grades" :key="index" class="ml-1" size="small" color="primary"
                     label>
                     {{ grade.label }}</v-chip>
