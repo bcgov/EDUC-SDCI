@@ -227,7 +227,6 @@ function goToDistrict() {
 
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="pt-6 pb-0 pb-md-6 full-width">
       <v-container id="main">
-        <pre>{{ schoolData.value }}</pre>
         <DisplayAlert class="mx-4 mx-lg-1 mx-xl-0" />
         <v-row v-if="schoolData.value" no-gutters justify="space-between" class="pa-4 pa-md-5 pa-lg-0">
           <v-col cols="11" md="12">
