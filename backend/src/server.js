@@ -29,10 +29,9 @@ async function bootstrapCache() {
 
     // Load facility codes
     await cacheService.loadFacilityCodes();
-
     log.info("Loaded facility codes to memory");
-    await cacheService.loadContactTypeCodes();
 
+    await cacheService.loadContactTypeCodes();
     log.info("Loaded contact type codes to memory");
     // Load district data
     await cacheService.loadAllDistrictsToMap();

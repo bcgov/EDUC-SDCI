@@ -80,49 +80,6 @@ const searchContact = async () => {
       totalPages.value = searchResults.data.totalPages
       return
     }
-
-    // Fallback: build criteria on frontend and call existing endpoint when no type selected
-    // let currentDate = new Date().toISOString().substring(0, 19)
-    // const params: any = [
-    //   {
-    //     condition: null,
-    //     searchCriteriaList: []
-    //   }
-    // ]
-    // params[0].searchCriteriaList.push({
-    //   key: 'expiryDate',
-    //   operation: 'eq',
-    //   value: null,
-    //   valueType: 'STRING',
-    //   condition: 'OR'
-    // })
-    // params[0].searchCriteriaList.push({
-    //   key: 'expiryDate',
-    //   operation: 'gte',
-    //   value: currentDate,
-    //   valueType: 'DATE_TIME',
-    //   condition: 'OR'
-    // })
-    // params[0].searchCriteriaList.push({
-    //   key: 'effectiveDate',
-    //   operation: 'lte',
-    //   value: currentDate,
-    //   valueType: 'DATE_TIME',
-    //   condition: 'AND'
-    // })
-
-    // const jsonString = JSON.stringify(params)
-    // const encodedParams = encodeURIComponent(jsonString)
-    // const reqOld = {
-    //   pageSize: itemsPerPage,
-    //   searchCriteriaList: encodedParams,
-    //   sort: itemsSort.value
-    // }
-    // const searchResults = await InstituteService.searchContactByType(reqOld)
-    // const yukonFilteredContacts = filterOutYukon(searchResults.data.content)
-    // filteredContacts.value = transformContactForDownload(yukonFilteredContacts)
-    // results.value = searchResults.data.totalElements
-    // totalPages.value = searchResults.data.totalPages
   } catch (error) {
     console.error('Error fetching schools:', error)
   }
