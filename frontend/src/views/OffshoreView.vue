@@ -9,7 +9,9 @@ import DisplayAlert from '@/components/common/DisplayAlert.vue'
 
 const appStore = useAppStore()
 const { offshoreSchools } = storeToRefs(appStore)
+const { offshoreSchoolRepresentatives } = storeToRefs(appStore)
 const schoolSearch = ref('')
+const tab = ref('schools')
 const schoolHeaders = [
   { title: 'School Code', key: 'mincode' },
   { title: 'Name', key: 'displayName' },
@@ -25,7 +27,8 @@ const headers = ref([
   }
   // Add more header objects for additional columns
 ])
-const downloadCSV = () => {
+const downloadCSV = async () => {
+  await loadOffshoreSchoolsData();
   jsonexport(downloadSchools.value, function (err: any, csv: any) {
     if (err) return console.error(err)
     appStore.exportCSV(csv, 'offshoreSchools.csv')
@@ -67,7 +70,7 @@ const transformContactForDownload = (inputData: any): {} => {
     'Grade 12': item.GRADE12
   }))
 }
-onBeforeMount(() => {
+async function loadOffshoreSchoolsData() {
   if (offshoreSchools.value) {
     for (let i = 0; i < offshoreSchools.value.length; i++) {
       filteredSchools.value = offshoreSchools.value
@@ -119,79 +122,87 @@ onBeforeMount(() => {
     }
     downloadSchools.value = transformContactForDownload(filteredSchools.value)
   }
-})
+}
 </script>
 
 <template>
   <div>
-    <v-breadcrumbs
-      class="breadcrumbs"
-      bg-color="white"
-      :items="[{ title: 'Home', href: '/' }, 'Offshore Schools']"
-    ></v-breadcrumbs>
+    <v-breadcrumbs class="breadcrumbs" bg-color="white"
+      :items="[{ title: 'Home', href: '/' }, 'Offshore Schools']"></v-breadcrumbs>
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-container id="main">
         <DisplayAlert class="mx-4 mx-md-0" />
         <v-row no-gutters justify="space-between">
-          <v-col cols="11" md="auto">
-            <h1 class="mt-3 mb-2 mx-4 mx-md-0">Offshore Schools</h1>
+          <v-col cols="10" xs="12" sm="12" md="auto">
+            <h1 class="my-4">Offshore Schools</h1>
+          </v-col>
+          <v-col cols="2" xs="12" sm="12" md="auto" class="d-flex flex-column justify-end align-end">
+            <div class="d-flex flex-column my-4" style="gap: 8px;">
+
+              <v-btn variant="text" class="text-none text-subtitle-1 justify-start"
+                style="justify-content: flex-start; text-align: left;"
+                href="/api/download/offshoreschoolrepresentatives.csv"><template v-slot:prepend> <v-icon
+                    icon="mdi-download" /> </template>Download Offshore
+                Representatives (CSV)</v-btn>
+              <v-btn @click="downloadCSV" variant="text" class="text-none text-subtitle-1 justify-start"
+                style="justify-content: flex-start; text-align: left;"><template v-slot:prepend> <v-icon
+                    icon="mdi-download" /> </template>Download Offshore
+                Schools(CSV)</v-btn>
+            </div>
           </v-col>
         </v-row>
-        <v-row no-gutters justify="space-between">
-          <v-col cols="11" md="4"
-            ><v-btn
-              variant="text"
-              class="text-none text-subtitle-1 ma-1 mx-4 mx-md-0 v-btn-align-left"
-              href="/api/download/offshoreschoolrepresentatives.csv"
-              ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download Offshore
-              Representatives (CSV)</v-btn
-            >
-            <v-btn
-              @click="downloadCSV"
-              variant="text"
-              class="text-none text-subtitle-1 ma-1 mx-4 mx-md-0 v-btn-align-left"
-              ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download Offshore
-              Schools(CSV)</v-btn
-            >
-          </v-col>
-        </v-row>
+
       </v-container>
     </v-sheet>
-    <!-- END Offshore Schools Header Block -->
 
     <v-sheet class="pa-6">
-      <v-container>
-        <v-text-field
-          v-model="schoolSearch"
-          append-icon="mdi-magnify"
-          label="Filter Offshore School"
-          single-line
-          hide-details
-        ></v-text-field>
-        <v-data-table
-          :headers="schoolHeaders"
-          :hide-default-footer="true"
-          items-per-page="50"
-          :items="offshoreSchools"
-          :search="schoolSearch"
-          :sort-by="[{ key: 'mincode', order: 'asc' }]"
-        >
-          <template v-slot:item.displayName="{ item }">
-            <a :href="`/school/${item.schoolId}`"> {{ item.displayName }} </a>
-          </template>
-
-          <template v-slot:item.addresses="{ item }">
-            <div v-for="address in item.addresses">
-              <DisplayAddress v-bind="address" />
-            </div>
-          </template>
-          <template v-slot:item.contact="{ item }">
-            <strong>Phone:</strong> {{ item.phoneNumber }} <br />
-            <strong>Fax:</strong> {{ item.faxNumber }} <br />
-            <strong>Email:</strong> <a :href="'mailto:' + item.email">{{ item.email }}</a>
-          </template>
-        </v-data-table>
-      </v-container>
+      <div class="d-flex align-center mb-4" style="gap: 8px;">
+        <v-tabs v-model="tab">
+          <v-tab value="schools">Offshore Schools</v-tab>
+          <v-tab value="representatives">Offshore Representatives</v-tab>
+        </v-tabs>
+        <div style="flex:1"></div>
+        <v-text-field v-model="schoolSearch" append-icon="mdi-filter-variant" label="Filter Offshore School" single-line
+          hide-details style="max-width: 320px; min-width: 200px;"></v-text-field>
+      </div>
+      <v-window v-model="tab">
+        <v-window-item value="schools">
+          <v-data-table :headers="schoolHeaders" :hide-default-footer="true" items-per-page="50"
+            :items="offshoreSchools" :search="schoolSearch" :sort-by="[{ key: 'mincode', order: 'asc' }]">
+            <template v-slot:item.displayName="{ item }">
+              <a :href="`/school/${item.schoolId}`"> {{ item.displayName }} </a>
+            </template>
+            <template v-slot:item.addresses="{ item }">
+              <div v-for="address in item.addresses">
+                <DisplayAddress v-bind="address" />
+              </div>
+            </template>
+            <template v-slot:item.contact="{ item }">
+              <strong>Phone:</strong> {{ item.phoneNumber }} <br />
+              <strong>Fax:</strong> {{ item.faxNumber }} <br />
+              <strong>Email:</strong> <a :href="'mailto:' + item.email">{{ item.email }}</a>
+            </template>
+          </v-data-table>
+        </v-window-item>
+        <v-window-item value="representatives">
+          <v-data-table :headers="[
+            { title: 'Authority', key: 'Number' },
+            { title: 'Name', key: 'Name' },
+            { title: 'Address', key: 'Address' },
+            { title: 'Address Line 2', key: 'Address Line 2' },
+            { title: 'City', key: 'City' },
+            { title: 'Province', key: 'Province' },
+            { title: 'Postal Code', key: 'Postal Code' },
+            { title: 'Phone Number', key: 'Phone Number' },
+            { title: 'Fax', key: 'Fax' },
+            { title: 'Email', key: 'Email' }
+          ]" :items="offshoreSchoolRepresentatives" :hide-default-footer="true" items-per-page="50">
+            <template v-slot:item.Email="{ item }">
+              <a :href="'mailto:' + item.Email">{{ item.Email }}</a>
+            </template>
+          </v-data-table>
+        </v-window-item>
+      </v-window>
     </v-sheet>
   </div>
 </template>

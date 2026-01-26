@@ -23,6 +23,7 @@ export const useAppStore = defineStore('app', {
     authorities: [] as ListAuthority[],
     schools: [] as ListSchool[],
     offshoreSchools: [] as ListSchool[],
+    offshoreSchoolRepresentatives: [] as ListAuthority[],
     categoryCodes: [] as CategoryCode[],
     facilityCodes: [] as FacilityCode[],
     addressTypeCodes: [] as AddressTypeCode[],
@@ -35,6 +36,7 @@ export const useAppStore = defineStore('app', {
       await this.setAuthorityList()
       await this.setSchoolList()
       await this.setOffshoreSchoolList()
+      await this.setOffshoreSchoolRepresentatives()
       await this.setContactTypeCodes()
       await this.setCategoryCodes()
       await this.setFacilityCodes()
@@ -115,6 +117,17 @@ export const useAppStore = defineStore('app', {
         .then((response) => {
           // Handle the response data
           this.schools = response.data
+        })
+        .catch((error) => {
+          // Handle the error
+          console.error(error)
+        })
+    },
+    async setOffshoreSchoolRepresentatives(): Promise<void> {
+      InstituteService.getOffshoreSchoolRepresentatives()
+        .then((response) => {
+          // Handle the response data
+          this.offshoreSchoolRepresentatives = response.data
         })
         .catch((error) => {
           // Handle the error
@@ -206,11 +219,7 @@ export const useAppStore = defineStore('app', {
       return state.offshoreSchools
     },
     // Codes
-    getGradeCodes(this: any, state) {
-      if (!state.gradeCodes || state.gradeCodes.length === 0) {
-        // Trigger loading of grade codes asynchronously if not loaded
-        void this.setGradeCodes()
-      }
+    getGradeCodes: (state) => {
       return state.gradeCodes ?? []
     },
     getContactTypeCodes: (state) => {

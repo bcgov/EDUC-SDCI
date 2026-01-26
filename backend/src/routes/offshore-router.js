@@ -3,10 +3,13 @@ const router = express.Router();
 const config = require("../config/index");
 const axios = require("axios");
 const { checkToken } = require("../components/auth");
-const { getOffshoreSchoolList } = require("../components/offshore");
-
+const {
+  getOffshoreSchoolList,
+  getOffshoreSchoolRepresentatives,
+} = require("../components/offshore");
 router.get("/offshore-schools-list", checkToken, getOffshoreSchoolList);
-router.get("/:id", checkToken, getOffshore); // are we using this? Does it make more sense to just roll this into the school router?
+router.get("/representatives", checkToken, getOffshoreSchoolRepresentatives);
+router.get("/:id", checkToken, getOffshore);
 
 async function getOffshore(req, res) {
   const { id } = req.params;

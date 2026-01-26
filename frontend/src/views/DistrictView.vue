@@ -8,7 +8,6 @@ import { formatPhoneNumber, isValidDistrictNumber, isActiveDateString } from '@/
 import type { District, School, Grade, Address, Contact } from '@/types/types.d.ts'
 import jsonexport from 'jsonexport/dist'
 import { useSanitizeURL } from '@/composables/string'
-// import common components
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
 import DisplayAlert from '@/components/common/DisplayAlert.vue'
 
@@ -273,47 +272,62 @@ onMounted(async () => {
     <!-- END DISTRICT HEADER INFO -->
 
     <v-sheet class="pa-6">
-      <v-tabs v-model="tab">
-        <v-tab :value="tabOptions.contacts">
-          District Contacts
-          <v-chip color="bcGovBlue" size="small" class="ml-1" variant="tonal">{{
-            district.value.districtData?.contacts.length
-          }}</v-chip>
-        </v-tab>
-        <v-tab :value="tabOptions.schools">
-          District Schools
-          <v-chip color="bcGovBlue" size="small" class="ml-1" variant="tonal">{{
-            district.value.districtData?.districtSchools?.length
-          }}</v-chip>
-        </v-tab>
-      </v-tabs>
-
+      <div class="d-flex align-center mb-4" style="gap: 16px; justify-content: space-between">
+        <div style="flex: 1 1 auto; min-width: 0">
+          <v-tabs v-model="tab">
+            <v-tab :value="tabOptions.contacts">
+              District Contacts
+              <v-chip color="bcGovBlue" size="small" class="ml-1" variant="tonal">{{
+                district.value.districtData?.contacts.length
+              }}</v-chip>
+            </v-tab>
+            <v-tab :value="tabOptions.schools">
+              District Schools
+              <v-chip color="bcGovBlue" size="small" class="ml-1" variant="tonal">{{
+                district.value.districtData?.districtSchools?.length
+              }}</v-chip>
+            </v-tab>
+          </v-tabs>
+        </div>
+        <div style="flex: 0 0 auto; min-width: 300px; max-width: 420px">
+          <v-text-field
+            v-if="tab === tabOptions.contacts"
+            v-model="contactSearch"
+            append-icon="mdi-filter-variant"
+            label="Filter District Contacts"
+            single-line
+            hide-details
+          ></v-text-field>
+          <v-text-field
+            v-if="tab === tabOptions.schools"
+            v-model="schoolSearch"
+            append-icon="mdi-filter-variant"
+            label="Filter District Schools"
+            single-line
+            hide-details
+          ></v-text-field>
+        </div>
+      </div>
       <v-card-text>
         <v-window v-model="tab">
           <!-- District Contacts tab contents -->
           <v-window-item :value="tabOptions.contacts">
-            <v-text-field
-              v-model="contactSearch"
-              append-icon="mdi-magnify"
-              label="Filter District Contacts"
-              single-line
-              hide-details
-            ></v-text-field>
             <v-data-table
               items-per-page="-1"
               :headers="contactHeaders"
               :items="district.value.districtData?.contacts"
               :search="contactSearch"
               :sort-by="[{ key: 'label', order: 'asc' }]"
+              class="wrap-table-cells"
             >
               <template v-slot:item.email="{ item }">
-                <div style="max-width: 250px; overflow: hidden">
+                <div style="max-width: 250px; white-space: normal; word-break: break-word">
                   <a :href="`mailto:${item.email}`">{{ item.email }}</a>
                 </div>
               </template>
 
               <template v-slot:item.phoneNumber="{ item }">
-                <div style="min-width: 125px">
+                <div style="min-width: 125px; white-space: normal; word-break: break-word">
                   {{ formatPhoneNumber(item.phoneNumber) }}
                 </div>
               </template>
@@ -321,24 +335,20 @@ onMounted(async () => {
           </v-window-item>
           <!-- District Schools tab contents -->
           <v-window-item :value="tabOptions.schools">
-            <v-text-field
-              v-model="schoolSearch"
-              append-icon="mdi-magnify"
-              label="Filter District Schools"
-              single-line
-              hide-details
-            ></v-text-field>
             <v-data-table
               items-per-page="-1"
               :headers="schoolHeaders"
               :items="district.value.districtData.districtSchools"
               :search="schoolSearch"
               :sort-by="[{ key: 'mincode', order: 'asc' }]"
+              class="wrap-table-cells"
             >
               <template v-slot:item.displayName="{ item }">
-                <a @click="goToSchool(item.displayName, item.mincode, item.schoolId)">{{
-                  item.displayName
-                }}</a>
+                <a
+                  @click="goToSchool(item.displayName, item.mincode, item.schoolId)"
+                  style="white-space: normal; word-break: break-word"
+                  >{{ item.displayName }}</a
+                >
               </template>
 
               <template v-slot:item.schoolCategoryCode="{ item }">
@@ -350,26 +360,25 @@ onMounted(async () => {
               </template>
 
               <template v-slot:item.phoneNumber="{ item }">
-                <div style="min-width: 125px">
-                  <!-- Adjust the min-width value as needed -->
+                <div style="min-width: 125px; white-space: normal; word-break: break-word">
                   {{ formatPhoneNumber(item.phoneNumber) }}
                 </div>
               </template>
 
               <template v-slot:item.faxNumber="{ item }">
-                <div style="min-width: 125px">
+                <div style="min-width: 125px; white-space: normal; word-break: break-word">
                   {{ formatPhoneNumber(item.faxNumber) }}
                 </div>
               </template>
 
               <template v-slot:item.email="{ item }">
-                <div style="max-width: 250px; overflow: hidden">
+                <div style="max-width: 250px; white-space: normal; word-break: break-word">
                   <a :href="`mailto:${item.email}`">{{ item.email }}</a>
                 </div>
               </template>
 
               <template v-slot:item.website="{ item }">
-                <div style="max-width: 200px">
+                <div style="max-width: 200px; white-space: normal; word-break: break-word">
                   <a :href="item.website">{{ item.website }}</a>
                 </div>
               </template>
@@ -380,3 +389,10 @@ onMounted(async () => {
     </v-sheet>
   </div>
 </template>
+
+<style scoped>
+.wrap-table-cells .v-data-table__td {
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+</style>
