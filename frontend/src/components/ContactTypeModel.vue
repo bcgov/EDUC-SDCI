@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAppStore } from '@/stores/app'
 import { ref } from 'vue'
-import InstituteService from '@/services/InstituteService'
+import DistrictService from '@/services/DistrictService'
 import jsonexport from 'jsonexport/dist'
 
 const appStore = useAppStore()
@@ -79,7 +79,7 @@ const searchContact = async () => {
     sort: itemsSort.value
   }
   try {
-    const searchResults = await InstituteService.searchContactByType(req)
+    const searchResults = await DistrictService.searchContactByType(req)
     filteredContacts.value = transformContactForDownload(searchResults.data.content)
     results.value = searchResults.data.totalElements
     // Update current page and total pages
@@ -93,8 +93,13 @@ const searchContact = async () => {
   hello
   <v-dialog v-model="dialog" width="100%">
     <template v-slot:activator="{ props }">
-      <v-btn block variant="outlined" color="bcGovBlue" class="text-none text-subtitle-1 mb-4" v-bind="props"><template
-          v-slot:append> <v-icon icon="mdi-chevron-right" /> </template>
+      <v-btn
+        block
+        variant="outlined"
+        color="bcGovBlue"
+        class="text-none text-subtitle-1 mb-4"
+        v-bind="props"
+        ><template v-slot:append> <v-icon icon="mdi-chevron-right" /> </template>
         View District Contacts
       </v-btn>
     </template>
@@ -104,10 +109,13 @@ const searchContact = async () => {
       </v-card-title>
       <v-divider></v-divider>
       <v-card-text>
-        <v-autocomplete v-model="selectedContactType" label="Select a Contact by Type"
+        <v-autocomplete
+          v-model="selectedContactType"
+          label="Select a Contact by Type"
           :items="appStore.getAllDistrictContactTypeCodesLabel"
           :item-title="appStore.getAllDistrictContactTypeCodesLabel"
-          :item-value="appStore.getAllDistrictContactTypeCodesLabel"></v-autocomplete>
+          :item-value="appStore.getAllDistrictContactTypeCodesLabel"
+        ></v-autocomplete>
         <v-btn @click="searchContact" color="primary">Search</v-btn>
         <v-btn @click="resetContactFilters" color="error">Reset</v-btn>
         <v-card-actions>
@@ -119,12 +127,22 @@ const searchContact = async () => {
         <v-col class="ma-2">Total: {{ results }}</v-col>
         <v-col></v-col>
         <v-col>
-          <v-btn block class="text-none text-subtitle-1 ma-1" @click="downloadCSV" :disabled="results == 0"><template
-              v-slot:prepend> <v-icon icon="mdi-download" /> </template>Contact Info</v-btn>
+          <v-btn
+            block
+            class="text-none text-subtitle-1 ma-1"
+            @click="downloadCSV"
+            :disabled="results == 0"
+            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Contact Info</v-btn
+          >
         </v-col>
       </v-row>
-      <v-data-table-virtual :headers="headers" :items="filteredContacts" class="elevation-1" height="700"
-        item-value="name"></v-data-table-virtual>
+      <v-data-table-virtual
+        :headers="headers"
+        :items="filteredContacts"
+        class="elevation-1"
+        height="700"
+        item-value="name"
+      ></v-data-table-virtual>
     </v-card>
   </v-dialog>
 </template>

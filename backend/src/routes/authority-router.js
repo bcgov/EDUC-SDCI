@@ -5,7 +5,7 @@ const cacheService = require("../components/cache-service.js");
 const { getAuthorityList } = require("../components/authority.js");
 const { checkToken } = require("../components/auth");
 
-router.get("/list", checkToken, getAuthorityList);
+router.get("/independent-authorities-list", checkToken, getAuthorityList);
 router.get("/:id", checkToken, getAuthority);
 
 async function getAuthority(req, res) {

@@ -54,12 +54,12 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api", apiRouter);
 
-apiRouter.use("/v1/institute", instituteRouter);
-apiRouter.use("/v1/district", districtRouter);
-apiRouter.use("/v1/authority", authorityRouter);
-apiRouter.use("/v1/offshore", offshoreRouter);
-apiRouter.use("/v1/school", schoolRouter);
-apiRouter.use("/v1/search", searchRouter);
+apiRouter.use("/institute", instituteRouter);
+apiRouter.use("/district", districtRouter);
+apiRouter.use("/authority", authorityRouter);
+apiRouter.use("/offshore", offshoreRouter);
+apiRouter.use("/school", schoolRouter);
+apiRouter.use("/search", searchRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {
