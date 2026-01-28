@@ -120,18 +120,16 @@ onMounted(() => {
       </v-container>
     </v-sheet>
     <!-- END Contacts by Type header-->
-    <v-container>
-      <v-row>
-        <v-col class="ma-2">TOTAL: {{ results }}</v-col>
-        <v-col></v-col>
-        <v-col>
-          <v-btn block class="text-none text-subtitle-1 ma-1" @click="downloadCSV" :disabled="results == 0"><template
-              v-slot:prepend> <v-icon icon="mdi-download" /> </template>Contact Info</v-btn>
-        </v-col>
-      </v-row>
-      <v-data-table-virtual :headers="headers" :items="filteredContacts" class="elevation-1" item-value="name"
-        :sort-by="[{ key: 'districtNumber', order: 'asc' }]"></v-data-table-virtual>
-    </v-container>
+    <v-row>
+      <v-col class="ma-2">TOTAL: {{ results }}</v-col>
+      <v-col></v-col>
+      <v-col>
+        <v-btn block class="text-none text-subtitle-1 ma-1" @click="downloadCSV" :disabled="results == 0"><template
+            v-slot:prepend> <v-icon icon="mdi-download" /> </template>Contact Info</v-btn>
+      </v-col>
+    </v-row>
+    <v-data-table-virtual :headers="headers" :items="filteredContacts" class="elevation-1" item-value="name"
+      :sort-by="[{ key: 'districtNumber', order: 'asc' }]"></v-data-table-virtual>
   </div>
 </template>
 
