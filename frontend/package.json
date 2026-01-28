@@ -1,6 +1,6 @@
 {
   "name": "sdci",
-  "version": "0.0.0",
+  "version": "1.11.0",
   "private": true,
   "scripts": {
     "dev": "vite",
@@ -21,7 +21,7 @@
     "pinia": "^2.1.4",
     "vue": "^3.3.4",
     "vue-router": "^4.2.2",
-    "vuetify": "^3.4.0",
+    "vuetify": "^3.3.11",
     "ws": "^8.17.0"
   },
   "devDependencies": {
