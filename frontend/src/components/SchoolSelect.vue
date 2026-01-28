@@ -52,7 +52,7 @@ function goToSchoolSearch() {
             </v-col>
             <v-col cols="auto" class="pa-0 ml-2" style="flex: 0 0 auto;">
               <v-btn icon="mdi-magnify" color="primary" variant="flat" rounded="lg" size="large" @click="goToSchool"
-                class="pa-0" style="min-width: 48px; width: 48px;" />
+                class="pa-0" style="min-width: 60px; width: 60px;" />
             </v-col>
           </v-row>
           <v-row>

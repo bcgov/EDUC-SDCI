@@ -14,43 +14,14 @@ router.get("/school/search", checkToken, getSchoolSearchResults);
 router.get(
   "/districts/contact-search/paginated",
   checkToken,
-  getDistrictContactSearchResults
+  getDistrictContactSearchResults,
 );
 router.get(
   "/district/contact-search/:type",
   checkToken,
-  getDistrictContactSearchResults2
+  getDistrictContactSearchResults2,
 );
 
-// async function getSchoolSearchResults(req, res) {
-//   const fundingGroups = cacheService.getFundingGroupCodes(req, res);
-//   const encodedSearchCriteriaList = encodeURIComponent(
-//     req.query?.searchCriteriaList || ""
-//   );
-//   const url = `${config.get(
-//     "server:instituteAPIURL"
-//   )}/institute/school/paginated?pageSize=${req.query?.pageSize}&pageNumber=${
-//     req.query?.pageNumber
-//   }&searchCriteriaList=${encodedSearchCriteriaList}`;
-
-//   axios
-//     .get(url, { headers: { Authorization: `Bearer ${req.accessToken}` } })
-//     .then((response) => {
-//       const results = response.data.content;
-//       const resultsWithFundingGroups = addFundingGroups(results, fundingGroups);
-//       // Remove the 'contacts' array from each object
-//       const cleanedResults = resultsWithFundingGroups.map(
-//         ({ notes, contacts, ...rest }) => rest
-//       );
-
-//       response.data.content = cleanedResults;
-
-//       res.json(response.data);
-//     })
-//     .catch((e) => {
-//       log.error("getData Error", e.response ? e.response.status : e.message);
-//     });
-// }
 async function getSchoolSearchResults(req, res) {
   try {
     const fundingGroups = cacheService.getFundingGroupCodes(req, res);
@@ -115,7 +86,7 @@ async function getSchoolSearchResults(req, res) {
 
     // Construct URL
     let downstreamUrl = `${config.get(
-      "server:instituteAPIURL"
+      "server:instituteAPIURL",
     )}/institute/school/paginated?pageSize=${req.query.pageSize}&pageNumber=${
       req.query.pageNumber
     }&searchCriteriaList=${encodedSearchCriteriaList}`;
@@ -139,7 +110,7 @@ async function getSchoolSearchResults(req, res) {
     const resultsWithFundingGroups = addFundingGroups(results, fundingGroups);
 
     const cleanedResults = resultsWithFundingGroups.map(
-      ({ notes, contacts, ...rest }) => rest
+      ({ notes, contacts, ...rest }) => rest,
     );
 
     response.data.content = cleanedResults;
@@ -151,10 +122,10 @@ async function getSchoolSearchResults(req, res) {
 }
 async function getDistrictContactSearchResults(req, res) {
   const encodedSearchCriteriaList = encodeURIComponent(
-    req.query?.searchCriteriaList || ""
+    req.query?.searchCriteriaList || "",
   );
   const url = `${config.get(
-    "server:instituteAPIURL"
+    "server:instituteAPIURL",
   )}/institute/district/contact/paginated?pageSize=${
     req.query?.pageSize
   }&pageNumber=${
@@ -171,14 +142,14 @@ async function getDistrictContactSearchResults(req, res) {
 
         jsonData = addDistrictLabels(
           response.data,
-          cacheService.getActiveDistricts()
+          cacheService.getActiveDistricts(),
         );
         // Filter out entries with missing/invalid districtNumber
         jsonData.content = jsonData.content.filter(
           (contact) =>
             contact.districtNumber !== undefined &&
             contact.districtNumber !== "" &&
-            contact.districtNumber !== null
+            contact.districtNumber !== null,
         );
         res.json(jsonData);
       } else {
@@ -250,11 +221,11 @@ async function getDistrictContactSearchResults2(req, res) {
     ];
 
     const encodedSearchCriteriaList = encodeURIComponent(
-      JSON.stringify(params)
+      JSON.stringify(params),
     );
 
     let url = `${config.get(
-      "server:instituteAPIURL"
+      "server:instituteAPIURL",
     )}/institute/district/contact/paginated?pageSize=${pageSize}&pageNumber=${pageNumber}&searchCriteriaList=${encodedSearchCriteriaList}`;
     if (sortField && sortOrder) {
       url += `&sort[${sortField}]=${sortOrder}`;
@@ -275,7 +246,7 @@ async function getDistrictContactSearchResults2(req, res) {
         const bNum = Number(b.districtNumber);
         if (!Number.isFinite(aNum) || !Number.isFinite(bNum)) {
           return String(a.districtNumber).localeCompare(
-            String(b.districtNumber)
+            String(b.districtNumber),
           );
         }
         return aNum - bNum;
@@ -287,14 +258,14 @@ async function getDistrictContactSearchResults2(req, res) {
       (contact) =>
         contact.districtNumber !== undefined &&
         contact.districtNumber !== "" &&
-        contact.districtNumber !== null
+        contact.districtNumber !== null,
     );
 
     res.json(jsonData);
   } catch (e) {
     log.error(
       "getDistrictContactSearchResults2 Error",
-      e.response ? e.response.status : e.message
+      e.response ? e.response.status : e.message,
     );
     res
       .status(500)
