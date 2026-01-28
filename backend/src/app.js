@@ -6,7 +6,7 @@ const log = require("./components/logger");
 const cors = require("cors");
 const NodeCache = require("node-cache");
 const apiRouter = express.Router();
-const instituteRouter = require("./routes/institute-router");
+const codesRouter = require("./routes/codes-router");
 const districtRouter = require("./routes/district-router");
 const authorityRouter = require("./routes/authority-router");
 const offshoreRouter = require("./routes/offshore-router");
@@ -54,7 +54,7 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api", apiRouter);
 
-apiRouter.use("/institute", instituteRouter);
+apiRouter.use("/codes", codesRouter);
 apiRouter.use("/district", districtRouter);
 apiRouter.use("/authority", authorityRouter);
 apiRouter.use("/offshore", offshoreRouter);
@@ -64,14 +64,14 @@ apiRouter.use("/search", searchRouter);
 //Handle 500 error
 app.use((err, _req, res, next) => {
   res?.redirect(
-    config?.get("server:frontend") + "/error?message_internal_error"
+    config?.get("server:frontend") + "/error?message_internal_error",
   );
 });
 
 // Handle 404 error
 app.use((_req, res) => {
   res.redirect(
-    config?.get("server:frontend") + "/error?message=404_Page_Not_Found"
+    config?.get("server:frontend") + "/error?message=404_Page_Not_Found",
   );
 });
 

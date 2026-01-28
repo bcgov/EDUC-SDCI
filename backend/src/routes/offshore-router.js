@@ -8,7 +8,11 @@ const {
   getOffshoreSchoolRepresentatives,
 } = require("../components/offshore");
 router.get("/offshore-schools-list", checkToken, getOffshoreSchoolList);
-router.get("/representatives", checkToken, getOffshoreSchoolRepresentatives);
+router.get(
+  "/offshore-representatives",
+  checkToken,
+  getOffshoreSchoolRepresentatives,
+);
 router.get("/:id", checkToken, getOffshore);
 
 async function getOffshore(req, res) {
@@ -32,7 +36,7 @@ async function getOffshore(req, res) {
   const encodedParams = encodeURIComponent(jsonString);
 
   const url = `${config.get(
-    "server:instituteAPIURL"
+    "server:instituteAPIURL",
   )}/institute/school/paginated?pageNumber=0&pageSize=100&searchCriteriaList=${encodedParams}`;
 
   const schoolResponse = await axios.get(url, {

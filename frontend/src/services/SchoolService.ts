@@ -5,12 +5,6 @@ export default {
   async getSchoolList(): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/school/schools-list')
   },
-  async getOffshoreSchoolList(): Promise<AxiosResponse> {
-    return ApiService.apiAxios.get('/api/offshore/offshore-schools-list')
-  },
-  async getOffshoreSchoolRepresentatives(): Promise<AxiosResponse> {
-    return ApiService.apiAxios.get('/api/v1/offshore/representatives')
-  },
   async getSchool(schoolId: string): Promise<AxiosResponse> {
     return ApiService.apiAxios.get('/api/school/' + schoolId)
   },
@@ -38,5 +32,12 @@ export default {
     const url = `/api/school/search?${params.toString()}`
 
     return ApiService.apiAxios.get(url)
+  },
+  // OFFSHORE SCHOOLS
+  async getOffshoreSchoolList(): Promise<AxiosResponse> {
+    return ApiService.apiAxios.get('/api/offshore/offshore-schools-list')
+  },
+  async getOffshoreSchoolRepresentatives(): Promise<AxiosResponse> {
+    return ApiService.apiAxios.get('/api/offshore/offshore-representatives')
   }
 }

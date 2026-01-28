@@ -124,7 +124,7 @@ export const useAppStore = defineStore('app', {
         })
     },
     async setOffshoreSchoolRepresentatives(): Promise<void> {
-      InstituteService.getOffshoreSchoolRepresentatives()
+      SchoolService.getOffshoreSchoolRepresentatives()
         .then((response) => {
           // Handle the response data
           this.offshoreSchoolRepresentatives = response.data
