@@ -584,7 +584,7 @@ const cacheService = {
     const FILE_STORAGE_DIR = path.join(__dirname, "../..", "public");
     const filePathPublic = path.join(
       FILE_STORAGE_DIR,
-      "offshoreSchoolrepresentatives.csv",
+      "offshoreschoolrepresentatives.csv",
     );
     await this.writeCSVToFile(offshoreSchoolRepresentatives, filePathPublic);
   },
