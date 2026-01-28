@@ -20,8 +20,6 @@ app.get("/api/download/*", (req, res) => {
   try {
     const requestedFile = req.params[0];
     const filePath = path.resolve(publicPath, requestedFile);
-    log.info("publicPath:", publicPath);
-    log.info("filePath" + filePath);
     // Security check
     if (!filePath.startsWith(publicPath)) {
       return res.status(403).send("Forbidden");
@@ -64,14 +62,14 @@ apiRouter.use("/v1/search", searchRouter);
 //Handle 500 error
 app.use((err, _req, res, next) => {
   res?.redirect(
-    config?.get("server:frontend") + "/error?message_internal_error"
+    config?.get("server:frontend") + "/error?message_internal_error",
   );
 });
 
 // Handle 404 error
 app.use((_req, res) => {
   res.redirect(
-    config?.get("server:frontend") + "/error?message=404_Page_Not_Found"
+    config?.get("server:frontend") + "/error?message=404_Page_Not_Found",
   );
 });
 

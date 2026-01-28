@@ -400,6 +400,13 @@ const cacheService = {
             valueType: "DATE_TIME",
             condition: "AND",
           },
+          {
+            key: "authorityTypeCode",
+            operation: "eq",
+            value: "INDEPENDNT",
+            valueType: "STRING",
+            condition: "AND",
+          },
         ],
       },
       {
@@ -481,16 +488,17 @@ const cacheService = {
     }
   },
   async loadoffshoreSchoolRepresentatives() {
+    const currentDate = new Date().toISOString().substring(0, 19);
     offshoreSchoolRepresentatives = [];
     const params = [
       {
-        condition: null,
+        condition: "AND",
         searchCriteriaList: [
           {
-            key: "closedDate",
-            operation: "eq",
-            value: null,
-            valueType: "STRING",
+            key: "openedDate",
+            operation: "lte",
+            value: currentDate,
+            valueType: "DATE_TIME",
             condition: "AND",
           },
           {
@@ -499,6 +507,25 @@ const cacheService = {
             value: "OFFSHORE",
             valueType: "STRING",
             condition: "AND",
+          },
+        ],
+      },
+      {
+        condition: "AND",
+        searchCriteriaList: [
+          {
+            key: "closedDate",
+            operation: "eq",
+            value: null,
+            valueType: "STRING",
+            condition: "OR",
+          },
+          {
+            key: "closedDate",
+            operation: "gte",
+            value: currentDate,
+            valueType: "DATE_TIME",
+            condition: "OR",
           },
         ],
       },
@@ -557,7 +584,7 @@ const cacheService = {
     const FILE_STORAGE_DIR = path.join(__dirname, "../..", "public");
     const filePathPublic = path.join(
       FILE_STORAGE_DIR,
-      "offshoreSchoolRepresentatives.csv",
+      "offshoreSchoolrepresentatives.csv",
     );
     await this.writeCSVToFile(offshoreSchoolRepresentatives, filePathPublic);
   },
