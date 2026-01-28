@@ -388,23 +388,36 @@ const cacheService = {
     );
   },
   async createAuthorityMailingFile() {
+    const currentDate = new Date().toISOString().substring(0, 19);
     const params = [
       {
-        condition: null,
+        condition: "AND",
+        searchCriteriaList: [
+          {
+            key: "openedDate",
+            operation: "lte",
+            value: currentDate,
+            valueType: "DATE_TIME",
+            condition: "AND",
+          },
+        ],
+      },
+      {
+        condition: "AND",
         searchCriteriaList: [
           {
             key: "closedDate",
             operation: "eq",
             value: null,
             valueType: "STRING",
-            condition: "AND",
+            condition: "OR",
           },
           {
-            key: "authorityTypeCode",
-            operation: "eq",
-            value: "INDEPENDNT",
-            valueType: "STRING",
-            condition: "AND",
+            key: "closedDate",
+            operation: "gte",
+            value: currentDate,
+            valueType: "DATE_TIME",
+            condition: "OR",
           },
         ],
       },
@@ -414,7 +427,7 @@ const cacheService = {
     const encodedParams = encodeURIComponent(jsonString);
     const url = `${config.get(
       "server:instituteAPIURL",
-    )}/institute/authority/paginated?pageSize=10&sort[authorityNumber]=ASC&searchCriteriaList=${encodedParams}`;
+    )}/institute/authority/paginated?pageSize=1000&sort[authorityNumber]=ASC&searchCriteriaList=${encodedParams}`;
 
     try {
       const data = await auth.getApiCredentials(
@@ -436,6 +449,8 @@ const cacheService = {
         { property: "phoneNumber", label: "Phone Number" },
         { property: "faxNumber", label: "Fax" },
         { property: "email", label: "Email" },
+        { property: "openedDate", label: "Opened Date" },
+        { property: "closedDate", label: "Closed Date" },
       ];
 
       authorityResponse.content.forEach(
