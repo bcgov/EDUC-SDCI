@@ -6,10 +6,9 @@ const log = require("./components/logger");
 const cors = require("cors");
 const NodeCache = require("node-cache");
 const apiRouter = express.Router();
-const instituteRouter = require("./routes/institute-router");
+const codesRouter = require("./routes/codes-router");
 const districtRouter = require("./routes/district-router");
 const authorityRouter = require("./routes/authority-router");
-const offshoreRouter = require("./routes/offshore-router");
 const schoolRouter = require("./routes/school-router");
 const searchRouter = require("./routes/search-router");
 const app = express();
@@ -52,12 +51,11 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api", apiRouter);
 
-apiRouter.use("/v1/institute", instituteRouter);
-apiRouter.use("/v1/district", districtRouter);
-apiRouter.use("/v1/authority", authorityRouter);
-apiRouter.use("/v1/offshore", offshoreRouter);
-apiRouter.use("/v1/school", schoolRouter);
-apiRouter.use("/v1/search", searchRouter);
+apiRouter.use("/codes", codesRouter);
+apiRouter.use("/district", districtRouter);
+apiRouter.use("/authority", authorityRouter);
+apiRouter.use("/school", schoolRouter);
+apiRouter.use("/search", searchRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {

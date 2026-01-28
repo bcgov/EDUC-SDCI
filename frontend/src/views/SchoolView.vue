@@ -2,7 +2,7 @@
 import { reactive, onBeforeMount, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import router from '@/router'
-import InstituteService from '@/services/InstituteService'
+import SchoolService from '@/services/SchoolService'
 import { useAppStore } from '@/stores/app'
 import type { School, Grade } from '@/types/types.d.ts'
 import jsonexport from 'jsonexport/dist'
@@ -107,7 +107,7 @@ onBeforeMount(async () => {
   const route = useRoute()
   const selectedSchoolId: string | string[] = route.params.schoolId
   try {
-    const response = await InstituteService.getSchool(selectedSchoolId as string)
+    const response = await SchoolService.getSchool(selectedSchoolId as string)
     schoolData.value = response.data
 
     //add the missing labels

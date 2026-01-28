@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import InstituteService from '@/services/InstituteService'
+import AuthorityService from '@/services/AuthorityService'
 import { ref, reactive, onMounted, computed, toValue } from 'vue'
 import router from '@/router'
 import { useAppStore } from '@/stores/app'
@@ -108,7 +108,7 @@ onMounted(async () => {
   )?.authorityID
 
   try {
-    const response = await InstituteService.getAuthority(authorityId.value)
+    const response = await AuthorityService.getAuthority(authorityId.value)
     authority.value = response.data
     schools.value = response.data?.authoritySchools
     contacts.value = response.data?.authorityData?.contacts
@@ -206,15 +206,19 @@ onMounted(async () => {
 
 <template>
   <div>
-    <v-breadcrumbs class="breadcrumbs" bg-color="white" :items="[
-      { title: 'Home', href: '/' },
-      'Authority',
-      authority.value.authorityData
-        ? authority.value.authorityData.authorityNumber +
-        ' ' +
-        authority.value.authorityData.displayName
-        : ''
-    ]"></v-breadcrumbs>
+    <v-breadcrumbs
+      class="breadcrumbs"
+      bg-color="white"
+      :items="[
+        { title: 'Home', href: '/' },
+        'Authority',
+        authority.value.authorityData
+          ? authority.value.authorityData.authorityNumber +
+            ' ' +
+            authority.value.authorityData.displayName
+          : ''
+      ]"
+    ></v-breadcrumbs>
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-container id="main">
         <DisplayAlert class="mx-4 mx-lg-0" />
@@ -247,19 +251,29 @@ onMounted(async () => {
                   }}</a>
                 </p>
               </v-col>
-              <v-col cols="11" md="auto" v-for="item in authority.value.authorityData.addresses"
-                :key="item.addressTypeCode">
+              <v-col
+                cols="11"
+                md="auto"
+                v-for="item in authority.value.authorityData.addresses"
+                :key="item.addressTypeCode"
+              >
                 <DisplayAddress v-bind="item" />
               </v-col>
               <v-col cols="11" md="4" class="pa-0 pa-md-3">
-                <v-btn variant="text" class="text-none text-subtitle-1 ma-1 v-btn-align-left"
-                  @click="downloadAuthorityContacts()"><template v-slot:prepend> <v-icon icon="mdi-download" />
-                  </template>Download
-                  Authority Contacts (CSV)</v-btn>
-                <v-btn variant="text" class="text-none text-subtitle-1 ma-1 v-btn-align-left"
-                  @click="downloadAuthoritySchools()"><template v-slot:prepend> <v-icon icon="mdi-download" />
-                  </template>Download
-                  Authority Schools (CSV)</v-btn>
+                <v-btn
+                  variant="text"
+                  class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+                  @click="downloadAuthorityContacts()"
+                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
+                  Authority Contacts (CSV)</v-btn
+                >
+                <v-btn
+                  variant="text"
+                  class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+                  @click="downloadAuthoritySchools()"
+                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
+                  Authority Schools (CSV)</v-btn
+                >
               </v-col>
             </v-row>
           </v-col>
@@ -268,8 +282,8 @@ onMounted(async () => {
     </v-sheet>
     <!-- END Authority Info Header Block -->
     <v-sheet class="pa-6">
-      <div class="d-flex align-center mb-4" style="gap: 16px; justify-content: space-between;">
-        <div style="flex:1 1 auto; min-width:0;">
+      <div class="d-flex align-center mb-4" style="gap: 16px; justify-content: space-between">
+        <div style="flex: 1 1 auto; min-width: 0">
           <v-tabs v-model="tab">
             <v-tab :value="tabOptions.contacts">
               Authority Contacts
@@ -285,11 +299,23 @@ onMounted(async () => {
             </v-tab>
           </v-tabs>
         </div>
-        <div style="flex:0 0 auto; min-width:320px; max-width:420px;">
-          <v-text-field v-if="tab === tabOptions.contacts" v-model="contactSearch" append-icon="mdi-magnify"
-            label="Filter Authority Contacts" single-line hide-details></v-text-field>
-          <v-text-field v-if="tab === tabOptions.schools" v-model="schoolSearch" append-icon="mdi-magnify"
-            label="Filter Authority Schools" single-line hide-details></v-text-field>
+        <div style="flex: 0 0 auto; min-width: 320px; max-width: 420px">
+          <v-text-field
+            v-if="tab === tabOptions.contacts"
+            v-model="contactSearch"
+            append-icon="mdi-magnify"
+            label="Filter Authority Contacts"
+            single-line
+            hide-details
+          ></v-text-field>
+          <v-text-field
+            v-if="tab === tabOptions.schools"
+            v-model="schoolSearch"
+            append-icon="mdi-magnify"
+            label="Filter Authority Schools"
+            single-line
+            hide-details
+          ></v-text-field>
         </div>
       </div>
 
@@ -297,8 +323,13 @@ onMounted(async () => {
         <v-window v-model="tab">
           <!-- Authority Contacts tab contents -->
           <v-window-item :value="tabOptions.contacts">
-            <v-data-table items-per-page="-1" :headers="contactHeaders" :items="authority.value.authorityData?.contacts"
-              :search="contactSearch" :sort-by="[{ key: 'authorityContactTypeCode', order: 'asc' }]">
+            <v-data-table
+              items-per-page="-1"
+              :headers="contactHeaders"
+              :items="authority.value.authorityData?.contacts"
+              :search="contactSearch"
+              :sort-by="[{ key: 'authorityContactTypeCode', order: 'asc' }]"
+            >
               <template v-slot:item.authorityContactTypeCode="{ item }">
                 {{ appStore.getAuthorityContactTypeCodeLabel(item.authorityContactTypeCode) }}
               </template>
@@ -316,8 +347,13 @@ onMounted(async () => {
           </v-window-item>
           <!-- Authority Schools tab contents -->
           <v-window-item :value="tabOptions.schools">
-            <v-data-table items-per-page="-1" :headers="schoolHeaders" :items="authority.value.authoritySchools"
-              :search="schoolSearch" :sort-by="[{ key: 'mincode', order: 'asc' }]">
+            <v-data-table
+              items-per-page="-1"
+              :headers="schoolHeaders"
+              :items="authority.value.authoritySchools"
+              :search="schoolSearch"
+              :sort-by="[{ key: 'mincode', order: 'asc' }]"
+            >
               <template v-slot:item.displayName="{ item }">
                 <a @click="goToSchool(item.displayName, item.mincode, item.schoolId)">{{
                   item.displayName

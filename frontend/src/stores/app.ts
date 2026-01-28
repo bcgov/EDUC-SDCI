@@ -12,7 +12,10 @@ import type {
   Grade
 } from '@/types/types'
 
-import InstituteService from '@/services/InstituteService'
+import SchoolService from '@/services/SchoolService'
+import DistrictService from '@/services/DistrictService'
+import AuthorityService from '@/services/AuthorityService'
+import CodesService from '@/services/CodesService'
 
 export const useAppStore = defineStore('app', {
   state: () => ({
@@ -88,7 +91,7 @@ export const useAppStore = defineStore('app', {
       return schoolCategoryCode == 'INDEPEND'
     },
     async setDistricts(): Promise<void> {
-      await InstituteService.getDistricts()
+      await DistrictService.getDistricts()
         .then((response) => {
           // Handle the response data
           this.districts = response.data
@@ -99,7 +102,7 @@ export const useAppStore = defineStore('app', {
         })
     },
     async setAuthorityList(): Promise<void> {
-      await InstituteService.getAuthorityList()
+      await AuthorityService.getAuthorityList()
         .then((response) => {
           //handle the response
           this.authorities = response.data
@@ -110,7 +113,7 @@ export const useAppStore = defineStore('app', {
         })
     },
     async setSchoolList(): Promise<void> {
-      InstituteService.getSchoolList()
+      SchoolService.getSchoolList()
         .then((response) => {
           // Handle the response data
           this.schools = response.data
@@ -121,7 +124,7 @@ export const useAppStore = defineStore('app', {
         })
     },
     async setOffshoreSchoolRepresentatives(): Promise<void> {
-      InstituteService.getOffshoreSchoolRepresentatives()
+      SchoolService.getOffshoreSchoolRepresentatives()
         .then((response) => {
           // Handle the response data
           this.offshoreSchoolRepresentatives = response.data
@@ -132,7 +135,7 @@ export const useAppStore = defineStore('app', {
         })
     },
     async setOffshoreSchoolList(): Promise<void> {
-      InstituteService.getOffshoreSchoolList()
+      SchoolService.getOffshoreSchoolList()
         .then((response) => {
           // Handle the response data
           this.offshoreSchools = response.data
@@ -144,23 +147,23 @@ export const useAppStore = defineStore('app', {
     },
 
     async setContactTypeCodes(): Promise<any> {
-      const contactsResponse = await InstituteService.getContactTypeCodes()
+      const contactsResponse = await CodesService.getContactTypeCodes()
       this.contactTypeCodes = contactsResponse.data
     },
     async setCategoryCodes(): Promise<any> {
-      const categoryCodeResponse = await InstituteService.getCategoryCodes()
+      const categoryCodeResponse = await CodesService.getCategoryCodes()
       this.categoryCodes = categoryCodeResponse.data
     },
     async setFacilityCodes(): Promise<any> {
-      const facilityCodeResponse = await InstituteService.getFacilityCodes()
+      const facilityCodeResponse = await CodesService.getFacilityCodes()
       this.facilityCodes = facilityCodeResponse.data
     },
     async setAddressTypeCodes(): Promise<any> {
-      const addressTypeCodeResponse = await InstituteService.getAddressTypeCodes()
+      const addressTypeCodeResponse = await CodesService.getAddressTypeCodes()
       this.addressTypeCodes = addressTypeCodeResponse.data
     },
     async setGradeCodes(): Promise<any> {
-      const gradeCodeResponse = await InstituteService.getGradeCodes()
+      const gradeCodeResponse = await CodesService.getGradeCodes()
       this.gradeCodes = gradeCodeResponse.data
     }
   },
