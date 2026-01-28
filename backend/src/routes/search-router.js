@@ -10,9 +10,9 @@ const {
   addDistrictLabels,
 } = require("../components/utils.js");
 
-router.get("/school/search", checkToken, getSchoolSearchResults);
+router.get("/school", checkToken, getSchoolSearchResults);
 router.get(
-  "/districts/contact-search/paginated",
+  "/district/contact-search/paginated",
   checkToken,
   getDistrictContactSearchResults,
 );

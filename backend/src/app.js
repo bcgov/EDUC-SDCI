@@ -9,7 +9,6 @@ const apiRouter = express.Router();
 const codesRouter = require("./routes/codes-router");
 const districtRouter = require("./routes/district-router");
 const authorityRouter = require("./routes/authority-router");
-const offshoreRouter = require("./routes/offshore-router");
 const schoolRouter = require("./routes/school-router");
 const searchRouter = require("./routes/search-router");
 const app = express();
@@ -55,7 +54,6 @@ app.use("/api", apiRouter);
 apiRouter.use("/codes", codesRouter);
 apiRouter.use("/district", districtRouter);
 apiRouter.use("/authority", authorityRouter);
-apiRouter.use("/offshore", offshoreRouter);
 apiRouter.use("/school", schoolRouter);
 apiRouter.use("/search", searchRouter);
 

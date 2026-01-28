@@ -29,15 +29,15 @@ export default {
     }
 
     // Construct URL
-    const url = `/api/school/search?${params.toString()}`
+    const url = `/api/search/school?${params.toString()}`
 
     return ApiService.apiAxios.get(url)
   },
   // OFFSHORE SCHOOLS
   async getOffshoreSchoolList(): Promise<AxiosResponse> {
-    return ApiService.apiAxios.get('/api/offshore/offshore-schools-list')
+    return ApiService.apiAxios.get('/api/school/offshore-schools-list')
   },
   async getOffshoreSchoolRepresentatives(): Promise<AxiosResponse> {
-    return ApiService.apiAxios.get('/api/offshore/offshore-representatives')
+    return ApiService.apiAxios.get('/api/school/offshore-representatives')
   }
 }

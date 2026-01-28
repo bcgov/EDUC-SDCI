@@ -9,12 +9,12 @@ const {
 } = require("../components/offshore");
 
 router.get("/schools-list", checkToken, getSchoolList);
+router.get("/offshore-schools-list", checkToken, getOffshoreSchoolList);
+router.get(
+  "/offshore-representatives",
+  checkToken,
+  getOffshoreSchoolRepresentatives,
+);
 router.get("/:schoolId", checkToken, getSchoolBySchoolID);
-// router.get("/offshore-schools-list", checkToken, getOffshoreSchoolList);
-// router.get(
-//   "/offshore-representatives",
-//   checkToken,
-//   getOffshoreSchoolRepresentatives,
-// );
 
 module.exports = router;
