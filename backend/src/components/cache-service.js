@@ -535,7 +535,7 @@ const cacheService = {
     const encodedParams = encodeURIComponent(jsonString);
     const url = `${config.get(
       "server:instituteAPIURL",
-    )}/institute/authority/paginated?pageSize=10&sort[authorityNumber]=ASC&searchCriteriaList=${encodedParams}`;
+    )}/institute/authority/paginated?pageSize=1000&sort[authorityNumber]=ASC&searchCriteriaList=${encodedParams}`;
 
     try {
       const data = await auth.getApiCredentials(
@@ -557,13 +557,13 @@ const cacheService = {
         { property: "phoneNumber", label: "Phone Number" },
         { property: "faxNumber", label: "Fax" },
         { property: "email", label: "Email" },
+        { property: "openedDate", label: "open" },
+        { property: "closedDate", label: "close" },
       ];
 
       authorityResponse.content.forEach(
         appendMailingAddressDetailsAndRemoveAddresses,
       );
-
-      // 🔥 No rearrangeAndRelabelObjectProperties needed
       authorityResponse.content = authorityResponse.content.map((item) => {
         const result = {};
         propertyOrder.forEach(({ property, label }) => {

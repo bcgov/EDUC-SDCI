@@ -11,6 +11,7 @@ const appStore = useAppStore()
 const { offshoreSchools } = storeToRefs(appStore)
 const { offshoreSchoolRepresentatives } = storeToRefs(appStore)
 const schoolSearch = ref('')
+const representativeSearch = ref('')
 const tab = ref('schools')
 const schoolHeaders = [
   { title: 'School Code', key: 'mincode' },
@@ -162,8 +163,12 @@ async function loadOffshoreSchoolsData() {
           <v-tab value="representatives">Offshore Representatives</v-tab>
         </v-tabs>
         <div style="flex:1"></div>
-        <v-text-field v-model="schoolSearch" append-icon="mdi-filter-variant" label="Filter Offshore School" single-line
-          hide-details style="max-width: 320px; min-width: 200px;"></v-text-field>
+        <v-text-field v-if="tab === 'schools'" v-model="schoolSearch" append-icon="mdi-filter-variant"
+          label="Filter Offshore School" single-line hide-details
+          style="max-width: 320px; min-width: 200px;"></v-text-field>
+        <v-text-field v-if="tab === 'representatives'" v-model="representativeSearch" append-icon="mdi-filter-variant"
+          label="Filter Offshore Representative" single-line hide-details
+          style="max-width: 320px; min-width: 200px;"></v-text-field>
       </div>
       <v-window v-model="tab">
         <v-window-item value="schools">
@@ -185,6 +190,7 @@ async function loadOffshoreSchoolsData() {
           </v-data-table>
         </v-window-item>
         <v-window-item value="representatives">
+
           <v-data-table :headers="[
             { title: 'Authority', key: 'Number' },
             { title: 'Name', key: 'Name' },
@@ -196,7 +202,8 @@ async function loadOffshoreSchoolsData() {
             { title: 'Phone Number', key: 'Phone Number' },
             { title: 'Fax', key: 'Fax' },
             { title: 'Email', key: 'Email' }
-          ]" :items="offshoreSchoolRepresentatives" :hide-default-footer="true" items-per-page="50">
+          ]" :items="offshoreSchoolRepresentatives" :hide-default-footer="true" :search="representativeSearch"
+            items-per-page="50">
             <template v-slot:item.Email="{ item }">
               <a :href="'mailto:' + item.Email">{{ item.Email }}</a>
             </template>
