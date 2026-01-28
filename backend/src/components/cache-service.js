@@ -557,13 +557,13 @@ const cacheService = {
         { property: "phoneNumber", label: "Phone Number" },
         { property: "faxNumber", label: "Fax" },
         { property: "email", label: "Email" },
+        { property: "openedDate", label: "open" },
+        { property: "closedDate", label: "close" },
       ];
 
       authorityResponse.content.forEach(
         appendMailingAddressDetailsAndRemoveAddresses,
       );
-
-      // 🔥 No rearrangeAndRelabelObjectProperties needed
       authorityResponse.content = authorityResponse.content.map((item) => {
         const result = {};
         propertyOrder.forEach(({ property, label }) => {
