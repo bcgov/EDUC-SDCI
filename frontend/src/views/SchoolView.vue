@@ -2,7 +2,7 @@
 import { reactive, onBeforeMount, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import router from '@/router'
-import InstituteService from '@/services/InstituteService'
+import SchoolService from '@/services/SchoolService'
 import { useAppStore } from '@/stores/app'
 import type { School, Grade } from '@/types/types.d.ts'
 import jsonexport from 'jsonexport/dist'
@@ -14,13 +14,13 @@ const appStore = useAppStore()
 
 // props
 const districtInfo = reactive<any>({ value: {} })
-const authorityInfo = reactive<any>({ value: {} })
+const authorityInfo = ref<any>({})
 const downloadContacts = ref<any>([])
 const filteredContacts = ref<any>([])
 const filteredAddresses = reactive<any>({ value: {} })
-const filteredGradesLabels = reactive<any>([])
+const filteredGradesLabels = ref<any[]>([])
 const headers = [
-  { title: 'Contact Type', key: 'schoolContactTypeCode_label' },
+  { title: 'Contact Type', key: 'schoolContactTypeCodeLabel' },
   { title: 'Role', key: 'jobTitle' },
   { title: 'First Name', key: 'firstName' },
   { title: 'Last Name', key: 'lastName' },
@@ -40,7 +40,7 @@ const tab = ref(tabOptions.contacts)
 const downloadCSV = () => {
   jsonexport(downloadContacts.value, function (err: any, csv: any) {
     if (err) return console.error(err)
-    appStore.exportCSV(csv)
+    appStore.exportCSV(csv, 'schoolInfo.csv')
   })
 }
 const transformContactForDownload = (inputData: any): {} => {
@@ -58,7 +58,7 @@ const transformContactForDownload = (inputData: any): {} => {
       'School Email': item.schoolEmail,
       'School Phone Number': item.schoolPhoneNumber,
       'School Fax Number': item.schoolFaxNumber,
-      'Contact Type': item.schoolContactTypeCode_label,
+      'Contact Type': item.schoolContactTypeCodeLabel,
       Role: item.jobTitle,
       'First Name': item.firstName,
       'Last Name': item.lastName,
@@ -107,17 +107,15 @@ onBeforeMount(async () => {
   const route = useRoute()
   const selectedSchoolId: string | string[] = route.params.schoolId
   try {
-    const response = await InstituteService.getSchool(selectedSchoolId as string)
+    const response = await SchoolService.getSchool(selectedSchoolId as string)
     schoolData.value = response.data
 
     //add the missing labels
-    const filteredGrades = appStore.compareSchoolGrades(
-      appStore.getGradeByGradeCodes,
-      schoolData.value.grades
-    )
-    //extract only the labels for UI (no longer used for extract)
-    if (filteredGradesLabels.length == 0) {
-      filteredGradesLabels.push(...appStore.extractGradeLabels(filteredGrades))
+    const filteredGrades = appStore.mapSchoolGradesToLabels(schoolData.value.grades)
+    const labels = appStore.extractGradeLabels(filteredGrades)
+
+    if (labels && labels.length > 0) {
+      filteredGradesLabels.value = labels // assign the whole array instead of push
     }
 
     //setting district name and number
@@ -136,7 +134,6 @@ onBeforeMount(async () => {
         filteredAddresses.value = response.data.addresses[0]
       }
     }
-    // console.log(appStore.getFacilityCodeLabel(response.data?.facilityTypeCode))
     //setting school contacts
     if (response.data) {
       if (response.data.contacts.length > 0) {
@@ -201,7 +198,6 @@ onBeforeMount(async () => {
             filteredContacts.value[i].seniorSecondary1112 = response.data.seniorSecondary1112
           }
         }
-
         downloadContacts.value = transformContactForDownload(filteredContacts.value)
       }
     }
@@ -223,29 +219,16 @@ function goToDistrict() {
 
 <template>
   <div>
-    <v-breadcrumbs
-      class="breadcrumbs"
-      bg-color="white"
-      :items="[
-        { title: 'Home', href: '/' },
-        'School',
-        !!schoolData.value ? { title: schoolData.value.displayName, href: '' } : ''
-      ]"
-    ></v-breadcrumbs>
+    <v-breadcrumbs class="breadcrumbs" bg-color="white" :items="[
+      { title: 'Home', href: '/' },
+      'School',
+      !!schoolData.value ? { title: schoolData.value.displayName, href: '' } : ''
+    ]"></v-breadcrumbs>
 
-    <v-sheet
-      style="z-index: 100; position: relative"
-      elevation="2"
-      class="pt-6 pb-0 pb-md-6 full-width"
-    >
+    <v-sheet style="z-index: 100; position: relative" elevation="2" class="pt-6 pb-0 pb-md-6 full-width">
       <v-container id="main">
         <DisplayAlert class="mx-4 mx-lg-1 mx-xl-0" />
-        <v-row
-          v-if="schoolData.value"
-          no-gutters
-          justify="space-between"
-          class="pa-4 pa-md-5 pa-lg-0"
-        >
+        <v-row v-if="schoolData.value" no-gutters justify="space-between" class="pa-4 pa-md-5 pa-lg-0">
           <v-col cols="11" md="12">
             <v-row no-gutters>
               <h1 class="mt-3 mb-2">
@@ -257,36 +240,26 @@ function goToDistrict() {
               </h1>
             </v-row>
             <v-row no-gutters class="mt-0 mb-1">
-              <a
-                v-if="schoolData.value.schoolCategoryCode == 'PUBLIC'"
-                id="district-link"
-                :href="`/district/${useSanitizeURL(
-                  String(districtInfo.value?.districtNumber)
-                )}-${useSanitizeURL(String(districtInfo.value?.displayName))}`"
-              >
+              <a v-if="schoolData.value.schoolCategoryCode == 'PUBLIC'" id="district-link" :href="`/district/${useSanitizeURL(
+                String(districtInfo.value?.districtNumber)
+              )}-${useSanitizeURL(String(districtInfo.value?.displayName))}`">
                 District {{ districtInfo.value.districtNumber }} -
                 {{ districtInfo.value.displayName }}
               </a>
-              <a
-                id="authority-link"
-                :href="`/authority/${authorityInfo.value.authorityNumber}-${authorityInfo.value.displayName}`"
-                v-if="schoolData.value?.independentAuthorityId && authorityInfo.value"
-                class="ml-1"
-              >
+              <router-link v-if="schoolData.value?.independentAuthorityId && authorityInfo.value" :to="{
+                name: 'authority',
+                params: {
+                  authorityNumber: authorityInfo.value.authorityNumber,
+                  displayName: authorityInfo.value.displayName
+                }
+              }" id="authority-link" class="ml-1">
                 Independent Authority {{ authorityInfo.value.authorityNumber }} -
                 {{ authorityInfo.value.displayName }}
-              </a>
+              </router-link>
             </v-row>
             <v-row no-gutters class="mt-1 mb-4">
-              <v-chip
-                v-for="grade in filteredGradesLabels"
-                :key="grade"
-                class="mr-1 mb-1"
-                size="small"
-                color="primary"
-                label
-                >{{ grade }}</v-chip
-              >
+              <v-chip v-for="grade in filteredGradesLabels" :key="grade" class="mr-1 mb-1" size="small" color="primary"
+                label>{{ grade }}</v-chip>
             </v-row>
             <v-row no-gutters justify="space-between">
               <v-col cols="11" md="auto" class="pl-0 mb-2">
@@ -299,24 +272,15 @@ function goToDistrict() {
                   </a>
                 </p>
               </v-col>
-              <v-col
-                cols="11"
-                md="auto"
-                v-for="item in schoolData.value.addresses"
-                :key="item.addressTypeCode"
-              >
+              <v-col cols="11" md="auto" v-for="item in schoolData.value.addresses" :key="item.addressTypeCode">
                 <DisplayAddress v-bind="item" />
               </v-col>
-              <v-col
-                cols="11"
-                md="auto"
-                v-if="
-                  schoolData.value.primaryK3 ||
-                  schoolData.value.elementary47 ||
-                  schoolData.value.juniorSecondary810 ||
-                  schoolData.value.seniorSecondary1112
-                "
-              >
+              <v-col cols="11" md="auto" v-if="
+                schoolData.value.primaryK3 ||
+                schoolData.value.elementary47 ||
+                schoolData.value.juniorSecondary810 ||
+                schoolData.value.seniorSecondary1112
+              ">
                 <strong> Group Classification:</strong><br />
                 <ul class="pl-2 pl-md-5">
                   <li v-if="schoolData.value.primaryK3">
@@ -336,16 +300,11 @@ function goToDistrict() {
                   </li>
                 </ul>
               </v-col>
-              <v-col cols="11" md="4"
-                ><v-btn
-                  variant="text"
-                  class="text-none text-subtitle-1 ma-1 v-btn-align-left px-0 px-md-4"
-                  @click="downloadCSV"
-                  :disabled="!schoolData.value"
-                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
-                  School Info (CSV)</v-btn
-                ></v-col
-              >
+              <v-col cols="11" md="4"><v-btn variant="text"
+                  class="text-none text-subtitle-1 ma-1 v-btn-align-left px-0 px-md-4" @click="downloadCSV"
+                  :disabled="!schoolData.value"><template v-slot:prepend> <v-icon icon="mdi-download" />
+                  </template>Download
+                  School Info (CSV)</v-btn></v-col>
             </v-row>
           </v-col>
         </v-row>
@@ -359,16 +318,8 @@ function goToDistrict() {
       <v-card-text>
         <v-window v-model="tab">
           <v-window-item :value="tabOptions.contacts">
-            <v-data-table-virtual
-              :headers="headers"
-              :items="filteredContacts"
-              class="elevation-1"
-              item-value="name"
-              :sort-by="[{ key: 'schoolContactTypeCode_label', order: 'asc' }]"
-            >
-              <!-- <template v-slot:item.jobTitle="{ item }">
-                {{ item.label }}
-              </template> -->
+            <v-data-table-virtual :headers="headers" :items="filteredContacts" class="elevation-1" item-value="name"
+              :sort-by="[{ key: 'schoolContactTypeCodeLabel', order: 'asc' }]">
               <template v-slot:item.phoneNumber="{ item }">
                 {{ formatPhoneNumber(item.phoneNumber) }}
               </template>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAppStore } from '@/stores/app'
 import { ref, onMounted } from 'vue'
-import InstituteService from '@/services/InstituteService'
+import DistrictService from '@/services/DistrictService'
 import jsonexport from 'jsonexport/dist'
 
 import DisplayAlert from '@/components/common/DisplayAlert.vue'
@@ -13,7 +13,7 @@ const dialog = ref(false)
 const filteredContacts = ref([])
 const selectedContactType = ref(null)
 const results = ref(0)
-const itemsPerPage = ref(100)
+const itemsPerPage = ref(1000)
 const itemsSort = ref('')
 const totalPages = ref(1)
 const headers = [
@@ -28,9 +28,13 @@ const headers = [
 ]
 // export to CSV file
 const downloadCSV = () => {
-  jsonexport(filteredContacts.value, function (err: any, csv: any) {
+  jsonexport(transformContactForDownload(filteredContacts.value), function (err: any, csv: any) {
     if (err) return console.error(err)
-    appStore.exportCSV(csv)
+    const contactType = appStore.getDistrictContactTypeCodes.find(
+      (c: any) => c.districtContactTypeCode === selectedContactType.value
+    )
+    const fileName = contactType ? contactType.label + '_contacts.csv' : 'contacts.csv'
+    appStore.exportCSV(csv, fileName)
   })
 }
 // const loading = ref(false)
@@ -43,99 +47,39 @@ const resetContactFilters = () => {
 }
 const transformContactForDownload = (inputData: any) => {
   return inputData.map((item: any) => ({
-    districtNumber: item.districtNumber,
-    districtName: item.districtName,
-    firstName: item.firstName,
-    lastName: item.lastName,
-    jobTitle: item.jobTitle,
-    phoneNumber: item.phoneNumber,
-    phoneExtension: item.phoneExtension,
-    alternatePhoneNumber: item.alternatePhoneNumber,
-    alternatePhoneExtension: item.alternatePhoneExtension,
-    email: item.email
+    'District Number': item.districtNumber,
+    'District Name': item.districtName,
+    'First Name': item.firstName,
+    'Last Name': item.lastName,
+    Title: item.jobTitle,
+    Phone: item.phoneNumber,
+    Extension: item.phoneExtension,
+    'Alternate Phone': item.alternatePhoneNumber,
+    'Alternate Extension': item.alternatePhoneExtension,
+    Email: item.email
   }))
 }
-const filterOutYukon = (inputData: any) => {
-  return inputData.filter(
-    (contact: { districtId: string }) =>
-      contact.districtId !== '54396317-b444-063d-779e-e4d42ff7634f'
-  )
-}
+
 const searchContact = async () => {
-  // Filter contacts based on selected filters
-  let currentDate = new Date().toISOString().substring(0, 19)
-  const params: any = [
-    {
-      condition: null,
-      searchCriteriaList: []
-    }
-  ]
-  if (selectedContactType.value) {
-    params[0].searchCriteriaList.push({
-      key: 'expiryDate',
-      operation: 'eq',
-      value: null,
-      valueType: 'STRING',
-      condition: 'OR'
-    })
-    params[0].searchCriteriaList.push({
-      key: 'expiryDate',
-      operation: 'gte',
-      value: currentDate,
-      valueType: 'DATE_TIME',
-      condition: 'OR'
-    })
-    params[0].searchCriteriaList.push({
-      key: 'effectiveDate',
-      operation: 'lte',
-      value: currentDate,
-      valueType: 'DATE_TIME',
-      condition: 'AND'
-    })
-    params[0].searchCriteriaList.push({
-      key: 'districtContactTypeCode',
-      operation: 'eq',
-      value: selectedContactType.value,
-      valueType: 'STRING',
-      condition: 'AND'
-    })
-  } else {
-    params[0].searchCriteriaList.push({
-      key: 'expiryDate',
-      operation: 'eq',
-      value: null,
-      valueType: 'STRING',
-      condition: 'OR'
-    })
-    params[0].searchCriteriaList.push({
-      key: 'expiryDate',
-      operation: 'gte',
-      value: currentDate,
-      valueType: 'DATE_TIME',
-      condition: 'OR'
-    })
-    params[0].searchCriteriaList.push({
-      key: 'effectiveDate',
-      operation: 'lte',
-      value: currentDate,
-      valueType: 'DATE_TIME',
-      condition: 'AND'
-    })
-  }
-  const jsonString = JSON.stringify(params)
-  const encodedParams = encodeURIComponent(jsonString)
-  const req = {
-    pageSize: itemsPerPage,
-    searchCriteriaList: encodedParams,
-    sort: itemsSort.value
-  }
+  // Use backend builder if a specific contact type is selected
+
   try {
-    const searchResults = await InstituteService.searchContactByType(req)
-    const yukonFilteredContacts = filterOutYukon(searchResults.data.content)
-    filteredContacts.value = transformContactForDownload(yukonFilteredContacts)
-    results.value = searchResults.data.totalElements
-    // Update current page and total pages
-    totalPages.value = searchResults.data.totalPages
+    if (selectedContactType.value) {
+      const req = {
+        pageSize: { value: itemsPerPage.value },
+        pageNumber: 0,
+        sort: itemsSort.value
+      }
+      const searchResults = await DistrictService.searchContactByType2(
+        selectedContactType.value,
+        req
+      )
+      filteredContacts.value = searchResults.data.content
+
+      results.value = searchResults.data.totalElements
+      totalPages.value = searchResults.data.totalPages
+      return
+    }
   } catch (error) {
     console.error('Error fetching schools:', error)
   }
@@ -196,28 +140,26 @@ onMounted(() => {
       </v-container>
     </v-sheet>
     <!-- END Contacts by Type header-->
-    <v-container>
-      <v-row>
-        <v-col class="ma-2">TOTAL: {{ results }}</v-col>
-        <v-col></v-col>
-        <v-col>
-          <v-btn
-            block
-            class="text-none text-subtitle-1 ma-1"
-            @click="downloadCSV"
-            :disabled="results == 0"
-            ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Contact Info</v-btn
-          >
-        </v-col>
-      </v-row>
-      <v-data-table-virtual
-        :headers="headers"
-        :items="filteredContacts"
-        class="elevation-1"
-        item-value="name"
-        :sort-by="[{ key: 'districtNumber', order: 'asc' }]"
-      ></v-data-table-virtual>
-    </v-container>
+    <v-row>
+      <v-col class="ma-2">TOTAL: {{ results }}</v-col>
+      <v-col></v-col>
+      <v-col>
+        <v-btn
+          block
+          class="text-none text-subtitle-1 ma-1"
+          @click="downloadCSV"
+          :disabled="results == 0"
+          ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Contact Info</v-btn
+        >
+      </v-col>
+    </v-row>
+    <v-data-table-virtual
+      :headers="headers"
+      :items="filteredContacts"
+      class="elevation-1"
+      item-value="name"
+      :sort-by="[{ key: 'districtNumber', order: 'asc' }]"
+    ></v-data-table-virtual>
   </div>
 </template>
 

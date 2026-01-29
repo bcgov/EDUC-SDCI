@@ -1,96 +1,73 @@
 const config = require("./config/index");
-const log = require("./components/logger");
-const dotenv = require("dotenv");
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
-const axios = require("axios");
+const log = require("./components/logger");
 const cors = require("cors");
 const NodeCache = require("node-cache");
 const apiRouter = express.Router();
-const instituteRouter = require("./routes/institute-router");
+const codesRouter = require("./routes/codes-router");
 const districtRouter = require("./routes/district-router");
-const downloadRouter = require("./routes/download-router");
 const authorityRouter = require("./routes/authority-router");
-const offshoreRouter = require("./routes/offshore-router");
 const schoolRouter = require("./routes/school-router");
 const searchRouter = require("./routes/search-router");
 const app = express();
-const publicPath = path.join(__dirname, "public");
-
-async function writeFileAsync(filePath, data, encoding) {
-  return new Promise((resolve, reject) => {
-    fs.writeFile(filePath, data, encoding, (error) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve();
-      }
-    });
-  });
-}
+const publicPath = path.join(__dirname, "../public");
 app.use(express.static(publicPath));
 
-app.use(express.static("public"));
-app.use(cors());
+app.get("/api/download/*", (req, res) => {
+  try {
+    const requestedFile = req.params[0];
+    const filePath = path.resolve(publicPath, requestedFile);
+    // Security check
+    if (!filePath.startsWith(publicPath)) {
+      return res.status(403).send("Forbidden");
+    }
+
+    // Check if file exists
+    if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
+      return res.status(404).send("File not found");
+    }
+
+    // Extract actual filename
+    const filename = path.basename(filePath);
+
+    // Force filename in download
+    res.download(filePath, filename, (err) => {
+      if (err) {
+        console.error("Download error:", err);
+        res.status(500).send("Internal server error");
+      }
+    });
+  } catch (err) {
+    console.error("Error in /download route:", err);
+    res.status(500).send("Internal server error");
+  }
+});
+
 app.get("/api/health", (req, res) => {
   res.status(200).send("OK");
 });
 
-app.get("/download/:fileName", (req, res) => {
-  try {
-    // Get the requested file name from the URL parameter
-    const { fileName } = req.params;
+app.use("/api", apiRouter);
 
-    // Construct the file path based on the requested file name
-
-    const filePath = path.join(__dirname, "../public", fileName);
-    // Check if the file exists
-    if (!filePath || !fileName || !fs.existsSync(filePath)) {
-      // If the file doesn't exist, send a 404 Not Found response
-      res.status(404).send("File not found");
-      return;
-    }
-
-    // Set the appropriate headers for a file download
-    res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
-    res.setHeader("Content-Type", "application/octet-stream"); // Set the appropriate MIME type
-
-    // Send the file as the response
-    res.sendFile(filePath, (err) => {
-      if (err) {
-        // If an error occurs during sending, log the error and send a 500 Internal Server Error response
-        console.error(err);
-        res.status(500).send("Internal Server Error");
-      }
-    });
-  } catch (err) {
-    // Handle any unexpected errors with a 500 Internal Server Error response
-    console.error(err);
-    res.status(500).send("Internal Server Error");
-  }
-});
-app.use(/(\/api)?/, apiRouter);
-
-apiRouter.use("/v1/download", downloadRouter);
-apiRouter.use("/v1/institute", instituteRouter);
-apiRouter.use("/v1/district", districtRouter);
-apiRouter.use("/v1/authority", authorityRouter);
-apiRouter.use("/v1/offshore", offshoreRouter);
-apiRouter.use("/v1/school", schoolRouter);
-apiRouter.use("/v1/search", searchRouter);
+apiRouter.use("/codes", codesRouter);
+apiRouter.use("/district", districtRouter);
+apiRouter.use("/authority", authorityRouter);
+apiRouter.use("/school", schoolRouter);
+apiRouter.use("/search", searchRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {
   res?.redirect(
-    config?.get("server:frontend") + "/error?message=500_internal_error"
+    config?.get("server:frontend") + "/error?message_internal_error",
   );
 });
 
 // Handle 404 error
 app.use((_req, res) => {
   res.redirect(
-    config?.get("server:frontend") + "/error?message=404_Page_Not_Found"
+    config?.get("server:frontend") + "/error?message=404_Page_Not_Found",
   );
 });
 

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useAppStore } from '@/stores/app'
 import { ref } from 'vue'
-import InstituteService from '@/services/InstituteService'
-import * as jsonexport from 'jsonexport/dist'
+import DistrictService from '@/services/DistrictService'
+import jsonexport from 'jsonexport/dist'
 
 const appStore = useAppStore()
 // used for open and close modal
@@ -79,7 +79,7 @@ const searchContact = async () => {
     sort: itemsSort.value
   }
   try {
-    const searchResults = await InstituteService.searchContactByType(req)
+    const searchResults = await DistrictService.searchContactByType(req)
     filteredContacts.value = transformContactForDownload(searchResults.data.content)
     results.value = searchResults.data.totalElements
     // Update current page and total pages
@@ -90,6 +90,7 @@ const searchContact = async () => {
 }
 </script>
 <template>
+  hello
   <v-dialog v-model="dialog" width="100%">
     <template v-slot:activator="{ props }">
       <v-btn

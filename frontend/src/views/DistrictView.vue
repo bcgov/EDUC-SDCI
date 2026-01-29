@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import InstituteService from '@/services/InstituteService'
+import DistrictService from '@/services/DistrictService'
 import { ref, reactive, onMounted, computed, toValue } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { useRoute } from 'vue-router'
 import router from '@/router'
-import { formatPhoneNumber, isValidDistrictNumber } from '@/utils/common'
+import { formatPhoneNumber, isValidDistrictNumber, isActiveDateString } from '@/utils/common'
 import type { District, School, Grade, Address, Contact } from '@/types/types.d.ts'
 import jsonexport from 'jsonexport/dist'
 import { useSanitizeURL } from '@/composables/string'
-// import common components
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
 import DisplayAlert from '@/components/common/DisplayAlert.vue'
 
@@ -19,7 +18,6 @@ const schools = ref<any>([])
 const contacts = ref<any>([])
 const filteredContacts = ref<any>([])
 const filteredSchools = ref<any>([])
-// const downloadContacts = ref<any>([])
 const tabOptions = {
   contacts: 1,
   schools: 2
@@ -27,7 +25,7 @@ const tabOptions = {
 const tab = ref(tabOptions.contacts) // Default to contacts tab
 const contactHeaders = [
   { title: 'Role', key: 'jobTitle' },
-  { title: 'Contact', key: 'label' },
+  { title: 'Contact', key: 'districtContactLabel' },
   { title: 'First Name', key: 'firstName' },
   { title: 'Last Name', key: 'lastName' },
   { title: 'Phone', key: 'phoneNumber' },
@@ -39,7 +37,6 @@ const schoolHeaders = [
   { title: 'Mincode', key: 'mincode' },
   { title: 'Category', key: 'schoolCategoryCode' },
   { title: 'Type', key: 'facilityTypeCode' },
-  //{ title: 'Grades', key: ''},
   { title: 'Phone', key: 'phoneNumber' },
   { title: 'Fax', key: 'faxNumber' },
   { title: 'Email', key: 'email' },
@@ -48,10 +45,6 @@ const schoolHeaders = [
 
 const schoolSearch = ref('')
 const contactSearch = ref('')
-//sorting
-// const contactSortBy = [{ key: 'label', order: 'asc' }]
-// const schoolSortBy = [{ key: 'mincode', order: 'asc' }]
-// functions
 function goToSchool(displayName: string, mincode: string, id: string) {
   router.push({
     name: 'school',
@@ -65,13 +58,13 @@ function goToSchool(displayName: string, mincode: string, id: string) {
 function downloadDistrictContacts() {
   jsonexport(filteredContacts.value, function (err: any, csv: any) {
     if (err) return console.error(err)
-    appStore.exportCSV(csv)
+    appStore.exportCSV(csv, 'districtContacts.csv')
   })
 }
 function downloadDistrictSchools() {
   jsonexport(filteredSchools.value, function (err: any, csv: any) {
     if (err) return console.error(err)
-    appStore.exportCSV(csv)
+    appStore.exportCSV(csv, 'districtSchools.csv')
   })
 }
 async function getDistrictId(): Promise<string> {
@@ -85,28 +78,34 @@ async function getDistrictData(): Promise<void> {
   // get district data
   if (!!districtId.value) {
     try {
-      const response = await InstituteService.getDistrictView(districtId.value)
+      const response = await DistrictService.getDistrictView(districtId.value)
       if (response.data?.districtData?.contacts) {
         district.value = response.data
-        contacts.value = response.data?.districtData?.contacts
-        schools.value = district.value?.districtSchools
-
+        contacts.value = response.data.districtData?.contacts
+        schools.value = district.value?.districtData?.districtSchools
         //Change School date for DL
         const transformedSchoolData = schools.value.map((school: School) => {
           const { contacts, addresses, ...rest } = school
-          const transformedContacts = contacts?.map(({ schoolContactTypeCode, ...contactRest }) => ({
-            schoolContactTypeCode,
-            ...contactRest
-          }))
-          const physicalAddress = addresses.find(
-            (address: Address) => address?.addressTypeCode === 'PHYSICAL'
+          const transformedContacts = contacts?.map(
+            ({ schoolContactTypeCode, ...contactRest }) => ({
+              schoolContactTypeCode,
+              ...contactRest
+            })
           )
-          const mailingAddress = addresses.find(
-            (address: Address) => address?.addressTypeCode === 'MAILING'
-          )
+          let physicalAddress: Address | null = null
+          let mailingAddress: Address | null = null
+
+          for (const address of addresses || []) {
+            if (address.addressTypeCode === 'PHYSICAL') physicalAddress = address
+            else if (address.addressTypeCode === 'MAILING') mailingAddress = address
+
+            if (physicalAddress && mailingAddress) break
+          }
           return {
             ...rest,
-            schoolContact: transformedContacts?.find((contact) => contact.schoolContactTypeCode === 'PRINCIPAL'),
+            schoolContact: transformedContacts?.find(
+              (contact) => contact.schoolContactTypeCode === 'PRINCIPAL'
+            ),
             physicalAddress: physicalAddress,
             mailingAddress: mailingAddress,
             grades: [],
@@ -120,22 +119,22 @@ async function getDistrictData(): Promise<void> {
             'District Number': response.data.districtData.districtNumber,
             Mincode: item.mincode,
             'Display Name': item.displayName,
-            'Mailing Address': item.mailingAddress?.addressLine1,
-            'Mailing Address Line2': item.mailingAddress?.addressLine2,
-            'Mailing Address City': item.mailingAddress?.city,
-            'Mailing Address Province': item.mailingAddress?.provinceCode,
-            'Mailing Address PostalCode': item.mailingAddress?.postal,
-            'Physical Address': item.physicalAddress?.addressLine1,
-            'Physical Address Line2': item.physicalAddress?.addressLine2,
-            'Physical Address City': item.physicalAddress?.city,
-            'Physical Address Province': item.physicalAddress?.provinceCode,
-            'Physical Address Postal Code': item.physicalAddress?.postal,
-            Role: item.schoolContact?.jobTitle,
-            'Contact First Name': item.schoolContact?.firstName,
-            'Contact Last Name': item.schoolContact?.lastName,
-            'Contact Phone Extension': item.schoolContact?.phoneExtension,
-            'Contact Phone Number': item.schoolContact?.phoneNumber,
-            'Facility Type Code': appStore.getFacilityCodeLabel(item.facilityTypeCode),
+            'Mailing Address': item.mailingAddressLine1,
+            'Mailing Address Line2': item.mailingAddressLine2,
+            'Mailing Address City': item.mailingCity,
+            'Mailing Address Province': item.mailingProvince,
+            'Mailing Address PostalCode': item.mailingPostal,
+            'Physical Address': item.physicalAddressLine1,
+            'Physical Address Line2': item.physicalAddressLine2,
+            'Physical Address City': item.physicalCity,
+            'Physical Address Province': item.physicalProvince,
+            'Physical Address Postal Code': item.physicalPostal,
+            Role: item?.principalJobTile,
+            'Contact First Name': item?.principalFirstName,
+            'Contact Last Name': item?.principalLastName,
+            'Contact Phone Extension': item?.principalPhoneExtension,
+            'Contact Phone Number': item?.principalPhoneNumber,
+            'Facility Type Code': item.facilityTypeCode,
             'School Category Code': appStore.getCategoryCodeLabel(item.schoolCategoryCode),
             'Phone Number': item.phoneNumber,
             Fax: item.faxNumber,
@@ -147,12 +146,11 @@ async function getDistrictData(): Promise<void> {
             'Group Classification Senior Secondary 11-12': item.seniorSecondary1112
           }
         })
-        console.log(filteredSchools)
         filteredContacts.value = contacts.value.map((item: any) => {
           return {
             'District Number': response.data.districtData?.districtNumber,
             'District Name': response.data.districtData?.displayName,
-            'Contact Type': item.label,
+            'Contact Type': item.districtContactLabel,
             'Job Title': item.jobTitle,
             'First Name': item.firstName,
             'Last Name': item.lastName,
@@ -161,10 +159,10 @@ async function getDistrictData(): Promise<void> {
             'Alternate Phone Number': item.alternatePhoneNumber,
             'Alternate Phone Extension': item.alternatePhoneExtension,
             Email: item.email,
-            'Mailing Address': response.data.districtData?.addresses[0].addressLine1,
-            'Mailing City': response.data.districtData?.addresses[0].city,
-            'Mailing Province': response.data.districtData?.addresses[0].provinceCode,
-            'Mailing Postal Code': response.data.districtData?.addresses[0].postal,
+            'Mailing Address': response.data.districtData?.addresses?.[0]?.addressLine1,
+            'Mailing City': response.data.districtData?.addresses?.[0]?.city,
+            'Mailing Province': response.data.districtData?.addresses?.[0]?.provinceCode,
+            'Mailing Postal Code': response.data.districtData?.addresses?.[0]?.postal,
             'District Phone': response.data.districtData?.phoneNumber,
             'District Fax': response.data.districtData?.faxNumber,
             Website: response.data.districtData?.website
@@ -201,6 +199,7 @@ onMounted(async () => {
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-container id="main">
         <DisplayAlert class="mx-4 mx-lg-0" />
+
         <v-row no-gutters justify="space-between" class="pa-4 pa-md-5 pa-lg-0">
           <v-col cols="12" v-if="district.value.districtData">
             <v-row no-gutters justify="space-between">
@@ -273,47 +272,62 @@ onMounted(async () => {
     <!-- END DISTRICT HEADER INFO -->
 
     <v-sheet class="pa-6">
-      <v-tabs v-model="tab">
-        <v-tab :value="tabOptions.contacts">
-          District Contacts
-          <v-chip color="bcGovBlue" size="small" class="ml-1" variant="tonal">{{
-            district.value.districtData?.contacts.length
-          }}</v-chip>
-        </v-tab>
-        <v-tab :value="tabOptions.schools">
-          District Schools
-          <v-chip color="bcGovBlue" size="small" class="ml-1" variant="tonal">{{
-            district.value.districtSchools?.length
-          }}</v-chip>
-        </v-tab>
-      </v-tabs>
-
+      <div class="d-flex align-center mb-4" style="gap: 16px; justify-content: space-between">
+        <div style="flex: 1 1 auto; min-width: 0">
+          <v-tabs v-model="tab">
+            <v-tab :value="tabOptions.contacts">
+              District Contacts
+              <v-chip color="bcGovBlue" size="small" class="ml-1" variant="tonal">{{
+                district.value.districtData?.contacts.length
+              }}</v-chip>
+            </v-tab>
+            <v-tab :value="tabOptions.schools">
+              District Schools
+              <v-chip color="bcGovBlue" size="small" class="ml-1" variant="tonal">{{
+                district.value.districtData?.districtSchools?.length
+              }}</v-chip>
+            </v-tab>
+          </v-tabs>
+        </div>
+        <div style="flex: 0 0 auto; min-width: 300px; max-width: 420px">
+          <v-text-field
+            v-if="tab === tabOptions.contacts"
+            v-model="contactSearch"
+            append-icon="mdi-filter-variant"
+            label="Filter District Contacts"
+            single-line
+            hide-details
+          ></v-text-field>
+          <v-text-field
+            v-if="tab === tabOptions.schools"
+            v-model="schoolSearch"
+            append-icon="mdi-filter-variant"
+            label="Filter District Schools"
+            single-line
+            hide-details
+          ></v-text-field>
+        </div>
+      </div>
       <v-card-text>
         <v-window v-model="tab">
           <!-- District Contacts tab contents -->
           <v-window-item :value="tabOptions.contacts">
-            <v-text-field
-              v-model="contactSearch"
-              append-icon="mdi-magnify"
-              label="Filter District Contacts"
-              single-line
-              hide-details
-            ></v-text-field>
             <v-data-table
               items-per-page="-1"
               :headers="contactHeaders"
               :items="district.value.districtData?.contacts"
               :search="contactSearch"
               :sort-by="[{ key: 'label', order: 'asc' }]"
+              class="wrap-table-cells"
             >
               <template v-slot:item.email="{ item }">
-                <div style="max-width: 250px; overflow: hidden">
+                <div style="max-width: 250px; white-space: normal; word-break: break-word">
                   <a :href="`mailto:${item.email}`">{{ item.email }}</a>
                 </div>
               </template>
 
               <template v-slot:item.phoneNumber="{ item }">
-                <div style="min-width: 125px">
+                <div style="min-width: 125px; white-space: normal; word-break: break-word">
                   {{ formatPhoneNumber(item.phoneNumber) }}
                 </div>
               </template>
@@ -321,24 +335,20 @@ onMounted(async () => {
           </v-window-item>
           <!-- District Schools tab contents -->
           <v-window-item :value="tabOptions.schools">
-            <v-text-field
-              v-model="schoolSearch"
-              append-icon="mdi-magnify"
-              label="Filter District Schools"
-              single-line
-              hide-details
-            ></v-text-field>
             <v-data-table
               items-per-page="-1"
               :headers="schoolHeaders"
-              :items="district.value.districtSchools"
+              :items="district.value.districtData.districtSchools"
               :search="schoolSearch"
               :sort-by="[{ key: 'mincode', order: 'asc' }]"
+              class="wrap-table-cells"
             >
               <template v-slot:item.displayName="{ item }">
-                <a @click="goToSchool(item.displayName, item.mincode, item.schoolId)">{{
-                  item.displayName
-                }}</a>
+                <a
+                  @click="goToSchool(item.displayName, item.mincode, item.schoolId)"
+                  style="white-space: normal; word-break: break-word"
+                  >{{ item.displayName }}</a
+                >
               </template>
 
               <template v-slot:item.schoolCategoryCode="{ item }">
@@ -346,30 +356,29 @@ onMounted(async () => {
               </template>
 
               <template v-slot:item.facilityTypeCode="{ item }">
-                {{ appStore.getFacilityCodeLabel(item.facilityTypeCode) }}
+                {{ item.facilityTypeCode }}
               </template>
 
               <template v-slot:item.phoneNumber="{ item }">
-                <div style="min-width: 125px">
-                  <!-- Adjust the min-width value as needed -->
+                <div style="min-width: 125px; white-space: normal; word-break: break-word">
                   {{ formatPhoneNumber(item.phoneNumber) }}
                 </div>
               </template>
 
               <template v-slot:item.faxNumber="{ item }">
-                <div style="min-width: 125px">
+                <div style="min-width: 125px; white-space: normal; word-break: break-word">
                   {{ formatPhoneNumber(item.faxNumber) }}
                 </div>
               </template>
 
               <template v-slot:item.email="{ item }">
-                <div style="max-width: 250px; overflow: hidden">
+                <div style="max-width: 250px; white-space: normal; word-break: break-word">
                   <a :href="`mailto:${item.email}`">{{ item.email }}</a>
                 </div>
               </template>
 
               <template v-slot:item.website="{ item }">
-                <div style="max-width: 200px">
+                <div style="max-width: 200px; white-space: normal; word-break: break-word">
                   <a :href="item.website">{{ item.website }}</a>
                 </div>
               </template>
@@ -380,3 +389,10 @@ onMounted(async () => {
     </v-sheet>
   </div>
 </template>
+
+<style scoped>
+.wrap-table-cells .v-data-table__td {
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+</style>

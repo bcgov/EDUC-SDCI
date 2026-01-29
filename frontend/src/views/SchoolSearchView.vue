@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeMount, isProxy, toRaw } from 'vue'
 import { useAppStore } from '@/stores/app'
-import InstituteService from '@/services/InstituteService'
+import SchoolService from '@/services/SchoolService'
+import CodesService from '@/services/CodesService'
 import DisplayAddress from '@/components/common/DisplayAddress.vue'
 import DisplayAlert from '@/components/common/DisplayAlert.vue'
 
@@ -43,13 +44,13 @@ const handleUpdate = async (options: any) => {
 
 const fetchTypes = async () => {
   try {
-    const response = await InstituteService.getFacilityCodes()
+    const response = await CodesService.getFacilityCodes()
     types.value = response.data
   } catch (error) {
     console.error('Error fetching types:', error)
   }
   try {
-    const response = await InstituteService.getCategoryCodes()
+    const response = await CodesService.getCategoryCodes()
     //filter out the schools that have expired
     jurisdictions.value = response.data?.filter((item: any) => {
       const effectiveDate: Date = new Date(item.effectiveDate)
@@ -64,7 +65,7 @@ const fetchTypes = async () => {
     console.error('Error fetching types:', error)
   }
   try {
-    const response = await InstituteService.getGradeCodes()
+    const response = await CodesService.getGradeCodes()
     grades.value = response.data
   } catch (error) {
     console.error('Error fetching types:', error)
@@ -101,61 +102,24 @@ const filteredSchools = ref(schools)
 const search = ref('')
 const expanded = ref([])
 const transformedSchools = ref(schools)
+
 const searchSchools = async () => {
-  // Filter schools based on selected filters
-  let currentDate = new Date().toISOString().substring(0, 19)
-  const params: any = [
-    {
-      condition: null,
-      searchCriteriaList: []
-    }
-  ]
-  if (selectedJurisdiction.value) {
-    params[0].searchCriteriaList.push({
-      key: 'schoolCategoryCode',
-      operation: selectedJurisdiction.value.length > 1 ? 'in' : 'eq',
-      value: selectedJurisdiction.value.join(','),
-      valueType: 'STRING',
-      condition: 'AND'
-    })
-  }
-  if (selectedType.value) {
-    params[0].searchCriteriaList.push({
-      key: 'facilityTypeCode',
-      operation: 'in',
-      value: selectedType.value.join(','),
-      valueType: 'STRING',
-      condition: 'AND'
-    })
-  }
-  //only add open schools
-  params[0].searchCriteriaList.push({
-    key: 'openedDate',
-    operation: 'lte',
-    value: currentDate,
-    valueType: 'DATE_TIME',
-    condition: 'AND'
-  })
-  params[0].searchCriteriaList.push({
-    key: 'closedDate',
-    operation: 'eq',
-    value: null,
-    valueType: 'STRING',
-    condition: 'AND'
-  })
-
-  const jsonString = JSON.stringify(params)
-  const encodedParams = encodeURIComponent(jsonString)
-
+  // Prepare simple payload with raw values
   const req = {
+    // Pass the raw arrays directly
+    jurisdiction: selectedJurisdiction.value,
+    type: selectedType.value,
+
+    // Pagination & Sorting
     pageNumber: currentPage.value !== 0 ? currentPage.value - 1 : currentPage.value,
     pageSize: itemsPerPage,
-    searchCriteriaList: encodedParams,
     sort: itemsSort.value
   }
 
   try {
-    const searchresults = await InstituteService.searchSchools(req)
+    // Call the service (which now accepts simple params)
+    const searchresults = await SchoolService.searchSchools(req)
+
     filteredSchools.value = searchresults.data?.content
     transformedSchools.value = filteredSchools.value.map((item: any) => {
       const { ...rest } = item
@@ -163,18 +127,16 @@ const searchSchools = async () => {
         ...rest,
         schoolCategoryCodeLabel: appStore.getCategoryCodeLabel(item.schoolCategoryCode),
         facilityTypeCodeLabel: appStore.getFacilityCodeLabel(item.facilityTypeCode),
-        grades: appStore.compareSchoolGrades(appStore.getGradeByGradeCodes, item.grades)
+        grades: appStore.mapSchoolGradesToLabels(item.grades)
       }
     })
     results.value = searchresults.data.totalElements
-    // Update current page and total pages
     currentPage.value = req.pageNumber
     totalPages.value = searchresults.data.totalPages
   } catch (error) {
     console.error('Error fetching schools:', error)
   }
 }
-
 const resetFilters = () => {
   // Reset selected filters and search input to show all schools
   selectedJurisdiction.value = null
@@ -244,16 +206,13 @@ onBeforeMount(async () => {
             <v-btn @click="resetFilters" variant="outlined" color="primary" class="text-none"
               >Reset</v-btn
             >
-            <!-- <v-btn @click="searchSchools" color="primary">Search</v-btn> -->
           </v-col>
         </v-row>
       </v-container>
     </v-sheet>
-
-    <!-- <v-card class="pa-6" width="100%"> -->
-    <v-sheet class="pa-6">
+    <v-sheet>
       <!-- Search Results Table -->
-      Total: {{ results }} <span v-if="results != 0">Current Page {{ currentPage + 1 }}</span>
+
       <v-data-table-server
         v-if="results != 0"
         v-model:items-per-page="itemsPerPage"
@@ -279,7 +238,7 @@ onBeforeMount(async () => {
         </template>
         <template v-slot:expanded-row="{ item }">
           <tr>
-            <td :colspan="headers.length">
+            <td :colspan="headers.length" style="padding-left: 48px">
               <v-col>
                 <v-row class="my-1 pl-2">
                   <v-chip
@@ -296,6 +255,7 @@ onBeforeMount(async () => {
                 <v-row>
                   <p>
                     <router-link
+                      v-if="appStore.getDistrictByDistrictId(item.districtId)"
                       class="pl-4"
                       :to="`/district/${
                         appStore.getDistrictByDistrictId(item.districtId)?.districtNumber
@@ -321,11 +281,8 @@ onBeforeMount(async () => {
           </tr>
         </template>
       </v-data-table-server>
-      <!-- </v-card> -->
     </v-sheet>
   </div>
 </template>
 
-<style>
-/* Add custom styles here if needed */
-</style>
+<style></style>

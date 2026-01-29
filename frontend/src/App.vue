@@ -9,11 +9,7 @@ const data = ref([]) // Placeholder for the received data
 const appStore = useAppStore()
 
 onBeforeMount(async () => {
-  await appStore.setCodes() //calls /create-cache
-  await appStore.setDistricts()
-  await appStore.setAuthorityList()
-  await appStore.setSchoolList()
-  await appStore.setOffshoreSchoolList()
+  await appStore.setCodes()
 })
 </script>
 
@@ -70,6 +66,7 @@ nav a:first-of-type {
     width: 1280px;
     padding: 0 2rem;
   }
+
   header {
     display: flex;
     place-items: center;

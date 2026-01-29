@@ -72,7 +72,7 @@ function downloadDistrictsMailing() {
           </v-btn>
 
           <v-btn
-            href="/api/v1/download/csv/district/all-mailing?filepath=districtmailing"
+            href="/api/download/districtmailing.csv"
             variant="text"
             class="v-btn-align-left text-none text-subtitle-1 my-1"
             ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>
@@ -80,7 +80,7 @@ function downloadDistrictsMailing() {
             Mailing for All Districts (CSV)</v-btn
           >
           <v-btn
-            href="/api/v1/download/csv/district/all-contacts?filepath=districtcontacts"
+            href="/api/download/alldistrictcontacts.csv"
             variant="text"
             class="v-btn-align-left text-none text-subtitle-1 my-1"
             ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>

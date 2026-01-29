@@ -51,7 +51,7 @@ function goToAuthority() {
         </v-row>
         <v-row>
           <v-btn
-            href="/api/v1/download/csv/authority/all-mailing/INDEPENDNT?filepath=authoritymailing"
+            href="/api/download/authoritymailing.csv"
             variant="text"
             class="v-btn-align-left text-none wrap text-subtitle-1 my-1 text-wrap"
             ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Mailing for All
