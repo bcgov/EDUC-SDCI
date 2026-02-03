@@ -136,7 +136,7 @@ jobs:
           oc rollout restart deployment/${{ env.IMAGE_NAME }} 2> /dev/null \
           || true && echo "Rollout in progress"
 
-          oc rollout restart deployment/${{ env.APP_NAME_FRONTEND_MAIN }} 2> /dev/null \
+          oc rollout restart deployment/${{ env.APP_NAME_FRONTEND_MASTER }} 2> /dev/null \
           || true && echo "Rollout in progress"
           # Get status, returns 0 if rollout is successful
           oc rollout status deployment/${{ env.IMAGE_NAME }}
