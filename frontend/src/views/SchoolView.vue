@@ -246,15 +246,15 @@ function goToDistrict() {
                 District {{ districtInfo.value.districtNumber }} -
                 {{ districtInfo.value.displayName }}
               </a>
-              <router-link v-if="schoolData.value?.independentAuthorityId && authorityInfo.value" :to="{
+              <router-link v-if="schoolData.value?.independentAuthorityId && authorityInfo" :to="{
                 name: 'authority',
                 params: {
-                  authorityNumber: authorityInfo.value.authorityNumber,
-                  displayName: authorityInfo.value.displayName
+                  authorityNumber: authorityInfo.authorityNumber,
+                  displayName: authorityInfo.displayName
                 }
               }" id="authority-link" class="ml-1">
-                Independent Authority {{ authorityInfo.value.authorityNumber }} -
-                {{ authorityInfo.value.displayName }}
+                Independent Authority {{ authorityInfo.authorityNumber }} -
+                {{ authorityInfo.displayName }}
               </router-link>
             </v-row>
             <v-row no-gutters class="mt-1 mb-4">
