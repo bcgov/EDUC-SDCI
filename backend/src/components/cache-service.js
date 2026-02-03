@@ -49,6 +49,55 @@ let gradeCodes = [];
 let fundingGroups = [];
 
 const cacheService = {
+  async loadCache() {
+    // Load address type codes
+    await this.loadAddressTypeCodes();
+    log.info("Loaded address type codes to memory");
+
+    // Load school category codes
+    await this.loadSchoolCategoryCodes();
+    log.info("Loaded category codes to memory");
+
+    // Load facility codes
+    await this.loadFacilityCodes();
+    log.info("Loaded facility codes to memory");
+
+    await this.loadContactTypeCodes();
+    log.info("Loaded contact type codes to memory");
+    // Load grade codes
+    await this.loadGradeCodes();
+    log.info("Loaded grade codes to memory");
+    this.loadSchoolandDistrictCache();
+  },
+  async loadSchoolandDistrictCache() {
+    // Load district data
+    await cacheService.loadAllDistrictsToMap();
+    log.info("Loaded district data to memory");
+    // Load school data
+    await this.loadAllSchoolsToMap();
+    log.info("Loaded school data to memory");
+
+    // Add schools to districts
+    await this.addSchoolsToDistricts();
+
+    // Load authority data
+    await this.loadAllAuthoritiesToMap();
+    log.info("Loaded authority data to memory");
+
+    //Create Files for download
+    await this.createSchoolFiles();
+    log.info("Created school files");
+    await this.createDistrictFiles();
+    log.info("Created district files");
+    await this.createDistrictMailingFile();
+    log.info("Created district mailing file");
+    await this.createAuthorityMailingFile();
+    log.info("Created authority mailing file");
+    await this.loadoffshoreSchoolRepresentatives();
+    log.info("Loaded Offshore School representatives to memory ");
+    await this.createOffshoreFile();
+    log.info("Created authority offshore file");
+  },
   async loadAllSchoolsToMap() {
     await retry(
       async () => {
