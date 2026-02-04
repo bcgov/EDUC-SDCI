@@ -9,7 +9,6 @@ const districtRouter = require("./routes/district-router");
 const authorityRouter = require("./routes/authority-router");
 const schoolRouter = require("./routes/school-router");
 const searchRouter = require("./routes/search-router");
-const cacheService = require("./components/cache-service");
 const app = express();
 const publicPath = path.join(__dirname, "../public");
 app.use(express.static(publicPath));
@@ -45,11 +44,7 @@ app.get("/api/download/*", (req, res) => {
 });
 
 app.get("/api/health", (req, res) => {
-  res.status(200).json({
-    status: "OK",
-    lastCacheRebuild: cacheService.getLastCacheRebuild(),
-    uptime: process.uptime(),
-  });
+  res.status(200).send("OK");
 });
 
 app.use("/api", apiRouter);
