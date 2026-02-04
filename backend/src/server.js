@@ -3,10 +3,24 @@ const NATS = require("./messaging/message-pub-sub");
 const InstituteMessageHandler = require("./messaging/handlers/institute-update-handler");
 
 // Initialize NATS and subscribe to the topic when the app starts
-NATS.init().then(() => {
-  InstituteMessageHandler.subscribe();
-  Z;
-});
+NATS.init()
+  .then(() => {
+    if (!NATS.isConnectionClosed()) {
+      try {
+        InstituteMessageHandler.subscribe();
+      } catch (err) {
+        console.error("Error subscribing to Institute message topic:", err);
+      }
+    } else {
+      console.error(
+        "NATS connection is closed. Cannot subscribe to Institute message topic.",
+      );
+    }
+  })
+  .catch((err) => {
+    console.error("Error initializing NATS:", err);
+  });
+
 ("use strict");
 
 const config = require("./config/index");
