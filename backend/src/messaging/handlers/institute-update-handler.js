@@ -43,7 +43,7 @@ async function subscribeToInstituteAPIMessageTopic(nats) {
     }
   } catch (error) {
     log.error(
-      `Error subscribing to INSTITUTE_CACHE_REFRESH_TOPICL: ${error.message}`,
+      `Error subscribing to INSTITUTE_CACHE_REFRESH_TOPIC: ${error.message}`,
     );
   }
 }
