@@ -3,6 +3,8 @@ const config = require("../config/index");
 const log = require("../components/logger");
 let connection;
 let connectionClosed = true;
+console.log("process.env.NATS_SERVICE_URL:", process.env.NATS_SERVICE_URL);
+console.log("config.get('messaging'):", config.get("messaging"));
 const server = config.get("messaging:natsUrl");
 const nats = require("nats");
 const natsOptions = {
