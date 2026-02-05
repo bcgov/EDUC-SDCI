@@ -18,6 +18,7 @@ const natsOptions = {
 const NATS = {
   async init() {
     try {
+      log.info(`Connecting to NATS server at ${server}...`);
       connection = await nats.connect(natsOptions);
       connectionClosed = false;
       log.info("NATS connected!", connection.getServer());
@@ -69,7 +70,7 @@ const NATS = {
         })
         .catch((e) => {
           log.error(
-            `Request to NATS failed for topic ${topic} and payload ${payload}`
+            `Request to NATS failed for topic ${topic} and payload ${payload}`,
           );
           return reject(e?.message);
         });
