@@ -28,18 +28,17 @@ async function subscribeToInstituteAPIMessageTopic(nats) {
       log.info(
         `Message details: subject=${msg.subject}, sid=${msg.sid}, reply=${msg.reply}, data=${messageData}`,
       );
-      // Debounce the cache update log
-      if (debounceTimer) {
-        clearTimeout(debounceTimer);
+      // Only set the debounce timer if one isn't already running
+      if (!debounceTimer) {
+        debounceTimer = setTimeout(() => {
+          (async () => {
+            const now = new Date().toISOString();
+            log.info(`UPDATED CACHE`);
+            await cacheService.loadSchoolandDistrictCache();
+            debounceTimer = null;
+          })();
+        }, DEBOUNCE_TIMER_MS);
       }
-      debounceTimer = setTimeout(() => {
-        (async () => {
-          const now = new Date().toISOString();
-          log.info(`UPDATED CACHE`);
-          await cacheService.loadSchoolandDistrictCache();
-          debounceTimer = null;
-        })();
-      }, DEBOUNCE_TIMER_MS);
     }
   } catch (error) {
     log.error(
