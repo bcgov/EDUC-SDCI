@@ -41,5 +41,8 @@ nconf.defaults({
     discovery: process.env.SOAM_DISCOVERY,
     tokenEndpoint: process.env.SOAM_TOKEN_URL,
   },
+  messaging: {
+    natsUrl: process.env.NATS_SERVICE_URL,
+  },
 });
 module.exports = nconf;
