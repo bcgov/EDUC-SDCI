@@ -5,7 +5,7 @@ const NATS = require("../message-pub-sub");
 const cacheService = require("../../components/cache-service");
 
 async function subscribeToInstituteAPIMessageTopic(nats) {
-  const DEBOUNCE_TIMER_MS = 1800000; // 30 minutes
+  const DEBOUNCE_TIMER_MS = 900000; // 15 minutes
   const opts = {};
   let debounceTimer = null;
   try {
