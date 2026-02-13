@@ -24,7 +24,7 @@ async function getAuthority(req, res) {
   } catch (e) {
     log.error(
       "getAuthority Error:",
-      e.response ? e.response.status : e.message
+      e.response ? e.response.status : e.message,
     );
     res.status(500).json({ error: "Failed to fetch authority data" });
   }

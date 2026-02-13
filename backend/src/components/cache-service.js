@@ -761,9 +761,25 @@ const cacheService = {
             authoritiesResponse.content &&
             authoritiesResponse.content.length > 0
           ) {
+            const now = new Date();
             for (const authority of authoritiesResponse.content) {
+              // Filter contacts by effective/expiry date
+              if (Array.isArray(authority.contacts)) {
+                authority.contacts = authority.contacts.filter((contact) => {
+                  const effectiveDate = contact.effectiveDate
+                    ? new Date(contact.effectiveDate)
+                    : null;
+                  const expiryDate = contact.expiryDate
+                    ? new Date(contact.expiryDate)
+                    : null;
+                  // Only include if effectiveDate <= now and (no expiryDate or expiryDate >= now)
+                  return (
+                    (!effectiveDate || effectiveDate <= now) &&
+                    (!expiryDate || expiryDate >= now)
+                  );
+                });
+              }
               const authorityData = generateAuthorityObject(authority);
-
               authorities.push(authorityData);
               if (isAuthorityActive(authorityData)) {
                 activeAuthorities.push(authorityData);
@@ -813,7 +829,6 @@ const cacheService = {
         try {
           for (const [authorityId, authorityData] of authoritiesMap.entries()) {
             const schools = await this.getAuthoritySchools(authorityId);
-
             authoritiesMap.set(authorityId, {
               ...authorityData, // spreads properties of districtData at top level
               authoritySchools: schools,
