@@ -456,8 +456,6 @@ const cacheService = {
         { property: "phoneNumber", label: "Phone Number" },
         { property: "faxNumber", label: "Fax" },
         { property: "email", label: "Email" },
-        { property: "openedDate", label: "Opened Date" },
-        { property: "closedDate", label: "Closed Date" },
       ];
 
       authorityResponse.content.forEach(
