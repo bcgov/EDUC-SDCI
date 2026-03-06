@@ -47,16 +47,70 @@ let contactTypeCodes = {};
 let facilityCodes = [];
 let gradeCodes = [];
 let fundingGroups = [];
+let lastCacheRebuild = null;
 
 const cacheService = {
+  async loadCache() {
+    lastCacheRebuild = new Date().toLocaleString("en-CA", {
+      timeZone: "America/Vancouver",
+    });
+    // Load address type codes
+    await this.loadAddressTypeCodes();
+    log.info("Loaded address type codes to memory");
+
+    // Load school category codes
+    await this.loadSchoolCategoryCodes();
+    log.info("Loaded category codes to memory");
+
+    // Load facility codes
+    await this.loadFacilityCodes();
+    log.info("Loaded facility codes to memory");
+
+    await this.loadContactTypeCodes();
+    log.info("Loaded contact type codes to memory");
+    // Load grade codes
+    await this.loadGradeCodes();
+    log.info("Loaded grade codes to memory");
+    this.loadSchoolandDistrictCache();
+  },
+  async loadSchoolandDistrictCache() {
+    // Load district data
+    await cacheService.loadAllDistrictsToMap();
+    log.info("Loaded district data to memory");
+    // Load school data
+    await this.loadAllSchoolsToMap();
+    log.info("Loaded school data to memory");
+
+    // Add schools to districts
+    await this.addSchoolsToDistricts();
+
+    // Load authority data
+    await this.loadAllAuthoritiesToMap();
+    log.info("Loaded authority data to memory");
+
+    //Create Files for download
+    await this.createSchoolFiles();
+    log.info("Created school files");
+    await this.createDistrictFiles();
+    log.info("Created district files");
+    await this.createDistrictMailingFile();
+    log.info("Created district mailing file");
+    await this.createAuthorityMailingFile();
+    log.info("Created authority mailing file");
+    await this.loadoffshoreSchoolRepresentatives();
+    log.info("Loaded Offshore School representatives to memory ");
+    await this.createOffshoreFile();
+    log.info("Created authority offshore file");
+  },
   async loadAllSchoolsToMap() {
     await retry(
       async () => {
-        schools = []; // reset the value.
-        schoolMap.clear(); // reset the value.
-        mincode_school_ID_Map.clear();
-        activeSchools = [];
-        offshoreSchools = [];
+        // Use local variables to collect new data
+        let schoolsToCache = [];
+        let schoolMapToCache = new Map();
+        let mincode_school_ID_MapToCache = new Map();
+        let activeSchoolsToCache = [];
+        let offshoreSchoolsToCache = [];
 
         const data = await auth.getApiCredentials(
           config.get("oidc:clientId"),
@@ -168,19 +222,25 @@ const cacheService = {
 
               schoolObject = addFundingGroups(schoolObject);
 
-              schoolMap.set(schoolObject.schoolId, schoolObject);
-              mincode_school_ID_Map.set(
+              schoolMapToCache.set(schoolObject.schoolId, schoolObject);
+              mincode_school_ID_MapToCache.set(
                 schoolObject.mincode,
                 schoolObject.schoolId,
               );
               if (schoolObject.schoolCategoryCode == "OFFSHORE") {
-                offshoreSchools.push(schoolObject);
+                offshoreSchoolsToCache.push(schoolObject);
               }
-              schools.push(schoolObject);
-              activeSchools.push(schoolObject);
+              schoolsToCache.push(schoolObject);
+              activeSchoolsToCache.push(schoolObject);
             }
           }
         }
+        // Set global variables after all processing is done
+        schools = schoolsToCache;
+        schoolMap = schoolMapToCache;
+        mincode_school_ID_Map = mincode_school_ID_MapToCache;
+        activeSchools = activeSchoolsToCache;
+        offshoreSchools = offshoreSchoolsToCache;
         log.info(`Loaded ${schoolMap.size} schools.`);
         log.info(`Loaded ${activeSchools.length} active schools.`);
       },
@@ -649,12 +709,12 @@ const cacheService = {
           `${instituteApiUrl}/institute/district/paginated?pageSize=500`,
         );
 
-        // Reset collections
-        districts = [];
-        activeDistricts = [];
-        districtsMap.clear();
-        districtsNumber_ID_Map.clear();
-        districtID_Name_Map.clear();
+        // Use local variables to collect new data
+        let districtsToCache = [];
+        let activeDistrictsToCache = [];
+        let districtsMapToCache = new Map();
+        let districtsNumber_ID_MapToCache = new Map();
+        let districtID_Name_MapToCache = new Map();
 
         if (districtsResponse?.content?.length > 0) {
           for (const district of districtsResponse.content) {
@@ -689,26 +749,33 @@ const cacheService = {
               }
 
               // Add to maps and arrays
-              districtsMap.set(district.districtId, districtData);
-              districtsNumber_ID_Map.set(
+              districtsMapToCache.set(district.districtId, districtData);
+              districtsNumber_ID_MapToCache.set(
                 district.districtNumber,
                 district.districtId,
               );
-              districtID_Name_Map.set(
+              districtID_Name_MapToCache.set(
                 district.districtId,
                 district.displayName,
               );
-              districts.push(districtData);
-              activeDistricts.push(districtData);
+              districtsToCache.push(districtData);
+              activeDistrictsToCache.push(districtData);
             }
           }
 
           // Sort active districts by district number (padded to 3 digits)
-          activeDistricts.sort((a, b) => {
+          activeDistrictsToCache.sort((a, b) => {
             const numA = a.districtNumber.toString().padStart(3, "0");
             const numB = b.districtNumber.toString().padStart(3, "0");
             return numA.localeCompare(numB);
           });
+
+          // Set global variables after all processing is done
+          districts = districtsToCache;
+          activeDistricts = activeDistrictsToCache;
+          districtsMap = districtsMapToCache;
+          districtsNumber_ID_Map = districtsNumber_ID_MapToCache;
+          districtID_Name_Map = districtID_Name_MapToCache;
 
           log.info(`Loaded ${districtsMap.size} districts.`);
           log.info(`Loaded ${activeDistricts.length} active districts.`);
@@ -1224,6 +1291,9 @@ const cacheService = {
         });
       });
     });
+  },
+  getLastCacheRebuild() {
+    return lastCacheRebuild;
   },
 };
 

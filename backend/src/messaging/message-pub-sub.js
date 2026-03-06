@@ -69,7 +69,7 @@ const NATS = {
         })
         .catch((e) => {
           log.error(
-            `Request to NATS failed for topic ${topic} and payload ${payload}`
+            `Request to NATS failed for topic ${topic} and payload ${payload}`,
           );
           return reject(e?.message);
         });

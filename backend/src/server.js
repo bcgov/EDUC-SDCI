@@ -1,4 +1,27 @@
-"use strict";
+// NATS and Institute message handler
+const NATS = require("./messaging/message-pub-sub");
+const InstituteMessageHandler = require("./messaging/handlers/institute-update-handler");
+
+// Initialize NATS and subscribe to the topic when the app starts
+NATS.init()
+  .then(() => {
+    if (!NATS.isConnectionClosed()) {
+      try {
+        InstituteMessageHandler.subscribe();
+      } catch (err) {
+        console.error("Error subscribing to Institute message topic:", err);
+      }
+    } else {
+      console.error(
+        "NATS connection is closed. Cannot subscribe to Institute message topic.",
+      );
+    }
+  })
+  .catch((err) => {
+    console.error("Error initializing NATS:", err);
+  });
+
+("use strict");
 
 const config = require("./config/index");
 const http = require("http");
@@ -19,51 +42,7 @@ const cacheService = require("./components/cache-service");
 
 async function bootstrapCache() {
   try {
-    // Load address type codes
-    await cacheService.loadAddressTypeCodes();
-    log.info("Loaded address type codes to memory");
-
-    // Load school category codes
-    await cacheService.loadSchoolCategoryCodes();
-    log.info("Loaded category codes to memory");
-
-    // Load facility codes
-    await cacheService.loadFacilityCodes();
-    log.info("Loaded facility codes to memory");
-
-    await cacheService.loadContactTypeCodes();
-    log.info("Loaded contact type codes to memory");
-    // Load district data
-    await cacheService.loadAllDistrictsToMap();
-    log.info("Loaded district data to memory");
-    // Load grade codes
-    await cacheService.loadGradeCodes();
-    log.info("Loaded grade codes to memory");
-
-    // Load school data
-    await cacheService.loadAllSchoolsToMap();
-    log.info("Loaded school data to memory");
-
-    // Add schools to districts
-    await cacheService.addSchoolsToDistricts();
-
-    // Load authority data
-    await cacheService.loadAllAuthoritiesToMap();
-    log.info("Loaded authority data to memory");
-
-    //Create Files for download
-    await cacheService.createSchoolFiles();
-    log.info("Created school files");
-    await cacheService.createDistrictFiles();
-    log.info("Created district files");
-    await cacheService.createDistrictMailingFile();
-    log.info("Created district mailing file");
-    await cacheService.createAuthorityMailingFile();
-    log.info("Created authority mailing file");
-    await cacheService.loadoffshoreSchoolRepresentatives();
-    log.info("Loaded Offshore School representatives to memory ");
-    await cacheService.createOffshoreFile();
-    log.info("Created authority offshore file");
+    await cacheService.loadCache();
   } catch (error) {
     log.error("Error during cache bootstrapping:", error);
   }
