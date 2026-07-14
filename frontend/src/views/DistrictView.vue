@@ -182,19 +182,15 @@ onMounted(async () => {
 
 <template>
   <div>
-    <v-breadcrumbs
-      class="breadcrumbs"
-      bg-color="white"
-      :items="[
-        { title: 'Home', href: '/' },
-        'District',
-        district.value.districtData
-          ? district.value.districtData.districtNumber +
-            ' ' +
-            district.value.districtData.displayName
-          : ''
-      ]"
-    ></v-breadcrumbs>
+    <v-breadcrumbs class="breadcrumbs" bg-color="white" :items="[
+      { title: 'Home', href: '/' },
+      'District',
+      district.value.districtData
+        ? district.value.districtData.districtNumber +
+        ' ' +
+        district.value.districtData.displayName
+        : ''
+    ]"></v-breadcrumbs>
 
     <v-sheet style="z-index: 100; position: relative" elevation="2" class="py-6 full-width">
       <v-container id="main">
@@ -227,8 +223,7 @@ onMounted(async () => {
                   {{ formatPhoneNumber(district.value.districtData?.faxNumber) }}
                 </p>
                 <p v-if="district.value.districtData?.email">
-                  <strong>Email: </strong
-                  ><a :href="'mailto:' + district.value.districtData?.email">{{
+                  <strong>Email: </strong><a :href="'mailto:' + district.value.districtData?.email">{{
                     district.value.districtData?.email
                   }}</a>
                 </p>
@@ -239,30 +234,20 @@ onMounted(async () => {
                 </p>
               </v-col>
 
-              <v-col
-                cols="11"
-                md="auto"
-                v-for="item in district.value.districtData.addresses"
-                :key="item.addressTypeCode"
-              >
+              <v-col cols="11" md="auto" v-for="item in district.value.districtData.addresses"
+                :key="item.addressTypeCode">
                 <DisplayAddress v-bind="item" class="mb-3" />
               </v-col>
 
               <v-col cols="11" md="4" class="pa-0 pa-md-3">
-                <v-btn
-                  variant="text"
-                  class="text-none text-subtitle-1 ma-1 v-btn-align-left"
-                  @click="downloadDistrictContacts"
-                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
-                  District Contacts (CSV)</v-btn
-                >
-                <v-btn
-                  variant="text"
-                  class="text-none text-subtitle-1 ma-1 v-btn-align-left"
-                  @click="downloadDistrictSchools"
-                  ><template v-slot:prepend> <v-icon icon="mdi-download" /> </template>Download
-                  District Schools (CSV)</v-btn
-                >
+                <v-btn variant="text" class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+                  @click="downloadDistrictContacts"><template v-slot:prepend> <v-icon icon="mdi-download" />
+                  </template>Download
+                  District Contacts (CSV)</v-btn>
+                <v-btn variant="text" class="text-none text-subtitle-1 ma-1 v-btn-align-left"
+                  @click="downloadDistrictSchools"><template v-slot:prepend> <v-icon icon="mdi-download" />
+                  </template>Download
+                  District Schools (CSV)</v-btn>
               </v-col>
             </v-row>
           </v-col>
@@ -290,36 +275,18 @@ onMounted(async () => {
           </v-tabs>
         </div>
         <div style="flex: 0 0 auto; min-width: 300px; max-width: 420px">
-          <v-text-field
-            v-if="tab === tabOptions.contacts"
-            v-model="contactSearch"
-            append-icon="mdi-filter-variant"
-            label="Filter District Contacts"
-            single-line
-            hide-details
-          ></v-text-field>
-          <v-text-field
-            v-if="tab === tabOptions.schools"
-            v-model="schoolSearch"
-            append-icon="mdi-filter-variant"
-            label="Filter District Schools"
-            single-line
-            hide-details
-          ></v-text-field>
+          <v-text-field v-if="tab === tabOptions.contacts" v-model="contactSearch" append-icon="mdi-filter-variant"
+            label="Filter District Contacts" single-line hide-details></v-text-field>
+          <v-text-field v-if="tab === tabOptions.schools" v-model="schoolSearch" append-icon="mdi-filter-variant"
+            label="Filter District Schools" single-line hide-details></v-text-field>
         </div>
       </div>
       <v-card-text>
         <v-window v-model="tab">
           <!-- District Contacts tab contents -->
           <v-window-item :value="tabOptions.contacts">
-            <v-data-table
-              items-per-page="-1"
-              :headers="contactHeaders"
-              :items="district.value.districtData?.contacts"
-              :search="contactSearch"
-              :sort-by="[{ key: 'label', order: 'asc' }]"
-              class="wrap-table-cells"
-            >
+            <v-data-table items-per-page="-1" :headers="contactHeaders" :items="district.value.districtData?.contacts"
+              :search="contactSearch" :sort-by="[{ key: 'label', order: 'asc' }]" class="wrap-table-cells">
               <template v-slot:item.email="{ item }">
                 <div style="max-width: 250px; white-space: normal; word-break: break-word">
                   <a :href="`mailto:${item.email}`">{{ item.email }}</a>
@@ -335,20 +302,12 @@ onMounted(async () => {
           </v-window-item>
           <!-- District Schools tab contents -->
           <v-window-item :value="tabOptions.schools">
-            <v-data-table
-              items-per-page="-1"
-              :headers="schoolHeaders"
-              :items="district.value.districtData.districtSchools"
-              :search="schoolSearch"
-              :sort-by="[{ key: 'mincode', order: 'asc' }]"
-              class="wrap-table-cells"
-            >
+            <v-data-table items-per-page="-1" :headers="schoolHeaders"
+              :items="district.value.districtData.districtSchools" :search="schoolSearch"
+              :sort-by="[{ key: 'displayName', order: 'asc' }]" class="wrap-table-cells">
               <template v-slot:item.displayName="{ item }">
-                <a
-                  @click="goToSchool(item.displayName, item.mincode, item.schoolId)"
-                  style="white-space: normal; word-break: break-word"
-                  >{{ item.displayName }}</a
-                >
+                <a @click="goToSchool(item.displayName, item.mincode, item.schoolId)"
+                  style="white-space: normal; word-break: break-word">{{ item.displayName }}</a>
               </template>
 
               <template v-slot:item.schoolCategoryCode="{ item }">

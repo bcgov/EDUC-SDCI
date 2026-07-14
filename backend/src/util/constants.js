@@ -140,6 +140,8 @@ const EXCLUDED_SCHOOL_CATEGORY_CODES = Object.freeze([
   "POST_SEC",
 ]);
 
+const EXCLUDED_DISTRICT_SCHOOL_CATEGORIES = Object.freeze(["INDEPEND"]);
+
 const NON_BC_DISTRICTS = Object.freeze(["098", "102", "103"]);
 
 module.exports = {
@@ -148,5 +150,6 @@ module.exports = {
   EVENT_TYPE,
   EXCLUDED_FACILITY_TYPES,
   EXCLUDED_SCHOOL_CATEGORY_CODES,
+  EXCLUDED_DISTRICT_SCHOOL_CATEGORIES,
   NON_BC_DISTRICTS,
 };

@@ -25,6 +25,7 @@ const fs = require("fs");
 const {
   EXCLUDED_FACILITY_TYPES,
   EXCLUDED_SCHOOL_CATEGORY_CODES,
+  EXCLUDED_DISTRICT_SCHOOL_CATEGORIES,
 } = require("../util/constants");
 
 let schoolMap = new Map();
@@ -158,6 +159,11 @@ const cacheService = {
         ].sort((a, b) => a.mincode.localeCompare(b.mincode));
         if (schoolsToLoadToCache && schoolsToLoadToCache.length > 0) {
           for (const school of schoolsToLoadToCache) {
+            if (
+              EXCLUDED_SCHOOL_CATEGORY_CODES.includes(school.schoolCategoryCode)
+            ) {
+              continue;
+            }
             let schoolObject = generateSchoolObject(school, gradeCodes);
 
             if (isSchoolActive(schoolObject)) {
@@ -722,7 +728,13 @@ const cacheService = {
 
   getDistrictSchools(districtId) {
     return Array.from(schoolMap.entries())
-      .filter(([_, value]) => value.districtId === districtId)
+      .filter(
+        ([_, value]) =>
+          value.districtId === districtId &&
+          !EXCLUDED_DISTRICT_SCHOOL_CATEGORIES.includes(
+            value.schoolCategoryCode,
+          ),
+      )
       .map(([key, value]) => ({ key, ...value }));
   },
 
