@@ -212,6 +212,11 @@ const cacheService = {
         ].sort((a, b) => a.mincode.localeCompare(b.mincode));
         if (schoolsToLoadToCache && schoolsToLoadToCache.length > 0) {
           for (const school of schoolsToLoadToCache) {
+            if (
+              EXCLUDED_SCHOOL_CATEGORY_CODES.includes(school.schoolCategoryCode)
+            ) {
+              continue;
+            }
             let schoolObject = generateSchoolObject(school, gradeCodes);
 
             if (isSchoolActive(schoolObject)) {
@@ -789,7 +794,11 @@ const cacheService = {
 
   getDistrictSchools(districtId) {
     return Array.from(schoolMap.entries())
-      .filter(([_, value]) => value.districtId === districtId)
+      .filter(
+        ([_, value]) =>
+          value.districtId === districtId &&
+          value.schoolCategoryCode !== "INDEPEND",
+      )
       .map(([key, value]) => ({ key, ...value }));
   },
 
