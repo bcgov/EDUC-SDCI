@@ -728,13 +728,7 @@ const cacheService = {
 
   getDistrictSchools(districtId) {
     return Array.from(schoolMap.entries())
-      .filter(
-        ([_, value]) =>
-          value.districtId === districtId &&
-          !EXCLUDED_DISTRICT_SCHOOL_CATEGORIES.includes(
-            value.schoolCategoryCode,
-          ),
-      )
+      .filter(([_, value]) => value.districtId === districtId)
       .map(([key, value]) => ({ key, ...value }));
   },
 

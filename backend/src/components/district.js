@@ -23,11 +23,16 @@ async function getDistrict(req, res) {
   try {
     const { id } = req.params;
     const districtJSON = await cacheService.getDistrictByDistrictID(id);
+    if (districtJSON?.districtSchools) {
+      districtJSON.districtSchools = districtJSON.districtSchools.filter(
+        (school) => !["INDEPEND"].includes(school.schoolCategoryCode),
+      );
+    }
     res.json({ districtData: districtJSON });
   } catch (e) {
     console.error(
       "getDistrict Error:",
-      e.response ? e.response.status : e.message
+      e.response ? e.response.status : e.message,
     );
     res.status(500).json({ error: "Failed to get district data" });
   }
