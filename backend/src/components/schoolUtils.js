@@ -10,13 +10,13 @@ function generateSchoolObject(school = {}, gradeCodes = []) {
       const effective = new Date(effectiveDate);
       const expiry = expiryDate ? new Date(expiryDate) : null;
       return effective <= now && (!expiry || expiry >= now);
-    }
+    },
   );
 
   // Extract existing grade codes from school.grades
   const allSchoolGrades = new Set(gradeCodes.map((g) => g.schoolGradeCode));
   const presentGrades = new Set(
-    school?.grades?.map((g) => g.schoolGradeCode) || []
+    school?.grades?.map((g) => g.schoolGradeCode) || [],
   );
 
   // Build the grade status object (GRADE: "Y" or "N")
@@ -24,7 +24,6 @@ function generateSchoolObject(school = {}, gradeCodes = []) {
   allSchoolGrades.forEach((code) => {
     gradeStatus[code] = presentGrades.has(code) ? "Y" : "N";
   });
-
   //Add Funding Codes
   return {
     schoolId: school.schoolId || null,
@@ -60,12 +59,11 @@ function generateSchoolObject(school = {}, gradeCodes = []) {
     notes: school.notes || null,
     neighborhoodLearning: school.neighborhoodLearning || [],
     schoolMove: school.schoolMove || [],
-    schoolCategoryCode_label: school.schoolCategoryCode_label || "Public",
+    schoolCategoryCode_label: school.schoolCategoryCode_label || null,
     schoolCategoryCode_description:
-      school.schoolCategoryCode_description || "Public School",
-    faciltyTypeCode_label: school.faciltyTypeCode_label || "Provincial",
-    faciltyTypeCode_description:
-      school.faciltyTypeCode_description || "Provincial school",
+      school.schoolCategoryCode_description || null,
+    faciltyTypeCode_label: school.faciltyTypeCode_label || null,
+    faciltyTypeCode_description: school.faciltyTypeCode_description || null,
     primaryK3: school.primaryK3 || "",
     elementary47: school.elementary47 || "",
     juniorSecondary810: school.juniorSecondary810 || "",
@@ -79,12 +77,12 @@ function isSchoolActive(school) {
   const currentTime = LocalDateTime.now();
   const openedDate = LocalDateTime.parse(
     school.openedDate,
-    DateTimeFormatter.ISO_LOCAL_DATE_TIME
+    DateTimeFormatter.ISO_LOCAL_DATE_TIME,
   );
   const closedDate = school.closedDate
     ? LocalDateTime.parse(
         school.closedDate,
-        DateTimeFormatter.ISO_LOCAL_DATE_TIME
+        DateTimeFormatter.ISO_LOCAL_DATE_TIME,
       )
     : null;
 
