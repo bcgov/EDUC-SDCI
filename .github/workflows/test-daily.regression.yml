@@ -5,6 +5,8 @@ on:
   schedule:
     - cron: "0 11 * * 1-5"
 
+permissions:
+  contents: read
 jobs:
   Regression:
     runs-on: ubuntu-latest

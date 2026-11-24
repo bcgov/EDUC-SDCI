@@ -20,6 +20,8 @@ on:
         description: "Version Number"
         required: true
 
+permissions:
+  contents: write
 jobs:
   openshift-ci-cd:
     name: Tag Image

@@ -8,6 +8,10 @@ on:
         required: false
         default: 'main'
 
+permissions:
+  contents: read
+  packages: write
+  issues: write
 jobs:
   # ========================================================================================
   # JOB 1: BUILD AND DEPLOY TO DEV

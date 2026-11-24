@@ -44,6 +44,10 @@ env:
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+  packages: write
+  issues: write
 jobs:
   build-and-deploy-dev:
     name: Build and deploy to DEV

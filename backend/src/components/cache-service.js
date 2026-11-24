@@ -164,6 +164,14 @@ const cacheService = {
             ) {
               continue;
             }
+            //set facility description and school category description
+            school.faciltyTypeCode_description =
+              this.getFacilityDescriptionByCode(school.facilityTypeCode);
+            school.schoolCategoryCode_description =
+              this.getSchoolCategoryDescriptionByCode(
+                school.schoolCategoryCode,
+              );
+
             let schoolObject = generateSchoolObject(school, gradeCodes);
 
             if (isSchoolActive(schoolObject)) {
@@ -884,6 +892,18 @@ const cacheService = {
   },
   getSchoolIdByMincode(mincode) {
     return mincode_school_ID_Map.get(mincode);
+  },
+  getSchoolCategoryDescriptionByCode(schoolCode) {
+    const match = schoolCategoryCodes.find(
+      (code) => code.schoolCategoryCode === schoolCode,
+    );
+    return match ? match.description : schoolCode;
+  },
+  getFacilityDescriptionByCode(facilityCode) {
+    const match = facilityCodes.find(
+      (code) => code.facilityTypeCode === facilityCode,
+    );
+    return match ? match.description : facilityCode;
   },
   getSchoolMap() {
     return schoolMap ? schoolMap : {};

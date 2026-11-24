@@ -46,6 +46,9 @@ on:
   # https://docs.github.com/en/actions/reference/events-that-trigger-workflows
   workflow_dispatch:
 
+permissions:
+  contents: read
+  issues: write
 jobs:
   openshift-ci-cd:
     name: Build and deploy to PROD
